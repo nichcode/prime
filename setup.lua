@@ -50,12 +50,11 @@ workspace "prime"
 
         if (_OPTIONS["build_test"]) then
             files {
-                "prime.lua"
+                "setup.lua"
             }
         end    
 
         files {
-            "setup.lua",
             "include/**.h",
             "src/**.cpp",
             "src/**.h"
