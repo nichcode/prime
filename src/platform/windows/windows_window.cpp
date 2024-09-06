@@ -13,14 +13,16 @@ namespace prime {
 
 	static HINSTANCE s_Instance = NULL;
 	wstr s_ClassName = L"PrimeWindowClass";
+	wstr s_PropName = L"Prime";
 
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static void RegisterWindowClass()
 	{
 		WNDCLASSEX wc;
 		memset(&wc, 0, sizeof(wc));
 		wc.cbSize = sizeof(WNDCLASSEX);
 		wc.style = CS_DBLCLKS | CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
-		wc.lpfnWndProc = DefWindowProc;
+		wc.lpfnWndProc = WindowProc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.hInstance = s_Instance;
@@ -52,6 +54,31 @@ namespace prime {
 		SetWindowPos(handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 	}
 
+	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	{
+		prime::WindowData* data = (prime::WindowData*)GetPropW(hWnd, s_PropName.c_str());
+		if (!data) {
+			// no window created
+			return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		}
+
+		switch (uMsg)
+		{
+		case WM_DESTROY:
+		case WM_CLOSE: {
+			data->ShouldClose = true;
+			WindowHandle handle;
+			handle.Ptr = hWnd;
+			if (data->Callbacks.CloseCallback) {
+				data->Callbacks.CloseCallback(handle);
+			}	
+		}
+		break;
+
+		}
+		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+	}
+
 	void Window::Init(const WindowProperties& props)
 	{
 		if (!s_Instance) {
@@ -59,13 +86,7 @@ namespace prime {
 			RegisterWindowClass();
 		}
 
-		m_Props.Center = props.Center;
-		m_Props.Height = props.Height;
-		m_Props.Maximize = props.Maximize;
-		m_Props.Title = props.Title;
-		m_Props.Width = props.Width;
-		m_Props.XPos = props.XPos;
-		m_Props.YPos = props.YPos;
+		m_Data.Props = props;
 
 		u32 style = WS_OVERLAPPEDWINDOW;
 		u32 exStyle = WS_EX_OVERLAPPEDWINDOW;
@@ -94,19 +115,28 @@ namespace prime {
 		PASSERT_MSG(window, "Window creation failed");
 
 		if (window) {
+			SetPropW(window, s_PropName.c_str(), &m_Data);
+
+			u8 flags = 0;
+			if (props.Hidden) {
+				flags = SW_HIDE;
+			}
+			else if (!props.Hidden) {
+
+				if (props.Maximize) {
+					flags = SW_SHOWMAXIMIZED;
+				}
+				else {
+					flags = SW_SHOW;
+				}
+			}
 
 			if (props.Center) {
-				CenterWindow(window, &m_Props.XPos, &m_Props.YPos, props.Width, props.Height);
+				CenterWindow(window, &m_Data.Props.XPos, &m_Data.Props.YPos, props.Width, props.Height);
 			}
-
-			if (props.Maximize) {
-				ShowWindow(window, SW_SHOWMAXIMIZED);
-			}
-			else {
-				ShowWindow(window, SW_SHOW);
-			}
+			ShowWindow(window, flags);
 			UpdateWindow(window);
-			m_Handle.m_ptr = window;
+			m_Handle.Ptr = window;
 		}
 	}
 
@@ -116,8 +146,67 @@ namespace prime {
 			UneegisterWindowClass();
 		}
 
-		DestroyWindow((HWND)m_Handle.m_ptr);
-		m_Handle.m_ptr = nullptr;
+		DestroyWindow((HWND)m_Handle.Ptr);
+		m_Handle.Ptr = nullptr;
+	}
+
+	void Window::Hide()
+	{
+		m_Data.Props.Hidden = true;
+		ShowWindow((HWND)m_Handle.Ptr, SW_HIDE);
+	}
+
+	void Window::Show()
+	{
+		m_Data.Props.Hidden = false;
+		ShowWindow((HWND)m_Handle.Ptr, SW_SHOW);
+	}
+
+	void Window::SetTitle(const str& title)
+	{
+		m_Data.Props.Title = title;
+		wstr windowTitle = StringToWideString(title);
+		SetWindowText((HWND)m_Handle.Ptr, windowTitle.c_str());
+	}
+
+	void Window::SetPos(i32 xPos, i32 yPos)
+	{
+		RECT rect = { 0, 0, 0, 0 };
+		rect.left = xPos;
+		rect.right = xPos;
+		rect.top = yPos;
+		rect.bottom = yPos;
+		AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, 0, WS_EX_OVERLAPPEDWINDOW);
+
+		m_Data.Props.XPos = xPos;
+		m_Data.Props.YPos = yPos;
+		SetWindowPos((HWND)m_Handle.Ptr, NULL, rect.left, rect.top, 0, 0,
+			SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
+	}
+
+	void Window::SetSize(u32 width, u32 height)
+	{
+		b8 valid = width > 0 && height > 0;
+		PASSERT_MSG(valid, "invalid Parameter");
+		// TODO: make sure we dont exceed window size limits
+
+		RECT rect = { 0, 0, 0, 0 };
+		rect.right = width;
+		rect.bottom = height;
+		AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, 0, WS_EX_OVERLAPPEDWINDOW);
+
+		m_Data.Props.Width = width;
+		m_Data.Props.Height = height;
+		SetWindowPos((HWND)m_Handle.Ptr, HWND_TOP,
+			0, 0, rect.right - rect.left, rect.bottom - rect.top,
+			SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
+	}
+
+	void Window::SetCloseCallback(WindowCloseFunc func)
+	{
+		if (func) {
+			m_Data.Callbacks.CloseCallback = func;
+		}
 	}
 
 	void PullEvents()

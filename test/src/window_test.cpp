@@ -3,6 +3,11 @@
 
 b8 g_Running = false;
 
+void WindowCloseCallback(const prime::WindowHandle handle)
+{
+	g_Running = false;
+}
+
 b8 WindowTest()
 {
 	prime::Window window;
@@ -10,6 +15,8 @@ b8 WindowTest()
 	props.Center = true;
 	window.Init(props);
 	g_Running = true;
+
+	window.SetCloseCallback(WindowCloseCallback);
 
 	while (g_Running)
 	{
