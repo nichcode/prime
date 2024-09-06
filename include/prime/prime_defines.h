@@ -54,6 +54,9 @@ using str = std::string;
 /** @brief string view type */
 using str_view = std::string_view;
 
+/** @brief wide string type */
+using wstr = std::wstring;
+
 // // Properly define static assertions.
 // Ensure all types are of the correct size.
 

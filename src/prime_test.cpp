@@ -29,7 +29,7 @@ namespace prime {
 		u32 passed = 0;
 		u32 failed = 0;
 
-		for (auto test : s_Tests) {
+		for (auto& test : s_Tests) {
 			b8 result = test.Function();
 
 			if (result) {
