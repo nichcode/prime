@@ -24,7 +24,7 @@ workspace "prime"
     filter {"system:windows", "configurations:*"}
         architecture "x64"
         systemversion "latest"
-        cppdialect "C++17"
+        cppdialect "C++20"
         staticruntime "off"
 
     filter "configurations:Debug"

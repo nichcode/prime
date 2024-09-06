@@ -1,10 +1,9 @@
 
 #include "prime/prime_test.h"
+#include "prime/prime_logger.h"
 
 #include <vector>
-
-// TODO: remove
-#include <iostream>
+#include "format"
 
 namespace prime {
 
@@ -16,16 +15,6 @@ namespace prime {
 	};
 
 	static std::vector<TestEntry> s_Tests;
-
-	void TestManager::Init()
-	{
-
-	}
-
-	void TestManager::Shutdown()
-	{
-		s_Tests.clear();
-	}
 
 	void TestManager::AddTest(TestFunc testFunc, const str& name)
 	{
@@ -44,17 +33,20 @@ namespace prime {
 			b8 result = test.Function();
 
 			if (result) {
-				// TODO: remove
-				std::cout << "[SUCCESS]" << test.Name << std::endl;
+				str msg = std::format("[SUCCESS]: {}", test.Name);
+				PINFO(msg);
 				++passed;
 			}
 
 			else {
-				std::cout << "[FAILED]" << test.Name << std::endl;
+				str msg = std::format("[FAILED]: {}", test.Name);
+				PINFO(msg);
 				++failed;
 			}
 		}
 
-		std::cout << "Results: " << passed << "passed, " << failed << "failed" << std::endl;
+		str msg = std::format("Results: {} passed, {} failed", passed, failed);
+		PINFO(msg);;
+		s_Tests.clear();
 	}
 }
