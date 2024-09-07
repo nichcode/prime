@@ -6,8 +6,8 @@ b8 MultiWindowTest();
 
 int main(int argc, char** argv) 
 {
-	//prime::TestManager::AddTest(WindowTest, "WindowTest");
-	prime::TestManager::AddTest(MultiWindowTest, "MultiWindowTest");
+	prime::TestManager::AddTest(WindowTest, "WindowTest");
+	//prime::TestManager::AddTest(MultiWindowTest, "MultiWindowTest");
 	prime::TestManager::Run();
 
 	return 0;

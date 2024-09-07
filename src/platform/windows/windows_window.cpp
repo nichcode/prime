@@ -20,6 +20,7 @@ namespace prime {
 	{
 		CloseFunc Close = nullptr;
 		KeyFunc Key = nullptr;
+		MouseFunc Mouse = nullptr;
 	};
 
 	static i32 s_WindowCount = 0;
@@ -335,6 +336,23 @@ namespace prime {
 		}
 	}
 
+	static void ProcessMouse(Window* window, WindowData* data, u16 mouse, u8 action)
+	{
+		PASSERT_MSG(mouse >= 0 && mouse < Mouse_Max, "Invalid Key");
+		PASSERT_MSG(action == PRELEASE || action == PPRESS, "Invalid action");
+
+		if (action == PPRESS && data->mouse[mouse] == PRELEASE) {
+			data->mouse[mouse] = PPRESS;
+		}
+		else {
+			data->mouse[mouse] = action;
+		}
+
+		if (s_Callbacks.Mouse) {
+			s_Callbacks.Mouse(window, mouse, action);
+		}
+	}
+
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		prime::Window* window = (prime::Window*)GetPropW(hWnd, s_WindowPropName.c_str());
@@ -351,10 +369,9 @@ namespace prime {
 			data->ShouldClose = true;
 			if (s_Callbacks.Close) {
 				s_Callbacks.Close(window);
+			}
+		}return 0; break;
 
-				
-			}return 0; break;
-		}
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 		case WM_KEYUP:
@@ -444,9 +461,44 @@ namespace prime {
 			else {
 				ProcessKey(window, data, key, scancode, action);
 			}
+		}break;
 
-			break;
-		}
+		case WM_LBUTTONDOWN:
+		case WM_RBUTTONDOWN:
+		case WM_MBUTTONDOWN:
+		case WM_XBUTTONDOWN:
+		case WM_LBUTTONUP:
+		case WM_RBUTTONUP:
+		case WM_MBUTTONUP:
+		case WM_XBUTTONUP: {
+			i32 button, action;
+
+			if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP) {
+				button = Mouse_Left;
+			}
+				
+			else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP) {
+				button = Mouse_Right;
+			}
+				
+			else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP) {
+				button = Mouse_Middle;
+			}
+
+			if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN ||
+				uMsg == WM_MBUTTONDOWN || uMsg == WM_XBUTTONDOWN) {
+				action = PPRESS;
+			}
+			else {
+				action = PRELEASE;
+			}
+
+			ProcessMouse(window, data, button, action);
+
+			if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
+				return TRUE;
+		} return 0; break;
+
 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -650,6 +702,13 @@ namespace prime {
 	{
 		if (func) {
 			s_Callbacks.Key = func;
+		}
+	}
+
+	void SetWindowMouseCallback(MouseFunc func)
+	{
+		if (func) {
+			s_Callbacks.Mouse = func;
 		}
 	}
 }

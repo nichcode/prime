@@ -2,6 +2,7 @@
 
 #include "prime_defines.h"
 #include "prime_keycodes.h"
+#include "prime_mousecodes.h"
 
 namespace prime {
 
@@ -21,6 +22,7 @@ namespace prime {
 
 	using CloseFunc = void(*)(const Window* window);
 	using KeyFunc = void(*)(const Window* window, u16 key, i32 scancode, u8 action);
+	using MouseFunc = void(*)(const Window* window, u16 mouse, u8 action);
 
 	struct WindowData 
 	{
@@ -28,10 +30,11 @@ namespace prime {
 		b8 ShouldClose = false;
 
 		u16 Keycodes[512] = {};
-		u16 Scancodes[(u16)Keys::KeyMax + 1] = {};
-		u8 keys[(u16)Keys::KeyMax + 1] = {};
+		u16 Scancodes[KeyMax + 1] = {};
+		str Keynames[KeyMax + 1] = {};
 
-		str Keynames[(u16)Keys::KeyMax + 1] = {};
+		u8 keys[KeyMax + 1] = {};
+		u8 mouse[Mouse_Max + 1] = {};
 
 		WindowData()
 		{
@@ -68,7 +71,7 @@ namespace prime {
 		void SetPos(i32 xPos, i32 yPos);
 		void SetSize(u32 width, u32 height);
 
-		PINLINE b8 GetKeyState(u16 key) {
+		PINLINE b8 GetKeyState(u16 key) const {
 			return m_Data.keys[key] == PPRESS;
 		}
 
@@ -80,16 +83,33 @@ namespace prime {
 			return "";
 		}
 
+		PINLINE str GetMouseName(u16 mouse) const
+		{
+			switch (mouse)
+			{
+			case 0:
+				return "Mouse_Left";
+				break;
+			case 1:
+				return "Mouse_Right";
+				break;
+			case 2:
+				return "Mouse_Middle";
+				break;
+			}
+			return "";
+		}
+
 		PINLINE str GetActionName(u8 action) const
 		{
 			if (action == PRELEASE) {
-				return "Action Release";
+				return "Release";
 			}
 			else if (action == PPRESS) {
-				return "Action Press";
+				return "Press";
 			}
 			else if (action == PREPEAT) {
-				return "Action Repeat";
+				return "Repeat";
 			}
 			return "";
 		}
@@ -109,4 +129,5 @@ namespace prime {
 
 	void SetWindowCloseCallback(CloseFunc func);
 	void SetWindowKeyCallback(KeyFunc func);
+	void SetWindowMouseCallback(MouseFunc func);
 }
