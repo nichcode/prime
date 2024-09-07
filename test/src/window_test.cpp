@@ -22,17 +22,11 @@ b8 WindowTest()
 	window.Init(props);
 	g_Running = true;
 
-	window.SetCloseCallback(WindowCloseCallback);
-	window.SetKeyCallback(WindowKeyCallback);
+	SetWindowCloseCallback(WindowCloseCallback);
 
 	while (g_Running)
 	{
 		prime::PollEvents();
-
-		if (window.GetKeyState((u16)prime::Keys::Key_Right)) {
-			PINFO("WORKINg");
-		}
-
 	}
 
 	window.Destroy();

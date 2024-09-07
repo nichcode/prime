@@ -4,7 +4,7 @@
 
 namespace prime {
 
-	enum class Keys : u16
+	enum Keys : u16
 	{
 		Key_A,
 		Key_B,

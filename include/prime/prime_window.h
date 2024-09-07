@@ -22,16 +22,9 @@ namespace prime {
 	using CloseFunc = void(*)(const Window* window);
 	using KeyFunc = void(*)(const Window* window, u16 key, i32 scancode, u8 action);
 
-	struct Callbacks
-	{
-		CloseFunc Close = nullptr;
-		KeyFunc Key = nullptr;
-	};
-
 	struct WindowData 
 	{
 		WindowProperties Props;
-		Callbacks Callbacks;
 		b8 ShouldClose = false;
 
 		u16 Keycodes[512] = {};
@@ -79,7 +72,6 @@ namespace prime {
 			return m_Data.keys[key] == PPRESS;
 		}
 
-		// keys
 		PINLINE str GetKeyName(u16 key) const
 		{ 
 			if (key >= 0 && key < (u16)Keys::KeyMax) { 
@@ -88,7 +80,6 @@ namespace prime {
 			return "";
 		}
 
-		// keys
 		PINLINE str GetActionName(u8 action) const
 		{
 			if (action == PRELEASE) {
@@ -103,9 +94,6 @@ namespace prime {
 			return "";
 		}
 
-		void SetCloseCallback(CloseFunc func);
-		void SetKeyCallback(KeyFunc func);
-
 		PINLINE b8 operator==(const Window& window)
 		{
 			return m_Handle.Ptr == window.GetHandle().Ptr;
@@ -118,4 +106,7 @@ namespace prime {
 	};
 
 	void PollEvents();
+
+	void SetWindowCloseCallback(CloseFunc func);
+	void SetWindowKeyCallback(KeyFunc func);
 }
