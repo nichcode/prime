@@ -106,6 +106,15 @@ static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 /** @brief make inline */
 #define PINLINE inline
 
+/** @brief a release action */
+#define PRELEASE 0
+
+/** @brief a presse action */
+#define PPRESS 1
+
+/** @brief a repeat action */
+#define PREPEAT 2
+
 /** @brief debug breakpoint */
 #ifdef PPLATFORM_WINDOWS
 #define PBREAK __debugbreak();

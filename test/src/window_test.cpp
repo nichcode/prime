@@ -10,7 +10,8 @@ void WindowCloseCallback(const prime::Window* window)
 
 void WindowKeyCallback(const prime::Window* window, u16 key, i32 scancode, u8 action)
 {
-	PINFO(window->GetKeyName(key));
+	str msg = std::format("{} is {}", window->GetKeyName(key), window->GetActionName(action));
+	PINFO(msg);
 }
 
 b8 WindowTest()
@@ -26,7 +27,12 @@ b8 WindowTest()
 
 	while (g_Running)
 	{
-		prime::PullEvents();
+		prime::PollEvents();
+
+		if (window.GetKeyState((u16)prime::Keys::Key_Right)) {
+			PINFO("WORKINg");
+		}
+
 	}
 
 	window.Destroy();

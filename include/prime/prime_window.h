@@ -36,6 +36,8 @@ namespace prime {
 
 		u16 Keycodes[512] = {};
 		u16 Scancodes[(u16)Keys::KeyMax + 1] = {};
+		u8 keys[(u16)Keys::KeyMax + 1] = {};
+
 		str Keynames[(u16)Keys::KeyMax + 1] = {};
 
 		WindowData()
@@ -73,11 +75,30 @@ namespace prime {
 		void SetPos(i32 xPos, i32 yPos);
 		void SetSize(u32 width, u32 height);
 
+		PINLINE b8 GetKeyState(u16 key) {
+			return m_Data.keys[key] == PPRESS;
+		}
+
 		// keys
 		PINLINE str GetKeyName(u16 key) const
 		{ 
 			if (key >= 0 && key < (u16)Keys::KeyMax) { 
-				return m_Data.Keynames[key]; 
+				return m_Data.Keynames[key];
+			}
+			return "";
+		}
+
+		// keys
+		PINLINE str GetActionName(u8 action) const
+		{
+			if (action == PRELEASE) {
+				return "Action Release";
+			}
+			else if (action == PPRESS) {
+				return "Action Press";
+			}
+			else if (action == PREPEAT) {
+				return "Action Repeat";
 			}
 			return "";
 		}
@@ -96,5 +117,5 @@ namespace prime {
 		}
 	};
 
-	void PullEvents();
+	void PollEvents();
 }
