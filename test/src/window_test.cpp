@@ -3,9 +3,14 @@
 
 b8 g_Running = false;
 
-void WindowCloseCallback(const prime::WindowHandle handle)
+void WindowCloseCallback(const prime::Window* window)
 {
 	g_Running = false;
+}
+
+void WindowKeyCallback(const prime::Window* window, u16 key, i32 scancode, u8 action)
+{
+	PINFO(window->GetKeyName(key));
 }
 
 b8 WindowTest()
@@ -17,6 +22,7 @@ b8 WindowTest()
 	g_Running = true;
 
 	window.SetCloseCallback(WindowCloseCallback);
+	window.SetKeyCallback(WindowKeyCallback);
 
 	while (g_Running)
 	{

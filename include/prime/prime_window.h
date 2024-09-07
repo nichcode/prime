@@ -1,17 +1,14 @@
 #pragma once
 
 #include "prime_defines.h"
+#include "prime_keycodes.h"
 
 namespace prime {
 
+	class Window;
 	struct WindowHandle 
 	{
 		void* Ptr = nullptr;
-
-		b8 operator==(WindowHandle& handle)
-		{
-			return Ptr == handle.Ptr;
-		}
 	};
 
 	struct WindowProperties 
@@ -22,10 +19,13 @@ namespace prime {
 		i32 XPos = 100, YPos = 100;
 	};
 
-	using WindowCloseFunc = void(*)(const WindowHandle);
+	using CloseFunc = void(*)(const Window* window);
+	using KeyFunc = void(*)(const Window* window, u16 key, i32 scancode, u8 action);
+
 	struct Callbacks
 	{
-		WindowCloseFunc CloseCallback;
+		CloseFunc Close = nullptr;
+		KeyFunc Key = nullptr;
 	};
 
 	struct WindowData 
@@ -33,6 +33,16 @@ namespace prime {
 		WindowProperties Props;
 		Callbacks Callbacks;
 		b8 ShouldClose = false;
+
+		u16 Keycodes[512] = {};
+		u16 Scancodes[(u16)Keys::KeyMax + 1] = {};
+		str Keynames[(u16)Keys::KeyMax + 1] = {};
+
+		WindowData()
+		{
+			memset(Keycodes, 0, sizeof(Keycodes));
+			memset(Scancodes, 0, sizeof(Scancodes));
+		}
 	};
 
 	class Window
@@ -63,7 +73,27 @@ namespace prime {
 		void SetPos(i32 xPos, i32 yPos);
 		void SetSize(u32 width, u32 height);
 
-		void SetCloseCallback(WindowCloseFunc func);
+		// keys
+		PINLINE str GetKeyName(u16 key) const
+		{ 
+			if (key >= 0 && key < (u16)Keys::KeyMax) { 
+				return m_Data.Keynames[key]; 
+			}
+			return "";
+		}
+
+		void SetCloseCallback(CloseFunc func);
+		void SetKeyCallback(KeyFunc func);
+
+		PINLINE b8 operator==(const Window& window)
+		{
+			return m_Handle.Ptr == window.GetHandle().Ptr;
+		}
+
+		PINLINE b8 operator==(const Window* window)
+		{
+			return m_Handle.Ptr == window->GetHandle().Ptr;
+		}
 	};
 
 	void PullEvents();

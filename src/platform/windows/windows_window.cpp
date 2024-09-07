@@ -13,7 +13,8 @@ namespace prime {
 
 	static HINSTANCE s_Instance = NULL;
 	wstr s_ClassName = L"PrimeWindowClass";
-	wstr s_PropName = L"Prime";
+	wstr s_WindowPropName = L"PrimeWindow";
+	wstr s_DataPropName = L"PrimeData";
 
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static void RegisterWindowClass()
@@ -54,9 +55,78 @@ namespace prime {
 		SetWindowPos(handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 	}
 
+	static void MapKeys(WindowData& data)
+	{
+		data.Keycodes[0x01E] = (u16)Keys::KeyA;
+		data.Keycodes[0x030] = (u16)Keys::KeyB;
+		data.Keycodes[0x02E] = (u16)Keys::KeyC;
+		data.Keycodes[0x020] = (u16)Keys::KeyD;
+		data.Keycodes[0x012] = (u16)Keys::KeyE;
+		data.Keycodes[0x021] = (u16)Keys::KeyF;
+		data.Keycodes[0x022] = (u16)Keys::KeyG;
+		data.Keycodes[0x023] = (u16)Keys::KeyH;
+		data.Keycodes[0x017] = (u16)Keys::KeyI;
+		data.Keycodes[0x024] = (u16)Keys::KeyJ;
+		data.Keycodes[0x025] = (u16)Keys::KeyK;
+		data.Keycodes[0x026] = (u16)Keys::KeyL;
+		data.Keycodes[0x032] = (u16)Keys::KeyM;
+		data.Keycodes[0x031] = (u16)Keys::KeyN;
+		data.Keycodes[0x018] = (u16)Keys::KeyO;
+		data.Keycodes[0x019] = (u16)Keys::KeyP;
+		data.Keycodes[0x010] = (u16)Keys::KeyQ;
+		data.Keycodes[0x013] = (u16)Keys::KeyR;
+		data.Keycodes[0x01F] = (u16)Keys::KeyS;
+		data.Keycodes[0x014] = (u16)Keys::KeyT;
+		data.Keycodes[0x016] = (u16)Keys::KeyU;
+		data.Keycodes[0x02F] = (u16)Keys::KeyV;
+		data.Keycodes[0x011] = (u16)Keys::KeyW;
+		data.Keycodes[0x02D] = (u16)Keys::KeyX;
+		data.Keycodes[0x015] = (u16)Keys::KeyY;
+		data.Keycodes[0x02C] = (u16)Keys::KeyZ;
+	}
+
+	static void MapKeysNames(WindowData& data)
+	{
+		data.Keynames[(u16)Keys::KeyA] = "Key A";
+		data.Keynames[(u16)Keys::KeyB] = "Key B";
+		data.Keynames[(u16)Keys::KeyC] = "Key C";
+		data.Keynames[(u16)Keys::KeyD] = "Key D";
+		data.Keynames[(u16)Keys::KeyE] = "Key E";
+		data.Keynames[(u16)Keys::KeyF] = "Key F";
+		data.Keynames[(u16)Keys::KeyG] = "Key G";
+		data.Keynames[(u16)Keys::KeyH] = "Key H";
+		data.Keynames[(u16)Keys::KeyI] = "Key I";
+		data.Keynames[(u16)Keys::KeyJ] = "Key J";
+		data.Keynames[(u16)Keys::KeyK] = "Key K";
+		data.Keynames[(u16)Keys::KeyL] = "Key L";
+		data.Keynames[(u16)Keys::KeyM] = "Key M";
+		data.Keynames[(u16)Keys::KeyN] = "Key N";
+		data.Keynames[(u16)Keys::KeyO] = "Key O";
+		data.Keynames[(u16)Keys::KeyP] = "Key P";
+		data.Keynames[(u16)Keys::KeyQ] = "Key Q";
+		data.Keynames[(u16)Keys::KeyR] = "Key R";
+		data.Keynames[(u16)Keys::KeyS] = "Key S";
+		data.Keynames[(u16)Keys::KeyT] = "Key T";
+		data.Keynames[(u16)Keys::KeyU] = "Key U";
+		data.Keynames[(u16)Keys::KeyV] = "Key V";
+		data.Keynames[(u16)Keys::KeyW] = "Key W";
+		data.Keynames[(u16)Keys::KeyX] = "Key X";
+		data.Keynames[(u16)Keys::KeyY] = "Key Y";
+		data.Keynames[(u16)Keys::KeyZ] = "Key Z";
+	}
+
+	static void ProcessKey(Window* window, WindowData* data, u16 key, i32 scancode, u8 action)
+	{
+		if (data->Callbacks.Key) {
+			data->Callbacks.Key(window, key, scancode, action);
+		}
+	}
+
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		prime::WindowData* data = (prime::WindowData*)GetPropW(hWnd, s_PropName.c_str());
+		prime::WindowData* data = (prime::WindowData*)GetPropW(hWnd, s_DataPropName.c_str());
+		prime::Window* window = (prime::Window*)GetPropW(hWnd, s_WindowPropName.c_str());
+
 		if (!data) {
 			// no window created
 			return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -69,11 +139,32 @@ namespace prime {
 			data->ShouldClose = true;
 			WindowHandle handle;
 			handle.Ptr = hWnd;
-			if (data->Callbacks.CloseCallback) {
-				data->Callbacks.CloseCallback(handle);
+			if (data->Callbacks.Close) {
+				data->Callbacks.Close(window);
 			}	
-		}
-		break;
+		}break;
+		case WM_KEYDOWN:
+		case WM_SYSKEYDOWN:
+		case WM_KEYUP:
+		case WM_SYSKEYUP: {
+			i32 key, scancode;
+
+			const u8 action = (HIWORD(lParam) & KF_UP) ? 0 : 1; // 0 for release 1 for pressed
+			scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
+			if (!scancode)
+			{
+				// NOTE: Some synthetic key messages have a scancode of zero
+				// HACK: Map the virtual key back to a usable scancode
+				scancode = MapVirtualKeyW((UINT)wParam, MAPVK_VK_TO_VSC);
+			}
+
+			key = data->Keycodes[scancode];
+			WindowHandle handle;
+			handle.Ptr = hWnd;
+
+			ProcessKey(window, data, key, scancode, action);
+
+		}break;
 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -84,6 +175,8 @@ namespace prime {
 		if (!s_Instance) {
 			s_Instance = GetModuleHandle(nullptr);
 			RegisterWindowClass();
+			MapKeys(m_Data);
+			MapKeysNames(m_Data);
 		}
 
 		m_Data.Props = props;
@@ -115,7 +208,8 @@ namespace prime {
 		PASSERT_MSG(window, "Window creation failed");
 
 		if (window) {
-			SetPropW(window, s_PropName.c_str(), &m_Data);
+			SetPropW(window, s_DataPropName.c_str(), &m_Data);
+			SetPropW(window, s_WindowPropName.c_str(), this);
 
 			u8 flags = 0;
 			if (props.Hidden) {
@@ -202,10 +296,17 @@ namespace prime {
 			SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
 	}
 
-	void Window::SetCloseCallback(WindowCloseFunc func)
+	void Window::SetCloseCallback(CloseFunc func)
 	{
 		if (func) {
-			m_Data.Callbacks.CloseCallback = func;
+			m_Data.Callbacks.Close = func;
+		}
+	}
+
+	void Window::SetKeyCallback(KeyFunc func)
+	{
+		if (func) {
+			m_Data.Callbacks.Key = func;
 		}
 	}
 
