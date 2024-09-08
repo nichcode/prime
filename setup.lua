@@ -22,7 +22,8 @@ workspace "prime"
     }
 
     disablewarnings {
-        "6385"
+        "6385",
+        "6386"
     }
 
     filter {"system:windows", "configurations:*"}

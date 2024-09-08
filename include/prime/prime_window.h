@@ -26,6 +26,7 @@ namespace prime {
 	using MouseMovedFunc = void(*)(const Window* window, i32 x, i32 y);
 	using MouseScrolledFunc = void(*)(const Window* window, f32 xOffset, f32 yOffset);
 	using WindowPosFunc = void(*)(const Window* window, i32 x, i32 y);
+	using WindowResizeFunc = void(*)(const Window* window, u32 width, u32 height);
 
 	struct WindowData 
 	{
@@ -138,4 +139,5 @@ namespace prime {
 	void SetWindowMouseMovedCallback(MouseMovedFunc func);
 	void SetWindowMouseScrolledCallback(MouseScrolledFunc func);
 	void SetWindowPosCallback(WindowPosFunc func);
+	void SetWindowResizeCallback(WindowResizeFunc func);
 }

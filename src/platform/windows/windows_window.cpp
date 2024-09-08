@@ -25,6 +25,7 @@ namespace prime {
 		MouseMovedFunc MouseMoved = nullptr;
 		MouseScrolledFunc MouseScrolled = nullptr;
 		WindowPosFunc WindowPos = nullptr;
+		WindowResizeFunc WindowResize = nullptr;
 	};
 
 	static i32 s_WindowCount = 0;
@@ -537,6 +538,20 @@ namespace prime {
 
 		} return 0; break;
 
+		case WM_SIZE: {
+			const u32 width = (u32)LOWORD(lParam);
+			const u32 height = (u32)HIWORD(lParam);
+
+			if (width != data->Props.Width || height != data->Props.Height) {
+				data->Props.Width = width;
+				data->Props.Height = height;
+
+				if (s_Callbacks.WindowResize) {
+					s_Callbacks.WindowResize(window, width, height);
+				}
+			}
+
+		} return 0; break;
 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -768,6 +783,13 @@ namespace prime {
 	{
 		if (func) {
 			s_Callbacks.WindowPos = func;
+		}
+	}
+	
+	void SetWindowResizeCallback(WindowResizeFunc func)
+	{
+		if (func) {
+			s_Callbacks.WindowResize = func;
 		}
 	}
 }

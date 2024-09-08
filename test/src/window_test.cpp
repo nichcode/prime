@@ -38,6 +38,12 @@ void WindowPosCallback(const prime::Window* window, i32 x, i32 y)
 	PINFO(msg);
 }
 
+void WindowResizeCallback(const prime::Window* window, u32 width, u32 height)
+{
+	str msg = std::format("Window Size ({} {})", width, height);
+	PINFO(msg);
+}
+
 b8 WindowTest()
 {
 	prime::Window window;
@@ -52,6 +58,7 @@ b8 WindowTest()
 	SetWindowMouseMovedCallback(WindowMouseMovedCallback);
 	SetWindowMouseScrolledCallback(WindowMouseScrolledCallback);
 	SetWindowPosCallback(WindowPosCallback);
+	SetWindowResizeCallback(WindowResizeCallback);
 
 	while (g_Running)
 	{
