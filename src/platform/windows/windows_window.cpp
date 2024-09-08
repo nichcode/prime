@@ -411,7 +411,10 @@ namespace prime {
 			if (s_Callbacks.Close) {
 				s_Callbacks.Close(window);
 			}
-		}return 0; break;
+
+			return 0;
+			break;
+		}
 
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
@@ -502,7 +505,9 @@ namespace prime {
 			else {
 				ProcessKey(window, data, key, scancode, action);
 			}
-		}break;
+
+			break;
+		}
 
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
@@ -535,10 +540,11 @@ namespace prime {
 			}
 
 			ProcessMouse(window, data, button, action);
+			if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP) { return true; }
 
-			if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
-				return TRUE;
-		} return 0; break;
+			return 0;
+			break;
+		}
 
 		case WM_MOUSEMOVE: {
 			if (data->IsFocused) {
@@ -548,13 +554,18 @@ namespace prime {
 				ProcessMouseMoved(window, data, x, y);
 			}
 
-		} return 0; break;
+			return 0;
+			break;
+		}
 
 		case WM_MOUSEWHEEL: {
 			if (s_Callbacks.MouseScrolled) {
 				s_Callbacks.MouseScrolled(window, 0.0, (f32)HIWORD(wParam) / (f32)WHEEL_DELTA);
 			}
-		} return 0; break;
+
+			return 0;
+			break;
+		}
 
 		case WM_MOVE: {
 			i32 x = GET_X_LPARAM(lParam);
@@ -566,7 +577,9 @@ namespace prime {
 				s_Callbacks.WindowPos(window, x, y);
 			}
 
-		} return 0; break;
+			return 0;
+			break;
+		}
 
 		case WM_SIZE: {
 			const u32 width = (u32)LOWORD(lParam);
@@ -581,17 +594,23 @@ namespace prime {
 				}
 			}
 
-		} return 0; break;
+			return 0;
+			break;
+		}
 
 		case WM_SETFOCUS: {
 			ProcessWindowFocus(window, data, true);
 
-		} return 0; break;
+			return 0;
+			break;
+		}
 
 		case WM_KILLFOCUS: {
 			ProcessWindowFocus(window, data, false);
 
-		} return 0; break;
+			return 0;
+			break;
+		}
 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);

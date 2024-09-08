@@ -67,7 +67,10 @@ workspace "prime"
 
         removefiles {
             "src/platform/windows/**.h",
-            "src/platform/windows/**.cpp"
+            "src/platform/windows/**.cpp",
+
+            "src/platform/directx11/**.h",
+            "src/platform/directx11/**.cpp"
         }
 
         includedirs {
@@ -78,7 +81,14 @@ workspace "prime"
         filter "system:windows"
             files {
                 "src/platform/windows/**.h",
-                "src/platform/windows/**.cpp"
+                "src/platform/windows/**.cpp",
+
+                "src/platform/directx11/**.h",
+                "src/platform/directx11/**.cpp"
+            }
+
+            links {
+                "d3d11.lib"
             }
 
     -- prime-test

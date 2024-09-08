@@ -112,6 +112,12 @@ static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 /** @brief a presse action */
 #define PPRESS 1
 
+/** @brief a failed */
+#define PFAILED 0
+
+/** @brief passed */
+#define PPASSED 1
+
 /** @brief a repeat action */
 #define PREPEAT 2
 

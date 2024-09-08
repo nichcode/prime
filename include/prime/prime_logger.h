@@ -8,7 +8,7 @@ namespace prime {
 
 	enum LogTypes : u8
 	{
-		None,
+		LogTypesNone,
 		LogTypesTrace,
 		LogTypesDebug,
 		LogTypesInfo,
@@ -30,7 +30,7 @@ namespace prime {
 		{
 			SetLevel(logType);
 			std::cout << msg << std::endl;
-			SetLevel(None);
+			SetLevel(LogTypesNone);
 		}
 	};
 }
