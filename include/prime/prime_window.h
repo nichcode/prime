@@ -22,9 +22,10 @@ namespace prime {
 
 	using CloseFunc = void(*)(const Window* window);
 	using KeyFunc = void(*)(const Window* window, u16 key, i32 scancode, u8 action);
-	using MouseFunc = void(*)(const Window* window, u16 mouse, u8 action);
+	using MouseButtonFunc = void(*)(const Window* window, u16 mouse, u8 action);
 	using MouseMovedFunc = void(*)(const Window* window, i32 x, i32 y);
 	using MouseScrolledFunc = void(*)(const Window* window, f32 xOffset, f32 yOffset);
+	using WindowPosFunc = void(*)(const Window* window, i32 x, i32 y);
 
 	struct WindowData 
 	{
@@ -133,7 +134,8 @@ namespace prime {
 
 	void SetWindowCloseCallback(CloseFunc func);
 	void SetWindowKeyCallback(KeyFunc func);
-	void SetWindowMouseCallback(MouseFunc func);
+	void SetWindowMouseButtonCallback(MouseButtonFunc func);
 	void SetWindowMouseMovedCallback(MouseMovedFunc func);
 	void SetWindowMouseScrolledCallback(MouseScrolledFunc func);
+	void SetWindowPosCallback(WindowPosFunc func);
 }

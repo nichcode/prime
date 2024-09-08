@@ -21,6 +21,10 @@ workspace "prime"
         "MultiProcessorCompile"
     }
 
+    disablewarnings {
+        "6385"
+    }
+
     filter {"system:windows", "configurations:*"}
         architecture "x64"
         systemversion "latest"

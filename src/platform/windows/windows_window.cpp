@@ -21,9 +21,10 @@ namespace prime {
 	{
 		CloseFunc Close = nullptr;
 		KeyFunc Key = nullptr;
-		MouseFunc Mouse = nullptr;
+		MouseButtonFunc Mouse = nullptr;
 		MouseMovedFunc MouseMoved = nullptr;
 		MouseScrolledFunc MouseScrolled = nullptr;
+		WindowPosFunc WindowPos = nullptr;
 	};
 
 	static i32 s_WindowCount = 0;
@@ -524,6 +525,18 @@ namespace prime {
 			}
 		} return 0; break;
 
+		case WM_MOVE: {
+			i32 x = GET_X_LPARAM(lParam);
+			i32 y = GET_Y_LPARAM(lParam);
+			data->Props.XPos = x;
+			data->Props.YPos = y;
+
+			if (s_Callbacks.WindowPos) {
+				s_Callbacks.WindowPos(window, x, y);
+			}
+
+		} return 0; break;
+
 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -730,7 +743,7 @@ namespace prime {
 		}
 	}
 
-	void SetWindowMouseCallback(MouseFunc func)
+	void SetWindowMouseButtonCallback(MouseButtonFunc func)
 	{
 		if (func) {
 			s_Callbacks.Mouse = func;
@@ -748,6 +761,13 @@ namespace prime {
 	{
 		if (func) {
 			s_Callbacks.MouseScrolled = func;
+		}
+	}
+	
+	void SetWindowPosCallback(WindowPosFunc func)
+	{
+		if (func) {
+			s_Callbacks.WindowPos = func;
 		}
 	}
 }

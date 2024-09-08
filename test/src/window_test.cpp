@@ -14,7 +14,7 @@ void WindowKeyCallback(const prime::Window* window, u16 key, i32 scancode, u8 ac
 	PINFO(msg);
 }
 
-void WindowMouseCallback(const prime::Window* window, u16 mouse, u8 action)
+void WindowMouseButtonCallback(const prime::Window* window, u16 mouse, u8 action)
 {
 	str msg = std::format("{} is {}", window->GetMouseName(mouse), window->GetActionName(action));
 	PINFO(msg);
@@ -32,6 +32,12 @@ void WindowMouseScrolledCallback(const prime::Window* window, f32 xOffset, f32 y
 	PINFO(msg);
 }
 
+void WindowPosCallback(const prime::Window* window, i32 x, i32 y)
+{
+	str msg = std::format("Window Pos ({} {})", x, y);
+	PINFO(msg);
+}
+
 b8 WindowTest()
 {
 	prime::Window window;
@@ -42,9 +48,10 @@ b8 WindowTest()
 
 	SetWindowCloseCallback(WindowCloseCallback);
 	SetWindowKeyCallback(WindowKeyCallback);
-	SetWindowMouseCallback(WindowMouseCallback);
+	SetWindowMouseButtonCallback(WindowMouseButtonCallback);
 	SetWindowMouseMovedCallback(WindowMouseMovedCallback);
 	SetWindowMouseScrolledCallback(WindowMouseScrolledCallback);
+	SetWindowPosCallback(WindowPosCallback);
 
 	while (g_Running)
 	{
