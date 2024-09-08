@@ -24,6 +24,7 @@ namespace prime {
 	using KeyFunc = void(*)(const Window* window, u16 key, i32 scancode, u8 action);
 	using MouseFunc = void(*)(const Window* window, u16 mouse, u8 action);
 	using MouseMovedFunc = void(*)(const Window* window, i32 x, i32 y);
+	using MouseScrolledFunc = void(*)(const Window* window, f32 xOffset, f32 yOffset);
 
 	struct WindowData 
 	{
@@ -134,4 +135,5 @@ namespace prime {
 	void SetWindowKeyCallback(KeyFunc func);
 	void SetWindowMouseCallback(MouseFunc func);
 	void SetWindowMouseMovedCallback(MouseMovedFunc func);
+	void SetWindowMouseScrolledCallback(MouseScrolledFunc func);
 }

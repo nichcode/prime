@@ -23,6 +23,7 @@ namespace prime {
 		KeyFunc Key = nullptr;
 		MouseFunc Mouse = nullptr;
 		MouseMovedFunc MouseMoved = nullptr;
+		MouseScrolledFunc MouseScrolled = nullptr;
 	};
 
 	static i32 s_WindowCount = 0;
@@ -517,6 +518,12 @@ namespace prime {
 
 		} return 0; break;
 
+		case WM_MOUSEWHEEL: {
+			if (s_Callbacks.MouseScrolled) {
+				s_Callbacks.MouseScrolled(window, 0.0, (f32)HIWORD(wParam) / (f32)WHEEL_DELTA);
+			}
+		} return 0; break;
+
 
 		}
 		return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -734,6 +741,13 @@ namespace prime {
 	{
 		if (func) {
 			s_Callbacks.MouseMoved = func;
+		}
+	}
+	
+	void SetWindowMouseScrolledCallback(MouseScrolledFunc func)
+	{
+		if (func) {
+			s_Callbacks.MouseScrolled = func;
 		}
 	}
 }

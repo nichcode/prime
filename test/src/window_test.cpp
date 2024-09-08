@@ -22,7 +22,13 @@ void WindowMouseCallback(const prime::Window* window, u16 mouse, u8 action)
 
 void WindowMouseMovedCallback(const prime::Window* window, i32 x, i32 y)
 {
-	str msg = std::format("Mouse ({} {})", x, y);
+	str msg = std::format("Mouse Moved ({} {})", x, y);
+	PINFO(msg);
+}
+
+void WindowMouseScrolledCallback(const prime::Window* window, f32 xOffset, f32 yOffset)
+{
+	str msg = std::format("Mouse Scrolled ({} {})", xOffset, yOffset);
 	PINFO(msg);
 }
 
@@ -38,6 +44,7 @@ b8 WindowTest()
 	SetWindowKeyCallback(WindowKeyCallback);
 	SetWindowMouseCallback(WindowMouseCallback);
 	SetWindowMouseMovedCallback(WindowMouseMovedCallback);
+	SetWindowMouseScrolledCallback(WindowMouseScrolledCallback);
 
 	while (g_Running)
 	{
