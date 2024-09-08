@@ -62,7 +62,8 @@ workspace "prime"
         files {
             "include/**.h",
             "src/**.cpp",
-            "src/**.h"
+            "src/**.h",
+            "src/**.c"
         }
 
         removefiles {
@@ -76,6 +77,10 @@ workspace "prime"
         includedirs {
             "include",
             "src"
+        }
+
+        links {
+            "OpenGL32.lib"
         }
 
         filter "system:windows"

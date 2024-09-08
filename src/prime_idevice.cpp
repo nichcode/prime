@@ -4,6 +4,7 @@
 
 // platforms
 #include "platform/directx11/directx11_device.h"
+#include "platform/opengl/opengl_device.h"
 
 namespace prime {
 
@@ -17,6 +18,9 @@ namespace prime {
 
 		case prime::DeviceTypeDirectX11:
 			return new DirectX11Device();
+
+		case prime::DeviceTypeOpenGL:
+			return new OpenGLDevice();
 		}
 		return nullptr;
 	}

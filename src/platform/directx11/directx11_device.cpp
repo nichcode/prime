@@ -62,7 +62,6 @@ namespace prime {
 		}
 		
 		PASSERT_MSG(m_Device, "DirectX11 device creation failed");
-		PINFO("DirectX11 Device Init");
 	}
 
 	void DirectX11Device::Shutdown()
@@ -73,7 +72,6 @@ namespace prime {
 			m_SwapChain->Release();
 			m_Device->Release();
 		}
-		PINFO("DirectX11 Device Shutdown");
 	}
 
 	void DirectX11Device::Clear()

@@ -32,3 +32,28 @@ b8 DirectX11DeviceTest()
 
 	return PPASSED;
 }
+
+b8 OpenGLDeviceTest()
+{
+	prime::Window window;
+	window.Init(prime::WindowProperties());
+
+	prime::Device openGLDevice;
+	openGLDevice.Init(prime::DeviceTypeOpenGL, &window);
+	openGLDevice.SetClearColor(.2f, .2f, .2f, 1.0f);
+
+	prime::SetWindowCloseCallback(OnWndowClose);
+	s_Running = true;
+
+	while (s_Running)
+	{
+		prime::PollEvents();
+
+		openGLDevice.Clear();
+		openGLDevice.SwapBuffers();
+	}
+
+	openGLDevice.Shutdown();
+
+	return PPASSED;
+}

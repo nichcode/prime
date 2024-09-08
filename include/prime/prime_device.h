@@ -10,7 +10,8 @@ namespace prime {
 	enum DeviceType : u8
 	{
 		DeviceTypeNone,
-		DeviceTypeDirectX11
+		DeviceTypeDirectX11,
+		DeviceTypeOpenGL
 	};
 
 	class Device
