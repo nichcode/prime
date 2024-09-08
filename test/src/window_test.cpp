@@ -44,6 +44,12 @@ void WindowResizeCallback(const prime::Window* window, u32 width, u32 height)
 	PINFO(msg);
 }
 
+void WindowFocusCallback(const prime::Window* window, b8 focused)
+{
+	str msg = std::format("Focused - {}", focused);
+	PINFO(msg);
+}
+
 b8 WindowTest()
 {
 	prime::Window window;
@@ -59,6 +65,9 @@ b8 WindowTest()
 	SetWindowMouseScrolledCallback(WindowMouseScrolledCallback);
 	SetWindowPosCallback(WindowPosCallback);
 	SetWindowResizeCallback(WindowResizeCallback);
+	SetWindowFocusCallback(WindowFocusCallback);
+	//SetWindowFocusCallback()
+	//SetWindowFocus
 
 	while (g_Running)
 	{

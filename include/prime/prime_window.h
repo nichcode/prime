@@ -27,17 +27,18 @@ namespace prime {
 	using MouseScrolledFunc = void(*)(const Window* window, f32 xOffset, f32 yOffset);
 	using WindowPosFunc = void(*)(const Window* window, i32 x, i32 y);
 	using WindowResizeFunc = void(*)(const Window* window, u32 width, u32 height);
+	using WindowFocusFunc = void(*)(const Window* window, b8 focused);
 
 	struct WindowData 
 	{
 		WindowProperties Props;
-		b8 ShouldClose = false;
+		b8 ShouldClose = false, IsFocused = false;
 
 		u16 Keycodes[512] = {};
-		u16 Scancodes[KeyMax + 1] = {};
-		str Keynames[KeyMax + 1] = {};
+		u16 Scancodes[Key_Max + 1] = {};
+		str Keynames[Key_Max + 1] = {};
 
-		u8 keys[KeyMax + 1] = {};
+		u8 keys[Key_Max + 1] = {};
 		u8 Mouse[Mouse_Max + 1] = {};
 
 		i32 MousePos[2] = {};
@@ -83,7 +84,7 @@ namespace prime {
 
 		PINLINE str GetKeyName(u16 key) const
 		{ 
-			if (key >= 0 && key < (u16)Keys::KeyMax) { 
+			if (key >= 0 && key < (u16)Keys::Key_Max) { 
 				return m_Data.Keynames[key];
 			}
 			return "";
@@ -140,4 +141,5 @@ namespace prime {
 	void SetWindowMouseScrolledCallback(MouseScrolledFunc func);
 	void SetWindowPosCallback(WindowPosFunc func);
 	void SetWindowResizeCallback(WindowResizeFunc func);
+	void SetWindowFocusCallback(WindowFocusFunc func);
 }

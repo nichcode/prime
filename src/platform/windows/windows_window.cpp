@@ -26,6 +26,7 @@ namespace prime {
 		MouseScrolledFunc MouseScrolled = nullptr;
 		WindowPosFunc WindowPos = nullptr;
 		WindowResizeFunc WindowResize = nullptr;
+		WindowFocusFunc WindowFocus = nullptr;
 	};
 
 	static i32 s_WindowCount = 0;
@@ -311,7 +312,7 @@ namespace prime {
 
 	static void ProcessKey(Window* window, WindowData* data, u16 key, i32 scancode, u8 action)
 	{
-		PASSERT_MSG(key >= 0 && key < KeyMax, "Invalid Key");
+		PASSERT_MSG(key >= 0 && key < Key_Max, "Invalid Key");
 		PASSERT_MSG(action == PRELEASE || action == PPRESS, "Invalid action");
 
 		b8 repeated = false;
@@ -363,6 +364,33 @@ namespace prime {
 
 		if (s_Callbacks.MouseMoved) {
 			s_Callbacks.MouseMoved(window, x, y);
+		}
+	}
+
+	static void ProcessWindowFocus(Window* window, WindowData* data, b8 focused)
+	{
+		data->IsFocused = focused;
+		if (s_Callbacks.WindowFocus) {
+			s_Callbacks.WindowFocus(window, focused);
+		}
+
+		if (focused == false) {
+			u16 key, button;
+
+			// process keys
+			for (key = 0; key <= Key_Max; key++) {
+				if (data->keys[key] == PPRESS) {
+					const i32 scancode = data->Scancodes[key];
+					ProcessKey(window, data, key, scancode, PRELEASE);
+				}
+			}
+
+			// proces mouse buttons
+			for (button = 0; button <= Mouse_Max; button++) {
+				if (data->Mouse[button] == PPRESS) {
+					ProcessMouse(window, data, button, PRELEASE);
+				}
+			}
 		}
 	}
 
@@ -513,10 +541,12 @@ namespace prime {
 		} return 0; break;
 
 		case WM_MOUSEMOVE: {
-			const int x = GET_X_LPARAM(lParam);
-			const int y = GET_Y_LPARAM(lParam);
+			if (data->IsFocused) {
+				const int x = GET_X_LPARAM(lParam);
+				const int y = GET_Y_LPARAM(lParam);
 
-			ProcessMouseMoved(window, data, x, y);
+				ProcessMouseMoved(window, data, x, y);
+			}
 
 		} return 0; break;
 
@@ -550,6 +580,16 @@ namespace prime {
 					s_Callbacks.WindowResize(window, width, height);
 				}
 			}
+
+		} return 0; break;
+
+		case WM_SETFOCUS: {
+			ProcessWindowFocus(window, data, true);
+
+		} return 0; break;
+
+		case WM_KILLFOCUS: {
+			ProcessWindowFocus(window, data, false);
 
 		} return 0; break;
 
@@ -790,6 +830,13 @@ namespace prime {
 	{
 		if (func) {
 			s_Callbacks.WindowResize = func;
+		}
+	}
+	
+	void SetWindowFocusCallback(WindowFocusFunc func)
+	{
+		if (func) {
+			s_Callbacks.WindowFocus = func;
 		}
 	}
 }

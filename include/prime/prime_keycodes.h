@@ -118,6 +118,6 @@ namespace prime {
 		Key_PEnter,
 		Key_PEqual,
 
-		KeyMax
+		Key_Max
 	};
 }

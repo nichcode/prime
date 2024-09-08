@@ -52,6 +52,12 @@ void MultiWindowResizeCallback(const prime::Window* window, u32 width, u32 heigh
 	PINFO(msg);
 }
 
+void MultiWindowFocusCallback(const prime::Window* window, b8 focused)
+{
+	str msg = std::format("{} - Focused - {}", window->GetTitle(), focused);
+	PINFO(msg);
+}
+
 b8 MultiWindowTest()
 {
 	prime::WindowProperties props;
@@ -71,6 +77,7 @@ b8 MultiWindowTest()
 	SetWindowMouseScrolledCallback(MultiWindowMouseScrolledCallback);
 	SetWindowPosCallback(MultiWindowPosCallback);
 	SetWindowResizeCallback(MultiWindowResizeCallback);
+	SetWindowFocusCallback(MultiWindowFocusCallback);
 
 	while (g_MultiRunning)
 	{
