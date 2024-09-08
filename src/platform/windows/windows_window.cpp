@@ -8,6 +8,7 @@
 #define WIN32_LEAN_AND_MEAN
 #endif // !WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <windowsx.h>
 
 namespace prime {
 
@@ -21,6 +22,7 @@ namespace prime {
 		CloseFunc Close = nullptr;
 		KeyFunc Key = nullptr;
 		MouseFunc Mouse = nullptr;
+		MouseMovedFunc MouseMoved = nullptr;
 	};
 
 	static i32 s_WindowCount = 0;
@@ -191,8 +193,6 @@ namespace prime {
 
 	static void MapKeysNames(WindowData& data)
 	{
-		//data.Keynames.reserve(KeyMax);
-
 		data.Keynames[Key_A] = str("Key A");
 		data.Keynames[Key_B] = "Key B";
 		data.Keynames[Key_C] = "Key C";
@@ -341,15 +341,25 @@ namespace prime {
 		PASSERT_MSG(mouse >= 0 && mouse < Mouse_Max, "Invalid Key");
 		PASSERT_MSG(action == PRELEASE || action == PPRESS, "Invalid action");
 
-		if (action == PPRESS && data->mouse[mouse] == PRELEASE) {
-			data->mouse[mouse] = PPRESS;
+		if (action == PPRESS && data->Mouse[mouse] == PRELEASE) {
+			data->Mouse[mouse] = PPRESS;
 		}
 		else {
-			data->mouse[mouse] = action;
+			data->Mouse[mouse] = action;
 		}
 
 		if (s_Callbacks.Mouse) {
 			s_Callbacks.Mouse(window, mouse, action);
+		}
+	}
+
+	static void ProcessMouseMoved(Window* window, WindowData* data, i32 x, i32 y)
+	{
+		data->MousePos[0] = x;
+		data->MousePos[1] = y;
+
+		if (s_Callbacks.MouseMoved) {
+			s_Callbacks.MouseMoved(window, x, y);
 		}
 	}
 
@@ -497,6 +507,14 @@ namespace prime {
 
 			if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP)
 				return TRUE;
+		} return 0; break;
+
+		case WM_MOUSEMOVE: {
+			const int x = GET_X_LPARAM(lParam);
+			const int y = GET_Y_LPARAM(lParam);
+
+			ProcessMouseMoved(window, data, x, y);
+
 		} return 0; break;
 
 
@@ -709,6 +727,13 @@ namespace prime {
 	{
 		if (func) {
 			s_Callbacks.Mouse = func;
+		}
+	}
+
+	void SetWindowMouseMovedCallback(MouseMovedFunc func)
+	{
+		if (func) {
+			s_Callbacks.MouseMoved = func;
 		}
 	}
 }

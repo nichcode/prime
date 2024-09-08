@@ -20,6 +20,12 @@ void WindowMouseCallback(const prime::Window* window, u16 mouse, u8 action)
 	PINFO(msg);
 }
 
+void WindowMouseMovedCallback(const prime::Window* window, i32 x, i32 y)
+{
+	str msg = std::format("Mouse ({} {})", x, y);
+	PINFO(msg);
+}
+
 b8 WindowTest()
 {
 	prime::Window window;
@@ -31,6 +37,7 @@ b8 WindowTest()
 	SetWindowCloseCallback(WindowCloseCallback);
 	SetWindowKeyCallback(WindowKeyCallback);
 	SetWindowMouseCallback(WindowMouseCallback);
+	SetWindowMouseMovedCallback(WindowMouseMovedCallback);
 
 	while (g_Running)
 	{

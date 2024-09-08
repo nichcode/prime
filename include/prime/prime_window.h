@@ -23,6 +23,7 @@ namespace prime {
 	using CloseFunc = void(*)(const Window* window);
 	using KeyFunc = void(*)(const Window* window, u16 key, i32 scancode, u8 action);
 	using MouseFunc = void(*)(const Window* window, u16 mouse, u8 action);
+	using MouseMovedFunc = void(*)(const Window* window, i32 x, i32 y);
 
 	struct WindowData 
 	{
@@ -34,7 +35,9 @@ namespace prime {
 		str Keynames[KeyMax + 1] = {};
 
 		u8 keys[KeyMax + 1] = {};
-		u8 mouse[Mouse_Max + 1] = {};
+		u8 Mouse[Mouse_Max + 1] = {};
+
+		i32 MousePos[2] = {};
 
 		WindowData()
 		{
@@ -130,4 +133,5 @@ namespace prime {
 	void SetWindowCloseCallback(CloseFunc func);
 	void SetWindowKeyCallback(KeyFunc func);
 	void SetWindowMouseCallback(MouseFunc func);
+	void SetWindowMouseMovedCallback(MouseMovedFunc func);
 }
