@@ -22,6 +22,36 @@ void MultiWindowKeyCallback(const prime::Window* window, u16 key, i32 scancode, 
 	PINFO(msg);
 }
 
+void MultiWindowMouseButtonCallback(const prime::Window* window, u16 mouse, u8 action)
+{
+	str msg = std::format("{} - {} is {}", window->GetTitle(), window->GetMouseName(mouse), window->GetActionName(action));
+	PINFO(msg);
+}
+
+void MultiWindowMouseMovedCallback(const prime::Window* window, i32 x, i32 y)
+{
+	str msg = std::format("{} - Mouse Moved ({} {})", window->GetTitle(), x, y);
+	PINFO(msg);
+}
+
+void MultiWindowMouseScrolledCallback(const prime::Window* window, f32 xOffset, f32 yOffset)
+{
+	str msg = std::format("{} - Mouse Scrolled ({} {})", window->GetTitle(), xOffset, yOffset);
+	PINFO(msg);
+}
+
+void MultiWindowPosCallback(const prime::Window* window, i32 x, i32 y)
+{
+	str msg = std::format("{} - Window Pos ({} {})",window->GetTitle(), x, y);
+	PINFO(msg);
+}
+
+void MultiWindowResizeCallback(const prime::Window* window, u32 width, u32 height)
+{
+	str msg = std::format("{} - Window Size ({} {})",window->GetTitle(), width, height);
+	PINFO(msg);
+}
+
 b8 MultiWindowTest()
 {
 	prime::WindowProperties props;
@@ -36,6 +66,11 @@ b8 MultiWindowTest()
 
 	SetWindowCloseCallback(MultiWindowCloseCallback);
 	SetWindowKeyCallback(MultiWindowKeyCallback);
+	SetWindowMouseButtonCallback(MultiWindowMouseButtonCallback);
+	SetWindowMouseMovedCallback(MultiWindowMouseMovedCallback);
+	SetWindowMouseScrolledCallback(MultiWindowMouseScrolledCallback);
+	SetWindowPosCallback(MultiWindowPosCallback);
+	SetWindowResizeCallback(MultiWindowResizeCallback);
 
 	while (g_MultiRunning)
 	{
