@@ -13,5 +13,6 @@
 #include "prime_ref.h"
 #include "prime_test.h"
 #include "prime_utils.h"
+#include "prime_vertexarray.h"
 #include "prime_vertexbuffer.h"
 #include "prime_window.h"

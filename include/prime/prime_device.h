@@ -5,6 +5,7 @@
 #include "prime_ref.h"
 #include "prime_devicetype.h"
 #include "prime_indexbuffer.h"
+#include "prime_vertexarray.h"
 
 namespace prime {
 
@@ -20,6 +21,7 @@ namespace prime {
 
 		VertexbufferHandle m_ActiveVertexbuffer;
 		IndexbufferHandle m_ActiveIndexbuffer;
+		VertexarrayHandle m_ActiveVertexarray;
 
 	public:
 		Device() : m_Driver(nullptr), m_Type(DeviceTypeNone),
@@ -41,9 +43,11 @@ namespace prime {
 		Ref<Vertexbuffer> CreateVertexBuffer(u32 size, VertexbufferType type);
 
 		Ref<Indexbuffer> CreateIndexBuffer(u32* indices, u32 count);
+		Ref<Vertexarray> CreateVertexarray();
 
 		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
+		void SetActiveVertexarray(VertexarrayHandle* vertexarrayHandle);
 
         PINLINE b8 IsActiveVertexbuffer(VertexbufferHandle& vertexbufferHandle) const
 		{
@@ -53,6 +57,11 @@ namespace prime {
 		PINLINE b8 IsActiveIndexbuffer(IndexbufferHandle& indexbufferHandle) const
 		{
 			return m_ActiveIndexbuffer.Ptr == indexbufferHandle.Ptr;
+		}
+
+		PINLINE b8 IsActiveVertexarray(VertexarrayHandle& vertexarrayHandle) const
+		{
+			return m_ActiveVertexarray.Ptr == vertexarrayHandle.Ptr;
 		}
 	};
 }

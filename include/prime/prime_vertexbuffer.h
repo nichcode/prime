@@ -42,7 +42,8 @@ namespace prime {
 			m_Elements.push_back(element);
 		}
 
-		PINLINE u32 GetStide() const { return m_Stride; }
+		PINLINE u32 GetStride() const { return m_Stride; }
+		PINLINE const std::vector<VertexbufferElement>& GetElements() const { return m_Elements; }
 
 		void ProcessElements()
 		{

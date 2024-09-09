@@ -55,6 +55,11 @@ namespace prime {
 		return Indexbuffer::Create(this, indices, count);
 	}
 
+	Ref<Vertexarray> Device::CreateVertexarray()
+	{
+		return Vertexarray::Create(this);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
 		if (!vertexbufferHandle->Ptr) {
@@ -66,6 +71,13 @@ namespace prime {
 	{
 		if (!indexbufferHandle->Ptr) {
 			m_ActiveVertexbuffer.Ptr = indexbufferHandle->Ptr;
+		}
+	}
+
+	void Device::SetActiveVertexarray(VertexarrayHandle* vertexarrayHandle)
+	{
+		if (!vertexarrayHandle->Ptr) {
+			m_ActiveVertexarray.Ptr = vertexarrayHandle->Ptr;
 		}
 	}
 }
