@@ -8,7 +8,7 @@ namespace prime {
 	{
 	private:
 		Device* m_Device;
-		u32 m_Count;
+		u32 m_Count, m_ID;
 		IndexbufferHandle m_Handle;
 
 	public:

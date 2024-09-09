@@ -26,12 +26,11 @@ namespace prime {
 		GLenum glType = VertexbufferTypeToOpenGLType(type);
 		m_Type = type;
 
-		GLuint handle = 0;
-		glGenBuffers(1, &handle);
-		glBindBuffer(GL_ARRAY_BUFFER, handle);
+		glGenBuffers(1, &m_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ARRAY_BUFFER, size, vertices, glType);
 
-		m_Handle.Ptr = &handle;
+		m_Handle.Ptr = &m_ID;
 		m_Device = device;
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -42,20 +41,19 @@ namespace prime {
 		GLenum glType = VertexbufferTypeToOpenGLType(type);
 		m_Type = type;
 
-		GLuint handle = 0;
-		glGenBuffers(1, &handle);
-		glBindBuffer(GL_ARRAY_BUFFER, handle);
+		glGenBuffers(1, &m_ID);
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ARRAY_BUFFER, size, nullptr, glType);
 
-		m_Handle.Ptr = &handle;
+		m_Handle.Ptr = &m_ID;
 		m_Device = device;
 	}
 
 	OpenGLVertexbuffer::~OpenGLVertexbuffer()
 	{
 		if (m_Handle.Ptr) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glDeleteBuffers(1, handle);
+			glDeleteBuffers(1, &m_ID);
+			m_ID = 0;
 			m_Handle.Ptr = nullptr;
 		}
 	}
@@ -63,8 +61,7 @@ namespace prime {
 	void OpenGLVertexbuffer::Bind()
 	{
 		if (!m_Device->IsActiveVertexbuffer(m_Handle)) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glBindBuffer(GL_ARRAY_BUFFER, *handle);
+			glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 			m_Device->SetActiveVertexbuffer(&m_Handle);
 		}
 	}
@@ -77,11 +74,7 @@ namespace prime {
 
 	void OpenGLVertexbuffer::SetData(const void* data, u32 size)
 	{
-		if (!m_Device->IsActiveVertexbuffer(m_Handle)) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glBindBuffer(GL_ARRAY_BUFFER, *handle);
-			m_Device->SetActiveVertexbuffer(&m_Handle);
-		}
+		Bind();
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 }

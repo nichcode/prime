@@ -7,14 +7,13 @@ namespace prime {
 
 	OpenGLIndexbuffer::OpenGLIndexbuffer(Device* device, u32* indices, u32 count)
 	{
-		GLuint handle = 0;
-		glGenBuffers(1, &handle);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, handle);
+		glGenBuffers(1, &m_ID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 
 		m_Device = device;
 		m_Count = count;
-		m_Handle.Ptr = &handle;
+		m_Handle.Ptr = &m_ID;
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
@@ -22,8 +21,8 @@ namespace prime {
 	OpenGLIndexbuffer::~OpenGLIndexbuffer()
 	{
 		if (m_Handle.Ptr) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glDeleteBuffers(1, handle);
+			glDeleteBuffers(1, &m_ID);
+			m_ID = 0;
 			m_Handle.Ptr = nullptr;
 		}
 	}
@@ -31,8 +30,7 @@ namespace prime {
 	void OpenGLIndexbuffer::Bind()
 	{
 		if (!m_Device->IsActiveIndexbuffer(m_Handle)) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, *handle);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
 			m_Device->SetActiveIndexbuffer(&m_Handle);
 		}
 	}

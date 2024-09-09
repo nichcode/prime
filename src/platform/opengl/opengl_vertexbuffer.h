@@ -11,6 +11,7 @@ namespace prime {
 		VertexbufferType m_Type;
 		VertexbufferLayout m_Layout;
 		Device* m_Device;
+		u32 m_ID;
 
 	public:
 		OpenGLVertexbuffer(Device* device, f32* vertices, u32 size, VertexbufferType type);

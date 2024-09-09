@@ -2,6 +2,7 @@
 #include "opengl_device.h"
 #include "prime/prime_window.h"
 #include "prime/prime_assert.h"
+#include "platform/glad/glad.h"
 
 #ifdef PPLATFORM_WINDOWS
 #include "platform/windows/wgl_context.h"
@@ -11,6 +12,21 @@ namespace prime {
 
 	static b8 s_Init = false;
 	static i32 s_Major, s_Minor;
+
+	PINLINE static GLenum TopologyToOpenGL(PrimitiveTopology topology)
+	{
+		switch (topology)
+		{
+		case prime::PrimitiveTopologyNone:
+			PASSERT_MSG(false, "Primitive Topology can not be None");
+			break;
+
+		case prime::PrimitiveTopologyTriangles:
+			return GL_TRIANGLES;
+			break;
+		}
+		PASSERT_MSG(false, "Invalid Primitive Topology");
+	}
 
 	void OpenGLDevice::Init(const Window* window)
 	{
@@ -29,6 +45,22 @@ namespace prime {
 #ifdef PPLATFORM_WINDOWS
 		DeleteWglContext(HGLRC(m_Context));
 #endif // PPLATFORM_WINDOWS
+	}
+
+	void OpenGLDevice::SetClearColor(f32 r, f32 g, f32 b, f32 a)
+	{
+		glClearColor(r, g, b, a);
+	}
+
+	void OpenGLDevice::Clear()
+	{
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	void OpenGLDevice::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
+	{
+		GLenum type = TopologyToOpenGL(topology);
+		glDrawElements(type, indexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
 	void OpenGLDevice::SwapBuffers()

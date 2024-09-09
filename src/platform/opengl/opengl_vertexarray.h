@@ -11,7 +11,7 @@ namespace prime {
 		Ref<Vertexbuffer> m_Vertexbuffer;
 		Ref<Indexbuffer> m_Indexbuffer;
 		VertexarrayHandle m_Handle;
-		u32 m_Index;
+		u32 m_Index, m_ID;
 
 	public:
 		OpenGLVertexarray(Device* device);

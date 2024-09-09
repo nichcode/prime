@@ -13,4 +13,10 @@ namespace prime {
 		DeviceTypeOpenGL
 #endif // PPLATFORM_WINDOWS
 	};
+
+	enum PrimitiveTopology
+	{
+		PrimitiveTopologyNone,
+		PrimitiveTopologyTriangles
+	};
 }

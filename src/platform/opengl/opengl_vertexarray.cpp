@@ -32,9 +32,8 @@ namespace prime {
 
 	OpenGLVertexarray::OpenGLVertexarray(Device* device)
 	{
-		GLuint handle = 0;
-		glGenVertexArrays(1, &handle);
-		m_Handle.Ptr = &handle;
+		glGenVertexArrays(1, &m_ID);
+		m_Handle.Ptr = &m_ID;
 		m_Device = device;
 		m_Index = 0;
 	}
@@ -42,8 +41,8 @@ namespace prime {
 	OpenGLVertexarray::~OpenGLVertexarray()
 	{
 		if (m_Handle.Ptr) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glDeleteVertexArrays(1, handle);
+			glDeleteVertexArrays(1, &m_ID);
+			m_ID = 0;
 			m_Handle.Ptr = nullptr;
 		}
 	}
@@ -51,8 +50,7 @@ namespace prime {
 	void OpenGLVertexarray::Bind()
 	{
 		if (!m_Device->IsActiveVertexarray(m_Handle)) {
-			GLuint* handle = static_cast<GLuint*>(m_Handle.Ptr);
-			glBindVertexArray(*handle);
+			glBindVertexArray(m_ID);
 			m_Device->SetActiveVertexarray(&m_Handle);
 		}
 	}

@@ -62,22 +62,27 @@ namespace prime {
 
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
-		if (!vertexbufferHandle->Ptr) {
+		if (vertexbufferHandle->Ptr) {
 			m_ActiveVertexbuffer.Ptr = vertexbufferHandle->Ptr;
 		}
 	}
 
 	void Device::SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle)
 	{
-		if (!indexbufferHandle->Ptr) {
+		if (indexbufferHandle->Ptr) {
 			m_ActiveVertexbuffer.Ptr = indexbufferHandle->Ptr;
 		}
 	}
 
 	void Device::SetActiveVertexarray(VertexarrayHandle* vertexarrayHandle)
 	{
-		if (!vertexarrayHandle->Ptr) {
+		if (vertexarrayHandle->Ptr) {
 			m_ActiveVertexarray.Ptr = vertexarrayHandle->Ptr;
 		}
+	}
+
+	void Device::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
+	{
+		m_Driver->DrawIndexed(topology, indexCount);
 	}
 }

@@ -37,5 +37,7 @@ namespace prime {
 		virtual void SetClearColor(f32 r, f32 g, f32 b, f32 a) override;
 		virtual void Clear() override;
 		virtual void SwapBuffers() override;
+
+		virtual void DrawIndexed(PrimitiveTopology topology, u32 indexCount) override;
 	};
 }

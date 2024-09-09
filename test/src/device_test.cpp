@@ -44,34 +44,56 @@ b8 DirectX11DeviceTest()
 
 b8 OpenGLDeviceTest()
 {
-	prime::Window windowOpenGL;
-	prime::WindowProperties propsOpenGL;
-	propsOpenGL.Title = "WindowOpenGL";
-	windowOpenGL.Init(propsOpenGL);
+	prime::Window window;
+	prime::WindowProperties props;
+	props.Title = "WindowOpenGL";
+	window.Init(props);
 
-	prime::Device openGLDevice;
-	openGLDevice.Init(prime::DeviceTypeOpenGL, &windowOpenGL);
-	openGLDevice.SetClearColor(.2f, .2f, .2f, 1.0f);
+	prime::Device device;
+	device.Init(prime::DeviceTypeOpenGL, &window);
+	device.SetClearColor(.2f, .2f, .2f, 1.0f);
 
 	prime::SetWindowCloseCallback(OnWndowCloseOpenGL);
 	s_RunningOpenGL = true;
 
 	// resoures
-	prime::Ref<prime::Vertexbuffer> openGLVertexbuffer;
-	prime::Ref<prime::Indexbuffer> openGLIndexbuffer;
-	openGLVertexbuffer = openGLDevice.CreateVertexBuffer(16, prime::VertexbufferTypeStatic);
-	openGLIndexbuffer = openGLDevice.CreateIndexBuffer(nullptr, 0);
+	prime::Ref<prime::Vertexarray> vertexarray;
+	prime::Ref<prime::Vertexbuffer> vertexbuffer;
+	prime::Ref<prime::Indexbuffer> indexbuffer;
+
+	vertexarray = device.CreateVertexarray();
+	vertexarray->Bind();
+
+	f32 vertices[6] = {
+		-0.5f, -0.5f,
+		 0.5f, -0.5f,
+		 0.0f,  0.5f,
+	};
+
+	prime::VertexbufferLayout layout;
+	layout.AddBufferElement({ prime::DataTypeFloat2 });
+	layout.ProcessElements();
+	vertexbuffer = device.CreateVertexBuffer(vertices, sizeof(vertices), prime::VertexbufferTypeStatic);
+	vertexbuffer->SetLayout(layout);
+	vertexarray->SetVertexBuffer(vertexbuffer);
+
+	u32 indices[3] = { 0,1, 2 };
+	indexbuffer = device.CreateIndexBuffer(indices, sizeof(indices) / sizeof(u32));
+	vertexarray->SetIndexBuffer(indexbuffer);
 
 	while (s_RunningOpenGL)
 	{
 		prime::PollEvents();
 
-		openGLDevice.Clear();
-		openGLDevice.SwapBuffers();
+		device.Clear();
+
+		vertexarray->Bind();
+		device.DrawIndexed(prime::PrimitiveTopologyTriangles, indexbuffer->GetCount());
+		device.SwapBuffers();
 	}
 
-	openGLDevice.Shutdown();
-	windowOpenGL.Destroy();
+	device.Shutdown();
+	window.Destroy();
 
 	return PPASSED;
 }

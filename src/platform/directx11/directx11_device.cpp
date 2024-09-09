@@ -93,4 +93,9 @@ namespace prime {
 	{
 		m_SwapChain->Present(1, 0);
 	}
+
+	void DirectX11Device::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
+	{
+
+	}
 }

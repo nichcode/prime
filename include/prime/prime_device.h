@@ -49,6 +49,9 @@ namespace prime {
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
 		void SetActiveVertexarray(VertexarrayHandle* vertexarrayHandle);
 
+		// draw calls
+		void DrawIndexed(PrimitiveTopology topology, u32 indexCount);
+
         PINLINE b8 IsActiveVertexbuffer(VertexbufferHandle& vertexbufferHandle) const
 		{
 			return m_ActiveVertexbuffer.Ptr == vertexbufferHandle.Ptr;
