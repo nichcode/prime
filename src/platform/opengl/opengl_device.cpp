@@ -10,18 +10,17 @@
 namespace prime {
 
 	static b8 s_Init = false;
-	static i32 m_Major, m_Minor;
+	static i32 s_Major, s_Minor;
 
 	void OpenGLDevice::Init(const Window* window)
 	{
 #ifdef PPLATFORM_WINDOWS
-		if (!s_Init) {
-			DummyWglContext(&m_Major, &m_Minor);
-		}
-		m_Context = CreateWglContext((HWND)window->GetHandle().Ptr, m_Major, m_Minor);
+		m_Context = CreateWglContext((HWND)window->GetHandle().Ptr);
 #endif // PPLATFORM_WINDOWS
 
 		m_Window = window;
+		s_Major = GLVersion.major;
+		s_Minor = GLVersion.minor;
 		s_Init = true;
 	}
 

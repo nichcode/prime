@@ -3,6 +3,8 @@
 #include "prime/prime_assert.h"
 #include "prime/prime_window.h"
 
+#include <d3d11.h>
+
 namespace prime {
 
 	void DirectX11Device::Init(const Window* window)
@@ -72,6 +74,14 @@ namespace prime {
 			m_SwapChain->Release();
 			m_Device->Release();
 		}
+	}
+
+	void DirectX11Device::SetClearColor(f32 r, f32 g, f32 b, f32 a)
+	{
+		m_ClearColor[0] = r;
+		m_ClearColor[1] = g;
+		m_ClearColor[2] = b;
+		m_ClearColor[3] = a;
 	}
 
 	void DirectX11Device::Clear()

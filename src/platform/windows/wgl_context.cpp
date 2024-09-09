@@ -6,11 +6,11 @@
 
 namespace prime {
 
-	void DummyWglContext(i32* versionMajor, i32* versionMinor)
+	void DummyWglContext()
 	{
         WNDCLASSEX windowClass = {};
         windowClass.style = CS_OWNDC;
-        windowClass.lpfnWndProc = DefWindowProcA;
+        windowClass.lpfnWndProc = DefWindowProc;
         windowClass.lpszClassName = L"PrimeDummyWindow";
         windowClass.cbSize = sizeof(WNDCLASSEX);
 
@@ -69,13 +69,10 @@ namespace prime {
 			PASSERT_MSG(GLVersion.major >= 4 || 
 				(GLVersion.major == 3 && GLVersion.minor >= 3),
 				"Prime requires at least OpenGL version 3.3!");
-
-			*versionMajor = GLVersion.major;
-			*versionMinor = GLVersion.minor;
 		}
 	}
 
-	HGLRC CreateWglContext(HWND window, i32 versionMajor, i32 versionMinor)
+	HGLRC CreateWglContext(HWND window)
 	{
 		auto hDC = GetDC(window);
 
@@ -101,8 +98,8 @@ namespace prime {
 		SetPixelFormat(hDC, pixelFormat, &pixelFormatDesc);
 
 		int openGLAttributes[] = {
-			WGL_CONTEXT_MAJOR_VERSION_ARB, versionMajor,
-			WGL_CONTEXT_MINOR_VERSION_ARB, versionMinor,
+			WGL_CONTEXT_MAJOR_VERSION_ARB, GLVersion.major,
+			WGL_CONTEXT_MINOR_VERSION_ARB, GLVersion.minor,
 			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 			0
 		};

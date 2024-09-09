@@ -1,7 +1,12 @@
 #pragma once
 
 #include "prime_idevice.h"
-#include <d3d11.h>
+
+// forward declared sp we do not include directx11 header
+struct ID3D11Device;
+struct IDXGISwapChain;
+struct ID3D11DeviceContext;
+struct ID3D11RenderTargetView;
 
 namespace prime {
 
@@ -29,14 +34,7 @@ namespace prime {
 		virtual void Init(const Window* window) override;
 		virtual void Shutdown() override;
 
-        PINLINE virtual void SetClearColor(f32 r, f32 g, f32 b, f32 a) override
-		{
-			m_ClearColor[0] = r;
-			m_ClearColor[1] = g;
-			m_ClearColor[2] = b;
-			m_ClearColor[3] = a;
-		}
-
+		virtual void SetClearColor(f32 r, f32 g, f32 b, f32 a) override;
 		virtual void Clear() override;
 		virtual void SwapBuffers() override;
 	};

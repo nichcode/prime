@@ -20,6 +20,7 @@ namespace prime {
 			m_Driver->Shutdown();
 			delete m_Driver;
 			m_Driver = nullptr;
+			m_ActiveVertexbuffer.Ptr = nullptr;
 			m_Type = DeviceTypeNone;
 		}
 	}
@@ -37,5 +38,23 @@ namespace prime {
 	void Device::SwapBuffers()
 	{
 		m_Driver->SwapBuffers();
+	}
+
+	Ref<Vertexbuffer> Device::CreateVertexBuffer(f32* vertices, u32 size, VertexbufferType type)
+	{
+		return Vertexbuffer::Create(this, vertices, size, type);
+	}
+
+	Ref<Vertexbuffer> Device::CreateVertexBuffer(u32 size, VertexbufferType type)
+	{
+		return Vertexbuffer::Create(this, size, type);
+	}
+
+	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
+	{
+		if (!vertexbufferHandle->Ptr) {
+			m_ActiveVertexbuffer.Ptr = vertexbufferHandle->Ptr;
+		}
+		
 	}
 }

@@ -5,9 +5,9 @@
 
 namespace prime {
 
-	void DummyWglContext(i32* versionMajor, i32* versionMinor);
+	void DummyWglContext();
 
-	HGLRC CreateWglContext(HWND window, i32 versionMajor, i32 versionMinor);
+	HGLRC CreateWglContext(HWND window);
 	void DeleteWglContext(HGLRC context);
 	void UpdateWglContext(HWND window);
 }

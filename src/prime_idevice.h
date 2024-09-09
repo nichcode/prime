@@ -2,6 +2,7 @@
 
 #include "prime/prime_defines.h"
 #include "prime/prime_device.h"
+#include "prime/prime_vertexbuffer.h"
 
 namespace prime {
 

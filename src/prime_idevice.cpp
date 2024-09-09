@@ -16,12 +16,15 @@ namespace prime {
 			PASSERT_MSG(false, "None is not a Graphics Device");
 			return nullptr;
 
+#ifdef PPLATFORM_WINDOWS
 		case prime::DeviceTypeDirectX11:
 			return new DirectX11Device();
 
 		case prime::DeviceTypeOpenGL:
 			return new OpenGLDevice();
 		}
+#endif // PPLATFORM_WINDOWS
+
 		return nullptr;
 	}
 }
