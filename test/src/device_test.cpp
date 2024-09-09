@@ -58,7 +58,9 @@ b8 OpenGLDeviceTest()
 
 	// resoures
 	prime::Ref<prime::Vertexbuffer> openGLVertexbuffer;
+	prime::Ref<prime::Indexbuffer> openGLIndexbuffer;
 	openGLVertexbuffer = openGLDevice.CreateVertexBuffer(16, prime::VertexbufferTypeStatic);
+	openGLIndexbuffer = openGLDevice.CreateIndexBuffer(nullptr, 0);
 
 	while (s_RunningOpenGL)
 	{

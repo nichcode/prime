@@ -33,6 +33,8 @@ namespace prime {
 
 		m_Handle.Ptr = &handle;
 		m_Device = device;
+
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	OpenGLVertexbuffer::OpenGLVertexbuffer(Device* device, u32 size, VertexbufferType type)

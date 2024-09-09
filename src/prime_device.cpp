@@ -50,11 +50,22 @@ namespace prime {
 		return Vertexbuffer::Create(this, size, type);
 	}
 
+	Ref<Indexbuffer> Device::CreateIndexBuffer(u32* indices, u32 count)
+	{
+		return Indexbuffer::Create(this, indices, count);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
 		if (!vertexbufferHandle->Ptr) {
 			m_ActiveVertexbuffer.Ptr = vertexbufferHandle->Ptr;
 		}
-		
+	}
+
+	void Device::SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle)
+	{
+		if (!indexbufferHandle->Ptr) {
+			m_ActiveVertexbuffer.Ptr = indexbufferHandle->Ptr;
+		}
 	}
 }

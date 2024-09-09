@@ -9,7 +9,7 @@ namespace prime {
 
 	class Device;
 
-	struct VertexbufferHandle 
+	struct VertexbufferHandle
 	{
 		void* Ptr = nullptr;
 	};
