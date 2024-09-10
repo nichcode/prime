@@ -74,8 +74,15 @@ namespace prime {
 		}
 	}
 
+	void Device::SetViewport(const Viewport& viewport)
+	{
+		m_Viewport = viewport;
+		m_Driver->SetViewport(viewport);
+	}
+
 	void Device::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
 	{
+		PASSERT_MSG(m_Viewport.Width > 0 || m_Viewport.Height > 0, "Viewport size invalid");
 		m_Driver->DrawIndexed(topology, indexCount);
 	}
 }

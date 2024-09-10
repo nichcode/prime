@@ -70,4 +70,9 @@ namespace prime {
 		UpdateWglContext((HWND)m_Window->GetHandle().Ptr);
 #endif // PPLATFORM_WINDOWS
 	}
+
+	void OpenGLDevice::SetViewport(const Viewport& viewport)
+	{
+		glViewport((i32)viewport.X, (i32)viewport.Y, viewport.Width, viewport.Height);
+	}
 }

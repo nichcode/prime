@@ -94,6 +94,16 @@ namespace prime {
 		m_SwapChain->Present(1, 0);
 	}
 
+	void DirectX11Device::SetViewport(const Viewport& viewport)
+	{
+		D3D11_VIEWPORT view;
+		view.TopLeftX = viewport.X;
+		view.TopLeftY = viewport.Y;
+		view.Width = (f32)viewport.Width;
+		view.Height = (f32)viewport.Height;
+		m_Context->RSSetViewports(1, &view);
+	}
+
 	void DirectX11Device::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
 	{
 

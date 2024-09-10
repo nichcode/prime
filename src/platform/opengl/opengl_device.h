@@ -22,6 +22,8 @@ namespace prime {
 		virtual void DrawIndexed(PrimitiveTopology topology, u32 indexCount) override;
 		virtual void SwapBuffers() override;
 
+		virtual void SetViewport(const Viewport& viewport) override;
+
 		virtual void* GetNative() const override { return nullptr; }
 		virtual void* GetNativeContext() const override { return m_Context; }
 	};

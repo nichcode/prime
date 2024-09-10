@@ -2,6 +2,7 @@
 
 #include "prime_datatype.h"
 #include "prime_devicetype.h"
+#include "prime_ref.h"
 
 #include <vector>
 
@@ -85,6 +86,6 @@ namespace prime {
 		virtual void SetData(const void* data, u32 size) = 0;
 
 	private:
-		static std::shared_ptr<Vertexbuffer> Create(Device* device, const void* data, u32 size, VertexbufferType type);
+		static Ref<Vertexbuffer> Create(Device* device, const void* data, u32 size, VertexbufferType type);
 	};
 }

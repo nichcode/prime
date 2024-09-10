@@ -10,7 +10,7 @@ namespace prime {
     {
         if (expr) {}
         else {
-            str msg = std::format("Assertion '{}' failed in '{}' at line '{}'", PSTR(expr), PFILE, PLINE);
+            str msg = std::format("Assertion failed in '{}' at line '{}'", PFILE, PLINE);
             PERROR(msg);
             PBREAK;
         }
@@ -20,7 +20,7 @@ namespace prime {
     {
         if (expr) {}
         else {
-            str msg = std::format("Assertion '{}' failed in '{}' at line '{}' \n'{}'", PSTR(expr), PFILE, PLINE, message);
+            str msg = std::format("Assertion failed in '{}' at line '{}' \n'{}'", PFILE, PLINE, message);
             PERROR(msg);
             PBREAK;
         }

@@ -40,14 +40,14 @@ namespace prime {
 		WNDCLASSEX wc;
 		memset(&wc, 0, sizeof(wc));
 		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.style = CS_DBLCLKS | CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
+		wc.style = CS_OWNDC;// | CS_VREDRAW | CS_HREDRAW;
 		wc.lpfnWndProc = WindowProc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.hInstance = s_Instance;
 		wc.hIcon = LoadIcon(s_Instance, IDI_WINLOGO);
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
-		wc.hbrBackground = NULL;
+		wc.hbrBackground = nullptr;
 		wc.lpszClassName = s_ClassName.c_str();
 
 		auto result = RegisterClassEx(&wc);
@@ -539,6 +539,13 @@ namespace prime {
 				action = PRELEASE;
 			}
 
+			if (uMsg == WM_LBUTTONDOWN) {
+				SetCapture(hWnd);
+			}
+			else if (uMsg == WM_LBUTTONUP) {
+				ReleaseCapture();
+			}
+
 			ProcessMouse(window, data, button, action);
 			if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP) { return true; }
 
@@ -547,12 +554,10 @@ namespace prime {
 		}
 
 		case WM_MOUSEMOVE: {
-			if (data->IsFocused) {
-				const int x = GET_X_LPARAM(lParam);
-				const int y = GET_Y_LPARAM(lParam);
+			const int x = GET_X_LPARAM(lParam);
+			const int y = GET_Y_LPARAM(lParam);
 
-				ProcessMouseMoved(window, data, x, y);
-			}
+			ProcessMouseMoved(window, data, x, y);
 
 			return 0;
 			break;
@@ -593,7 +598,6 @@ namespace prime {
 					s_Callbacks.WindowResize(window, width, height);
 				}
 			}
-
 			return 0;
 			break;
 		}
@@ -610,6 +614,15 @@ namespace prime {
 
 			return 0;
 			break;
+		}
+
+		case WM_PAINT: {
+			PAINTSTRUCT ps;
+			HDC hdc = BeginPaint(hWnd, &ps);
+			HBRUSH brush = CreateSolidBrush(0);
+			FillRect(hdc, &ps.rcPaint, brush);
+			EndPaint(hWnd, &ps);
+			DeleteObject(brush);
 		}
 
 		}
@@ -671,7 +684,6 @@ namespace prime {
 				CenterWindow(window, &m_Data.Props.XPos, &m_Data.Props.YPos, props.Width, props.Height);
 			}
 			ShowWindow(window, flags);
-			UpdateWindow(window);
 			
 			MapKeys(m_Data);
 			MapKeysNames(m_Data);

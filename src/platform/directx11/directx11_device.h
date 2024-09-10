@@ -41,6 +41,8 @@ namespace prime {
 		virtual void* GetNative() const override { return m_Device; }
 		virtual void* GetNativeContext() const override { return m_Context; }
 
+		virtual void SetViewport(const Viewport& viewport) override;
+
 		virtual void DrawIndexed(PrimitiveTopology topology, u32 indexCount) override;
 	};
 }

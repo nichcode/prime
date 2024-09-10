@@ -9,7 +9,7 @@
 
 namespace prime {
 
-	std::shared_ptr<Vertexbuffer> Vertexbuffer::Create(Device* device, const void* data, u32 size, VertexbufferType type)
+	Ref<Vertexbuffer> Vertexbuffer::Create(Device* device, const void* data, u32 size, VertexbufferType type)
 	{
 		switch (device->GetType())
 		{

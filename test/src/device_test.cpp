@@ -1,72 +1,51 @@
 
 #include "prime/prime.h"
 
-b8 s_RunningOpenGL = false;
-b8 s_RunningDirectx11 = false;
+b8 s_Running = false;
+prime::Window window;
+prime::Device device;
 
-void OnWndowCloseDirectx11(const prime::Window*)
+void OnWndowClose(const prime::Window*)
 {
-	s_RunningDirectx11 = false;
+	s_Running = false;
 }
 
-void OnWndowCloseOpenGL(const prime::Window*)
+void OnWndowResize(const prime::Window*, u32 width, u32 height)
 {
-	s_RunningOpenGL = false;
+	prime::Viewport view;
+	view.Width = width;
+	view.Height = height;
+	device.SetViewport(view);
 }
 
-b8 DirectX11DeviceTest()
+b8 DeviceTest()
 {
-	prime::Window windowDirectx11;
-	prime::WindowProperties propsDirectx11;
-	propsDirectx11.Title = "WindowDirectx11";
-	windowDirectx11.Init(propsDirectx11);
-
-	prime::Device directX11Device;
-	directX11Device.Init(prime::DeviceTypeDirectX11, &windowDirectx11);
-	directX11Device.SetClearColor(.2f, .2f, .2f, 1.0f);
-
-	prime::SetWindowCloseCallback(OnWndowCloseDirectx11);
-	s_RunningDirectx11 = true;
-
-	u32 indices[3] = { 0,1, 2 };
-
-	// resources
-	prime::Ref<prime::Vertexbuffer> vertexbuffer;
-	prime::Ref<prime::Indexbuffer> indexbuffer;
-	vertexbuffer = directX11Device.CreateVertexBuffer(nullptr, 200, prime::VertexbufferTypeStatic);
-	indexbuffer = directX11Device.CreateIndexBuffer(indices, 3);
-
-	while (s_RunningDirectx11)
-	{
-		prime::PollEvents();
-
-		directX11Device.Clear();
-		directX11Device.SwapBuffers();
-	}
-
-	windowDirectx11.Destroy();
-	directX11Device.Shutdown();
-
-	return PPASSED;
-}
-
-b8 OpenGLDeviceTest()
-{
-	prime::Window window;
 	prime::WindowProperties props;
-	props.Title = "WindowOpenGL";
+	prime::DeviceType type = prime::DeviceTypeOpenGL;
+
+	if (type == prime::DeviceTypeDirectX11) {
+		props.Title = "WindowOpenGL";
+	}
+	else if (type == prime::DeviceTypeOpenGL) {
+		props.Title = "WindowOpenGL";
+	}
 	window.Init(props);
 
-	prime::Device device;
-	device.Init(prime::DeviceTypeOpenGL, &window);
+	device.Init(type, &window);
 	device.SetClearColor(.2f, .2f, .2f, 1.0f);
 
-	prime::SetWindowCloseCallback(OnWndowCloseOpenGL);
-	s_RunningOpenGL = true;
+	prime::SetWindowCloseCallback(OnWndowClose);
+	prime::SetWindowResizeCallback(OnWndowResize);
+	s_Running = true;
 
 	// resoures
 	prime::Ref<prime::Vertexbuffer> vertexbuffer;
 	prime::Ref<prime::Indexbuffer> indexbuffer;
+	prime::Viewport viewport;
+	viewport.Width = window.GetWidth();
+	viewport.Height = window.GetHeight();
+
+	device.SetViewport(viewport);
 
 	f32 vertices[6] = {
 		-0.5f, -0.5f,
@@ -84,7 +63,7 @@ b8 OpenGLDeviceTest()
 	indexbuffer = device.CreateIndexBuffer(indices, sizeof(indices) / sizeof(u32));
 	indexbuffer->Bind();
 
-	while (s_RunningOpenGL)
+	while (s_Running)
 	{
 		prime::PollEvents();
 

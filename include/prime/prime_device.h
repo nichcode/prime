@@ -5,6 +5,7 @@
 #include "prime_ref.h"
 #include "prime_devicetype.h"
 #include "prime_indexbuffer.h"
+#include "prime_viewport.h"
 
 namespace prime {
 
@@ -20,6 +21,7 @@ namespace prime {
 
 		VertexbufferHandle m_ActiveVertexbuffer;
 		IndexbufferHandle m_ActiveIndexbuffer;
+		Viewport m_Viewport;
 
 	public:
 		Device() : m_Driver(nullptr), m_Type(DeviceTypeNone),
@@ -44,6 +46,8 @@ namespace prime {
 
 		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
+
+		void SetViewport(const Viewport& viewport);
 
 		// draw calls
 		void DrawIndexed(PrimitiveTopology topology, u32 indexCount);
