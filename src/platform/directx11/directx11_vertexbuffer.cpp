@@ -6,8 +6,6 @@
 
 namespace prime {
 
-    static u32 s_Count = 0;
-
     PINLINE static D3D11_USAGE D3D11UsageFromVertexbufferType(VertexbufferType type)
     {
         switch (type)
@@ -63,8 +61,6 @@ namespace prime {
         m_Handle.Ptr = buffer;
         m_Device = device;
         m_Type = type;
-        m_Index = s_Count;
-        s_Count++;
 	}
 
 	DirectX11Vertexbuffer::~DirectX11Vertexbuffer()

@@ -28,9 +28,13 @@ b8 DirectX11DeviceTest()
 	prime::SetWindowCloseCallback(OnWndowCloseDirectx11);
 	s_RunningDirectx11 = true;
 
+	u32 indices[3] = { 0,1, 2 };
+
 	// resources
 	prime::Ref<prime::Vertexbuffer> vertexbuffer;
+	prime::Ref<prime::Indexbuffer> indexbuffer;
 	vertexbuffer = directX11Device.CreateVertexBuffer(nullptr, 200, prime::VertexbufferTypeStatic);
+	indexbuffer = directX11Device.CreateIndexBuffer(indices, 3);
 
 	while (s_RunningDirectx11)
 	{

@@ -4,6 +4,7 @@
 
 // platforms
 #include "platform/opengl/opengl_indexbuffer.h"
+#include "platform/directx11/directx11_indexbuffer.h"
 
 namespace prime {
 
@@ -17,7 +18,7 @@ namespace prime {
 
 #ifdef PPLATFORM_WINDOWS
 		case DeviceTypeDirectX11:
-			PASSERT_MSG(false, "Direct11 Indexbuffer not implemented yet");
+			return CreateRef<DirectX11Indexbuffer>(device, indices, count);
 			break;
 
 		case DeviceTypeOpenGL:

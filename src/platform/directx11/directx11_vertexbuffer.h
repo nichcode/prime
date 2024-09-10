@@ -11,11 +11,10 @@ namespace prime {
 		VertexbufferHandle m_Handle;
 		VertexbufferLayout m_Layout;
 		VertexbufferType m_Type;
-		u32 m_Index;
 
 	public:
 		DirectX11Vertexbuffer(Device* device, const void* data, u32 size, VertexbufferType type);
-		virtual ~DirectX11Vertexbuffer();
+		virtual ~DirectX11Vertexbuffer() override;
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
