@@ -38,6 +38,9 @@ namespace prime {
 		virtual void Clear() override;
 		virtual void SwapBuffers() override;
 
+		virtual void* GetNative() const override { return m_Device; }
+		virtual void* GetNativeContext() const override { return m_Context; }
+
 		virtual void DrawIndexed(PrimitiveTopology topology, u32 indexCount) override;
 	};
 }

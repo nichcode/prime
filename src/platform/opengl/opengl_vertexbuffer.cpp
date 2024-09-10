@@ -5,6 +5,31 @@
 
 namespace prime {
 
+	PINLINE static GLenum DataTypeToOpenGLType(DataType type)
+	{
+		switch (type)
+		{
+		case DataTypeInt:
+		case DataTypeInt2:
+		case DataTypeInt3:
+		case DataTypeInt4:
+			return GL_INT;
+
+		case DataTypeFloat:
+		case DataTypeFloat2:
+		case DataTypeFloat3:
+		case DataTypeFloat4:
+		case DataTypeMat3:
+		case DataTypeMat4:
+			return GL_FLOAT;
+
+		case DataTypeBool:
+			return GL_BOOL;
+		}
+		PASSERT_MSG(type, "Invalid Datatype");
+		return 0;
+	}
+
 	PINLINE GLenum VertexbufferTypeToOpenGLType(VertexbufferType type)
 	{
 		switch (type)
@@ -21,39 +46,33 @@ namespace prime {
 		return 0;
 	}
 
-	OpenGLVertexbuffer::OpenGLVertexbuffer(Device* device, f32* vertices, u32 size, VertexbufferType type)
+	OpenGLVertexbuffer::OpenGLVertexbuffer(Device* device, const void* data, u32 size, VertexbufferType type)
 	{
 		GLenum glType = VertexbufferTypeToOpenGLType(type);
 		m_Type = type;
 
 		glGenBuffers(1, &m_ID);
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, glType);
+		glBufferData(GL_ARRAY_BUFFER, size, data, glType);
 
 		m_Handle.Ptr = &m_ID;
 		m_Device = device;
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
-	OpenGLVertexbuffer::OpenGLVertexbuffer(Device* device, u32 size, VertexbufferType type)
-	{
-		GLenum glType = VertexbufferTypeToOpenGLType(type);
-		m_Type = type;
-
-		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-		glBufferData(GL_ARRAY_BUFFER, size, nullptr, glType);
-
-		m_Handle.Ptr = &m_ID;
-		m_Device = device;
+		glGenVertexArrays(1, &m_Vertexarray);
 	}
 
 	OpenGLVertexbuffer::~OpenGLVertexbuffer()
 	{
 		if (m_Handle.Ptr) {
 			glDeleteBuffers(1, &m_ID);
+			glDeleteVertexArrays(1, &m_Vertexarray);
 			m_ID = 0;
+			m_Vertexarray = 0;
+
+			if (m_Device->IsActiveVertexbuffer(m_Handle)) {
+				m_Device->SetActiveVertexbuffer(nullptr);
+			}
 			m_Handle.Ptr = nullptr;
 		}
 	}
@@ -61,6 +80,7 @@ namespace prime {
 	void OpenGLVertexbuffer::Bind()
 	{
 		if (!m_Device->IsActiveVertexbuffer(m_Handle)) {
+			glBindVertexArray(m_Vertexarray);
 			glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 			m_Device->SetActiveVertexbuffer(&m_Handle);
 		}
@@ -69,7 +89,74 @@ namespace prime {
 	void OpenGLVertexbuffer::Unbind()
 	{
 		m_Device->SetActiveVertexbuffer(nullptr);
+		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
+	void OpenGLVertexbuffer::SetLayout(const VertexbufferLayout& vertexbufferlayout)
+	{
+		PASSERT_MSG(vertexbufferlayout.GetElements().size(),
+			"VertexbufferLayout has no layout");
+
+		m_Layout = vertexbufferlayout;
+		GLuint index = 0;
+		Bind();
+
+		const auto& layout = vertexbufferlayout;
+		for (const auto& element : layout)
+		{
+			switch (element.Type)
+			{
+			case DataTypeFloat:
+			case DataTypeFloat2:
+			case DataTypeFloat3:
+			case DataTypeFloat4:
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribPointer(index,
+					GetDataTypeCount(element.Type),
+					DataTypeToOpenGLType(element.Type),
+					GL_FALSE,
+					layout.GetStride(),
+					(const void*)element.Offset);
+				index++;
+				break;
+			}
+			case DataTypeInt:
+			case DataTypeInt2:
+			case DataTypeInt3:
+			case DataTypeInt4:
+			case DataTypeBool:
+			{
+				glEnableVertexAttribArray(index);
+				glVertexAttribIPointer(index,
+					GetDataTypeCount(element.Type),
+					DataTypeToOpenGLType(element.Type),
+					layout.GetStride(),
+					(const void*)element.Offset);
+				index++;
+				break;
+			}
+			case DataTypeMat3:
+			case DataTypeMat4:
+			{
+				u8 count = GetDataTypeCount(element.Type);
+				for (u8 i = 0; i < count; i++)
+				{
+					glEnableVertexAttribArray(index);
+					glVertexAttribPointer(index,
+						count,
+						DataTypeToOpenGLType(element.Type),
+						GL_FALSE,
+						layout.GetStride(),
+						(const void*)(element.Offset + sizeof(f32) * count * i));
+					glVertexAttribDivisor(index, 1);
+					index++;
+				}
+				break;
+			}
+			}
+		}
 	}
 
 	void OpenGLVertexbuffer::SetData(const void* data, u32 size)

@@ -28,6 +28,10 @@ b8 DirectX11DeviceTest()
 	prime::SetWindowCloseCallback(OnWndowCloseDirectx11);
 	s_RunningDirectx11 = true;
 
+	// resources
+	prime::Ref<prime::Vertexbuffer> vertexbuffer;
+	vertexbuffer = directX11Device.CreateVertexBuffer(nullptr, 200, prime::VertexbufferTypeStatic);
+
 	while (s_RunningDirectx11)
 	{
 		prime::PollEvents();
@@ -57,12 +61,8 @@ b8 OpenGLDeviceTest()
 	s_RunningOpenGL = true;
 
 	// resoures
-	prime::Ref<prime::Vertexarray> vertexarray;
 	prime::Ref<prime::Vertexbuffer> vertexbuffer;
 	prime::Ref<prime::Indexbuffer> indexbuffer;
-
-	vertexarray = device.CreateVertexarray();
-	vertexarray->Bind();
 
 	f32 vertices[6] = {
 		-0.5f, -0.5f,
@@ -75,19 +75,16 @@ b8 OpenGLDeviceTest()
 	layout.ProcessElements();
 	vertexbuffer = device.CreateVertexBuffer(vertices, sizeof(vertices), prime::VertexbufferTypeStatic);
 	vertexbuffer->SetLayout(layout);
-	vertexarray->SetVertexBuffer(vertexbuffer);
 
 	u32 indices[3] = { 0,1, 2 };
 	indexbuffer = device.CreateIndexBuffer(indices, sizeof(indices) / sizeof(u32));
-	vertexarray->SetIndexBuffer(indexbuffer);
+	indexbuffer->Bind();
 
 	while (s_RunningOpenGL)
 	{
 		prime::PollEvents();
 
 		device.Clear();
-
-		vertexarray->Bind();
 		device.DrawIndexed(prime::PrimitiveTopologyTriangles, indexbuffer->GetCount());
 		device.SwapBuffers();
 	}

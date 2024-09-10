@@ -86,6 +86,5 @@ namespace prime {
 
 	private:
 		static std::shared_ptr<Vertexbuffer> Create(Device* device, const void* data, u32 size, VertexbufferType type);
-		static std::shared_ptr<Vertexbuffer> Create(Device* device, u32 size, VertexbufferType type);
 	};
 }

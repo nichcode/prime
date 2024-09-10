@@ -21,9 +21,17 @@ workspace "prime"
         "MultiProcessorCompile"
     }
 
+    externalwarnings "off"
+
     disablewarnings {
         "6385",
-        "6386"
+        "6386",
+        "4005",
+        "4006"
+    }
+
+    linkoptions {
+        "-IGNORE:4006"
     }
 
     filter {"system:windows", "configurations:*"}

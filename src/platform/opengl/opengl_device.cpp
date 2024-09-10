@@ -25,6 +25,7 @@ namespace prime {
 			return GL_TRIANGLES;
 			break;
 		}
+		return 0;
 		PASSERT_MSG(false, "Invalid Primitive Topology");
 	}
 

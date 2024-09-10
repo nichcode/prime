@@ -5,7 +5,6 @@
 #include "prime_ref.h"
 #include "prime_devicetype.h"
 #include "prime_indexbuffer.h"
-#include "prime_vertexarray.h"
 
 namespace prime {
 
@@ -21,7 +20,6 @@ namespace prime {
 
 		VertexbufferHandle m_ActiveVertexbuffer;
 		IndexbufferHandle m_ActiveIndexbuffer;
-		VertexarrayHandle m_ActiveVertexarray;
 
 	public:
 		Device() : m_Driver(nullptr), m_Type(DeviceTypeNone),
@@ -37,17 +35,15 @@ namespace prime {
 		void SwapBuffers();
 
 		PINLINE DeviceType GetType() const { return m_Type; }
+		void* GetNative() const;
+		void* GetNativeContext() const;
 
 		// create resources
-		Ref<Vertexbuffer> CreateVertexBuffer(f32* vertices, u32 size, VertexbufferType type);
-		Ref<Vertexbuffer> CreateVertexBuffer(u32 size, VertexbufferType type);
-
+		Ref<Vertexbuffer> CreateVertexBuffer(const void* data, u32 size, VertexbufferType type);
 		Ref<Indexbuffer> CreateIndexBuffer(u32* indices, u32 count);
-		Ref<Vertexarray> CreateVertexarray();
 
 		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
-		void SetActiveVertexarray(VertexarrayHandle* vertexarrayHandle);
 
 		// draw calls
 		void DrawIndexed(PrimitiveTopology topology, u32 indexCount);
@@ -60,11 +56,6 @@ namespace prime {
 		PINLINE b8 IsActiveIndexbuffer(IndexbufferHandle& indexbufferHandle) const
 		{
 			return m_ActiveIndexbuffer.Ptr == indexbufferHandle.Ptr;
-		}
-
-		PINLINE b8 IsActiveVertexarray(VertexarrayHandle& vertexarrayHandle) const
-		{
-			return m_ActiveVertexarray.Ptr == vertexarrayHandle.Ptr;
 		}
 	};
 }

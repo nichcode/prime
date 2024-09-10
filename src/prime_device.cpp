@@ -40,24 +40,24 @@ namespace prime {
 		m_Driver->SwapBuffers();
 	}
 
-	Ref<Vertexbuffer> Device::CreateVertexBuffer(f32* vertices, u32 size, VertexbufferType type)
+	void* Device::GetNative() const
 	{
-		return Vertexbuffer::Create(this, vertices, size, type);
+		return m_Driver->GetNative();
 	}
 
-	Ref<Vertexbuffer> Device::CreateVertexBuffer(u32 size, VertexbufferType type)
+	void* Device::GetNativeContext() const
 	{
-		return Vertexbuffer::Create(this, size, type);
+		return m_Driver->GetNativeContext();
+	}
+
+	Ref<Vertexbuffer> Device::CreateVertexBuffer(const void* data, u32 size, VertexbufferType type)
+	{
+		return Vertexbuffer::Create(this, data, size, type);
 	}
 
 	Ref<Indexbuffer> Device::CreateIndexBuffer(u32* indices, u32 count)
 	{
 		return Indexbuffer::Create(this, indices, count);
-	}
-
-	Ref<Vertexarray> Device::CreateVertexarray()
-	{
-		return Vertexarray::Create(this);
 	}
 
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
@@ -71,13 +71,6 @@ namespace prime {
 	{
 		if (indexbufferHandle->Ptr) {
 			m_ActiveVertexbuffer.Ptr = indexbufferHandle->Ptr;
-		}
-	}
-
-	void Device::SetActiveVertexarray(VertexarrayHandle* vertexarrayHandle)
-	{
-		if (vertexarrayHandle->Ptr) {
-			m_ActiveVertexarray.Ptr = vertexarrayHandle->Ptr;
 		}
 	}
 
