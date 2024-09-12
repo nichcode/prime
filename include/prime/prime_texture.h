@@ -45,5 +45,6 @@ namespace prime {
 
 	private:
 		static Ref<Texture2D> Create(Device* device, const TextureProperties& props);
+		static Ref<Texture2D> Create(Device* device, const str& filepath);
 	};
 }

@@ -74,7 +74,7 @@ b8 DeviceTest()
 
 	uniformbuffer = device.CreateUniformbuffer(16, 0);
 
-	texture2D = device.CreateTexture2D(prime::TextureProperties());
+	texture2D = device.CreateTexture2D("textures/texture2d.png");
 	texture2D->Bind();
 
 	shader->Bind();

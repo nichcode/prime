@@ -27,4 +27,25 @@ namespace prime {
 		}
 		return nullptr;
 	}
+
+	Ref<Texture2D> Texture2D::Create(Device* device, const str& filepath)
+	{
+		switch (device->GetType())
+		{
+		case DeviceTypeNone:
+			PASSERT_MSG(false, "None is not a Graphics Device");
+			break;
+
+#ifdef PPLATFORM_WINDOWS
+		case DeviceTypeDirectX11:
+			PASSERT_MSG(false, "Have not implemented directx11 Texture");
+			break;
+
+		case DeviceTypeOpenGL:
+			return CreateRef<OpenGLTexture2D>(device, filepath);
+			break;
+#endif // PPLATFORM_WINDOWS
+		}
+		return nullptr;
+	}
 }

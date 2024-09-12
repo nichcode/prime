@@ -14,6 +14,8 @@ namespace prime {
 
 	public:
 		OpenGLTexture2D(Device* device, const TextureProperties& props);
+		OpenGLTexture2D(Device* device, const str& filepath);
+
 		virtual ~OpenGLTexture2D() override;
 
 		virtual void Bind(u32 slot) override;

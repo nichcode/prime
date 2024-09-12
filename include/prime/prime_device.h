@@ -29,6 +29,8 @@ namespace prime {
 		Texture2DHandle m_ActiveTexture2DHandle;
 		Viewport m_Viewport;
 
+		// TODO: save refs of textures and resources to not recreate them again
+
 	public:
 		Device() : m_Driver(nullptr), m_Type(DeviceTypeNone),
 			m_Window(nullptr) {}
@@ -52,6 +54,7 @@ namespace prime {
 		Ref<Shader> CreateShader(const str& VSource, const str& PSource, b8 load);
 		Ref<Uniformbuffer> CreateUniformbuffer(u32 size, u32 binding);
 		Ref<Texture2D> CreateTexture2D(const TextureProperties& props);
+		Ref<Texture2D> CreateTexture2D(const str& filepath);
 
 		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);

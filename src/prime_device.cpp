@@ -75,6 +75,11 @@ namespace prime {
 		return Texture2D::Create(this, props);
 	}
 
+	Ref<Texture2D> Device::CreateTexture2D(const str& filepath)
+	{
+		return Texture2D::Create(this, filepath);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
 		if (vertexbufferHandle == nullptr) {
