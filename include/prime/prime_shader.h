@@ -21,7 +21,6 @@ namespace prime {
 		virtual ~Shader() {}
 
 		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
 
 		virtual void setInt(const str& name, i32 data) = 0;
 		virtual void setIntArray(const str& name, i32* data, u32 count) = 0;

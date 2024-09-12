@@ -696,6 +696,7 @@ namespace prime {
 	{
 		DestroyWindow((HWND)m_Handle.Ptr);
 		m_Handle.Ptr = nullptr;
+		m_UserData = nullptr;
 		--s_WindowCount;
 		if (s_WindowCount == 0) {
 			UneegisterWindowClass();

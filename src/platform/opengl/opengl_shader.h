@@ -18,7 +18,6 @@ namespace prime {
 		virtual ~OpenGLShader() override;
 
 		virtual void Bind() override;
-		virtual void Unbind() override;
 
 		virtual void setInt(const str& name, i32 data) override;
 		virtual void setIntArray(const str& name, i32* data, u32 count) override;

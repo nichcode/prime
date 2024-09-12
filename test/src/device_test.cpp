@@ -15,6 +15,7 @@ void OnWndowResize(const prime::Window*, u32 width, u32 height)
 	prime::Viewport view;
 	view.Width = width;
 	view.Height = height;
+
 	device.SetViewport(view);
 }
 
@@ -43,32 +44,41 @@ b8 DeviceTest()
 	prime::Ref<prime::Indexbuffer> indexbuffer;
 	prime::Ref<prime::Shader > shader;
 	prime::Ref<prime::Uniformbuffer> uniformbuffer;
+    prime::Ref<prime::Texture2D> texture2D;
 	prime::Viewport viewport;
 	viewport.Width = window.GetWidth();
 	viewport.Height = window.GetHeight();
 
 	device.SetViewport(viewport);
 
-	f32 vertices[6] = {
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.0f,  0.5f,
+	f32 vertices[32] = {
+		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f
 	};
 
 	prime::VertexbufferLayout layout;
+	layout.AddBufferElement({ prime::DataTypeFloat2 });
+	layout.AddBufferElement({ prime::DataTypeFloat4 });
 	layout.AddBufferElement({ prime::DataTypeFloat2 });
 	layout.ProcessElements();
 	vertexbuffer = device.CreateVertexBuffer(vertices, sizeof(vertices), prime::VertexbufferTypeStatic);
 	vertexbuffer->SetLayout(layout);
 
-	u32 indices[3] = { 0,1, 2 };
+	u32 indices[6] = { 0,1, 2, 2, 3, 0 };
 	indexbuffer = device.CreateIndexBuffer(indices, sizeof(indices) / sizeof(u32));
 	indexbuffer->Bind();
 
 	shader = device.CreateShader("shaders/flat_color_vertex.glsl", "shaders/flat_color_pixel.glsl", true);
-	shader->Bind();
 
 	uniformbuffer = device.CreateUniformbuffer(16, 0);
+
+	texture2D = device.CreateTexture2D(prime::TextureProperties());
+	texture2D->Bind();
+
+	shader->Bind();
+	shader->setInt("u_Texture", 0);
 
 	while (s_Running)
 	{

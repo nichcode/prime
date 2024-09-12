@@ -127,12 +127,6 @@ namespace prime {
 		}
 	}
 
-	void OpenGLShader::Unbind()
-	{
-		m_Device->SetActiveShader(nullptr);
-		glUseProgram(0);
-	}
-
 	void OpenGLShader::setInt(const str& name, i32 data)
 	{
 		GLint location = GetUniformLocation(name);

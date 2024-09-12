@@ -1,0 +1,122 @@
+
+#include "opengl_texture.h"
+#include "prime/prime_device.h"
+#include "platform/glad/glad.h"
+
+namespace prime {
+
+	static u32 s_Data = 0xffffffff;
+
+	static GLenum GLDataFormatFromTextureFormat(TextureFormat format) 
+	{
+		switch (format)
+		{
+		case TextureFormatNone:
+			PASSERT_MSG(false, "Invalid textureFormat");
+			break;
+
+		case TextureFormatR8:
+			return GL_R8;
+			break;
+
+		case TextureFormatRGB8:
+			return GL_RGB;
+			break;
+
+		case TextureFormatRGBA8:
+			return GL_RGBA;
+			break;
+
+		case TextureFormatRGBA32F:
+			return GL_RGBA32F;
+			break;
+		}
+
+		return 0;
+		PASSERT_MSG(false, "Invalid textureFormat");
+	}
+
+	static GLenum GLInternalFormatFromTextureFormat(TextureFormat format)
+	{
+		switch (format)
+		{
+		case TextureFormatNone:
+			PASSERT_MSG(false, "Invalid textureFormat");
+			break;
+
+		case TextureFormatR8:
+			return GL_R8;
+			break;
+
+		case TextureFormatRGB8:
+			return GL_RGB8;
+			break;
+
+		case TextureFormatRGBA8:
+			return GL_RGBA8;
+			break;
+
+		case TextureFormatRGBA32F:
+			return GL_RGBA32F;
+			break;
+		}
+
+		return 0;
+		PASSERT_MSG(false, "Invalid textureFormat");
+	}
+
+	OpenGLTexture2D::OpenGLTexture2D(Device* device, const TextureProperties& props)
+	{
+        glGenTextures(1, &m_ID);
+        glBindTexture(GL_TEXTURE_2D, m_ID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		i32 dataFormat = GLDataFormatFromTextureFormat(props.Format);
+		i32 internalFormat = GLInternalFormatFromTextureFormat(props.Format);
+
+		glTexImage2D(
+			GL_TEXTURE_2D,
+			0,
+			internalFormat,
+			props.Width,
+			props.Height,
+			0,
+			dataFormat,
+			GL_UNSIGNED_BYTE,
+			&s_Data);
+
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
+		m_Device = device;
+		m_Width = props.Width;
+		m_Height = props.Height;
+		m_Handle.Ptr = &m_ID;
+	}
+
+	OpenGLTexture2D::~OpenGLTexture2D()
+	{
+		if (m_Handle.Ptr) {
+			if (m_Device->IsActiveTextureHandle(m_Handle)) {
+				m_Device->SetActiveTexture2DHandle(nullptr);
+			}
+			glDeleteTextures(1, &m_ID);
+			m_ID = 0;
+			m_Handle.Ptr = nullptr;
+		}
+	}
+
+	void OpenGLTexture2D::Bind(u32 slot)
+	{
+		if (!m_Device->IsActiveTextureHandle(m_Handle)) {
+			// check for maximum texture slots
+			glActiveTexture(GL_TEXTURE0 + slot);
+			glBindTexture(GL_TEXTURE_2D, m_ID);
+			m_Device->SetActiveTexture2DHandle(&m_Handle);
+		}
+	}
+}

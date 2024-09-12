@@ -36,12 +36,6 @@ namespace prime {
 		}
 	}
 
-	void OpenGLUniformbuffer::Unbind()
-	{
-		m_Device->SetActiveUniformbuffer(nullptr);
-		glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	}
-
 	void OpenGLUniformbuffer::SetData(u32 size, void* data)
 	{
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);

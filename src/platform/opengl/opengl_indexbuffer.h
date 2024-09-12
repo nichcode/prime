@@ -15,9 +15,7 @@ namespace prime {
 		OpenGLIndexbuffer(Device* device, u32* indices, u32 count);
 		virtual ~OpenGLIndexbuffer() override;
 
-		virtual void Bind();
-		virtual void Unbind();
-
-		PINLINE virtual u32 GetCount() const { return m_Count; }
+		virtual void Bind() override;
+		PINLINE virtual u32 GetCount() const override { return m_Count; }
 	};
 }

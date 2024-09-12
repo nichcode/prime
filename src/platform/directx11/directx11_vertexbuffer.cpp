@@ -86,13 +86,6 @@ namespace prime {
         }
 	}
 
-	void DirectX11Vertexbuffer::Unbind()
-	{
-        m_Device->SetActiveVertexbuffer(nullptr);
-        auto native = (ID3D11DeviceContext*)m_Device->GetNativeContext();
-        native->IASetVertexBuffers(0, 0, nullptr, nullptr, 0);
-	}
-
 	void DirectX11Vertexbuffer::SetData(const void* data, u32 size)
 	{
         PASSERT_MSG(m_Type == VertexbufferTypeDynamic, "Cannot set dat to a static vertexbuffer");

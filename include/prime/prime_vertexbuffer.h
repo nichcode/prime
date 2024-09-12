@@ -77,8 +77,6 @@ namespace prime {
 		virtual ~Vertexbuffer() {}
 
 		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
-
 		virtual VertexbufferType GetType() const = 0;
 
 		virtual void SetLayout(const VertexbufferLayout& layout) = 0;

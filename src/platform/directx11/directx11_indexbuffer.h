@@ -16,8 +16,6 @@ namespace prime {
 		virtual ~DirectX11Indexbuffer() override;
 
 		virtual void Bind() override;
-		virtual void Unbind() override;
-
 		virtual u32 GetCount() const override { return m_Count; }
 	};
 }

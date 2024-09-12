@@ -7,6 +7,7 @@
 namespace prime {
 
 	class Window;
+
 	struct WindowHandle 
 	{
 		void* Ptr = nullptr;
@@ -55,8 +56,11 @@ namespace prime {
 	private:
 		WindowHandle m_Handle;
 		WindowData m_Data;
+		void* m_UserData;
 
 	public:
+		Window() :m_UserData(nullptr) {}
+
 		void Init(const WindowProperties& props);
 		void Destroy();
 
@@ -77,6 +81,9 @@ namespace prime {
 		void SetTitle(const str& title);
 		void SetPos(i32 xPos, i32 yPos);
 		void SetSize(u32 width, u32 height);
+		
+		void SetUserData(void* userDataPtr) { m_UserData = userDataPtr; }
+		PINLINE void* GetUserData() { return m_UserData; }
 
 		PINLINE b8 GetKeyState(u16 key) const {
 			return m_Data.keys[key] == PPRESS;

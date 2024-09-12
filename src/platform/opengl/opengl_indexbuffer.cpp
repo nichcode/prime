@@ -37,10 +37,4 @@ namespace prime {
 			m_Device->SetActiveIndexbuffer(&m_Handle);
 		}
 	}
-
-	void OpenGLIndexbuffer::Unbind()
-	{
-		m_Device->SetActiveIndexbuffer(nullptr);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
 }

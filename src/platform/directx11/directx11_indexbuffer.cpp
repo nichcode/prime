@@ -50,11 +50,4 @@ namespace prime {
 			m_Device->SetActiveIndexbuffer(&m_Handle);
 		}
 	}
-
-	void DirectX11Indexbuffer::Unbind()
-	{
-		m_Device->SetActiveIndexbuffer(nullptr);
-		auto native = (ID3D11DeviceContext*)m_Device->GetNativeContext();
-		native->IASetIndexBuffer(nullptr, DXGI_FORMAT_UNKNOWN, 0);
-	}
 }

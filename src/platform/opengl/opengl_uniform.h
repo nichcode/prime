@@ -16,8 +16,6 @@ namespace prime {
 		virtual ~OpenGLUniformbuffer() override;
 
 		virtual void Bind() override;
-		virtual void Unbind() override;
-
 		virtual void SetData(u32 size, void* data) override;
 	};
 }

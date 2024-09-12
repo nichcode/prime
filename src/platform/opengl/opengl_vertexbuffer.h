@@ -18,8 +18,7 @@ namespace prime {
 		virtual ~OpenGLVertexbuffer() override;
 
 		virtual void Bind() override;
-		virtual void Unbind() override;
-
+		
 		PINLINE virtual VertexbufferType GetType() const override { return m_Type; }
 
 		virtual void SetLayout(const VertexbufferLayout& layout) override;

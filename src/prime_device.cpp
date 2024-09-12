@@ -70,6 +70,11 @@ namespace prime {
 		return Uniformbuffer::Create(this, size, binding);
 	}
 
+	Ref<Texture2D> Device::CreateTexture2D(const TextureProperties& props)
+	{
+		return Texture2D::Create(this, props);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
 		if (vertexbufferHandle == nullptr) {
@@ -107,6 +112,16 @@ namespace prime {
 		}
 		else {
 			m_ActiveUniformbuffer.Ptr = uniformbufferHandle->Ptr;
+		}
+	}
+
+	void Device::SetActiveTexture2DHandle(Texture2DHandle* textureHandle)
+	{
+		if (textureHandle == nullptr) {
+			m_ActiveTexture2DHandle.Ptr = nullptr;
+		}
+		else {
+			m_ActiveTexture2DHandle.Ptr = textureHandle->Ptr;
 		}
 	}
 

@@ -86,13 +86,6 @@ namespace prime {
 		}
 	}
 
-	void OpenGLVertexbuffer::Unbind()
-	{
-		m_Device->SetActiveVertexbuffer(nullptr);
-		glBindVertexArray(0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
-
 	void OpenGLVertexbuffer::SetLayout(const VertexbufferLayout& vertexbufferlayout)
 	{
 		PASSERT_MSG(vertexbufferlayout.GetElements().size(),
