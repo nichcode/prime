@@ -7,6 +7,7 @@
 #include "prime_indexbuffer.h"
 #include "prime_viewport.h"
 #include "prime_shader.h"
+#include "prime_uniformbuffer.h"
 
 namespace prime {
 
@@ -23,6 +24,7 @@ namespace prime {
 		VertexbufferHandle m_ActiveVertexbuffer;
 		IndexbufferHandle m_ActiveIndexbuffer;
 		ShaderHandle m_ActiveShaderHandle;
+		UniformbufferHandle m_ActiveUniformbuffer;
 		Viewport m_Viewport;
 
 	public:
@@ -46,10 +48,12 @@ namespace prime {
 		Ref<Vertexbuffer> CreateVertexBuffer(const void* data, u32 size, VertexbufferType type);
 		Ref<Indexbuffer> CreateIndexBuffer(u32* indices, u32 count);
 		Ref<Shader> CreateShader(const str& VSource, const str& PSource, b8 load);
+		Ref<Uniformbuffer> CreateUniformbuffer(u32 size, u32 binding);
 
 		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
 		void SetActiveShader(ShaderHandle* shaderHandle);
+		void SetActiveUniformbuffer(UniformbufferHandle* uniformbufferHandle);
 
 		void SetViewport(const Viewport& viewport);
 
@@ -69,6 +73,11 @@ namespace prime {
 		PINLINE b8 IsActiveShader(ShaderHandle& shaderHandle) const
 		{
 			return m_ActiveShaderHandle.Ptr == shaderHandle.Ptr;
+		}
+
+		PINLINE b8 IsActiveUniformbuffer(UniformbufferHandle& uniformbufferHandle) const
+		{
+			return m_ActiveUniformbuffer.Ptr == uniformbufferHandle.Ptr;
 		}
 	};
 }

@@ -65,6 +65,11 @@ namespace prime {
 		return  Shader::Create(this, VSource, PSource, load);
 	}
 
+	Ref<Uniformbuffer> Device::CreateUniformbuffer(u32 size, u32 binding)
+	{
+		return Uniformbuffer::Create(this, size, binding);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
 		if (vertexbufferHandle == nullptr) {
@@ -92,6 +97,16 @@ namespace prime {
 		}
 		else {
 			m_ActiveShaderHandle.Ptr = shaderHandle->Ptr;
+		}
+	}
+
+	void Device::SetActiveUniformbuffer(UniformbufferHandle* uniformbufferHandle)
+	{
+		if (uniformbufferHandle == nullptr) {
+			m_ActiveUniformbuffer.Ptr = nullptr;
+		}
+		else {
+			m_ActiveUniformbuffer.Ptr = uniformbufferHandle->Ptr;
 		}
 	}
 
