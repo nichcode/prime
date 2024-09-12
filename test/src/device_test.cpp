@@ -41,6 +41,7 @@ b8 DeviceTest()
 	// resoures
 	prime::Ref<prime::Vertexbuffer> vertexbuffer;
 	prime::Ref<prime::Indexbuffer> indexbuffer;
+	prime::Ref<prime::Shader > shader;
 	prime::Viewport viewport;
 	viewport.Width = window.GetWidth();
 	viewport.Height = window.GetHeight();
@@ -62,6 +63,9 @@ b8 DeviceTest()
 	u32 indices[3] = { 0,1, 2 };
 	indexbuffer = device.CreateIndexBuffer(indices, sizeof(indices) / sizeof(u32));
 	indexbuffer->Bind();
+
+	shader = device.CreateShader("shaders/flat_color_vertex.glsl", "shaders/flat_color_pixel.glsl", true);
+	shader->Bind();
 
 	while (s_Running)
 	{

@@ -65,12 +65,14 @@ namespace prime {
 
 	DirectX11Vertexbuffer::~DirectX11Vertexbuffer()
 	{
-        ID3D11Buffer* buffer = (ID3D11Buffer*)m_Handle.Ptr;
-        buffer->Release();
-        if (m_Device->IsActiveVertexbuffer(m_Handle)) {
-            m_Device->SetActiveVertexbuffer(nullptr);
+        if (m_Handle.Ptr) {
+            if (m_Device->IsActiveVertexbuffer(m_Handle)) {
+                m_Device->SetActiveVertexbuffer(nullptr);
+            }
+            ID3D11Buffer* buffer = (ID3D11Buffer*)m_Handle.Ptr;
+            buffer->Release();
+            m_Handle.Ptr = nullptr;
         }
-        m_Handle.Ptr = nullptr;
 	}
 
 	void DirectX11Vertexbuffer::Bind()

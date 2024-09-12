@@ -11,6 +11,7 @@
 #include "prime_mousecodes.h"
 #include "prime_platform.h"
 #include "prime_ref.h"
+#include "prime_shader.h"
 #include "prime_test.h"
 #include "prime_utils.h"
 #include "prime_vertexbuffer.h"

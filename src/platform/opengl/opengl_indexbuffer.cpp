@@ -21,6 +21,9 @@ namespace prime {
 	OpenGLIndexbuffer::~OpenGLIndexbuffer()
 	{
 		if (m_Handle.Ptr) {
+			if (m_Device->IsActiveIndexbuffer(m_Handle)) {
+				m_Device->SetActiveIndexbuffer(&m_Handle);
+			}
 			glDeleteBuffers(1, &m_ID);
 			m_ID = 0;
 			m_Handle.Ptr = nullptr;

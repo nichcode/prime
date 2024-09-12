@@ -60,17 +60,38 @@ namespace prime {
 		return Indexbuffer::Create(this, indices, count);
 	}
 
+	Ref<Shader> Device::CreateShader(const str& VSource, const str& PSource, b8 load)
+	{
+		return  Shader::Create(this, VSource, PSource, load);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
-		if (vertexbufferHandle->Ptr) {
+		if (vertexbufferHandle == nullptr) {
+			m_ActiveVertexbuffer.Ptr = nullptr;
+		}
+		else {
 			m_ActiveVertexbuffer.Ptr = vertexbufferHandle->Ptr;
 		}
 	}
 
 	void Device::SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle)
 	{
-		if (indexbufferHandle->Ptr) {
-			m_ActiveVertexbuffer.Ptr = indexbufferHandle->Ptr;
+		if (indexbufferHandle == nullptr) {
+			m_ActiveIndexbuffer.Ptr = nullptr;
+		}
+		else {
+			m_ActiveIndexbuffer.Ptr = indexbufferHandle->Ptr;
+		}
+	}
+
+	void Device::SetActiveShader(ShaderHandle* shaderHandle)
+	{
+		if (shaderHandle == nullptr) {
+			m_ActiveShaderHandle.Ptr = nullptr;
+		}
+		else {
+			m_ActiveShaderHandle.Ptr = shaderHandle->Ptr;
 		}
 	}
 

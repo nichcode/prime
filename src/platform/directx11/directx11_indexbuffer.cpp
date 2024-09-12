@@ -31,12 +31,14 @@ namespace prime {
 
 	DirectX11Indexbuffer::~DirectX11Indexbuffer()
 	{
-		ID3D11Buffer* buffer = (ID3D11Buffer*)m_Handle.Ptr;
-		buffer->Release();
-		if (m_Device->IsActiveIndexbuffer(m_Handle)) {
-			m_Device->SetActiveIndexbuffer(nullptr);
+		if (m_Handle.Ptr) {
+			if (m_Device->IsActiveIndexbuffer(m_Handle)) {
+				m_Device->SetActiveIndexbuffer(nullptr);
+			}
+			ID3D11Buffer* buffer = (ID3D11Buffer*)m_Handle.Ptr;
+			buffer->Release();
+			m_Handle.Ptr = nullptr;
 		}
-		m_Handle.Ptr = nullptr;
 	}
 
 	void DirectX11Indexbuffer::Bind()
