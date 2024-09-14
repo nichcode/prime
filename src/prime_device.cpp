@@ -80,6 +80,11 @@ namespace prime {
 		return Texture2D::Create(this, filepath);
 	}
 
+	Ref<RenderTarget> Device::CreateRenderTarget(u32 width, u32 height, const Viewport* viewport)
+	{
+		return RenderTarget::Create(this, width, height, viewport);
+	}
+
 	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
 	{
 		if (vertexbufferHandle == nullptr) {
@@ -127,6 +132,16 @@ namespace prime {
 		}
 		else {
 			m_ActiveTexture2DHandle.Ptr = textureHandle->Ptr;
+		}
+	}
+
+	void Device::SetActiveRenderTargetHandle(RenderTargetHandle* renderTargetHandle)
+	{
+		if (renderTargetHandle == nullptr) {
+			m_ActiveRenderTargetHandle.Ptr = nullptr;
+		}
+		else {
+			m_ActiveRenderTargetHandle.Ptr = renderTargetHandle->Ptr;
 		}
 	}
 

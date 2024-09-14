@@ -45,6 +45,7 @@ b8 DeviceTest()
 	prime::Ref<prime::Shader > shader;
 	prime::Ref<prime::Uniformbuffer> uniformbuffer;
     prime::Ref<prime::Texture2D> texture2D;
+	prime::Ref<prime::RenderTarget> renderTarget;
 	prime::Viewport viewport;
 	viewport.Width = window.GetWidth();
 	viewport.Height = window.GetHeight();
@@ -71,18 +72,19 @@ b8 DeviceTest()
 	indexbuffer->Bind();
 
 	shader = device.CreateShader("shaders/flat_color_vertex.glsl", "shaders/flat_color_pixel.glsl", true);
-
 	uniformbuffer = device.CreateUniformbuffer(16, 0);
-
 	texture2D = device.CreateTexture2D("textures/texture2d.png");
-	texture2D->Bind();
 
-	shader->Bind();
-	shader->setInt("u_Texture", 0);
+	renderTarget = device.CreateRenderTarget(1000, 600, &viewport);
 
 	while (s_Running)
 	{
 		prime::PollEvents();
+
+		texture2D->Bind();
+
+		shader->Bind();
+		shader->setInt("u_Texture", 0);
 
 		device.Clear();
 		device.DrawIndexed(prime::PrimitiveTopologyTriangles, indexbuffer->GetCount());

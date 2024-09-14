@@ -9,6 +9,7 @@
 #include "prime_shader.h"
 #include "prime_uniformbuffer.h"
 #include "prime_texture.h"
+#include "prime_render_target.h"
 
 namespace prime {
 
@@ -27,6 +28,7 @@ namespace prime {
 		ShaderHandle m_ActiveShaderHandle;
 		UniformbufferHandle m_ActiveUniformbuffer;
 		Texture2DHandle m_ActiveTexture2DHandle;
+		RenderTargetHandle m_ActiveRenderTargetHandle;
 		Viewport m_Viewport;
 
 		// TODO: save refs of textures and resources to not recreate them again
@@ -55,12 +57,14 @@ namespace prime {
 		Ref<Uniformbuffer> CreateUniformbuffer(u32 size, u32 binding);
 		Ref<Texture2D> CreateTexture2D(const TextureProperties& props);
 		Ref<Texture2D> CreateTexture2D(const str& filepath);
+		Ref<RenderTarget> CreateRenderTarget(u32 width, u32 height, const Viewport* viewport);
 
 		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
 		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
 		void SetActiveShader(ShaderHandle* shaderHandle);
 		void SetActiveUniformbuffer(UniformbufferHandle* uniformbufferHandle);
 		void SetActiveTexture2DHandle(Texture2DHandle* textureHandle);
+		void SetActiveRenderTargetHandle(RenderTargetHandle* renderTargetHandle);
 
 		void SetViewport(const Viewport& viewport);
 
@@ -90,6 +94,11 @@ namespace prime {
 		PINLINE b8 IsActiveTextureHandle(Texture2DHandle& textureHandle) const
 		{
 			return m_ActiveTexture2DHandle.Ptr == textureHandle.Ptr;
+		}
+
+		PINLINE b8 IsActiveRenderTargetHandle(RenderTargetHandle& renderTargetHandle) const
+		{
+			return m_ActiveRenderTargetHandle.Ptr == renderTargetHandle.Ptr;
 		}
 	};
 }
