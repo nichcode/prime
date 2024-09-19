@@ -52,7 +52,7 @@ namespace prime {
 		case DataTypeBool:     return 1;
 		}
 
-		PASSERT_MSG(false, "Invalid DataType")
+		PASSERT_MSG(false, "Invalid DataType");
 		return 0;
 	}
 

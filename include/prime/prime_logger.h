@@ -43,10 +43,10 @@ namespace prime {
 #define PERROR(...)         prime::Logger::Log(prime::LogTypesError,    __VA_ARGS__)
 #define PFATAL(...)         prime::Logger::Log(prime::LogTypesCritical, __VA_ARGS__)
 #else
-#define PTRACE(...)         void()0
-#define PDEBUG(...)         void()0
-#define PINFO(...)          void()0
-#define PWARN(...)          void()0
-#define PERROR(...)         void()0
-#define PFATAL(...)         void()0
+#define PTRACE(...)         
+#define PDEBUG(...)         
+#define PINFO(...)          
+#define PWARN(...)          
+#define PERROR(...)         
+#define PFATAL(...)         
 #endif // PCONFIG_DEBUG
