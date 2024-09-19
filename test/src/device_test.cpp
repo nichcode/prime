@@ -77,8 +77,12 @@ b8 DeviceTest()
 
 	renderTarget = device.CreateRenderTarget(1000, 600, &viewport);
 
+	prime::Timestep timestep;
+
 	while (s_Running)
 	{
+		timestep.Tick();
+
 		prime::PollEvents();
 
 		texture2D->Bind();

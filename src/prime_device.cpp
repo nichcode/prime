@@ -151,6 +151,12 @@ namespace prime {
 		m_Driver->SetViewport(viewport);
 	}
 
+	void Device::SetVSync(b8 vSync)
+	{
+		m_VSync = vSync;
+		m_Driver->SetVSync(vSync);
+	}
+
 	void Device::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
 	{
 		PASSERT_MSG(m_Viewport.Width > 0 || m_Viewport.Height > 0, "Viewport size invalid");

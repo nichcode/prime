@@ -91,7 +91,7 @@ namespace prime {
 
 	void DirectX11Device::SwapBuffers()
 	{
-		m_SwapChain->Present(1, 0);
+		m_SwapChain->Present(m_SwapInterval, 0);
 	}
 
 	void DirectX11Device::SetViewport(const Viewport& viewport)

@@ -75,4 +75,14 @@ namespace prime {
 	{
 		glViewport((i32)viewport.X, (i32)viewport.Y, viewport.Width, viewport.Height);
 	}
+
+	void OpenGLDevice::SetVSync(b8 vSync)
+	{
+		if (vSync) {
+			SetWGLVSync(1);
+		}
+		else {
+			SetWGLVSync(0);
+		}
+	}
 }

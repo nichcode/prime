@@ -23,6 +23,7 @@ namespace prime {
 		virtual void SwapBuffers() override;
 
 		virtual void SetViewport(const Viewport& viewport) override;
+		virtual void SetVSync(b8 vSync) override;
 
 		virtual void* GetNative() const override { return nullptr; }
 		virtual void* GetNativeContext() const override { return m_Context; }

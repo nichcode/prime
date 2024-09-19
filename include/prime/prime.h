@@ -15,6 +15,7 @@
 #include "prime_shader.h"
 #include "prime_test.h"
 #include "prime_texture.h"
+#include "prime_time.h"
 #include "prime_uniformbuffer.h"
 #include "prime_utils.h"
 #include "prime_vertexbuffer.h"

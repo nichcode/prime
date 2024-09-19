@@ -119,4 +119,9 @@ namespace prime {
 	{
 		SwapBuffers(GetDC(window));
 	}
+
+	void SetWGLVSync(int interval)
+	{
+		wglSwapIntervalEXT(interval);
+	}
 }

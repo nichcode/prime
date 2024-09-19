@@ -18,6 +18,7 @@ namespace prime {
 		ID3D11DeviceContext* m_Context;
 		ID3D11RenderTargetView* m_RenderTargetView;
 
+		u32 m_SwapInterval = 0;
 		f32 m_ClearColor[4];
 
 	public:
@@ -42,6 +43,15 @@ namespace prime {
 		virtual void* GetNativeContext() const override { return m_Context; }
 
 		virtual void SetViewport(const Viewport& viewport) override;
+		virtual void SetVSync(b8 vSync) override
+		{
+			if (vSync) {
+				m_SwapInterval = 1;
+			}
+			else {
+				m_SwapInterval = 0;
+			}
+		}
 
 		virtual void DrawIndexed(PrimitiveTopology topology, u32 indexCount) override;
 	};

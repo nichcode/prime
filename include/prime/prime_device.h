@@ -30,6 +30,7 @@ namespace prime {
 		Texture2DHandle m_ActiveTexture2DHandle;
 		RenderTargetHandle m_ActiveRenderTargetHandle;
 		Viewport m_Viewport;
+		b8 m_VSync = false;
 
 		// TODO: save refs of textures and resources to not recreate them again
 
@@ -67,6 +68,7 @@ namespace prime {
 		void SetActiveRenderTargetHandle(RenderTargetHandle* renderTargetHandle);
 
 		void SetViewport(const Viewport& viewport);
+		void SetVSync(b8 vSync);
 
 		// draw calls
 		void DrawIndexed(PrimitiveTopology topology, u32 indexCount);

@@ -10,4 +10,6 @@ namespace prime {
 	HGLRC CreateWglContext(HWND window);
 	void DeleteWglContext(HGLRC context);
 	void UpdateWglContext(HWND window);
+
+	void SetWGLVSync(int interval);
 }
