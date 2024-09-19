@@ -42,7 +42,7 @@ namespace prime {
 			return GL_DYNAMIC_DRAW;
 			break;
 		}
-		PASSERT_MSG(false, "Invalid VertexBufferType")
+		PASSERT_MSG(false, "Invalid VertexBufferType");
 		return 0;
 	}
 

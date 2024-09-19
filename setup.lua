@@ -44,9 +44,9 @@ workspace "prime"
         symbols "on"
         runtime "Debug"
 
-        defines {
-            "PCONFIG_DEBUG"
-        }
+        --defines {
+          --  "PCONFIG_DEBUG"
+        --}
 
     filter "configurations:Release"
         symbols "off"

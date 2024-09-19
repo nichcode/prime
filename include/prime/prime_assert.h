@@ -29,10 +29,10 @@ namespace prime {
 
 #ifdef PCONFIG_DEBUG
 
-#define PASSERT(expr) prime::assertMessage(expr);
-#define PASSERT_MSG(expr, message) prime::assertMessage(expr, message);
+#define PASSERT(expr) prime::assertMessage(expr)
+#define PASSERT_MSG(expr, message) prime::assertMessage(expr, message)
 
 #else
-#define PASSERT(expr)                  void()
-#define PASSERT_MSG(expr, message)     void()
+#define PASSERT(expr)                  
+#define PASSERT_MSG(expr, message)     
 #endif // PCONFIG_DEBUG 
