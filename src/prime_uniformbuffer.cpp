@@ -3,7 +3,7 @@
 #include "prime/prime_device.h"
 
 // platforms
-#include "platform/opengl/opengl_uniform.h"
+#include "platform/opengl/opengl_uniformbuffer.h"
 
 namespace prime {
 
@@ -11,17 +11,18 @@ namespace prime {
 	{
 		switch (device->GetType())
 		{
-		case DeviceTypeNone:
+		case DriverTypesNone:
 			PASSERT_MSG(false, "None is not a Graphics Device");
 			break;
 
 #ifdef PPLATFORM_WINDOWS
-		case DeviceTypeDirectX11:
-			PASSERT_MSG(false, "Have not implemented directx11 shader");
+		case DriverTypesDirectX11:
+			PASSERT_MSG(false, "Prime currently does not support Directx11 Device");
+			return nullptr;
 			break;
 
-		case DeviceTypeOpenGL:
-			return CreateRef<OpenGLUniformbuffer>(device, size, binding);
+		case DriverTypesOpenGL:
+			return CreateRef<OpenGLUniformbuffer>(size, binding);
 			break;
 #endif // PPLATFORM_WINDOWS
 		}

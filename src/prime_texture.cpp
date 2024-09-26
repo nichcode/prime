@@ -11,17 +11,18 @@ namespace prime {
 	{
 		switch (device->GetType())
 		{
-		case DeviceTypeNone:
+		case DriverTypesNone:
 			PASSERT_MSG(false, "None is not a Graphics Device");
 			break;
 
 #ifdef PPLATFORM_WINDOWS
-		case DeviceTypeDirectX11:
-			PASSERT_MSG(false, "Have not implemented directx11 Texture");
+		case DriverTypesDirectX11:
+			PASSERT_MSG(false, "Prime currently does not support Directx11 Device");
+			return nullptr;
 			break;
 
-		case DeviceTypeOpenGL:
-			return CreateRef<OpenGLTexture2D>(device, props);
+		case DriverTypesOpenGL:
+			return CreateRef<OpenGLTexture2D>(props);
 			break;
 #endif // PPLATFORM_WINDOWS
 		}
@@ -32,17 +33,17 @@ namespace prime {
 	{
 		switch (device->GetType())
 		{
-		case DeviceTypeNone:
+		case DriverTypesNone:
 			PASSERT_MSG(false, "None is not a Graphics Device");
 			break;
 
 #ifdef PPLATFORM_WINDOWS
-		case DeviceTypeDirectX11:
-			PASSERT_MSG(false, "Have not implemented directx11 Texture");
+		case DriverTypesDirectX11:
+			PASSERT_MSG(false, "Prime currently does not support Directx11 Device");
 			break;
 
-		case DeviceTypeOpenGL:
-			return CreateRef<OpenGLTexture2D>(device, filepath);
+		case DriverTypesOpenGL:
+			return CreateRef<OpenGLTexture2D>(filepath);
 			break;
 #endif // PPLATFORM_WINDOWS
 		}

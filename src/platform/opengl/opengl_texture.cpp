@@ -70,7 +70,7 @@ namespace prime {
 		PASSERT_MSG(false, "Invalid textureFormat");
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(Device* device, const TextureProperties& props)
+	OpenGLTexture2D::OpenGLTexture2D(const TextureProperties& props)
 	{
         glGenTextures(1, &m_ID);
         glBindTexture(GL_TEXTURE_2D, m_ID);
@@ -97,13 +97,11 @@ namespace prime {
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		m_Device = device;
 		m_Width = props.Width;
 		m_Height = props.Height;
-		m_Handle.Ptr = &m_ID;
 	}
 
-	OpenGLTexture2D::OpenGLTexture2D(Device* device, const str& filepath)
+	OpenGLTexture2D::OpenGLTexture2D(const str& filepath)
 	{
 		int w = 0, h = 0, channels = 0;
 		stbi_set_flip_vertically_on_load(1);
@@ -143,34 +141,27 @@ namespace prime {
 			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			m_Device = device;
 			m_Width = w;
 			m_Height = h;
-			m_Handle.Ptr = &m_ID;
-
 			stbi_image_free(data);
 		}
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
-		if (m_Handle.Ptr) {
-			if (m_Device->IsActiveTextureHandle(m_Handle)) {
-				m_Device->SetActiveTexture2DHandle(nullptr);
-			}
-			glDeleteTextures(1, &m_ID);
-			m_ID = 0;
-			m_Handle.Ptr = nullptr;
-		}
+		glDeleteTextures(1, &m_ID);
+		m_ID = 0;
 	}
 
 	void OpenGLTexture2D::Bind(u32 slot)
 	{
-		if (!m_Device->IsActiveTextureHandle(m_Handle)) {
-			// TODO: check for maximum texture slots
-			glActiveTexture(GL_TEXTURE0 + slot);
-			glBindTexture(GL_TEXTURE_2D, m_ID);
-			m_Device->SetActiveTexture2DHandle(&m_Handle);
-		}
+		// TODO: check available texture slots.
+		glActiveTexture(GL_TEXTURE0 + slot);
+		glBindTexture(GL_TEXTURE_2D, m_ID);
+	}
+
+	void OpenGLTexture2D::Unbind()
+	{
+		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }

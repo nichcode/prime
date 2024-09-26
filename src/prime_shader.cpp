@@ -11,18 +11,18 @@ namespace prime {
 	{
 		switch (device->GetType())
 		{
-		case DeviceTypeNone:
+		case DriverTypesNone:
 			PASSERT_MSG(false, "None is not a Graphics Device");
 			break;
 
 #ifdef PPLATFORM_WINDOWS
-		case DeviceTypeDirectX11:
-			PASSERT_MSG(false, "Have not implemented directx11 shader");
+		case DriverTypesDirectX11:
+			PASSERT_MSG(false, "Prime currently does not support Directx11 Device");
 			return nullptr;
 			break;
 
-		case DeviceTypeOpenGL:
-			return CreateRef<OpenGLShader>(device, vSource, pSource, load);
+		case DriverTypesOpenGL:
+			return CreateRef<OpenGLShader>(vSource, pSource, load);
 			break;
 #endif // PPLATFORM_WINDOWS
 		}

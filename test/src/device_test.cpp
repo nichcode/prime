@@ -4,10 +4,11 @@
 b8 s_Running = false;
 prime::Window window;
 prime::Device device;
+prime::Ref<prime::Context> context;
 
 void OnWndowClose(const prime::Window*)
 {
-	s_Running = false;
+	s_Running = false;	
 }
 
 void OnWndowResize(const prime::Window*, u32 width, u32 height)
@@ -16,24 +17,18 @@ void OnWndowResize(const prime::Window*, u32 width, u32 height)
 	view.Width = width;
 	view.Height = height;
 
-	device.SetViewport(view);
+	context->SetViewport(view);
 }
 
 b8 DeviceTest()
 {
 	prime::WindowProperties props;
-	prime::DeviceType type = prime::DeviceTypeOpenGL;
-
-	if (type == prime::DeviceTypeDirectX11) {
-		props.Title = "WindowOpenGL";
-	}
-	else if (type == prime::DeviceTypeOpenGL) {
-		props.Title = "WindowOpenGL";
-	}
+	props.Title = "OpenGLWindow";
 	window.Init(props);
 
-	device.Init(type, &window);
-	device.SetClearColor(.2f, .2f, .2f, 1.0f);
+	device.Init(prime::DriverTypesOpenGL);
+	context = device.CreateContext(&window);
+	context->SetClearColor(.2f, .2f, .2f, 1.0f);
 
 	prime::SetWindowCloseCallback(OnWndowClose);
 	prime::SetWindowResizeCallback(OnWndowResize);
@@ -50,7 +45,7 @@ b8 DeviceTest()
 	viewport.Width = window.GetWidth();
 	viewport.Height = window.GetHeight();
 
-	device.SetViewport(viewport);
+	context->SetViewport(viewport);
 
 	f32 vertices[32] = {
 		-0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
@@ -88,15 +83,13 @@ b8 DeviceTest()
 		texture2D->Bind();
 
 		shader->Bind();
-		shader->setInt("u_Texture", 0);
+		shader->SetInt("u_Texture", 0);
 
-		device.Clear();
-		device.DrawIndexed(prime::PrimitiveTopologyTriangles, indexbuffer->GetCount());
-		device.SwapBuffers();
+		context->Clear();
+		context->DrawIndexed(prime::PrimitiveTopologyTriangles, indexbuffer->GetCount());
+		context->SwapBuffers();
 	}
 
-	device.Shutdown();
 	window.Destroy();
-
 	return PPASSED;
 }

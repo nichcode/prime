@@ -2,10 +2,9 @@
 
 #include "prime_assert.h"
 #include "prime_defines.h"
-#include "prime_datatype.h"
+#include "prime_data_types.h"
 #include "prime_device.h"
-#include "prime_devicetype.h"
-#include "prime_engine.h"
+#include "prime_driver_types.h"
 #include "prime_keycodes.h"
 #include "prime_logger.h"
 #include "prime_mousecodes.h"

@@ -3,104 +3,119 @@
 #include "prime_defines.h"
 #include "prime_vertexbuffer.h"
 #include "prime_ref.h"
-#include "prime_devicetype.h"
+#include "prime_driver_types.h"
 #include "prime_indexbuffer.h"
-#include "prime_viewport.h"
 #include "prime_shader.h"
 #include "prime_uniformbuffer.h"
 #include "prime_texture.h"
 #include "prime_render_target.h"
+#include "prime_context.h"
 
 namespace prime {
 
-	class IDevice;
 	class Window;
 
 	class Device
 	{
 	private:
-		IDevice* m_Driver;
-		DeviceType m_Type;
-		Window* m_Window;
-
-		VertexbufferHandle m_ActiveVertexbuffer;
-		IndexbufferHandle m_ActiveIndexbuffer;
-		ShaderHandle m_ActiveShaderHandle;
-		UniformbufferHandle m_ActiveUniformbuffer;
-		Texture2DHandle m_ActiveTexture2DHandle;
-		RenderTargetHandle m_ActiveRenderTargetHandle;
-		Viewport m_Viewport;
-		b8 m_VSync = false;
-
-		// TODO: save refs of textures and resources to not recreate them again
+		DriverTypes m_Type;
 
 	public:
-		Device() : m_Driver(nullptr), m_Type(DeviceTypeNone),
-			m_Window(nullptr) {}
+		Device() : m_Type(DriverTypesNone) { }
+
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
 
-		void Init(DeviceType type, const Window* window);
-		void Shutdown();
+        /**
+         * @brief Initialize the device and its subsystems.
+         * @param type The driver type ie. opengl, directx11 etc.
+         */
+		void Init(DriverTypes type);
 
-		void SetClearColor(f32 r, f32 g, f32 b, f32 a);
-		void Clear();
-		void SwapBuffers();
+        /**
+         * @brief Get the driver type of the device.
+         * 
+         * @return PINLINE the driver type.
+         */
+		PINLINE DriverTypes GetType() const { return m_Type; }
 
-		PINLINE DeviceType GetType() const { return m_Type; }
-		void* GetNative() const;
-		void* GetNativeContext() const;
+		/**
+		 * @brief Create a rendering context. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * @return void* The driver handle of the device.
+		 */
+		Ref<Context> CreateContext(Window* window);
 
-		// create resources
+		/**
+		 * @brief Create a vertexbuffer object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param data The data for the vertexbuffer. This can be a nullptr.
+		 * @param size The size of the vertexbuffer.
+		 * @param type The type of the vertexbuffer ie. static or dynamic.
+		 * @return Ref<Vertexbuffer> the reference of the vertexbuffer if it was created else nullptr.
+		 */
 		Ref<Vertexbuffer> CreateVertexBuffer(const void* data, u32 size, VertexbufferType type);
+        
+		/**
+		 * @brief Create a indexbuffer object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param indices the indices which the index buffer will stored and use. 
+		 * Prime supports only 32bit indices.
+		 * @param count The count of the indices.
+		 * @return Ref<Indexbuffer> The reference of the indexbuffer if it was created else nullptr.
+		 */
 		Ref<Indexbuffer> CreateIndexBuffer(u32* indices, u32 count);
+
+		/**
+		 * @brief Create a shader object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param VSource The vertexshader source to use.
+		 * @param PSource The pixelshader source to use.
+		 * @param load If true the Vsource and PSource will be loaded as files from disk.
+		 * @return Ref<Shader> The reference of the shader if it was created else nullptr.
+		 */
 		Ref<Shader> CreateShader(const str& VSource, const str& PSource, b8 load);
+
+		/**
+		 * @brief Create a uniformbuffer object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param size The size of the uniformbuffer.
+		 * @param binding The binding slot to use for the uniform buffer.
+		 * @return Ref<Uniformbuffer> The reference of the uniformbuffer if it was created else nullptr.
+		 */
 		Ref<Uniformbuffer> CreateUniformbuffer(u32 size, u32 binding);
+
+		/**
+		 * @brief Create a Texture2d object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param props The properties of the texture2d.
+		 * @return Ref<Texture2D> The reference of the texture2d if it was created else nullptr.
+		 */
 		Ref<Texture2D> CreateTexture2D(const TextureProperties& props);
+
+		/**
+		 * @brief Load a Texture2d object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param filepath The filepath to load the texture2d.
+		 * @return Ref<Texture2D> The reference of the texture2d if it was created else nullptr.
+		 */
 		Ref<Texture2D> CreateTexture2D(const str& filepath);
+
+		/**
+		 * @brief Create a rendertarget object. The device keeps the object itself and
+		 * returns reference to the caller of the function. The helps to clean up all sunresources created.
+		 * 
+		 * @param width The width of the rendertarget.
+		 * @param height The height of the rendertarget.
+		 * @param viewport A pointer to the viewport of the device.
+		 * @return Ref<RenderTarget> The reference of the rendertarget if it was created else nullptr.
+		 */
 		Ref<RenderTarget> CreateRenderTarget(u32 width, u32 height, const Viewport* viewport);
-
-		void SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle);
-		void SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle);
-		void SetActiveShader(ShaderHandle* shaderHandle);
-		void SetActiveUniformbuffer(UniformbufferHandle* uniformbufferHandle);
-		void SetActiveTexture2DHandle(Texture2DHandle* textureHandle);
-		void SetActiveRenderTargetHandle(RenderTargetHandle* renderTargetHandle);
-
-		void SetViewport(const Viewport& viewport);
-		void SetVSync(b8 vSync);
-
-		// draw calls
-		void DrawIndexed(PrimitiveTopology topology, u32 indexCount);
-
-        PINLINE b8 IsActiveVertexbuffer(VertexbufferHandle& vertexbufferHandle) const
-		{
-			return m_ActiveVertexbuffer.Ptr == vertexbufferHandle.Ptr;
-		}
-
-		PINLINE b8 IsActiveIndexbuffer(IndexbufferHandle& indexbufferHandle) const
-		{
-			return m_ActiveIndexbuffer.Ptr == indexbufferHandle.Ptr;
-		}
-
-		PINLINE b8 IsActiveShader(ShaderHandle& shaderHandle) const
-		{
-			return m_ActiveShaderHandle.Ptr == shaderHandle.Ptr;
-		}
-
-		PINLINE b8 IsActiveUniformbuffer(UniformbufferHandle& uniformbufferHandle) const
-		{
-			return m_ActiveUniformbuffer.Ptr == uniformbufferHandle.Ptr;
-		}
-
-		PINLINE b8 IsActiveTextureHandle(Texture2DHandle& textureHandle) const
-		{
-			return m_ActiveTexture2DHandle.Ptr == textureHandle.Ptr;
-		}
-
-		PINLINE b8 IsActiveRenderTargetHandle(RenderTargetHandle& renderTargetHandle) const
-		{
-			return m_ActiveRenderTargetHandle.Ptr == renderTargetHandle.Ptr;
-		}
 	};
 }

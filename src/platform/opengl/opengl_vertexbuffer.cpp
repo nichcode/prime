@@ -46,7 +46,7 @@ namespace prime {
 		return 0;
 	}
 
-	OpenGLVertexbuffer::OpenGLVertexbuffer(Device* device, const void* data, u32 size, VertexbufferType type)
+	OpenGLVertexbuffer::OpenGLVertexbuffer(const void* data, u32 size, VertexbufferType type)
 	{
 		GLenum glType = VertexbufferTypeToOpenGLType(type);
 		m_Type = type;
@@ -55,35 +55,28 @@ namespace prime {
 		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
 		glBufferData(GL_ARRAY_BUFFER, size, data, glType);
 
-		m_Handle.Ptr = &m_ID;
-		m_Device = device;
-
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glGenVertexArrays(1, &m_Vertexarray);
 	}
 
 	OpenGLVertexbuffer::~OpenGLVertexbuffer()
 	{
-		if (m_Handle.Ptr) {
-			glDeleteBuffers(1, &m_ID);
-			glDeleteVertexArrays(1, &m_Vertexarray);
-			m_ID = 0;
-			m_Vertexarray = 0;
-
-			if (m_Device->IsActiveVertexbuffer(m_Handle)) {
-				m_Device->SetActiveVertexbuffer(nullptr);
-			}
-			m_Handle.Ptr = nullptr;
-		}
+		glDeleteBuffers(1, &m_ID);
+		glDeleteVertexArrays(1, &m_Vertexarray);
+		m_ID = 0;
+		m_Vertexarray = 0;
 	}
-	
+
 	void OpenGLVertexbuffer::Bind()
 	{
-		if (!m_Device->IsActiveVertexbuffer(m_Handle)) {
-			glBindVertexArray(m_Vertexarray);
-			glBindBuffer(GL_ARRAY_BUFFER, m_ID);
-			m_Device->SetActiveVertexbuffer(&m_Handle);
-		}
+		glBindVertexArray(m_Vertexarray);
+		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+	}
+
+	void OpenGLVertexbuffer::Unbind()
+	{
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
 	void OpenGLVertexbuffer::SetLayout(const VertexbufferLayout& vertexbufferlayout)
@@ -154,7 +147,6 @@ namespace prime {
 
 	void OpenGLVertexbuffer::SetData(const void* data, u32 size)
 	{
-		Bind();
 		glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 	}
 }

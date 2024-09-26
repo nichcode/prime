@@ -1,5 +1,5 @@
 
-#include "opengl_device.h"
+#include "opengl_context.h"
 #include "prime/prime_window.h"
 #include "prime/prime_assert.h"
 #include "platform/glad/glad.h"
@@ -29,10 +29,10 @@ namespace prime {
 		PASSERT_MSG(false, "Invalid Primitive Topology");
 	}
 
-	void OpenGLDevice::Init(const Window* window)
+	OpenGLContext::OpenGLContext(Window* window)
 	{
 #ifdef PPLATFORM_WINDOWS
-		m_Context = CreateWglContext((HWND)window->GetHandle().Ptr);
+		m_Context = CreateWglContext((HWND)window->GetHandle());
 #endif // PPLATFORM_WINDOWS
 
 		m_Window = window;
@@ -41,42 +41,42 @@ namespace prime {
 		s_Init = true;
 	}
 
-	void OpenGLDevice::Shutdown()
+	OpenGLContext::~OpenGLContext()
 	{
 #ifdef PPLATFORM_WINDOWS
 		DeleteWglContext(HGLRC(m_Context));
 #endif // PPLATFORM_WINDOWS
 	}
 
-	void OpenGLDevice::SetClearColor(f32 r, f32 g, f32 b, f32 a)
+	void OpenGLContext::SetClearColor(f32 r, f32 g, f32 b, f32 a)
 	{
 		glClearColor(r, g, b, a);
 	}
 
-	void OpenGLDevice::Clear()
+	void OpenGLContext::Clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLDevice::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
+	void OpenGLContext::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
 	{
 		GLenum type = TopologyToOpenGL(topology);
 		glDrawElements(type, indexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
-	void OpenGLDevice::SwapBuffers()
+	void OpenGLContext::SwapBuffers()
 	{
 #ifdef PPLATFORM_WINDOWS
-		UpdateWglContext((HWND)m_Window->GetHandle().Ptr);
+		UpdateWglContext((HWND)m_Window->GetHandle());
 #endif // PPLATFORM_WINDOWS
 	}
 
-	void OpenGLDevice::SetViewport(const Viewport& viewport)
+	void OpenGLContext::SetViewport(const Viewport& viewport)
 	{
 		glViewport((i32)viewport.X, (i32)viewport.Y, viewport.Width, viewport.Height);
 	}
 
-	void OpenGLDevice::SetVSync(b8 vSync)
+	void OpenGLContext::SetVSync(b8 vSync)
 	{
 		if (vSync) {
 			SetWGLVSync(1);

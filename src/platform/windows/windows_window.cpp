@@ -687,15 +687,15 @@ namespace prime {
 			
 			MapKeys(m_Data);
 			MapKeysNames(m_Data);
-			m_Handle.Ptr = window;
+			m_Handle = window;
 			++s_WindowCount;
 		}
 	}
 
 	void Window::Destroy()
 	{
-		DestroyWindow((HWND)m_Handle.Ptr);
-		m_Handle.Ptr = nullptr;
+		DestroyWindow((HWND)m_Handle);
+		m_Handle = nullptr;
 		m_UserData = nullptr;
 		--s_WindowCount;
 		if (s_WindowCount == 0) {
@@ -706,20 +706,20 @@ namespace prime {
 	void Window::Hide()
 	{
 		m_Data.Props.Hidden = true;
-		ShowWindow((HWND)m_Handle.Ptr, SW_HIDE);
+		ShowWindow((HWND)m_Handle, SW_HIDE);
 	}
 
 	void Window::Show()
 	{
 		m_Data.Props.Hidden = false;
-		ShowWindow((HWND)m_Handle.Ptr, SW_SHOW);
+		ShowWindow((HWND)m_Handle, SW_SHOW);
 	}
 
 	void Window::SetTitle(const str& title)
 	{
 		m_Data.Props.Title = title;
 		wstr windowTitle = StringToWideString(title);
-		SetWindowText((HWND)m_Handle.Ptr, windowTitle.c_str());
+		SetWindowText((HWND)m_Handle, windowTitle.c_str());
 	}
 
 	void Window::SetPos(i32 xPos, i32 yPos)
@@ -733,7 +733,7 @@ namespace prime {
 
 		m_Data.Props.XPos = xPos;
 		m_Data.Props.YPos = yPos;
-		SetWindowPos((HWND)m_Handle.Ptr, NULL, rect.left, rect.top, 0, 0,
+		SetWindowPos((HWND)m_Handle, NULL, rect.left, rect.top, 0, 0,
 			SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 	}
 
@@ -750,7 +750,7 @@ namespace prime {
 
 		m_Data.Props.Width = width;
 		m_Data.Props.Height = height;
-		SetWindowPos((HWND)m_Handle.Ptr, HWND_TOP,
+		SetWindowPos((HWND)m_Handle, HWND_TOP,
 			0, 0, rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
 	}

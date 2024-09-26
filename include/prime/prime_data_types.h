@@ -23,6 +23,12 @@ namespace prime {
         DataTypeMax
     };
 
+    /**
+     * @brief Get the data type size.
+     * 
+     * @param type The vertexbuffer element data type.
+     * @return PINLINE u8 the size of the data type.
+     */
 	PINLINE u8 GetDataTypeSize(DataType type)
 	{
 		switch (type)
@@ -55,7 +61,13 @@ namespace prime {
 		PASSERT_MSG(false, "Invalid DataType");
 		return 0;
 	}
-
+    
+	/**
+     * @brief Get the data type count.
+     * 
+     * @param type The vertexbuffer element data type.
+     * @return PINLINE u8 the count of the data type.
+     */
 	PINLINE u8 GetDataTypeCount(DataType type)
 	{
 		switch (type)

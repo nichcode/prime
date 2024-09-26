@@ -66,7 +66,7 @@ namespace prime {
 		return result;
 	}
 
-	OpenGLShader::OpenGLShader(Device* device, const str& vSource, const str& pSource, b8 load)
+	OpenGLShader::OpenGLShader(const str& vSource, const str& pSource, b8 load)
 	{
 		if (load) {
 			m_VShader = CreateShader(GL_VERTEX_SHADER, ReadFile(vSource));
@@ -102,80 +102,73 @@ namespace prime {
 		}
 		glDeleteShader(m_VShader);
 		glDeleteShader(m_PShader);
-
-		m_Handle.Ptr = &m_ID;
-		m_Device = device;
 	}
 
 	OpenGLShader::~OpenGLShader()
 	{
-		if (m_Handle.Ptr) {
-			if (m_Device->IsActiveShader(m_Handle)) {
-				m_Device->SetActiveShader(nullptr);
-			}
-			glDeleteProgram(m_ID);
-			m_Handle.Ptr = nullptr;
-			m_ID = 0;
-		}
+		glDeleteProgram(m_ID);
+		m_ID = 0;
 	}
 
 	void OpenGLShader::Bind()
 	{
-		if (!m_Device->IsActiveShader(m_Handle)) {
-			m_Device->SetActiveShader(&m_Handle);
-			glUseProgram(m_ID);
-		}
+		glUseProgram(m_ID);
 	}
 
-	void OpenGLShader::setInt(const str& name, i32 data)
+	void OpenGLShader::Unbind()
+	{
+		glUseProgram(0);
+	}
+
+	void OpenGLShader::SetInt(const str& name, i32 data)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1i(location, data);
 	}
 
-	void OpenGLShader::setIntArray(const str& name, i32* data, u32 count)
+	void OpenGLShader::SetIntArray(const str& name, i32* data, u32 count)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1iv(location, count, data);
 	}
 
-	void OpenGLShader::setFloat(const str& name, f32 data)
+	void OpenGLShader::SetFloat(const str& name, f32 data)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform1f(location, data);
 	}
 
-	void OpenGLShader::setFloat2(const str& name, f32 data, f32 data2)
+	void OpenGLShader::SetFloat2(const str& name, f32 data, f32 data2)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform2f(location, data, data2);
 	}
 
-	void OpenGLShader::setFloat3(const str& name, f32 data, f32 data2, f32 data3)
+	void OpenGLShader::SetFloat3(const str& name, f32 data, f32 data2, f32 data3)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform3f(location, data, data2, data3);
 	}
 
-	void OpenGLShader::setFloat4(const str& name, f32 data, f32 data2, f32 data3, f32 data4)
+	void OpenGLShader::SetFloat4(const str& name, f32 data, f32 data2, f32 data3, f32 data4)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniform4f(location, data, data2, data3, data4);
 	}
 	
-	void OpenGLShader::setMat2(const str& name, f32* data)
+	void OpenGLShader::SetMat2(const str& name, f32* data)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniformMatrix2fv(location, 1, GL_FALSE, data);
 	}
 
-	void OpenGLShader::setMat3(const str& name, f32* data)
+	void OpenGLShader::SetMat3(const str& name, f32* data)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniformMatrix3fv(location, 1, GL_FALSE, data);
 	}
 
-	void OpenGLShader::setMat4(const str& name, f32* data)
+	void OpenGLShader::SetMat4(const str& name, f32* data)
 	{
 		GLint location = GetUniformLocation(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, data);

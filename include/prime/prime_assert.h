@@ -6,33 +6,84 @@
 
 namespace prime {
 
-    static void assertMessage(bool expr)
+    /**
+     * @brief Check an expression to see if its true or false.
+     * if the expression is true it does nothing else its triggers a
+     * breakpoint printing out the line number and the file name to the console.
+     * 
+     * @param expr the expression to check.
+     */
+    static void AssertExpr(bool expr)
     {
         if (expr) {}
         else {
             str msg = std::format("Assertion failed in '{}' at line '{}'", PFILE, PLINE);
-            PERROR(msg);
+            prime::Logger::Log(prime::LogTypesError, msg);
             PBREAK;
         }
     }
 
-    static void assertMessage(bool expr, const char* message)
+    /**
+     * @brief Check an expression to see if its true or false.
+     * if the expression is true it does nothing else its triggers a
+     * breakpoint printing out the line number, file name and the message to the console.
+     * 
+     * @param expr the expression to check.
+     * @param message the message to printout.
+     */
+    static void AssertExprMessage(bool expr, const char* message)
     {
         if (expr) {}
         else {
             str msg = std::format("Assertion failed in '{}' at line '{}' \n'{}'", PFILE, PLINE, message);
-            PERROR(msg);
+            prime::Logger::Log(prime::LogTypesError, msg);
             PBREAK;
         }
     }
 }
 
 #ifdef PCONFIG_DEBUG
+    /**
+     * @brief Check an expression to see if its true or false.
+     * if the expression is true it does nothing else its triggers a
+     * breakpoint printing out the line number and file name to the console.
+     * This only works on debug build or PCONFIG_DEBUG is defines.
+     * 
+     * @param expr the expression to check.
+     */
+#define PASSERT(expr) prime::AssertExpr(expr)
 
-#define PASSERT(expr) prime::assertMessage(expr)
-#define PASSERT_MSG(expr, message) prime::assertMessage(expr, message)
+    /**
+     * @brief Check an expression to see if its true or false.
+     * if the expression is true it does nothing else its triggers a
+     * breakpoint printing out the line number, file name and the message to the console.
+     * This only works on debug build or PCONFIG_DEBUG is defines.
+     * 
+     * @param expr the expression to check.
+     * @param message the message to printout.
+     */
+#define PASSERT_MSG(expr, message) prime::AssertExprMessage(expr, message)
 
 #else
-#define PASSERT(expr)                  
-#define PASSERT_MSG(expr, message)     
+    /**
+     * @brief Check an expression to see if its true or false.
+     * if the expression is true it does nothing else its triggers a
+     * breakpoint printing out the line number and file name to the console.
+     * This only works on debug build or PCONFIG_DEBUG is defines.
+     * 
+     * @param expr the expression to check.
+     */
+#define PASSERT(expr) 
+
+    /**
+     * @brief Check an expression to see if its true or false.
+     * if the expression is true it does nothing else its triggers a
+     * breakpoint printing out the line number, file name and the message to the console.
+     * This only works on debug build or PCONFIG_DEBUG is defines.
+     * 
+     * @param expr the expression to check.
+     * @param message the message to printout.
+     */
+#define PASSERT_MSG(expr, message) 
+
 #endif // PCONFIG_DEBUG 

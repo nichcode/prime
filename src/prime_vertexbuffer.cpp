@@ -5,7 +5,6 @@
 
 // platforms
 #include "platform/opengl/opengl_vertexbuffer.h"
-#include "platform/directx11/directx11_vertexbuffer.h"
 
 namespace prime {
 
@@ -13,17 +12,18 @@ namespace prime {
 	{
 		switch (device->GetType())
 		{
-		case DeviceTypeNone:
+		case DriverTypesNone:
 			PASSERT_MSG(false, "None is not a Graphics Device");
 			break;
 
 #ifdef PPLATFORM_WINDOWS
-		case DeviceTypeDirectX11:
-			return CreateRef<DirectX11Vertexbuffer>(device, data, size, type);
+		case DriverTypesDirectX11:
+			PASSERT_MSG(false, "Prime currently does not support Directx11 Device");
+			return nullptr;
 			break;
 
-		case DeviceTypeOpenGL:
-			return CreateRef<OpenGLVertexbuffer>(device, data, size, type);
+		case DriverTypesOpenGL:
+			return CreateRef<OpenGLVertexbuffer>(data, size, type);
 			break;
 #endif // PPLATFORM_WINDOWS
 		}

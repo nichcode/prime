@@ -1,53 +1,26 @@
 
 #include "prime/prime_device.h"
-#include "prime_idevice.h"
-#include "prime/prime_window.h"
+#include "prime/prime_time.h"
+
+#ifdef PPLATFORM_WINDOWS
+#include "platform/windows/wgl_context.h"
+#endif // PPLATFORM_WINDOWS
 
 namespace prime {
 
-	void Device::Init(DeviceType type, const Window* window)
+	void Device::Init(DriverTypes type)
 	{
-		if (!m_Driver) {
-			m_Driver = IDevice::Create(type);
-			m_Driver->Init(window);
-			m_Type = type;
-		}
+		m_Type = type;
+#ifdef PPLATFORM_WINDOWS
+		DummyWglContext();
+#endif // PPLATFORM_WINDOWS
+
+		Time::Init();
 	}
 
-	void Device::Shutdown()
+	Ref<Context> Device::CreateContext(Window* window)
 	{
-		if (m_Driver) {
-			m_Driver->Shutdown();
-			delete m_Driver;
-			m_Driver = nullptr;
-			m_ActiveVertexbuffer.Ptr = nullptr;
-			m_Type = DeviceTypeNone;
-		}
-	}
-
-	void Device::SetClearColor(f32 r, f32 g, f32 b, f32 a)
-	{
-		m_Driver->SetClearColor(r, g, b, a);
-	}
-
-	void Device::Clear()
-	{
-		m_Driver->Clear();
-	}
-
-	void Device::SwapBuffers()
-	{
-		m_Driver->SwapBuffers();
-	}
-
-	void* Device::GetNative() const
-	{
-		return m_Driver->GetNative();
-	}
-
-	void* Device::GetNativeContext() const
-	{
-		return m_Driver->GetNativeContext();
+		return Context::Create(this, window);
 	}
 
 	Ref<Vertexbuffer> Device::CreateVertexBuffer(const void* data, u32 size, VertexbufferType type)
@@ -83,83 +56,5 @@ namespace prime {
 	Ref<RenderTarget> Device::CreateRenderTarget(u32 width, u32 height, const Viewport* viewport)
 	{
 		return RenderTarget::Create(this, width, height, viewport);
-	}
-
-	void Device::SetActiveVertexbuffer(VertexbufferHandle* vertexbufferHandle)
-	{
-		if (vertexbufferHandle == nullptr) {
-			m_ActiveVertexbuffer.Ptr = nullptr;
-		}
-		else {
-			m_ActiveVertexbuffer.Ptr = vertexbufferHandle->Ptr;
-		}
-	}
-
-	void Device::SetActiveIndexbuffer(IndexbufferHandle* indexbufferHandle)
-	{
-		if (indexbufferHandle == nullptr) {
-			m_ActiveIndexbuffer.Ptr = nullptr;
-		}
-		else {
-			m_ActiveIndexbuffer.Ptr = indexbufferHandle->Ptr;
-		}
-	}
-
-	void Device::SetActiveShader(ShaderHandle* shaderHandle)
-	{
-		if (shaderHandle == nullptr) {
-			m_ActiveShaderHandle.Ptr = nullptr;
-		}
-		else {
-			m_ActiveShaderHandle.Ptr = shaderHandle->Ptr;
-		}
-	}
-
-	void Device::SetActiveUniformbuffer(UniformbufferHandle* uniformbufferHandle)
-	{
-		if (uniformbufferHandle == nullptr) {
-			m_ActiveUniformbuffer.Ptr = nullptr;
-		}
-		else {
-			m_ActiveUniformbuffer.Ptr = uniformbufferHandle->Ptr;
-		}
-	}
-
-	void Device::SetActiveTexture2DHandle(Texture2DHandle* textureHandle)
-	{
-		if (textureHandle == nullptr) {
-			m_ActiveTexture2DHandle.Ptr = nullptr;
-		}
-		else {
-			m_ActiveTexture2DHandle.Ptr = textureHandle->Ptr;
-		}
-	}
-
-	void Device::SetActiveRenderTargetHandle(RenderTargetHandle* renderTargetHandle)
-	{
-		if (renderTargetHandle == nullptr) {
-			m_ActiveRenderTargetHandle.Ptr = nullptr;
-		}
-		else {
-			m_ActiveRenderTargetHandle.Ptr = renderTargetHandle->Ptr;
-		}
-	}
-
-	void Device::SetViewport(const Viewport& viewport)
-	{
-		m_Viewport = viewport;
-		m_Driver->SetViewport(viewport);
-	}
-
-	void Device::SetVSync(b8 vSync)
-	{
-		m_VSync = vSync;
-		m_Driver->SetVSync(vSync);
-	}
-
-	void Device::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
-	{
-		PASSERT_MSG(m_Viewport.Width > 0 || m_Viewport.Height > 0, "Viewport size invalid");
-		m_Driver->DrawIndexed(topology, indexCount);
 	}
 }

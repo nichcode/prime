@@ -7,20 +7,29 @@ namespace prime {
 
 	class Device;
 
-	struct UniformbufferHandle 
-	{
-		void* Ptr = nullptr;
-	};
-
 	class Uniformbuffer 
 	{
-	private:
 		friend class Device;
 
 	public:
 		virtual ~Uniformbuffer() {}
 
+		/**
+		 * @brief Bind the uniformbuffer.
+		 */
 		virtual void Bind() = 0;
+
+		/**
+		 * @brief Unbind the uniformbuffer.
+		 */
+		virtual void Unbind() = 0;
+
+		/**
+		 * @brief Set data to the uniformbuffer.
+		 * 
+		 * @param size The size of the data to set.
+		 * @param data The data to set.
+		 */
 		virtual void SetData(u32 size, void* data) = 0;
 
 	private:

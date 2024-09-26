@@ -8,7 +8,7 @@
 
 namespace prime {
 
-	OpenGLRenderTarget::OpenGLRenderTarget(Device* device, u32 width, u32 height, const Viewport* viewport)
+	OpenGLRenderTarget::OpenGLRenderTarget(u32 width, u32 height, const Viewport* viewport)
 	{
 		glGenFramebuffers(1, &m_ID);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
@@ -50,37 +50,27 @@ namespace prime {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		m_Device = device;
 		m_Width = width;
 		m_Height = height;
-		m_Handle.Ptr = &m_ID;
 		m_View = viewport;
 	}
 
 	OpenGLRenderTarget::~OpenGLRenderTarget()
 	{
-		if (m_Device->IsActiveRenderTargetHandle(m_Handle)) {
-			m_Device->SetActiveRenderTargetHandle(nullptr);
-			glDeleteFramebuffers(1, &m_ID);
-			m_ID = 0;
-			m_DepthHandle = 0;
-			m_TextureHandle = 0;
-			m_Handle.Ptr = nullptr;
-		}
+		glDeleteFramebuffers(1, &m_ID);
+		m_ID = 0;
+		m_DepthHandle = 0;
+		m_TextureHandle = 0;
 	}
 
 	void OpenGLRenderTarget::Bind()
 	{
-		if (!m_Device->IsActiveRenderTargetHandle(m_Handle)) {
-			glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
-			glViewport(0, 0, m_Width, m_Height);
-			m_Device->SetActiveRenderTargetHandle(&m_Handle);
-		}
+		glBindFramebuffer(GL_FRAMEBUFFER, m_ID);
+		glViewport(0, 0, m_Width, m_Height);
 	}
 
 	void OpenGLRenderTarget::Unbind()
 	{
-		m_Device->SetActiveRenderTargetHandle(nullptr);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport((i32)m_View->X, (i32)m_View->Y, m_View->Width, m_View->Height);
 	}

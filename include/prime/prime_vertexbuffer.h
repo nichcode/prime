@@ -1,7 +1,6 @@
 #pragma once
 
-#include "prime_datatype.h"
-#include "prime_devicetype.h"
+#include "prime_data_types.h"
 #include "prime_ref.h"
 
 #include <vector>
@@ -9,12 +8,7 @@
 namespace prime {
 
 	class Device;
-
-	struct VertexbufferHandle
-	{
-		void* Ptr = nullptr;
-	};
-
+    
 	struct VertexbufferElement
 	{
 		DataType Type;
@@ -25,7 +19,7 @@ namespace prime {
 		VertexbufferElement(DataType type)
 			: Type(type), Size(GetDataTypeSize(type)), Offset(0) {}
 	};
-
+    
 	class VertexbufferLayout
 	{
 	private:
@@ -37,15 +31,36 @@ namespace prime {
 		{
 			m_Elements.reserve(2);
 		}
-
+        
+		/**
+		 * @brief Add a vertexbuffer element to the layout.
+		 * 
+		 * @param element The vertexbuffer element to add.
+		 */
 		void AddBufferElement(VertexbufferElement element) {
 			m_Elements.reserve(2);
 			m_Elements.push_back(element);
 		}
-
+ 
+        /**
+         * @brief Get stride of the layout.
+         * 
+         * @return PINLINE the stride.
+         */
 		PINLINE u32 GetStride() const { return m_Stride; }
+
+		/**
+		 * @brief Get the vertexbuffer elements of the layout.
+		 * 
+		 * @return PINLINE const& a const vector of the vertexbuffer elements.
+		 */
 		PINLINE const std::vector<VertexbufferElement>& GetElements() const { return m_Elements; }
 
+		/**
+		 * @brief Process the vertexbuffer elements to find the stride and offsets.
+		 * This should be called after adding all vertexbuffer elements.
+		 * 
+		 */
 		void ProcessElements()
 		{
 			m_Stride = 0;
@@ -70,17 +85,47 @@ namespace prime {
 
 	class Vertexbuffer 
 	{
-	private:
 		friend class Device;
 
 	public:
 		virtual ~Vertexbuffer() {}
 
+		/**
+		 * @brief Bind the vertexbuffer.
+		 */
 		virtual void Bind() = 0;
-		virtual VertexbufferType GetType() const = 0;
 
+		/**
+		 * @brief Unbind the vertexbuffer.
+		 */
+		virtual void Unbind() = 0;
+
+		/**
+		 * @brief Get The vertexbuffer type.
+		 * 
+		 * @return VertexbufferType The vertexbuffer type.
+		 */
+		virtual VertexbufferType GetType() const = 0;
+       
+		/**
+		 * @brief Set the layout of the vertexbuffer.
+		 * @param layout The layout to set.
+		 */
 		virtual void SetLayout(const VertexbufferLayout& layout) = 0;
+
+		/**
+		 * @brief Get the layout of the vertexbuffer.
+		 * @return VertexbufferLayout The layout of the vertexbuffer.
+		 */
 		virtual const VertexbufferLayout& GetLayout() const = 0;
+
+		/**
+		 * @brief Set data to the vertexbuffer.
+		 * If the vertexbuffer type is static this function does nothing.
+		 * 
+		 * @param data The data to set.
+		 * @param size The size of the data to set.
+		 */
 		virtual void SetData(const void* data, u32 size) = 0;
 
 	private:
