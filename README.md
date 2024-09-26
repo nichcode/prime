@@ -1,6 +1,6 @@
 # Prime Abstraction Layer
 
-<img src="resources/prime.png?raw=true" alt="Prime Logo" width=150 height=150/>
+<img src="resources/prime.png?raw=true" alt="Prime Logo" width=450 height=400/>
 
 ***
 Prime is a Multi-Platform and Mulit Graphics API Abstraction Library. Currently prime supports windows platform and supports opengl graphics API. prime dependencies are contailed in the source files.
