@@ -3,7 +3,7 @@
 <img src="resources/prime.png?raw=true" alt="Prime Logo" width=150 height=150/>
 
 ***
-Prime is a Multi-Platform and Mulit Graphics API Abstraction Library. Currently prime supports windows platform and supports opengl graphics API fully and a little of directx11. prime dependencies are contailed in the source files.
+Prime is a Multi-Platform and Mulit Graphics API Abstraction Library. Currently prime supports windows platform and supports opengl graphics API. prime dependencies are contailed in the source files.
 
 ***
 
