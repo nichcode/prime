@@ -39,8 +39,8 @@ namespace prime {
 
 		/**
 		 * @brief Initialize a vec2 with two elements.
-		 * @param e1 The first float of the vec2. ie (x, r, s, u).
-		 * @param e2 The second float of the vec2. ie (y, g, t, v).
+		 * @param e1 The first float of the vec2.
+		 * @param e2 The second float of the vec2.
 		 */
 		Vec2(f32 e1, f32 e2)
 		{
@@ -49,8 +49,8 @@ namespace prime {
 		}
 
 		/**
-		 * @brief Initialize a vec2 with one elements.
-		 * @param e The float to use for both the first and second element.
+		 * @brief Initialize a vec2 with one element.
+		 * @param e The float to use for all the elements.
 		 */
 		Vec2(f32 e)
 		{
@@ -120,8 +120,6 @@ namespace prime {
 
 		/**
         * @brief Normalizes the vec2 to a unit vector.
-        *
-        * @param vector A pointer to the vector to be normalized.
         */
 		PINLINE void Normalize()
 		{
@@ -145,7 +143,7 @@ namespace prime {
 
 		/**
         * @brief Returns the distance between this vec2 and another vec2.
-        * @param vector The vec2.
+        * @param vec2 The vec2.
         * @return The distance between this vec2 and another vec2.
         */
 		PINLINE f32 Distance(Vec2 vec2)

@@ -19,5 +19,6 @@
 #include "prime_utils.h"
 #include "prime_vec2.h"
 #include "prime_vec3.h"
+#include "prime_vec4.h"
 #include "prime_vertexbuffer.h"
 #include "prime_window.h"

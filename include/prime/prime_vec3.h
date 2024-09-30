@@ -39,10 +39,10 @@ namespace prime {
 		}
 
 		/**
-		 * @brief Initialize a vec3 with two elements.
-		 * @param e1 The first float of the vec3. ie (x, r, s, u).
-		 * @param e2 The second float of the vec3. ie (y, g, t, v).
-		 * @param ee The third float of the vec3. ie (z, b, p, w).
+		 * @brief Initialize a vec3 with three elements.
+		 * @param e1 The first float of the vec3.
+		 * @param e2 The second float of the vec3.
+		 * @param e3 The third float of the vec3.
 		 */
 		Vec3(f32 e1, f32 e2, f32 e3)
 		{
@@ -52,8 +52,8 @@ namespace prime {
 		}
 
 		/**
-		 * @brief Initialize a vec3 with one elements.
-		 * @param e The float to use for both the first and second element.
+		 * @brief Initialize a vec3 with one element.
+		 * @param e The float to use for all the elements.
 		 */
 		Vec3(f32 e)
 		{
@@ -127,8 +127,6 @@ namespace prime {
 
 		/**
 		* @brief Normalizes the vec3 to a unit vector.
-		*
-		* @param vector A pointer to the vector to be normalized.
 		*/
 		PINLINE void Normalize()
 		{
