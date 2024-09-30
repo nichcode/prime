@@ -18,10 +18,10 @@ namespace prime {
 	class Device
 	{
 	private:
-		DriverTypes m_Type;
+		DriverTypes m_type;
 
 	public:
-		Device() : m_Type(DriverTypesNone) { }
+		Device() : m_type(DriverTypesNone) { }
 
 		Device(const Device&) = delete;
 		Device& operator=(const Device&) = delete;
@@ -37,7 +37,7 @@ namespace prime {
          * 
          * @return PINLINE the driver type.
          */
-		PINLINE DriverTypes GetType() const { return m_Type; }
+		PINLINE DriverTypes GetType() const { return m_type; }
 
 		/**
 		 * @brief Create a rendering context. The device keeps the object itself and

@@ -17,5 +17,6 @@
 #include "prime_time.h"
 #include "prime_uniformbuffer.h"
 #include "prime_utils.h"
+#include "prime_vec2.h"
 #include "prime_vertexbuffer.h"
 #include "prime_window.h"

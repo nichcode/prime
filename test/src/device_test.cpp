@@ -14,19 +14,21 @@ void OnWndowClose(const prime::Window*)
 void OnWndowResize(const prime::Window*, u32 width, u32 height)
 {
 	prime::Viewport view;
-	view.Width = width;
-	view.Height = height;
+	view.width = width;
+	view.height = height;
 
 	context->SetViewport(view);
 }
 
 b8 DeviceTest()
 {
+	prime::Device device;
+	device.Init(prime::DriverTypesOpenGL);
+
 	prime::WindowProperties props;
-	props.Title = "OpenGLWindow";
+	props.title = "OpenGLWindow";
 	window.Init(props);
 
-	device.Init(prime::DriverTypesOpenGL);
 	context = device.CreateContext(&window);
 	context->SetClearColor(.2f, .2f, .2f, 1.0f);
 
@@ -42,8 +44,8 @@ b8 DeviceTest()
     prime::Ref<prime::Texture2D> texture2D;
 	prime::Ref<prime::RenderTarget> renderTarget;
 	prime::Viewport viewport;
-	viewport.Width = window.GetWidth();
-	viewport.Height = window.GetHeight();
+	viewport.width = window.GetWidth();
+	viewport.height = window.GetHeight();
 
 	context->SetViewport(viewport);
 

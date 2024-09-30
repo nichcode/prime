@@ -6,7 +6,7 @@ namespace prime {
 
 	class OpenGLUniformbuffer : public Uniformbuffer
 	{
-		u32 m_ID;
+		u32 m_id;
 
 	public:
 		OpenGLUniformbuffer(u32 size, u32 binding);

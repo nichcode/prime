@@ -10,13 +10,13 @@
 
 namespace prime {
 
-	static GLuint CreateShader(i32 type, const str& shader_source)
+	static GLuint CreateShader(i32 type, const str& shaderSource)
 	{
 		int status = GL_FALSE;
 		int maxLength = 0;
 
 		GLuint shader = glCreateShader(type);
-		const char* source = shader_source.c_str();
+		const char* source = shaderSource.c_str();
 		glShaderSource(shader, 1, &source, NULL);
 		glCompileShader(shader);
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
@@ -69,50 +69,50 @@ namespace prime {
 	OpenGLShader::OpenGLShader(const str& vSource, const str& pSource, b8 load)
 	{
 		if (load) {
-			m_VShader = CreateShader(GL_VERTEX_SHADER, ReadFile(vSource));
-			m_PShader = CreateShader(GL_FRAGMENT_SHADER, ReadFile(pSource));
+			m_vShader = CreateShader(GL_VERTEX_SHADER, ReadFile(vSource));
+			m_pShader = CreateShader(GL_FRAGMENT_SHADER, ReadFile(pSource));
 		}
 		else {
-			m_VShader = CreateShader(GL_VERTEX_SHADER, vSource);
-			m_PShader = CreateShader(GL_FRAGMENT_SHADER, pSource);
+			m_vShader = CreateShader(GL_VERTEX_SHADER, vSource);
+			m_pShader = CreateShader(GL_FRAGMENT_SHADER, pSource);
 		}
 
 		int status = GL_FALSE;
 		int maxLength = 0;
 
-		m_ID = glCreateProgram();
-		glAttachShader(m_ID, m_VShader);
-		glAttachShader(m_ID, m_PShader);
-		glLinkProgram(m_ID);
+		m_id = glCreateProgram();
+		glAttachShader(m_id, m_vShader);
+		glAttachShader(m_id, m_pShader);
+		glLinkProgram(m_id);
 
-		glValidateProgram(m_ID);
-		glGetProgramiv(m_ID, GL_LINK_STATUS, &status);
-		glGetProgramiv(m_ID, GL_INFO_LOG_LENGTH, &maxLength);
+		glValidateProgram(m_id);
+		glGetProgramiv(m_id, GL_LINK_STATUS, &status);
+		glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &maxLength);
 		if (status != GL_TRUE)
 		{
 			std::vector<GLchar> infoLog(maxLength);
-			glGetProgramInfoLog(m_ID, maxLength, &maxLength, infoLog.data());
+			glGetProgramInfoLog(m_id, maxLength, &maxLength, infoLog.data());
 
 			str msg = std::format("shader link error : {}", infoLog.data());
 			PERROR(msg);
 
-			glDeleteProgram(m_ID);
-			m_ID = 0;
+			glDeleteProgram(m_id);
+			m_id = 0;
 			PASSERT(false);
 		}
-		glDeleteShader(m_VShader);
-		glDeleteShader(m_PShader);
+		glDeleteShader(m_vShader);
+		glDeleteShader(m_pShader);
 	}
 
 	OpenGLShader::~OpenGLShader()
 	{
-		glDeleteProgram(m_ID);
-		m_ID = 0;
+		glDeleteProgram(m_id);
+		m_id = 0;
 	}
 
 	void OpenGLShader::Bind()
 	{
-		glUseProgram(m_ID);
+		glUseProgram(m_id);
 	}
 
 	void OpenGLShader::Unbind()
@@ -176,12 +176,12 @@ namespace prime {
 
 	i32 OpenGLShader::GetUniformLocation(const str& name)
 	{
-		auto it = m_UniformLocations.find(name);
-		if (it == m_UniformLocations.end())
+		auto it = m_uniformLocations.find(name);
+		if (it == m_uniformLocations.end())
 		{
-			m_UniformLocations[name] = glGetUniformLocation(m_ID, name.c_str());
+			m_uniformLocations[name] = glGetUniformLocation(m_id, name.c_str());
 		}
 
-		return m_UniformLocations[name];
+		return m_uniformLocations[name];
 	}
 }

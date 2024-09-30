@@ -10,7 +10,7 @@
 
 namespace prime {
 
-	static u32 s_Data = 0xffffffff;
+	static u32 s_data = 0xffffffff;
 
 	static GLenum GLDataFormatFromTextureFormat(TextureFormat format) 
 	{
@@ -72,33 +72,33 @@ namespace prime {
 
 	OpenGLTexture2D::OpenGLTexture2D(const TextureProperties& props)
 	{
-        glGenTextures(1, &m_ID);
-        glBindTexture(GL_TEXTURE_2D, m_ID);
+        glGenTextures(1, &m_id);
+        glBindTexture(GL_TEXTURE_2D, m_id);
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-		i32 dataFormat = GLDataFormatFromTextureFormat(props.Format);
-		i32 internalFormat = GLInternalFormatFromTextureFormat(props.Format);
+		i32 dataFormat = GLDataFormatFromTextureFormat(props.format);
+		i32 internalFormat = GLInternalFormatFromTextureFormat(props.format);
 
 		glTexImage2D(
 			GL_TEXTURE_2D,
 			0,
 			internalFormat,
-			props.Width,
-			props.Height,
+			props.width,
+			props.height,
 			0,
 			dataFormat,
 			GL_UNSIGNED_BYTE,
-			&s_Data);
+			&s_data);
 
 		glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture(GL_TEXTURE_2D, 0);
 
-		m_Width = props.Width;
-		m_Height = props.Height;
+		m_width = props.width;
+		m_height = props.height;
 	}
 
 	OpenGLTexture2D::OpenGLTexture2D(const str& filepath)
@@ -119,8 +119,8 @@ namespace prime {
 
 			PASSERT_MSG(internalFormat & dataFormat, "Format not supported!");
 
-			glGenTextures(1, &m_ID);
-			glBindTexture(GL_TEXTURE_2D, m_ID);
+			glGenTextures(1, &m_id);
+			glBindTexture(GL_TEXTURE_2D, m_id);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
@@ -141,23 +141,23 @@ namespace prime {
 			glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D, 0);
 
-			m_Width = w;
-			m_Height = h;
+			m_width = w;
+			m_height = h;
 			stbi_image_free(data);
 		}
 	}
 
 	OpenGLTexture2D::~OpenGLTexture2D()
 	{
-		glDeleteTextures(1, &m_ID);
-		m_ID = 0;
+		glDeleteTextures(1, &m_id);
+		m_id = 0;
 	}
 
 	void OpenGLTexture2D::Bind(u32 slot)
 	{
 		// TODO: check available texture slots.
 		glActiveTexture(GL_TEXTURE0 + slot);
-		glBindTexture(GL_TEXTURE_2D, m_ID);
+		glBindTexture(GL_TEXTURE_2D, m_id);
 	}
 
 	void OpenGLTexture2D::Unbind()

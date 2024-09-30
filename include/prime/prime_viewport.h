@@ -9,21 +9,21 @@ namespace prime {
 		/**
 		 * @brief The left side of the viewport.
 		 */
-		f32 X = 0.0f;
+		f32 x = 0.0f;
 
 		/**
 		 * @brief The bottom side of the viewport.
 		 */
-		f32 Y = 0.0f;
+		f32 y = 0.0f;
 
 		/**
 		 * @brief The width of the viewport.
 		 */
-		u32 Width = 0;
+		u32 width = 0;
 
 		/**
 		 * @brief The height of the viewport.
 		 */
-		u32 Height = 0;
+		u32 height = 0;
 	};
 }

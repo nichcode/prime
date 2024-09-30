@@ -14,14 +14,14 @@ namespace prime {
 		TestEntry() : Name(""), Function(nullptr) {}
 	};
 
-	static std::vector<TestEntry> s_Tests;
+	static std::vector<TestEntry> s_tests;
 
 	void TestManager::AddTest(TestFunc testFunc, const str& name)
 	{
 		TestEntry entry;
 		entry.Function = testFunc;
 		entry.Name = name;
-		s_Tests.push_back(entry);
+		s_tests.push_back(entry);
 	}
 
 	void TestManager::Run()
@@ -29,7 +29,7 @@ namespace prime {
 		u32 passed = 0;
 		u32 failed = 0;
 
-		for (auto& test : s_Tests) {
+		for (auto& test : s_tests) {
 			b8 result = test.Function();
 
 			if (result) {
@@ -47,6 +47,6 @@ namespace prime {
 
 		str msg = std::format("Results: {} passed, {} failed", passed, failed);
 		PINFO(msg);;
-		s_Tests.clear();
+		s_tests.clear();
 	}
 }

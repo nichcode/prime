@@ -34,8 +34,8 @@ namespace prime {
 	class Timestep
 	{
 	private:
-		f32 m_FrameTime = 0.0f;
-		f32 m_DeltaTime = 0.0f;
+		f32 m_frameTime = 0.0f;
+		f32 m_deltaTime = 0.0f;
 
 	public:
 	    /**
@@ -43,7 +43,7 @@ namespace prime {
 	     * 
 	     * @return PINLINE the delta time.
 	     */
-		PINLINE f32 GetDT() const { return m_DeltaTime; }
+		PINLINE f32 GetDT() const { return m_deltaTime; }
 
 		/**
 		 * @brief Update the step on the current frame.
@@ -51,8 +51,8 @@ namespace prime {
 		void Tick()
 		{
 			f32 time = (f32)Time::Get();
-			m_DeltaTime = time - m_FrameTime;
-			m_FrameTime = time;
+			m_deltaTime = time - m_frameTime;
+			m_frameTime = time;
 		}
 	};
 }

@@ -7,23 +7,23 @@ namespace prime {
 
 	OpenGLIndexbuffer::OpenGLIndexbuffer(u32* indices, u32 count)
 	{
-		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+		glGenBuffers(1, &m_id);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
 
-		m_Count = count;
+		m_count = count;
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	OpenGLIndexbuffer::~OpenGLIndexbuffer()
 	{
-		glDeleteBuffers(1, &m_ID);
-		m_ID = 0;
+		glDeleteBuffers(1, &m_id);
+		m_id = 0;
 	}
 
 	void OpenGLIndexbuffer::Bind()
 	{
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 	}
 
 	void OpenGLIndexbuffer::Unbind()

@@ -7,21 +7,21 @@ namespace prime {
 
 	OpenGLUniformbuffer::OpenGLUniformbuffer(u32 size, u32 binding)
 	{
-		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_UNIFORM_BUFFER, m_ID);
+		glGenBuffers(1, &m_id);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_id);
 		glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_ID);
+		glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_id);
 	}
 
 	OpenGLUniformbuffer::~OpenGLUniformbuffer()
 	{
-		glDeleteBuffers(1, &m_ID);
-		m_ID = 0;
+		glDeleteBuffers(1, &m_id);
+		m_id = 0;
 	}
 
 	void OpenGLUniformbuffer::Bind()
 	{
-		glBindBuffer(GL_UNIFORM_BUFFER, m_ID);
+		glBindBuffer(GL_UNIFORM_BUFFER, m_id);
 	}
 
 	void OpenGLUniformbuffer::Unbind()

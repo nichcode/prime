@@ -10,8 +10,8 @@
 
 namespace prime {
 
-	static b8 s_Init = false;
-	static i32 s_Major, s_Minor;
+	static b8 s_init = false;
+	static i32 s_major, s_minor;
 
 	PINLINE static GLenum TopologyToOpenGL(PrimitiveTopology topology)
 	{
@@ -32,19 +32,19 @@ namespace prime {
 	OpenGLContext::OpenGLContext(Window* window)
 	{
 #ifdef PPLATFORM_WINDOWS
-		m_Context = CreateWglContext((HWND)window->GetHandle());
+		m_handle = CreateWglContext((HWND)window->GetHandle());
 #endif // PPLATFORM_WINDOWS
 
-		m_Window = window;
-		s_Major = GLVersion.major;
-		s_Minor = GLVersion.minor;
-		s_Init = true;
+		m_window = window;
+		s_major = GLVersion.major;
+		s_minor = GLVersion.minor;
+		s_init = true;
 	}
 
 	OpenGLContext::~OpenGLContext()
 	{
 #ifdef PPLATFORM_WINDOWS
-		DeleteWglContext(HGLRC(m_Context));
+		DeleteWglContext(HGLRC(m_handle));
 #endif // PPLATFORM_WINDOWS
 	}
 
@@ -67,13 +67,13 @@ namespace prime {
 	void OpenGLContext::SwapBuffers()
 	{
 #ifdef PPLATFORM_WINDOWS
-		UpdateWglContext((HWND)m_Window->GetHandle());
+		UpdateWglContext((HWND)m_window->GetHandle());
 #endif // PPLATFORM_WINDOWS
 	}
 
 	void OpenGLContext::SetViewport(const Viewport& viewport)
 	{
-		glViewport((i32)viewport.X, (i32)viewport.Y, viewport.Width, viewport.Height);
+		glViewport((i32)viewport.y, (i32)viewport.x, viewport.width, viewport.height);
 	}
 
 	void OpenGLContext::SetVSync(b8 vSync)

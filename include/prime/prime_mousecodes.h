@@ -6,9 +6,9 @@ namespace prime {
     
 	enum Mouse : u16
 	{
-		Mouse_Left,
-		Mouse_Right,
-		Mouse_Middle,
+		Mouse_ButtonLeft,
+		Mouse_ButtonRight,
+		Mouse_ButtonMiddle,
 		Mouse_Max
 	};
 }

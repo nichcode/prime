@@ -6,8 +6,8 @@ namespace prime {
 
 	class OpenGLContext : public Context
 	{
-		void* m_Context;
-		const Window* m_Window;
+		void* m_handle;
+		const Window* m_window;
 
 	public:
 		OpenGLContext(Window* window);

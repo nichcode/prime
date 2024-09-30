@@ -7,8 +7,8 @@ namespace prime {
 
 	class OpenGLShader : public Shader
 	{
-		u32 m_ID = 0, m_VShader, m_PShader;
-		std::unordered_map<str, i32> m_UniformLocations;
+		u32 m_id = 0, m_vShader, m_pShader;
+		std::unordered_map<str, i32> m_uniformLocations;
 
 	public:
 		OpenGLShader(const str& vSource, const str& pSource, b8 load);

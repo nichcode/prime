@@ -16,7 +16,7 @@ void WindowKeyCallback(const prime::Window* window, u16 key, i32 scancode, u8 ac
 
 void WindowMouseButtonCallback(const prime::Window* window, u16 mouse, u8 action)
 {
-	str msg = std::format("{} is {}", window->GetMouseName(mouse), window->GetActionName(action));
+	str msg = std::format("{} is {}", window->GetMouseButtonName(mouse), window->GetActionName(action));
 	PINFO(msg);
 }
 
@@ -54,7 +54,7 @@ b8 WindowTest()
 {
 	prime::Window window;
 	prime::WindowProperties props;
-	props.Center = true;
+	props.center = true;
 	window.Init(props);
 	g_Running = true;
 

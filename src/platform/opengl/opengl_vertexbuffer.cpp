@@ -49,28 +49,28 @@ namespace prime {
 	OpenGLVertexbuffer::OpenGLVertexbuffer(const void* data, u32 size, VertexbufferType type)
 	{
 		GLenum glType = VertexbufferTypeToOpenGLType(type);
-		m_Type = type;
+		m_type = type;
 
-		glGenBuffers(1, &m_ID);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		glGenBuffers(1, &m_id);
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 		glBufferData(GL_ARRAY_BUFFER, size, data, glType);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glGenVertexArrays(1, &m_Vertexarray);
+		glGenVertexArrays(1, &m_vertexarray);
 	}
 
 	OpenGLVertexbuffer::~OpenGLVertexbuffer()
 	{
-		glDeleteBuffers(1, &m_ID);
-		glDeleteVertexArrays(1, &m_Vertexarray);
-		m_ID = 0;
-		m_Vertexarray = 0;
+		glDeleteBuffers(1, &m_id);
+		glDeleteVertexArrays(1, &m_vertexarray);
+		m_id = 0;
+		m_vertexarray = 0;
 	}
 
 	void OpenGLVertexbuffer::Bind()
 	{
-		glBindVertexArray(m_Vertexarray);
-		glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+		glBindVertexArray(m_vertexarray);
+		glBindBuffer(GL_ARRAY_BUFFER, m_id);
 	}
 
 	void OpenGLVertexbuffer::Unbind()
@@ -84,14 +84,14 @@ namespace prime {
 		PASSERT_MSG(vertexbufferlayout.GetElements().size(),
 			"VertexbufferLayout has no layout");
 
-		m_Layout = vertexbufferlayout;
+		m_layout = vertexbufferlayout;
 		GLuint index = 0;
 		Bind();
 
 		const auto& layout = vertexbufferlayout;
 		for (const auto& element : layout)
 		{
-			switch (element.Type)
+			switch (element.type)
 			{
 			case DataTypeFloat:
 			case DataTypeFloat2:
@@ -100,11 +100,11 @@ namespace prime {
 			{
 				glEnableVertexAttribArray(index);
 				glVertexAttribPointer(index,
-					GetDataTypeCount(element.Type),
-					DataTypeToOpenGLType(element.Type),
+					GetDataTypeCount(element.type),
+					DataTypeToOpenGLType(element.type),
 					GL_FALSE,
 					layout.GetStride(),
-					(const void*)element.Offset);
+					(const void*)element.offset);
 				index++;
 				break;
 			}
@@ -116,26 +116,26 @@ namespace prime {
 			{
 				glEnableVertexAttribArray(index);
 				glVertexAttribIPointer(index,
-					GetDataTypeCount(element.Type),
-					DataTypeToOpenGLType(element.Type),
+					GetDataTypeCount(element.type),
+					DataTypeToOpenGLType(element.type),
 					layout.GetStride(),
-					(const void*)element.Offset);
+					(const void*)element.offset);
 				index++;
 				break;
 			}
 			case DataTypeMat3:
 			case DataTypeMat4:
 			{
-				u8 count = GetDataTypeCount(element.Type);
+				u8 count = GetDataTypeCount(element.type);
 				for (u8 i = 0; i < count; i++)
 				{
 					glEnableVertexAttribArray(index);
 					glVertexAttribPointer(index,
 						count,
-						DataTypeToOpenGLType(element.Type),
+						DataTypeToOpenGLType(element.type),
 						GL_FALSE,
 						layout.GetStride(),
-						(const void*)(element.Offset + sizeof(f32) * count * i));
+						(const void*)(element.offset + sizeof(f32) * count * i));
 					glVertexAttribDivisor(index, 1);
 					index++;
 				}

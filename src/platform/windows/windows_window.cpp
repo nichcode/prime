@@ -12,10 +12,10 @@
 
 namespace prime {
 
-	static HINSTANCE s_Instance = NULL;
-	wstr s_ClassName = L"PrimeWindowClass";
-	wstr s_WindowPropName = L"PrimeWindow";
-	wstr s_DataPropName = L"PrimeData";
+	static HINSTANCE s_hInstance = NULL;
+	wstr s_className = L"PrimeWindowClass";
+	wstr s_windowPropName = L"PrimeWindow";
+	wstr s_dataPropName = L"PrimeData";
 
 	struct Callbacks
 	{
@@ -35,7 +35,7 @@ namespace prime {
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 	static void RegisterWindowClass()
 	{
-		s_Instance = GetModuleHandle(nullptr);
+		s_hInstance = GetModuleHandle(nullptr);
 
 		WNDCLASSEX wc;
 		memset(&wc, 0, sizeof(wc));
@@ -44,11 +44,11 @@ namespace prime {
 		wc.lpfnWndProc = WindowProc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
-		wc.hInstance = s_Instance;
-		wc.hIcon = LoadIcon(s_Instance, IDI_WINLOGO);
+		wc.hInstance = s_hInstance;
+		wc.hIcon = LoadIcon(s_hInstance, IDI_WINLOGO);
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wc.hbrBackground = nullptr;
-		wc.lpszClassName = s_ClassName.c_str();
+		wc.lpszClassName = s_className.c_str();
 
 		auto result = RegisterClassEx(&wc);
 		PASSERT_MSG(result, "Window registration failed");
@@ -56,7 +56,7 @@ namespace prime {
 
 	static void UneegisterWindowClass()
 	{
-		UnregisterClass(s_ClassName.c_str(), s_Instance);
+		UnregisterClass(s_className.c_str(), s_hInstance);
 	}
 
 	static void CenterWindow(HWND handle, i32 *xPos, i32* yPos, u32 width, u32 height)
@@ -75,239 +75,239 @@ namespace prime {
 
 	static void MapKeys(WindowData& data)
 	{
-		data.Keycodes[0x01E] = Key_A;
-		data.Keycodes[0x030] = Key_B;
-		data.Keycodes[0x02E] = Key_C;
-		data.Keycodes[0x020] = Key_D;
-		data.Keycodes[0x012] = Key_E;
-		data.Keycodes[0x021] = Key_F;
-		data.Keycodes[0x022] = Key_G;
-		data.Keycodes[0x023] = Key_H;
-		data.Keycodes[0x017] = Key_I;
-		data.Keycodes[0x024] = Key_J;
-		data.Keycodes[0x025] = Key_K;
-		data.Keycodes[0x026] = Key_L;
-		data.Keycodes[0x032] = Key_M;
-		data.Keycodes[0x031] = Key_N;
-		data.Keycodes[0x018] = Key_O;
-		data.Keycodes[0x019] = Key_P;
-		data.Keycodes[0x010] = Key_Q;
-		data.Keycodes[0x013] = Key_R;
-		data.Keycodes[0x01F] = Key_S;
-		data.Keycodes[0x014] = Key_T;
-		data.Keycodes[0x016] = Key_U;
-		data.Keycodes[0x02F] = Key_V;
-		data.Keycodes[0x011] = Key_W;
-		data.Keycodes[0x02D] = Key_X;
-		data.Keycodes[0x015] = Key_Y;
-		data.Keycodes[0x02C] = Key_Z;
+		data.keycodes[0x01E] = Key_A;
+		data.keycodes[0x030] = Key_B;
+		data.keycodes[0x02E] = Key_C;
+		data.keycodes[0x020] = Key_D;
+		data.keycodes[0x012] = Key_E;
+		data.keycodes[0x021] = Key_F;
+		data.keycodes[0x022] = Key_G;
+		data.keycodes[0x023] = Key_H;
+		data.keycodes[0x017] = Key_I;
+		data.keycodes[0x024] = Key_J;
+		data.keycodes[0x025] = Key_K;
+		data.keycodes[0x026] = Key_L;
+		data.keycodes[0x032] = Key_M;
+		data.keycodes[0x031] = Key_N;
+		data.keycodes[0x018] = Key_O;
+		data.keycodes[0x019] = Key_P;
+		data.keycodes[0x010] = Key_Q;
+		data.keycodes[0x013] = Key_R;
+		data.keycodes[0x01F] = Key_S;
+		data.keycodes[0x014] = Key_T;
+		data.keycodes[0x016] = Key_U;
+		data.keycodes[0x02F] = Key_V;
+		data.keycodes[0x011] = Key_W;
+		data.keycodes[0x02D] = Key_X;
+		data.keycodes[0x015] = Key_Y;
+		data.keycodes[0x02C] = Key_Z;
 
-		data.Keycodes[0x00B] = Key_0;
-		data.Keycodes[0x002] = Key_1;
-		data.Keycodes[0x003] = Key_2;
-		data.Keycodes[0x004] = Key_3;
-		data.Keycodes[0x005] = Key_4;
-		data.Keycodes[0x006] = Key_5;
-		data.Keycodes[0x007] = Key_6;
-		data.Keycodes[0x008] = Key_7;
-		data.Keycodes[0x009] = Key_8;
-		data.Keycodes[0x00A] = Key_9;
+		data.keycodes[0x00B] = Key_0;
+		data.keycodes[0x002] = Key_1;
+		data.keycodes[0x003] = Key_2;
+		data.keycodes[0x004] = Key_3;
+		data.keycodes[0x005] = Key_4;
+		data.keycodes[0x006] = Key_5;
+		data.keycodes[0x007] = Key_6;
+		data.keycodes[0x008] = Key_7;
+		data.keycodes[0x009] = Key_8;
+		data.keycodes[0x00A] = Key_9;
 
-		data.Keycodes[0x028] = Key_Apostrophe;
-		data.Keycodes[0x02B] = Key_Backslash;
-		data.Keycodes[0x033] = Key_Comma;
-		data.Keycodes[0x00D] = Key_Equal;
-		data.Keycodes[0x029] = Key_GraveAccent;
-		data.Keycodes[0x01A] = Key_LeftBracket;
-		data.Keycodes[0x00C] = Key_Minus;
-		data.Keycodes[0x034] = Key_Period;
-		data.Keycodes[0x01B] = Key_RightBracket;
-		data.Keycodes[0x027] = Key_SemiColon;
-		data.Keycodes[0x035] = Key_Slash;
+		data.keycodes[0x028] = Key_Apostrophe;
+		data.keycodes[0x02B] = Key_Backslash;
+		data.keycodes[0x033] = Key_Comma;
+		data.keycodes[0x00D] = Key_Equal;
+		data.keycodes[0x029] = Key_GraveAccent;
+		data.keycodes[0x01A] = Key_LeftBracket;
+		data.keycodes[0x00C] = Key_Minus;
+		data.keycodes[0x034] = Key_Period;
+		data.keycodes[0x01B] = Key_RightBracket;
+		data.keycodes[0x027] = Key_SemiColon;
+		data.keycodes[0x035] = Key_Slash;
 
-		data.Keycodes[0x00E] = Key_Backspace;
-		data.Keycodes[0x153] = Key_Delete;
-		data.Keycodes[0x14F] = Key_End;
-		data.Keycodes[0x01C] = Key_Enter;
-		data.Keycodes[0x001] = Key_Escape;
-		data.Keycodes[0x147] = Key_Home;
-		data.Keycodes[0x152] = Key_Insert;
-		data.Keycodes[0x15D] = Key_Menu;
-		data.Keycodes[0x151] = Key_PageDown;
-		data.Keycodes[0x149] = Key_PageUp;
-		data.Keycodes[0x045] = Key_Pause;
-		data.Keycodes[0x039] = Key_Space;
-		data.Keycodes[0x00F] = Key_Tab;
-		data.Keycodes[0x03A] = Key_CapsLock;
-		data.Keycodes[0x145] = Key_NumLock;
-		data.Keycodes[0x046] = Key_ScrollLock;
-		data.Keycodes[0x03B] = Key_F1;
-		data.Keycodes[0x03C] = Key_F2;
-		data.Keycodes[0x03D] = Key_F3;
-		data.Keycodes[0x03E] = Key_F4;
-		data.Keycodes[0x03F] = Key_F5;
-		data.Keycodes[0x040] = Key_F6;
-		data.Keycodes[0x041] = Key_F7;
-		data.Keycodes[0x042] = Key_F8;
-		data.Keycodes[0x043] = Key_F9;
-		data.Keycodes[0x044] = Key_F10;
-		data.Keycodes[0x057] = Key_F11;
-		data.Keycodes[0x058] = Key_F12;
+		data.keycodes[0x00E] = Key_Backspace;
+		data.keycodes[0x153] = Key_Delete;
+		data.keycodes[0x14F] = Key_End;
+		data.keycodes[0x01C] = Key_Enter;
+		data.keycodes[0x001] = Key_Escape;
+		data.keycodes[0x147] = Key_Home;
+		data.keycodes[0x152] = Key_Insert;
+		data.keycodes[0x15D] = Key_Menu;
+		data.keycodes[0x151] = Key_PageDown;
+		data.keycodes[0x149] = Key_PageUp;
+		data.keycodes[0x045] = Key_Pause;
+		data.keycodes[0x039] = Key_Space;
+		data.keycodes[0x00F] = Key_Tab;
+		data.keycodes[0x03A] = Key_CapsLock;
+		data.keycodes[0x145] = Key_NumLock;
+		data.keycodes[0x046] = Key_ScrollLock;
+		data.keycodes[0x03B] = Key_F1;
+		data.keycodes[0x03C] = Key_F2;
+		data.keycodes[0x03D] = Key_F3;
+		data.keycodes[0x03E] = Key_F4;
+		data.keycodes[0x03F] = Key_F5;
+		data.keycodes[0x040] = Key_F6;
+		data.keycodes[0x041] = Key_F7;
+		data.keycodes[0x042] = Key_F8;
+		data.keycodes[0x043] = Key_F9;
+		data.keycodes[0x044] = Key_F10;
+		data.keycodes[0x057] = Key_F11;
+		data.keycodes[0x058] = Key_F12;
 
-		data.Keycodes[0x038] = Key_LeftAlt;
-		data.Keycodes[0x01D] = Key_LeftControl;
-		data.Keycodes[0x02A] = Key_LeftShift;
-		data.Keycodes[0x15B] = Key_LeftSuper;
-		data.Keycodes[0x137] = Key_PrintScreen;
-		data.Keycodes[0x138] = Key_RightAlt;
-		data.Keycodes[0x11D] = Key_RightControl;
-		data.Keycodes[0x036] = Key_RightShift;
-		data.Keycodes[0x15C] = Key_RightSuper;
-		data.Keycodes[0x150] = Key_Down;
-		data.Keycodes[0x14B] = Key_Left;
-		data.Keycodes[0x14D] = Key_Right;
-		data.Keycodes[0x148] = Key_Up;
+		data.keycodes[0x038] = Key_LeftAlt;
+		data.keycodes[0x01D] = Key_LeftControl;
+		data.keycodes[0x02A] = Key_LeftShift;
+		data.keycodes[0x15B] = Key_LeftSuper;
+		data.keycodes[0x137] = Key_PrintScreen;
+		data.keycodes[0x138] = Key_RightAlt;
+		data.keycodes[0x11D] = Key_RightControl;
+		data.keycodes[0x036] = Key_RightShift;
+		data.keycodes[0x15C] = Key_RightSuper;
+		data.keycodes[0x150] = Key_Down;
+		data.keycodes[0x14B] = Key_Left;
+		data.keycodes[0x14D] = Key_Right;
+		data.keycodes[0x148] = Key_Up;
 
-		data.Keycodes[0x052] = Key_P0;
-		data.Keycodes[0x04F] = Key_P1;
-		data.Keycodes[0x050] = Key_P2;
-		data.Keycodes[0x051] = Key_P3;
-		data.Keycodes[0x04B] = Key_P4;
-		data.Keycodes[0x04C] = Key_P5;
-		data.Keycodes[0x04D] = Key_P6;
-		data.Keycodes[0x047] = Key_P7;
-		data.Keycodes[0x048] = Key_P8;
-		data.Keycodes[0x049] = Key_P9;
-		data.Keycodes[0x04E] = Key_PAdd;
-		data.Keycodes[0x053] = Key_PDecimal;
-		data.Keycodes[0x135] = Key_PDivide;
-		data.Keycodes[0x11C] = Key_PEnter;
-		data.Keycodes[0x059] = Key_PEqual;
-		data.Keycodes[0x037] = Key_PMultiply;
-		data.Keycodes[0x04A] = Key_PSubtract;
+		data.keycodes[0x052] = Key_P0;
+		data.keycodes[0x04F] = Key_P1;
+		data.keycodes[0x050] = Key_P2;
+		data.keycodes[0x051] = Key_P3;
+		data.keycodes[0x04B] = Key_P4;
+		data.keycodes[0x04C] = Key_P5;
+		data.keycodes[0x04D] = Key_P6;
+		data.keycodes[0x047] = Key_P7;
+		data.keycodes[0x048] = Key_P8;
+		data.keycodes[0x049] = Key_P9;
+		data.keycodes[0x04E] = Key_PAdd;
+		data.keycodes[0x053] = Key_PDecimal;
+		data.keycodes[0x135] = Key_PDivide;
+		data.keycodes[0x11C] = Key_PEnter;
+		data.keycodes[0x059] = Key_PEqual;
+		data.keycodes[0x037] = Key_PMultiply;
+		data.keycodes[0x04A] = Key_PSubtract;
 
 		/*i32 scancode = 0;
 		for (scancode = 0; scancode < 512; scancode++) {
-			if (data.Keycodes[scancode] > 0) {
-				data.Keycodes[scancode] = scancode;
-				data.Scancodes[data.Keycodes[scancode]] = scancode;
+			if (data.keycodes[scancode] > 0) {
+				data.keycodes[scancode] = scancode;
+				data.scancodes[data.keycodes[scancode]] = scancode;
 			}
 		}*/
 	}
 
 	static void MapKeysNames(WindowData& data)
 	{
-		data.Keynames[Key_A] = str("Key A");
-		data.Keynames[Key_B] = "Key B";
-		data.Keynames[Key_C] = "Key C";
-		data.Keynames[Key_D] = "Key D";
-		data.Keynames[Key_E] = "Key E";
-		data.Keynames[Key_F] = "Key F";
-		data.Keynames[Key_G] = "Key G";
-		data.Keynames[Key_H] = "Key H";
-		data.Keynames[Key_I] = "Key I";
-		data.Keynames[Key_J] = "Key J";
-		data.Keynames[Key_K] = "Key K";
-		data.Keynames[Key_L] = "Key L";
-		data.Keynames[Key_M] = "Key M";
-		data.Keynames[Key_N] = "Key N";
-		data.Keynames[Key_O] = "Key O";
-		data.Keynames[Key_P] = "Key P";
-		data.Keynames[Key_Q] = "Key Q";
-		data.Keynames[Key_R] = "Key R";
-		data.Keynames[Key_S] = "Key S";
-		data.Keynames[Key_T] = "Key T";
-		data.Keynames[Key_U] = "Key U";
-		data.Keynames[Key_V] = "Key V";
-		data.Keynames[Key_W] = "Key W";
-		data.Keynames[Key_X] = "Key X";
-		data.Keynames[Key_Y] = "Key Y";
-		data.Keynames[Key_Z] = "Key Z";
+		data.keynames[Key_A] = str("Key A");
+		data.keynames[Key_B] = "Key B";
+		data.keynames[Key_C] = "Key C";
+		data.keynames[Key_D] = "Key D";
+		data.keynames[Key_E] = "Key E";
+		data.keynames[Key_F] = "Key F";
+		data.keynames[Key_G] = "Key G";
+		data.keynames[Key_H] = "Key H";
+		data.keynames[Key_I] = "Key I";
+		data.keynames[Key_J] = "Key J";
+		data.keynames[Key_K] = "Key K";
+		data.keynames[Key_L] = "Key L";
+		data.keynames[Key_M] = "Key M";
+		data.keynames[Key_N] = "Key N";
+		data.keynames[Key_O] = "Key O";
+		data.keynames[Key_P] = "Key P";
+		data.keynames[Key_Q] = "Key Q";
+		data.keynames[Key_R] = "Key R";
+		data.keynames[Key_S] = "Key S";
+		data.keynames[Key_T] = "Key T";
+		data.keynames[Key_U] = "Key U";
+		data.keynames[Key_V] = "Key V";
+		data.keynames[Key_W] = "Key W";
+		data.keynames[Key_X] = "Key X";
+		data.keynames[Key_Y] = "Key Y";
+		data.keynames[Key_Z] = "Key Z";
 
-		data.Keynames[Key_Escape] = "Key Escape";
-		data.Keynames[Key_Enter] = "Key Enter";
-		data.Keynames[Key_Tab] = "Key Tab";
-		data.Keynames[Key_Backspace] = "Key Backspace";
-		data.Keynames[Key_Insert] = "Key Insert";
-		data.Keynames[Key_Delete] = "Key Delete";
-		data.Keynames[Key_Right] = "Key Right";
-		data.Keynames[Key_Left] = "Key Left";
-		data.Keynames[Key_Down] = "Key Down";
-		data.Keynames[Key_Up] = "Key Up";
-		data.Keynames[Key_PageUp] = "Key PageUp";
-		data.Keynames[Key_PageDown] = "Key PageDown";
-		data.Keynames[Key_Home] = "Key Home";
-		data.Keynames[Key_End] = "Key End";
-		data.Keynames[Key_CapsLock] = "Key CapsLock";
-		data.Keynames[Key_ScrollLock] = "Key ScrollLock";
-		data.Keynames[Key_NumLock] = "Key NumLock";
-		data.Keynames[Key_PrintScreen] = "Key Pru16Screen";
-		data.Keynames[Key_Pause] = "Key Pause";
-		data.Keynames[Key_F1] = "Key F1";
-		data.Keynames[Key_F2] = "Key F2";
-		data.Keynames[Key_F3] = "Key F3";
-		data.Keynames[Key_F4] = "Key F4";
-		data.Keynames[Key_F5] = "Key F5";
-		data.Keynames[Key_F6] = "Key F6";
-		data.Keynames[Key_F7] = "Key F7";
-		data.Keynames[Key_F8] = "Key F8";
-		data.Keynames[Key_F9] = "Key F9";
-		data.Keynames[Key_F10] = "Key F10";
-		data.Keynames[Key_F11] = "Key F11";
-		data.Keynames[Key_F12] = "Key F12";
+		data.keynames[Key_Escape] = "Key Escape";
+		data.keynames[Key_Enter] = "Key Enter";
+		data.keynames[Key_Tab] = "Key Tab";
+		data.keynames[Key_Backspace] = "Key Backspace";
+		data.keynames[Key_Insert] = "Key Insert";
+		data.keynames[Key_Delete] = "Key Delete";
+		data.keynames[Key_Right] = "Key Right";
+		data.keynames[Key_Left] = "Key Left";
+		data.keynames[Key_Down] = "Key Down";
+		data.keynames[Key_Up] = "Key Up";
+		data.keynames[Key_PageUp] = "Key PageUp";
+		data.keynames[Key_PageDown] = "Key PageDown";
+		data.keynames[Key_Home] = "Key Home";
+		data.keynames[Key_End] = "Key End";
+		data.keynames[Key_CapsLock] = "Key CapsLock";
+		data.keynames[Key_ScrollLock] = "Key ScrollLock";
+		data.keynames[Key_NumLock] = "Key NumLock";
+		data.keynames[Key_PrintScreen] = "Key Pru16Screen";
+		data.keynames[Key_Pause] = "Key Pause";
+		data.keynames[Key_F1] = "Key F1";
+		data.keynames[Key_F2] = "Key F2";
+		data.keynames[Key_F3] = "Key F3";
+		data.keynames[Key_F4] = "Key F4";
+		data.keynames[Key_F5] = "Key F5";
+		data.keynames[Key_F6] = "Key F6";
+		data.keynames[Key_F7] = "Key F7";
+		data.keynames[Key_F8] = "Key F8";
+		data.keynames[Key_F9] = "Key F9";
+		data.keynames[Key_F10] = "Key F10";
+		data.keynames[Key_F11] = "Key F11";
+		data.keynames[Key_F12] = "Key F12";
 
-		data.Keynames[Key_LeftShift] = "Key LeftShift";
-		data.Keynames[Key_LeftControl] = "Key LeftControl";
-		data.Keynames[Key_LeftAlt] = "Key LeftAlt";
-		data.Keynames[Key_LeftSuper] = "Key LeftSuper";
-		data.Keynames[Key_LeftBracket] = "Key LeftBracket";
-		data.Keynames[Key_RightShift] = "Key RightShift";
-		data.Keynames[Key_RightControl] = "Key RightControl";
-		data.Keynames[Key_RightAlt] = "Key RightAlt";
-		data.Keynames[Key_RightSuper] = "Key RightSuper";
-		data.Keynames[Key_RightBracket] = "Key RightBracket";
+		data.keynames[Key_LeftShift] = "Key LeftShift";
+		data.keynames[Key_LeftControl] = "Key LeftControl";
+		data.keynames[Key_LeftAlt] = "Key LeftAlt";
+		data.keynames[Key_LeftSuper] = "Key LeftSuper";
+		data.keynames[Key_LeftBracket] = "Key LeftBracket";
+		data.keynames[Key_RightShift] = "Key RightShift";
+		data.keynames[Key_RightControl] = "Key RightControl";
+		data.keynames[Key_RightAlt] = "Key RightAlt";
+		data.keynames[Key_RightSuper] = "Key RightSuper";
+		data.keynames[Key_RightBracket] = "Key RightBracket";
 
-		data.Keynames[Key_Menu] = "Key Menu";
-		data.Keynames[Key_Backslash] = "Key Backslash";
-		data.Keynames[Key_GraveAccent] = "Key GraveAccent";
-		data.Keynames[Key_SemiColon] = "Key SemiColon";
-		data.Keynames[Key_Equal] = "Key Equal";
+		data.keynames[Key_Menu] = "Key Menu";
+		data.keynames[Key_Backslash] = "Key Backslash";
+		data.keynames[Key_GraveAccent] = "Key GraveAccent";
+		data.keynames[Key_SemiColon] = "Key SemiColon";
+		data.keynames[Key_Equal] = "Key Equal";
 
-		data.Keynames[Key_Space] = "Key Space";
-		data.Keynames[Key_Apostrophe] = "Key Apostrophe";
-		data.Keynames[Key_Comma] = "Key Comma";
-		data.Keynames[Key_Minus] = "Key Minus";
-		data.Keynames[Key_Period] = "Key Period";
-		data.Keynames[Key_Slash] = "Key Slash";
+		data.keynames[Key_Space] = "Key Space";
+		data.keynames[Key_Apostrophe] = "Key Apostrophe";
+		data.keynames[Key_Comma] = "Key Comma";
+		data.keynames[Key_Minus] = "Key Minus";
+		data.keynames[Key_Period] = "Key Period";
+		data.keynames[Key_Slash] = "Key Slash";
 
-		data.Keynames[Key_0] = "Key 0";
-		data.Keynames[Key_1] = "Key 1";
-		data.Keynames[Key_2] = "Key 2";
-		data.Keynames[Key_3] = "Key 3";
-		data.Keynames[Key_4] = "Key 4";
-		data.Keynames[Key_5] = "Key 5";
-		data.Keynames[Key_6] = "Key 6";
-		data.Keynames[Key_7] = "Key 7";
-		data.Keynames[Key_8] = "Key 8";
-		data.Keynames[Key_9] = "Key 9";
+		data.keynames[Key_0] = "Key 0";
+		data.keynames[Key_1] = "Key 1";
+		data.keynames[Key_2] = "Key 2";
+		data.keynames[Key_3] = "Key 3";
+		data.keynames[Key_4] = "Key 4";
+		data.keynames[Key_5] = "Key 5";
+		data.keynames[Key_6] = "Key 6";
+		data.keynames[Key_7] = "Key 7";
+		data.keynames[Key_8] = "Key 8";
+		data.keynames[Key_9] = "Key 9";
 
-		data.Keynames[Key_P0] = "Key P0";
-		data.Keynames[Key_P1] = "Key P1";
-		data.Keynames[Key_P2] = "Key P2";
-		data.Keynames[Key_P3] = "Key P3";
-		data.Keynames[Key_P4] = "Key P4";
-		data.Keynames[Key_P5] = "Key P5";
-		data.Keynames[Key_P6] = "Key P6";
-		data.Keynames[Key_P7] = "Key P7";
-		data.Keynames[Key_P8] = "Key P8";
-		data.Keynames[Key_P9] = "Key P9";
-		data.Keynames[Key_PDecimal] = "Key PDecimal";
-		data.Keynames[Key_PDivide] = "Key PDivide";
-		data.Keynames[Key_PMultiply] = "Key PMultiply";
-		data.Keynames[Key_PSubtract] = "Key PSubtract";
-		data.Keynames[Key_PAdd] = "Key PAdd";
-		data.Keynames[Key_PEnter] = "Key PEnter";
-		data.Keynames[Key_PEqual] = "Key PEqual";
+		data.keynames[Key_P0] = "Key P0";
+		data.keynames[Key_P1] = "Key P1";
+		data.keynames[Key_P2] = "Key P2";
+		data.keynames[Key_P3] = "Key P3";
+		data.keynames[Key_P4] = "Key P4";
+		data.keynames[Key_P5] = "Key P5";
+		data.keynames[Key_P6] = "Key P6";
+		data.keynames[Key_P7] = "Key P7";
+		data.keynames[Key_P8] = "Key P8";
+		data.keynames[Key_P9] = "Key P9";
+		data.keynames[Key_PDecimal] = "Key PDecimal";
+		data.keynames[Key_PDivide] = "Key PDivide";
+		data.keynames[Key_PMultiply] = "Key PMultiply";
+		data.keynames[Key_PSubtract] = "Key PSubtract";
+		data.keynames[Key_PAdd] = "Key PAdd";
+		data.keynames[Key_PEnter] = "Key PEnter";
+		data.keynames[Key_PEqual] = "Key PEqual";
 	}
 
 	static void ProcessKey(Window* window, WindowData* data, u16 key, i32 scancode, u8 action)
@@ -340,27 +340,27 @@ namespace prime {
 		}
 	}
 
-	static void ProcessMouse(Window* window, WindowData* data, u16 mouse, u8 action)
+	static void ProcessMouse(Window* window, WindowData* data, u16 button, u8 action)
 	{
-		PASSERT_MSG(mouse >= 0 && mouse < Mouse_Max, "Invalid Key");
+		PASSERT_MSG(button >= 0 && button < Mouse_Max, "Invalid Key");
 		PASSERT_MSG(action == PRELEASE || action == PPRESS, "Invalid action");
 
-		if (action == PPRESS && data->Mouse[mouse] == PRELEASE) {
-			data->Mouse[mouse] = PPRESS;
+		if (action == PPRESS && data->mouse[button] == PRELEASE) {
+			data->mouse[button] = PPRESS;
 		}
 		else {
-			data->Mouse[mouse] = action;
+			data->mouse[button] = action;
 		}
 
 		if (s_Callbacks.Mouse) {
-			s_Callbacks.Mouse(window, mouse, action);
+			s_Callbacks.Mouse(window, button, action);
 		}
 	}
 
 	static void ProcessMouseMoved(Window* window, WindowData* data, i32 x, i32 y)
 	{
-		data->MousePos[0] = x;
-		data->MousePos[1] = y;
+		data->mousePos[0] = x;
+		data->mousePos[1] = y;
 
 		if (s_Callbacks.MouseMoved) {
 			s_Callbacks.MouseMoved(window, x, y);
@@ -369,7 +369,7 @@ namespace prime {
 
 	static void ProcessWindowFocus(Window* window, WindowData* data, b8 focused)
 	{
-		data->IsFocused = focused;
+		data->isFocused = focused;
 		if (s_Callbacks.WindowFocus) {
 			s_Callbacks.WindowFocus(window, focused);
 		}
@@ -380,14 +380,14 @@ namespace prime {
 			// process keys
 			for (key = 0; key <= Key_Max; key++) {
 				if (data->keys[key] == PPRESS) {
-					const i32 scancode = data->Scancodes[key];
+					const i32 scancode = data->scancodes[key];
 					ProcessKey(window, data, key, scancode, PRELEASE);
 				}
 			}
 
 			// proces mouse buttons
 			for (button = 0; button <= Mouse_Max; button++) {
-				if (data->Mouse[button] == PPRESS) {
+				if (data->mouse[button] == PPRESS) {
 					ProcessMouse(window, data, button, PRELEASE);
 				}
 			}
@@ -396,8 +396,8 @@ namespace prime {
 
 	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
-		prime::Window* window = (prime::Window*)GetPropW(hWnd, s_WindowPropName.c_str());
-		prime::WindowData* data = (prime::WindowData*)GetPropW(hWnd, s_DataPropName.c_str());
+		prime::Window* window = (prime::Window*)GetPropW(hWnd, s_windowPropName.c_str());
+		prime::WindowData* data = (prime::WindowData*)GetPropW(hWnd, s_dataPropName.c_str());
 
 		if (!window) {
 			// no window created
@@ -407,7 +407,7 @@ namespace prime {
 		switch (uMsg)
 		{
 		case WM_CLOSE: {
-			data->ShouldClose = true;
+			data->shouldClose = true;
 			if (s_Callbacks.Close) {
 				s_Callbacks.Close(window);
 			}
@@ -441,7 +441,7 @@ namespace prime {
 			// HACK: CJK IME sets the extended bit for right Shift
 			if (scancode == 0x136) { scancode = 0x36; }
 
-			key = data->Keycodes[scancode];
+			key = data->keycodes[scancode];
 
 			// The Ctrl keys require special handling
 			if (wParam == VK_CONTROL)
@@ -520,15 +520,15 @@ namespace prime {
 			i32 button, action;
 
 			if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP) {
-				button = Mouse_Left;
+				button = Mouse_ButtonLeft;
 			}
 				
 			else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP) {
-				button = Mouse_Right;
+				button = Mouse_ButtonRight;
 			}
 				
 			else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP) {
-				button = Mouse_Middle;
+				button = Mouse_ButtonMiddle;
 			}
 
 			if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN ||
@@ -575,8 +575,8 @@ namespace prime {
 		case WM_MOVE: {
 			i32 x = GET_X_LPARAM(lParam);
 			i32 y = GET_Y_LPARAM(lParam);
-			data->Props.XPos = x;
-			data->Props.YPos = y;
+			data->props.xPos = x;
+			data->props.yPos = y;
 
 			if (s_Callbacks.WindowPos) {
 				s_Callbacks.WindowPos(window, x, y);
@@ -590,9 +590,9 @@ namespace prime {
 			const u32 width = (u32)LOWORD(lParam);
 			const u32 height = (u32)HIWORD(lParam);
 
-			if (width != data->Props.Width || height != data->Props.Height) {
-				data->Props.Width = width;
-				data->Props.Height = height;
+			if (width != data->props.width || height != data->props.height) {
+				data->props.width = width;
+				data->props.height = height;
 
 				if (s_Callbacks.WindowResize) {
 					s_Callbacks.WindowResize(window, width, height);
@@ -635,44 +635,44 @@ namespace prime {
 			RegisterWindowClass();
 		}
 
-		m_Data.Props = props;
+		m_data.props = props;
 		u32 style = WS_OVERLAPPEDWINDOW;
 		u32 exStyle = WS_EX_OVERLAPPEDWINDOW;
 
 		RECT rect = { 0, 0, 0, 0 };
-		rect.right = props.Width;
-		rect.bottom = props.Height;
+		rect.right = props.width;
+		rect.bottom = props.height;
 		AdjustWindowRectEx(&rect, style, 0, exStyle);
 
-		wstr title = StringToWideString(props.Title);
+		wstr title = StringToWideString(props.title);
 
 		HWND window = CreateWindowEx(
 			exStyle,
-			s_ClassName.c_str(),
+			s_className.c_str(),
 			title.c_str(),
 			style,
-			props.XPos,
-			props.YPos,
+			props.xPos,
+			props.yPos,
 			rect.right - rect.left,
 			rect.bottom - rect.top,
 			0,
 			0,
-			s_Instance,
+			s_hInstance,
 			0);
 
 		PASSERT_MSG(window, "Window creation failed");
 
 		if (window) {
-			SetPropW(window, s_DataPropName.c_str(), &m_Data);
-			SetPropW(window, s_WindowPropName.c_str(), this);
+			SetPropW(window, s_dataPropName.c_str(), &m_data);
+			SetPropW(window, s_windowPropName.c_str(), this);
 
 			u8 flags = 0;
-			if (props.Hidden) {
+			if (props.hidden) {
 				flags = SW_HIDE;
 			}
-			else if (!props.Hidden) {
+			else if (!props.hidden) {
 
-				if (props.Maximize) {
+				if (props.maximize) {
 					flags = SW_SHOWMAXIMIZED;
 				}
 				else {
@@ -680,23 +680,23 @@ namespace prime {
 				}
 			}
 
-			if (props.Center) {
-				CenterWindow(window, &m_Data.Props.XPos, &m_Data.Props.YPos, props.Width, props.Height);
+			if (props.center) {
+				CenterWindow(window, &m_data.props.xPos, &m_data.props.yPos, props.width, props.height);
 			}
 			ShowWindow(window, flags);
 			
-			MapKeys(m_Data);
-			MapKeysNames(m_Data);
-			m_Handle = window;
+			MapKeys(m_data);
+			MapKeysNames(m_data);
+			m_handle = window;
 			++s_WindowCount;
 		}
 	}
 
 	void Window::Destroy()
 	{
-		DestroyWindow((HWND)m_Handle);
-		m_Handle = nullptr;
-		m_UserData = nullptr;
+		DestroyWindow((HWND)m_handle);
+		m_handle = nullptr;
+		m_userData = nullptr;
 		--s_WindowCount;
 		if (s_WindowCount == 0) {
 			UneegisterWindowClass();
@@ -705,21 +705,21 @@ namespace prime {
 
 	void Window::Hide()
 	{
-		m_Data.Props.Hidden = true;
-		ShowWindow((HWND)m_Handle, SW_HIDE);
+		m_data.props.hidden = true;
+		ShowWindow((HWND)m_handle, SW_HIDE);
 	}
 
 	void Window::Show()
 	{
-		m_Data.Props.Hidden = false;
-		ShowWindow((HWND)m_Handle, SW_SHOW);
+		m_data.props.hidden = false;
+		ShowWindow((HWND)m_handle, SW_SHOW);
 	}
 
 	void Window::SetTitle(const str& title)
 	{
-		m_Data.Props.Title = title;
-		wstr windowTitle = StringToWideString(title);
-		SetWindowText((HWND)m_Handle, windowTitle.c_str());
+		m_data.props.title = title;
+		wstr windowtitle = StringToWideString(title);
+		SetWindowText((HWND)m_handle, windowtitle.c_str());
 	}
 
 	void Window::SetPos(i32 xPos, i32 yPos)
@@ -731,9 +731,9 @@ namespace prime {
 		rect.bottom = yPos;
 		AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, 0, WS_EX_OVERLAPPEDWINDOW);
 
-		m_Data.Props.XPos = xPos;
-		m_Data.Props.YPos = yPos;
-		SetWindowPos((HWND)m_Handle, NULL, rect.left, rect.top, 0, 0,
+		m_data.props.xPos = xPos;
+		m_data.props.yPos = yPos;
+		SetWindowPos((HWND)m_handle, NULL, rect.left, rect.top, 0, 0,
 			SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 	}
 
@@ -748,9 +748,9 @@ namespace prime {
 		rect.bottom = height;
 		AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, 0, WS_EX_OVERLAPPEDWINDOW);
 
-		m_Data.Props.Width = width;
-		m_Data.Props.Height = height;
-		SetWindowPos((HWND)m_Handle, HWND_TOP,
+		m_data.props.width = width;
+		m_data.props.height = height;
+		SetWindowPos((HWND)m_handle, HWND_TOP,
 			0, 0, rect.right - rect.left, rect.bottom - rect.top,
 			SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
 	}
@@ -766,8 +766,8 @@ namespace prime {
 		// from GLFW
 		HWND handle = GetActiveWindow();
 		if (handle) {
-			prime::WindowData* data = (prime::WindowData*)GetPropW(handle, s_DataPropName.c_str());
-			prime::Window* window = (prime::Window*)GetPropW(handle, s_WindowPropName.c_str());
+			prime::WindowData* data = (prime::WindowData*)GetPropW(handle, s_dataPropName.c_str());
+			prime::Window* window = (prime::Window*)GetPropW(handle, s_windowPropName.c_str());
 			if (data) {
 				int i;
 				const int keys[4][2] = {
@@ -780,10 +780,10 @@ namespace prime {
 				for (i = 0; i < 4; i++) {
 					const int vk = keys[i][0];
 					const int key = keys[i][1];
-					const int scancode = data->Scancodes[key];
+					const int scancode = data->scancodes[key];
 
 					if ((GetKeyState(vk) & 0x8000)) { continue; }
-					if (data->Keycodes[key] != PPRESS) { continue; }
+					if (data->keycodes[key] != PPRESS) { continue; }
 
 					ProcessKey(window, data, key, scancode, PRELEASE);
 				}

@@ -8,14 +8,20 @@
 
 namespace prime {
 
+	static b8 s_Init = false;
+
 	void Device::Init(DriverTypes type)
 	{
-		m_Type = type;
+		m_type = type;
+
+		if (!s_Init) {
 #ifdef PPLATFORM_WINDOWS
-		DummyWglContext();
+			DummyWglContext();
 #endif // PPLATFORM_WINDOWS
 
-		Time::Init();
+			Time::Init();
+			s_Init = true;
+		}
 	}
 
 	Ref<Context> Device::CreateContext(Window* window)

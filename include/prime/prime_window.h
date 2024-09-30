@@ -13,42 +13,42 @@ namespace prime {
 		/**
 		 * @brief The width of the window.
 		 */
-		u32 Width = 640;
+		u32 width = 640;
 
 		/**
 		 * @brief The height of the window.
 		 */
-		u32 Height = 480;
+		u32 height = 480;
 
 		/**
 		 * @brief The title of the window.
 		 */
-		str Title = "PrimeWindow";
+		str title = "PrimeWindow";
 
 		/**
 		 * @brief Center the window on creation.
 		 */
-		b8 Center = false;
+		b8 center = false;
 
 		/**
 		 * @brief Maximize the window on creation.
 		 */
-		b8 Maximize = false;
+		b8 maximize = false;
 
 		/**
 		 * @brief Hide the window on creation.
 		 */
-		b8 Hidden = false;
+		b8 hidden = false;
 
 		/**
 		 * @brief The left position of the window.
 		 */
-		i32 XPos = 100;
+		i32 xPos = 100;
 
 		/**
 		 * @brief The bottom position of the window.
 		 */
-		i32 YPos = 100;
+		i32 yPos = 100;
 	};
  
 	/**
@@ -64,7 +64,7 @@ namespace prime {
 	/**
 	* @brief Window mouse button callback.
 	*/
-	using MouseButtonFunc = void(*)(const Window* window, u16 mouse, u8 action);
+	using MouseButtonFunc = void(*)(const Window* window, u16 button, u8 action);
 
 	/**
 	* @brief Window mouse moved callback.
@@ -94,34 +94,34 @@ namespace prime {
 	
 	struct WindowData 
 	{
-		WindowProperties Props;
-		b8 ShouldClose = false, IsFocused = false;
+		WindowProperties props;
+		b8 shouldClose = false, isFocused = false;
 
-		u16 Keycodes[512] = {};
-		u16 Scancodes[Key_Max + 1] = {};
-		str Keynames[Key_Max + 1] = {};
+		u16 keycodes[512] = {};
+		u16 scancodes[Key_Max + 1] = {};
+		str keynames[Key_Max + 1] = {};
 
 		u8 keys[Key_Max + 1] = {};
-		u8 Mouse[Mouse_Max + 1] = {};
+		u8 mouse[Mouse_Max + 1] = {};
 
-		i32 MousePos[2] = {};
+		i32 mousePos[2] = {};
 
 		WindowData()
 		{
-			memset(Keycodes, 0, sizeof(Keycodes));
-			memset(Scancodes, 0, sizeof(Scancodes));
+			memset(keycodes, 0, sizeof(keycodes));
+			memset(scancodes, 0, sizeof(scancodes));
 		}
 	};
 
 	class Window
 	{
 	private:
-		void* m_Handle;
-		WindowData m_Data;
-		void* m_UserData;
+		void* m_handle;
+		WindowData m_data;
+		void* m_userData;
 
 	public:
-		Window() :m_UserData(nullptr), m_Handle(nullptr) {}
+		Window() :m_userData(nullptr), m_handle(nullptr) {}
 
         /**
          * @brief Initialize the window.
@@ -140,56 +140,56 @@ namespace prime {
 		 * 
 		 * @return PINLINE void* The window handle.
 		 */
-		PINLINE void* GetHandle() const { return m_Handle; }
+		PINLINE void* GetHandle() const { return m_handle; }
 
 		/**
 		 * @brief Get the width of the window.
 		 * 
 		 * @return u32 The width of the window.
 		 */
-		PINLINE u32 GetWidth() const { return m_Data.Props.Width; }
+		PINLINE u32 GetWidth() const { return m_data.props.width; }
 
 		/**
 		 * @brief Get the height of the window.
 		 * 
 		 * @return u32 The height of the window.
 		 */
-		PINLINE u32 GetHeight() const { return m_Data.Props.Height; }
+		PINLINE u32 GetHeight() const { return m_data.props.height; }
         
 		/**
 		 * @brief Get the x position of the window.
 		 * 
 		 * @return i32 The x position of the window.
 		 */
-		PINLINE i32 GetXPos() const { return m_Data.Props.XPos; }
+		PINLINE i32 GetXPos() const { return m_data.props.xPos; }
 
 		/**
 		 * @brief Get the y position of the window.
 		 * 
 		 * @return i32 The y position of the window.
 		 */
-		PINLINE i32 GetYPos() const { return m_Data.Props.YPos; }
+		PINLINE i32 GetYPos() const { return m_data.props.yPos; }
 
 		/**
 		 * @brief Get the title of the window.
 		 * 
 		 * @return str The title of the window.
 		 */
-		PINLINE str GetTitle() const { return m_Data.Props.Title; }
+		PINLINE str GetTitle() const { return m_data.props.title; }
 
         /**
 		 * @brief Check to see if the window is hidden.
 		 * 
 		 * @return True if window is hidden else false.
 		 */
-		PINLINE b8 IsHidden() const { return m_Data.Props.Hidden; }
+		PINLINE b8 IsHidden() const { return m_data.props.hidden; }
 
 		/**
 		 * @brief Check to see if the window's close button has been clicked.
 		 * 
 		 * @return PINLINE True if the window's close button has been clicked else false.
 		 */
-		PINLINE b8 ShouldClose() const { return m_Data.ShouldClose; }
+		PINLINE b8 ShouldClose() const { return m_data.shouldClose; }
 
 		/**
 		 * @brief Hide the window. If the window is already hidden, this does nothing.
@@ -231,14 +231,14 @@ namespace prime {
 		 * 
 		 * @param userDataPtr the user pointer to set. This should be a pointer.
 		 */
-		void SetUserData(void* userDataPtr) { m_UserData = userDataPtr; }
+		void SetUserData(void* userDataPtr) { m_userData = userDataPtr; }
 
 		/**
 		 * @brief Set the user data pointer of the window.
 		 * 
 		 * @return PINLINE void* The user data of the window.
 		 */
-		PINLINE void* GetUserData() const { return m_UserData; }
+		PINLINE void* GetUserData() const { return m_userData; }
 
 		/**
 		 * @brief Get the state of a key on the keyboard.
@@ -247,7 +247,7 @@ namespace prime {
 		 * @return PINLINE True if the key is pressed else false.
 		 */
 		PINLINE b8 GetKeyState(u16 key) const {
-			return m_Data.keys[key] == PPRESS;
+			return m_data.keys[key] == PPRESS;
 		}
 
         /**
@@ -259,7 +259,7 @@ namespace prime {
 		PINLINE str GetKeyName(u16 key) const
 		{ 
 			if (key >= 0 && key < (u16)Keys::Key_Max) { 
-				return m_Data.Keynames[key];
+				return m_data.keynames[key];
 			}
 			return "";
 		}
@@ -270,18 +270,18 @@ namespace prime {
          * @param mouse The mouse button to check the name.
          * @return PINLINE str The name of the mouse button.
          */
-		PINLINE str GetMouseName(u16 mouse) const
+		PINLINE str GetMouseButtonName(u16 mouse) const
 		{
 			switch (mouse)
 			{
 			case 0:
-				return "Mouse_Left";
+				return "mouse_ButtonLeft";
 				break;
 			case 1:
-				return "Mouse_Right";
+				return "mouse_ButtonRight";
 				break;
 			case 2:
-				return "Mouse_Middle";
+				return "mouse_ButtonMiddle";
 				break;
 			}
 			return "";

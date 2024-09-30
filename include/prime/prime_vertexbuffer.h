@@ -11,25 +11,25 @@ namespace prime {
     
 	struct VertexbufferElement
 	{
-		DataType Type;
-		u32 Size;
-		u64 Offset;
+		DataType type;
+		u32 size;
+		u64 offset;
 
 		VertexbufferElement() = default;
 		VertexbufferElement(DataType type)
-			: Type(type), Size(GetDataTypeSize(type)), Offset(0) {}
+			: type(type), size(GetDataTypeSize(type)), offset(0) {}
 	};
     
 	class VertexbufferLayout
 	{
 	private:
-		u32 m_Stride;
-		std::vector<VertexbufferElement> m_Elements;
+		u32 m_stride;
+		std::vector<VertexbufferElement> m_elements;
 
 	public:
-		VertexbufferLayout() : m_Stride(0) 
+		VertexbufferLayout() : m_stride(0) 
 		{
-			m_Elements.reserve(2);
+			m_elements.reserve(2);
 		}
         
 		/**
@@ -38,8 +38,8 @@ namespace prime {
 		 * @param element The vertexbuffer element to add.
 		 */
 		void AddBufferElement(VertexbufferElement element) {
-			m_Elements.reserve(2);
-			m_Elements.push_back(element);
+			m_elements.reserve(2);
+			m_elements.push_back(element);
 		}
  
         /**
@@ -47,14 +47,14 @@ namespace prime {
          * 
          * @return PINLINE the stride.
          */
-		PINLINE u32 GetStride() const { return m_Stride; }
+		PINLINE u32 GetStride() const { return m_stride; }
 
 		/**
 		 * @brief Get the vertexbuffer elements of the layout.
 		 * 
 		 * @return PINLINE const& a const vector of the vertexbuffer elements.
 		 */
-		PINLINE const std::vector<VertexbufferElement>& GetElements() const { return m_Elements; }
+		PINLINE const std::vector<VertexbufferElement>& GetElements() const { return m_elements; }
 
 		/**
 		 * @brief Process the vertexbuffer elements to find the stride and offsets.
@@ -63,18 +63,18 @@ namespace prime {
 		 */
 		void ProcessElements()
 		{
-			m_Stride = 0;
-			for (auto& element : m_Elements)
+			m_stride = 0;
+			for (auto& element : m_elements)
 			{
-				element.Offset = m_Stride;
-				m_Stride += element.Size;
+				element.offset = m_stride;
+				m_stride += element.size;
 			}
 		}
 
-		std::vector<VertexbufferElement>::iterator begin() { return m_Elements.begin(); }
-		std::vector<VertexbufferElement>::iterator end() { return m_Elements.end(); }
-		std::vector<VertexbufferElement>::const_iterator begin() const { return m_Elements.begin(); }
-		std::vector<VertexbufferElement>::const_iterator end() const { return m_Elements.end(); }
+		std::vector<VertexbufferElement>::iterator begin() { return m_elements.begin(); }
+		std::vector<VertexbufferElement>::iterator end() { return m_elements.end(); }
+		std::vector<VertexbufferElement>::const_iterator begin() const { return m_elements.begin(); }
+		std::vector<VertexbufferElement>::const_iterator end() const { return m_elements.end(); }
 	};
 
 	enum VertexbufferType

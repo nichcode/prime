@@ -21,17 +21,17 @@ namespace prime {
 		/**
 		 * @brief Width of the texture.
 		 */
-		uint32_t Width = 1;
+		uint32_t width = 1;
 
 		/**
 		 * @brief Width of the texture.
 		 */
-		uint32_t Height = 1;
+		uint32_t height = 1;
 
 		/**
 		 * @brief Format of the texture.
 		 */
-		TextureFormat Format = TextureFormatRGBA8;
+		TextureFormat format = TextureFormatRGBA8;
 	};
 
 	class Texture2D

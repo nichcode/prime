@@ -24,4 +24,3 @@ The plan for prime is to create an abstraction layer for things like window mana
 - Audio system
 - MultiThreading
 - Job system
-- A fast and SIMD maths library
