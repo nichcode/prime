@@ -12,7 +12,7 @@ Visual Studio 2019  is recommended, currenty prime is tested only on windows.
 
 Start by cloning the repository with `git clone https://github.com/nichcode/prime`.
 
-1. If build prime with the tests, Run the [generate_test.bat](https://github.com/nichcode/prime/main/generate_test.bat) file found in the `main directory` folder. This will generate the project with the test application.
+1. If build prime with the tests, Run the [generate_test.bat](https://github.com/nichcode/prime/blob/main/generate_test.bat) file found in the `main directory` folder. This will generate the project with the test application.
 
 2. If build prime without the tests, Run the [generate.bat](https://github.com/nichcode/prime/main/generate.bat) file found in the `main directory` folder. This will generate the project without the test application.
 
