@@ -156,7 +156,7 @@ namespace prime {
 
 		/**
 		* @brief Returns the distance squared between this vec2 and another vec2.
-		* @param vector The vec2.
+		* @param vec2 The vec2.
 		* @return The distance squared between this vec2 and another vec2.
 		*/
 		PINLINE f32 DistanceSquared(Vec2 vec2)
