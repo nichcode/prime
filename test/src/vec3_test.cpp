@@ -65,9 +65,6 @@ b8 Vec3Test()
 	PDEBUG("Length of result");
 	PDEBUG(result.Length());
 
-	PDEBUG("Print a copy of result normalized");
-	PDEBUG(result.Normalized());
-
 	PDEBUG("Distance squared of result from rhs");
 	PDEBUG(result.DistanceSquared(rhs));
 

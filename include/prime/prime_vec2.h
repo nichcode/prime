@@ -129,19 +129,6 @@ namespace prime {
 		}
 
 		/**
-		* @brief Returns a Normalized copy of the vec2.
-		* @return vec2 A normalized copy of the vec2.
-		*/
-		PINLINE Vec2 Normalized() const
-		{
-			f32 length = sqrt(x * x + y * y);
-			Vec2 vec(x, y);
-		    vec.x /= length;
-			vec.y /= length;
-			return vec;
-		}
-
-		/**
         * @brief Returns the distance between this vec2 and another vec2.
         * @param vec2 The vec2.
         * @return The distance between this vec2 and another vec2.
@@ -162,77 +149,91 @@ namespace prime {
 			Vec2 disnaceVec2(x - vec2.x, y - vec2.y);
 			return disnaceVec2.x * disnaceVec2.x + disnaceVec2.y * disnaceVec2.y;
 		}
+
+		/**
+		* @brief Returns a Normalized copy of the vec2.
+		* @param vec2 The vec2 to create the normalized copy.
+		* @return vec2 A normalized copy of the vec2.
+		*/
+		PINLINE Vec2 Normalized(Vec2 vec2) const
+		{
+			f32 length = sqrt(vec2.x * vec2.x + vec2.y * vec2.y);
+			Vec2 vec(x, y);
+			vec.x /= length;
+			vec.y /= length;
+			return vec;
+		}
 	};
 
-	PINLINE Vec2 operator+(Vec2 rhs, Vec2 lhs)
+	PINLINE Vec2 operator+(Vec2 lhs, Vec2 rhs)
 	{
-		return Vec2(rhs.x + lhs.x, rhs.y + lhs.y);
+		return Vec2(lhs.x + rhs.x, lhs.y + rhs.y);
 	}
 
-	PINLINE Vec2 operator-(Vec2 rhs, Vec2 lhs)
+	PINLINE Vec2 operator-(Vec2 lhs, Vec2 rhs)
 	{
-		return Vec2(rhs.x - lhs.x, rhs.y - lhs.y);
+		return Vec2(lhs.x - rhs.x, lhs.y - rhs.y);
 	}
 
-	PINLINE Vec2 operator*(Vec2 rhs, Vec2 lhs)
+	PINLINE Vec2 operator*(Vec2 lhs, Vec2 rhs)
 	{
-		return Vec2(rhs.x * lhs.x, rhs.y * lhs.y);
+		return Vec2(lhs.x * rhs.x, lhs.y * rhs.y);
 	}
 
-	PINLINE Vec2 operator*(Vec2 rhs, f32 scaler)
+	PINLINE Vec2 operator*(Vec2 lhs, f32 scaler)
 	{
-		return Vec2(rhs.x * scaler, rhs.y * scaler);
+		return Vec2(lhs.x * scaler, lhs.y * scaler);
 	}
 
-	PINLINE Vec2 operator/(Vec2 rhs, Vec2 lhs)
+	PINLINE Vec2 operator/(Vec2 lhs, Vec2 rhs)
 	{
-		return Vec2(rhs.x / lhs.x, rhs.y / lhs.y);
+		return Vec2(lhs.x / rhs.x, lhs.y / rhs.y);
 	}
 
-	PINLINE void operator+=(Vec2& rhs, Vec2 lhs)
+	PINLINE void operator+=(Vec2& lhs, Vec2 rhs)
 	{
-		rhs.x += lhs.x;
-		rhs.y += lhs.y;
+		lhs.x += rhs.x;
+		lhs.y += rhs.y;
 	}
 
-	PINLINE void operator-=(Vec2& rhs, Vec2 lhs)
+	PINLINE void operator-=(Vec2& lhs, Vec2 rhs)
 	{
-		rhs.x -= lhs.x;
-		rhs.y -= lhs.y;
+		lhs.x -= rhs.x;
+		lhs.y -= rhs.y;
 	}
 
-	PINLINE void operator*=(Vec2& rhs, Vec2 lhs)
+	PINLINE void operator*=(Vec2& lhs, Vec2 rhs)
 	{
-		rhs.x *= lhs.x;
-		rhs.y *= lhs.y;
+		lhs.x *= rhs.x;
+		lhs.y *= rhs.y;
 	}
 
-	PINLINE void operator*=(Vec2& rhs, f32 scaler)
+	PINLINE void operator*=(Vec2& lhs, f32 scaler)
 	{
-		rhs.x *= scaler;
-		rhs.y *= scaler;
+		lhs.x *= scaler;
+		lhs.y *= scaler;
 	}
 
-	PINLINE void operator/=(Vec2& rhs, Vec2 lhs)
+	PINLINE void operator/=(Vec2& lhs, Vec2 rhs)
 	{
-		rhs.x /= lhs.x;
-		rhs.y /= lhs.y;
+		lhs.x /= rhs.x;
+		lhs.y /= rhs.y;
 	}
 
-	PINLINE void operator/(Vec2& rhs, f32 scaler)
+	PINLINE void operator/(Vec2& lhs, f32 scaler)
 	{
-		rhs.x /= scaler;
-		rhs.y /= scaler;
+		lhs.x /= scaler;
+		lhs.y /= scaler;
 	}
 
-	PINLINE bool operator==(Vec2 rhs, Vec2 lhs)
+	PINLINE bool operator==(Vec2 lhs, Vec2 rhs)
 	{
-		return rhs.x == lhs.x && rhs.y == lhs.y;
+		return lhs.x == rhs.x && lhs.y == rhs.y;
 	}
 
-	PINLINE bool operator!=(Vec2 rhs, Vec2 lhs)
+	PINLINE bool operator!=(Vec2 lhs, Vec2 rhs)
 	{
-		return rhs.x != lhs.x && rhs.y != lhs.y;
+		return lhs.x != rhs.x && lhs.y != rhs.y;
 	}
 
 	PINLINE std::ostream& operator<<(std::ostream& out, const Vec2& vec2)

@@ -13,10 +13,10 @@ int main(int argc, char** argv)
 {
 	//prime::TestManager::AddTest(WindowTest, "WindowTest");
 	//prime::TestManager::AddTest(DeviceTest, "DeviceTest");
-	//prime::TestManager::AddTest(GameTest, "GameTest");
+	prime::TestManager::AddTest(GameTest, "GameTest");
 	//prime::TestManager::AddTest(Vec2Test, "Vec2Test");
 	//prime::TestManager::AddTest(Vec3Test, "Vec3Test");
-	prime::TestManager::AddTest(Vec4Test, "Vec4Test");
+	//prime::TestManager::AddTest(Vec4Test, "Vec4Test");
 	prime::TestManager::Run();
 
 	return 0;

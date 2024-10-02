@@ -126,7 +126,7 @@ namespace prime {
 		}
 
 		/**
-		* @brief Normalizes the vec3 to a unit vector.
+		* @brief Normalizes the vec3 to a unit vec.
 		*/
 		PINLINE void Normalize()
 		{
@@ -137,22 +137,8 @@ namespace prime {
 		}
 
 		/**
-		* @brief Returns a Normalized copy of the vec3.
-		* @return vec3 A normalized copy of the vec3.
-		*/
-		PINLINE Vec3 Normalized() const
-		{
-			f32 length = sqrt(x * x + y * y + z * z);
-			Vec3 vec(x, y, z);
-			vec.x /= length;
-			vec.y /= length;
-			vec.z /= length;
-			return vec;
-		}
-
-		/**
 		* @brief Returns the distance between this vec3 and another vec3.
-		* @param vector The vec3.
+		* @param vec The vec3.
 		* @return The distance between this vec3 and another vec3.
 		*/
 		PINLINE f32 Distance(Vec3 vec3)
@@ -175,83 +161,128 @@ namespace prime {
 				+ distanceVec.y * distanceVec.y
 				+ distanceVec.z * distanceVec.z;
 		}
+
+		/**
+        * @brief Returns the dot product between the provided vec3. Typically used
+        * to calculate the difference in direction.
+        *
+        * @param vec3 The provided vec3.
+        * @return The dot product.
+ */
+		PINLINE f32 Dot(Vec3 vec3) 
+		{
+			f32 p = 0;
+			p += x * vec3.x;
+			p += y * vec3.y;
+			p += z * vec3.z;
+			return p;
+		}
+
+		/**
+		* @brief Returns a Normalized copy of the vec3.
+		* @param vec4 The vec3 to create the normalized copy.
+		* @return vec3 A normalized copy of the vec3.
+		*/
+		PINLINE static Vec3 Normalized(Vec3 vec3)
+		{
+			f32 length = sqrt(vec3.x * vec3.x + vec3.y * vec3.y + vec3.z * vec3.z);
+			Vec3 vec(vec3.x, vec3.y, vec3.z);
+			vec.x /= length;
+			vec.y /= length;
+			vec.z /= length;
+			return vec;
+		}
+
+		/**
+        * @brief Calculates and returns the cross product of the supplied vec3s.
+        * The cross product is a new vec3 which is orthoganal to both provided vec3s.
+        * @param vec_1 The first vec3.
+        * @param vec_2 The second vec3.
+        * @return The cross product.
+        */
+		PINLINE static Vec3 Cross(Vec3 vec_1, Vec3 vec_2) {
+			return Vec3(
+				vec_1.y * vec_2.z - vec_1.z * vec_2.y,
+				vec_1.z * vec_2.x - vec_1.x * vec_2.z,
+				vec_1.x * vec_2.y - vec_1.y * vec_2.x);
+		}
 	};
 
-	PINLINE Vec3 operator+(Vec3 rhs, Vec3 lhs)
+	PINLINE Vec3 operator+(Vec3 lhs, Vec3 rhs)
 	{
-		return Vec3(rhs.x + lhs.x, rhs.y + lhs.y, rhs.z + lhs.z);
+		return Vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 	}
 
-	PINLINE Vec3 operator-(Vec3 rhs, Vec3 lhs)
+	PINLINE Vec3 operator-(Vec3 lhs, Vec3 rhs)
 	{
-		return Vec3(rhs.x - lhs.x, rhs.y - lhs.y, rhs.z - lhs.z);
+		return Vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 	}
 
-	PINLINE Vec3 operator*(Vec3 rhs, Vec3 lhs)
+	PINLINE Vec3 operator*(Vec3 lhs, Vec3 rhs)
 	{
-		return Vec3(rhs.x * lhs.x, rhs.y * lhs.y, rhs.z * lhs.z);
+		return Vec3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
 	}
 
-	PINLINE Vec3 operator*(Vec3 rhs, f32 scaler)
+	PINLINE Vec3 operator*(Vec3 lhs, f32 scaler)
 	{
-		return Vec3(rhs.x * scaler, rhs.y * scaler, rhs.z * scaler);
+		return Vec3(lhs.x * scaler, lhs.y * scaler, lhs.z * scaler);
 	}
 
-	PINLINE Vec3 operator/(Vec3 rhs, Vec3 lhs)
+	PINLINE Vec3 operator/(Vec3 lhs, Vec3 rhs)
 	{
-		return Vec3(rhs.x / lhs.x, rhs.y / lhs.y, rhs.z / lhs.z);
+		return Vec3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
 	}
 
-	PINLINE void operator+=(Vec3& rhs, Vec3 lhs)
+	PINLINE void operator+=(Vec3& lhs, Vec3 rhs)
 	{
-		rhs.x += lhs.x;
-		rhs.y += lhs.y;
-		rhs.z += lhs.z;
+		lhs.x += rhs.x;
+		lhs.y += rhs.y;
+		lhs.z += rhs.z;
 	}
 
-	PINLINE void operator-=(Vec3& rhs, Vec3 lhs)
+	PINLINE void operator-=(Vec3& lhs, Vec3 rhs)
 	{
-		rhs.x -= lhs.x;
-		rhs.y -= lhs.y;
-		rhs.z -= lhs.z;
+		lhs.x -= rhs.x;
+		lhs.y -= rhs.y;
+		lhs.z -= rhs.z;
 	}
 
-	PINLINE void operator*=(Vec3& rhs, Vec3 lhs)
+	PINLINE void operator*=(Vec3& lhs, Vec3 rhs)
 	{
-		rhs.x *= lhs.x;
-		rhs.y *= lhs.y;
-		rhs.z *= lhs.z;
+		lhs.x *= rhs.x;
+		lhs.y *= rhs.y;
+		lhs.z *= rhs.z;
 	}
 
-	PINLINE void operator*=(Vec3& rhs, f32 scaler)
+	PINLINE void operator*=(Vec3& lhs, f32 scaler)
 	{
-		rhs.x *= scaler;
-		rhs.y *= scaler;
-		rhs.z *= scaler;
+		lhs.x *= scaler;
+		lhs.y *= scaler;
+		lhs.z *= scaler;
 	}
 
-	PINLINE void operator/=(Vec3& rhs, Vec3 lhs)
+	PINLINE void operator/=(Vec3& lhs, Vec3 rhs)
 	{
-		rhs.x /= lhs.x;
-		rhs.y /= lhs.y;
-		rhs.z /= lhs.z;
+		lhs.x /= rhs.x;
+		lhs.y /= rhs.y;
+		lhs.z /= rhs.z;
 	}
 
-	PINLINE void operator/(Vec3& rhs, f32 scaler)
+	PINLINE void operator/(Vec3& lhs, f32 scaler)
 	{
-		rhs.x /= scaler;
-		rhs.y /= scaler;
-		rhs.z /= scaler;
+		lhs.x /= scaler;
+		lhs.y /= scaler;
+		lhs.z /= scaler;
 	}
 
-	PINLINE bool operator==(Vec3 rhs, Vec3 lhs)
+	PINLINE bool operator==(Vec3 lhs, Vec3 rhs)
 	{
-		return rhs.x == lhs.x && rhs.y == lhs.y && rhs.z == lhs.z;
+		return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
 	}
 
-	PINLINE bool operator!=(Vec3 rhs, Vec3 lhs)
+	PINLINE bool operator!=(Vec3 lhs, Vec3 rhs)
 	{
-		return rhs.x != lhs.x && rhs.y != lhs.y && rhs.z != lhs.z;
+		return lhs.x != rhs.x && lhs.y != rhs.y && lhs.z != rhs.z;
 	}
 
 	PINLINE std::ostream& operator<<(std::ostream& out, const Vec3& vec3)

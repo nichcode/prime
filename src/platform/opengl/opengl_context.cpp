@@ -39,6 +39,7 @@ namespace prime {
 		s_major = GLVersion.major;
 		s_minor = GLVersion.minor;
 		s_init = true;
+		m_viewport = nullptr;
 	}
 
 	OpenGLContext::~OpenGLContext()
@@ -60,6 +61,10 @@ namespace prime {
 
 	void OpenGLContext::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
 	{
+		if (m_viewport == nullptr) {
+			PASSERT_MSG(false, "Cannot swap buffer without viewport");
+		}
+
 		GLenum type = TopologyToOpenGL(topology);
 		glDrawElements(type, indexCount, GL_UNSIGNED_INT, nullptr);
 	}
@@ -73,6 +78,7 @@ namespace prime {
 
 	void OpenGLContext::SetViewport(const Viewport& viewport)
 	{
+		m_viewport = &viewport;
 		glViewport((i32)viewport.y, (i32)viewport.x, viewport.width, viewport.height);
 	}
 

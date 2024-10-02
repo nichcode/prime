@@ -28,6 +28,12 @@ namespace prime {
 		virtual void SetViewport(const Viewport& viewport) = 0;
 
 		/**
+		 * @brief Get the viewport.
+		 * @param viewport The viewport to get.
+		 */
+		virtual const prime::Viewport* GetViewport() = 0;
+
+		/**
 		 * @brief Set the clear color which will be use when clearing the renderering context.
 		 *
 		 * @param r The red channel in normalized device coordinates.

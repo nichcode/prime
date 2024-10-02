@@ -7,6 +7,7 @@
 #include "prime_driver_types.h"
 #include "prime_keycodes.h"
 #include "prime_logger.h"
+#include "prime_mat4.h"
 #include "prime_mousecodes.h"
 #include "prime_platform.h"
 #include "prime_ref.h"

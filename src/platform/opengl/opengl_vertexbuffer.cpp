@@ -86,7 +86,6 @@ namespace prime {
 
 		m_layout = vertexbufferlayout;
 		GLuint index = 0;
-		Bind();
 
 		const auto& layout = vertexbufferlayout;
 		for (const auto& element : layout)

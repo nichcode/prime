@@ -1,6 +1,7 @@
 #pragma once
 
 #include "prime/prime_context.h"
+#include "prime/prime_viewport.h"
 
 namespace prime {
 
@@ -8,6 +9,7 @@ namespace prime {
 	{
 		void* m_handle;
 		const Window* m_window;
+		const prime::Viewport* m_viewport = nullptr;
 
 	public:
 		OpenGLContext(Window* window);
@@ -20,6 +22,8 @@ namespace prime {
 		virtual void SwapBuffers() override;
 
 		virtual void SetViewport(const Viewport& viewport) override;
+		virtual const prime::Viewport* GetViewport() override { return m_viewport; }
+
 		virtual void SetVSync(b8 vSync) override;
 	};
 }

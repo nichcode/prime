@@ -66,13 +66,13 @@ namespace prime {
 		 * @brief Initialize a vec4 with a vec4.
 		 * @param vec4 The vec4.
 		 */
-		Vec4(const Vec4& vec4)
+		/*Vec4(const Vec4& vec4)
 		{
 			x = vec4.x;
 			y = vec4.y;
 			z = vec4.z;
 			w = vec4.w;
-		}
+		}*/
 
 		/**
 		 * @brief Create a string view of the vec4.
@@ -141,21 +141,6 @@ namespace prime {
 		}
 
 		/**
-		* @brief Returns a Normalized copy of the vec4.
-		* @return vec4 A normalized copy of the vec4.
-		*/
-		PINLINE Vec4 Normalized() const
-		{
-			f32 length = sqrt(x * x + y * y + z * z + w * w);
-			Vec4 vec(x, y, z, w);
-			vec.x /= length;
-			vec.y /= length;
-			vec.z /= length;
-			vec.w /= length;
-			return vec;
-		}
-
-		/**
 		* @brief Returns the distance between this vec4 and another vec4.
 		* @param vec4 The vec4.
 		* @return The distance between this vec4 and another vec4.
@@ -182,89 +167,105 @@ namespace prime {
 				+ distanceVec.z * distanceVec.z
 				+ distanceVec.w * distanceVec.w;
 		}
+
+		/**
+		* @brief Returns a Normalized copy of the vec4.
+		* @param vec4 The vec4 to create the normalized copy.
+		* @return vec4 A normalized copy of the vec4.
+		*/
+		PINLINE Vec4 Normalized(Vec4 vec4) const
+		{
+			f32 length = sqrt(vec4.x * vec4.x + vec4.y * vec4.y + vec4.z * vec4.z + vec4.w * vec4.w);
+			Vec4 vec(x, y, z, w);
+			vec.x /= length;
+			vec.y /= length;
+			vec.z /= length;
+			vec.w /= length;
+			return vec;
+		}
 	};
 
-	PINLINE Vec4 operator+(Vec4 rhs, Vec4 lhs)
+	PINLINE Vec4 operator+(Vec4 lhs, Vec4 rhs)
 	{
-		return Vec4(rhs.x + lhs.x, rhs.y + lhs.y, rhs.z + lhs.z, rhs.w + lhs.w);
+		return Vec4(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z, lhs.w + rhs.w);
 	}
 
-	PINLINE Vec4 operator-(Vec4 rhs, Vec4 lhs)
+	PINLINE Vec4 operator-(Vec4 lhs, Vec4 rhs)
 	{
-		return Vec4(rhs.x - lhs.x, rhs.y - lhs.y, rhs.z - lhs.z, rhs.w - lhs.w);
+		return Vec4(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w);
 	}
 
-	PINLINE Vec4 operator*(Vec4 rhs, Vec4 lhs)
+	PINLINE Vec4 operator*(Vec4 lhs, Vec4 rhs)
 	{
-		return Vec4(rhs.x * lhs.x, rhs.y * lhs.y, rhs.z * lhs.z, rhs.w * lhs.w);
+		return Vec4(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w);
 	}
 
-	PINLINE Vec4 operator*(Vec4 rhs, f32 scaler)
+	PINLINE Vec4 operator*(Vec4 lhs, f32 scaler)
 	{
-		return Vec4(rhs.x * scaler, rhs.y * scaler, rhs.z * scaler, rhs.w * scaler);
+		return Vec4(lhs.x * scaler, lhs.y * scaler, lhs.z * scaler, lhs.w * scaler);
 	}
 
-	PINLINE Vec4 operator/(Vec4 rhs, Vec4 lhs)
+	PINLINE Vec4 operator/(Vec4 lhs, Vec4 rhs)
 	{
-		return Vec4(rhs.x / lhs.x, rhs.y / lhs.y, rhs.z / lhs.z, rhs.w / lhs.w);
+		return Vec4(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z, lhs.w / rhs.w);
 	}
 
-	PINLINE void operator+=(Vec4& rhs, Vec4 lhs)
+	PINLINE void operator+=(Vec4& lhs, Vec4 rhs)
 	{
-		rhs.x += lhs.x;
-		rhs.y += lhs.y;
-		rhs.z += lhs.z;
-		rhs.w += lhs.w;
+		lhs.x += rhs.x;
+		lhs.y += rhs.y;
+		lhs.z += rhs.z;
+		lhs.w += rhs.w;
 	}
 
-	PINLINE void operator-=(Vec4& rhs, Vec4 lhs)
+	PINLINE void operator-=(Vec4& lhs, Vec4 rhs)
 	{
-		rhs.x -= lhs.x;
-		rhs.y -= lhs.y;
-		rhs.z -= lhs.z;
-		rhs.w -= lhs.w;
+		lhs.x -= rhs.x;
+		lhs.y -= rhs.y;
+		lhs.z -= rhs.z;
+		lhs.w -= rhs.w;
 	}
 
-	PINLINE void operator*=(Vec4& rhs, Vec4 lhs)
+	PINLINE void operator*=(Vec4& lhs, Vec4 rhs)
 	{
-		rhs.x *= lhs.x;
-		rhs.y *= lhs.y;
-		rhs.z *= lhs.z;
-		rhs.w *= lhs.w;
+		lhs.x *= rhs.x;
+		lhs.y *= rhs.y;
+		lhs.z *= rhs.z;
+		lhs.w *= rhs.w;
 	}
 
-	PINLINE void operator*=(Vec4& rhs, f32 scaler)
+	PINLINE void operator*=(Vec4& lhs, f32 scaler)
 	{
-		rhs.x *= scaler;
-		rhs.y *= scaler;
-		rhs.z *= scaler;
-		rhs.w *= scaler;
+		lhs.x *= scaler;
+		lhs.y *= scaler;
+		lhs.z *= scaler;
+		lhs.w *= scaler;
 	}
 
-	PINLINE void operator/=(Vec4& rhs, Vec4 lhs)
+	PINLINE void operator/=(Vec4& lhs, Vec4 rhs)
 	{
-		rhs.x /= lhs.x;
-		rhs.y /= lhs.y;
-		rhs.z /= lhs.z;
-		rhs.w /= lhs.w;
+		lhs.x /= rhs.x;
+		lhs.y /= rhs.y;
+		lhs.z /= rhs.z;
+		lhs.w /= rhs.w;
 	}
 
-	PINLINE void operator/(Vec4& rhs, f32 scaler)
+	PINLINE void operator/(Vec4& lhs, f32 scaler)
 	{
-		rhs.x /= scaler;
-		rhs.y /= scaler;
-		rhs.z /= scaler;
-		rhs.w /= scaler;
+		lhs.x /= scaler;
+		lhs.y /= scaler;
+		lhs.z /= scaler;
+		lhs.w /= scaler;
 	}
 
-	PINLINE bool operator==(Vec4 rhs, Vec4 lhs)
+	PINLINE bool operator==(Vec4 lhs, Vec4 rhs)
 	{
-		return rhs.x == lhs.x && rhs.y == lhs.y && rhs.z == lhs.z && rhs.w == lhs.w;
+		return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z && lhs.w == rhs.w;
 	}
 
-	PINLINE bool operator!=(Vec4 rhs, Vec4 lhs)
+	PINLINE bool operator!=(Vec4 lhs, Vec4 rhs)
 	{
-		return rhs.x != lhs.x && rhs.y != lhs.y && rhs.z != lhs.z && rhs.w != lhs.w;
+		return lhs.x != rhs.x && lhs.y != rhs.y && lhs.z != rhs.z && lhs.w != rhs.w;
 	}
 
 	PINLINE std::ostream& operator<<(std::ostream& out, const Vec4& vec4)
