@@ -18,7 +18,8 @@ project "prime-test"
     }
 
     includedirs {
-        "%{wks.location}/include"
+        "%{wks.location}/include",
+        "%{wks.location}/test/vendor"
     }
 
     links {

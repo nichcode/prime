@@ -1,6 +1,9 @@
 
 #include "prime/prime.h"
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+
 // shaders
 str s_vertexSrc = R"(
 
@@ -19,7 +22,7 @@ str s_vertexSrc = R"(
     void main()
     {
         v_color = a_color;
-        gl_Position = vec4(a_position, 0.0, 1.0);
+        gl_Position = u_viewProjection * vec4(a_position, 0.0, 1.0);
     }
 )";
 
@@ -38,13 +41,15 @@ str s_pixelSrc = R"(
     }
 )";
 
+class Renderer2D;
+
 class Rect2D
 {
 public:
 	f32 x = 0.0f;
 	f32 y = 0.0f;
-	f32 width = 1.0f;
-	f32 height = 1.0f;
+	f32 width = 50.0f;
+	f32 height = 50.0f;
 };
 
 struct Color
@@ -75,8 +80,8 @@ class Renderer2D
 {
 	struct SpriteVertex
 	{
-		prime::Vec2 position;
-		prime::Vec4 color;
+		glm::vec2 position;
+		glm::vec4 color;
 	};
 
 	struct Data
@@ -96,13 +101,17 @@ class Renderer2D
 
 	prime::Ref<prime::Context> m_context;
 	prime::Device* m_device;
-	prime::Vec4 m_vertices[4]{};
-	prime::Mat4 m_matrix;
+	glm::vec4 m_vertices[4]{};
+	glm::mat4 m_matrix{};
+	glm::mat4 m_identity;
 	prime::Viewport* m_view;
 	Data m_data;
 
 public:
-	Renderer2D() : m_device(nullptr), m_view(nullptr) {}
+	Renderer2D() : m_device(nullptr), m_view(nullptr) 
+	{
+		m_identity = glm::mat4(1.0f);
+	}
 
 	void Init(prime::Device* device, prime::Window* window);
 	void Shutdown();
@@ -138,15 +147,15 @@ void Renderer2D::Init(prime::Device* device, prime::Window* window)
 	layout.AddBufferElement({ prime::DataTypeFloat4 });
 	layout.ProcessElements();
 
-	/*m_vertices[0] = { 0.0f,  0.0f, 0.0f, 1.0f };
-	m_vertices[1] = { 50.0f,  0.0f, 0.0f, 1.0f };
-	m_vertices[2] = { 50.0f,  50.0f, 0.0f, 1.0f };
-	m_vertices[3] = { 0.0f,  50.0f, 0.0f, 1.0f };*/
+	m_vertices[0] = { 0.0f,  0.0f, 0.0f, 1.0f };
+	m_vertices[1] = { 1.0f,  0.0f, 0.0f, 1.0f };
+	m_vertices[2] = { 1.0f,  1.0f, 0.0f, 1.0f };
+	m_vertices[3] = { 0.0f,  1.0f, 0.0f, 1.0f };
 
-	m_vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+	/*m_vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
 	m_vertices[1] = { 0.5f, -0.5f, 0.0f, 1.0f };
 	m_vertices[2] = { 0.5f,  0.5f, 0.0f, 1.0f };
-	m_vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+	m_vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };*/
 
 	// indices
 	u32* indices = new u32[m_data.maxIndices];
@@ -176,7 +185,7 @@ void Renderer2D::Init(prime::Device* device, prime::Window* window)
 	m_data.indexbuffer->Bind();
 
 	m_data.shader = device->CreateShader(s_vertexSrc, s_pixelSrc, false);
-	m_data.uniformbuffer = device->CreateUniformbuffer(sizeof(prime::Mat4), 0);
+	m_data.uniformbuffer = device->CreateUniformbuffer(sizeof(glm::mat4), 0);
 
 	delete[] indices;
 	m_data.vertexbufferPtr = m_data.vertexbufferBase;
@@ -203,16 +212,17 @@ void Renderer2D::Clear()
 
 void Renderer2D::SetViewport(prime::Viewport& viewport)
 {
-	m_context->SetViewport(viewport);
-	m_matrix = prime::Mat4::Orthographic(viewport.x,
+	m_matrix = glm::ortho(viewport.x,
 		(f32)viewport.width,
 		(f32)viewport.height,
 		viewport.y,
 		-1.0f,
 		1.0f);
 
-	//m_data.uniformbuffer->Bind();
-	//m_data.uniformbuffer->SetData(sizeof(prime::Mat4), &m_matrix);
+	m_context->SetViewport(viewport);
+
+	m_data.uniformbuffer->Bind();
+	m_data.uniformbuffer->SetData(sizeof(glm::mat4), &m_matrix);
 }
 
 void Renderer2D::Flush()
@@ -233,19 +243,18 @@ void Renderer2D::Flush()
 
 void Renderer2D::Draw(Rect2D& rect, const Color& color)
 {
-	prime::Vec4 rectColor;
+	glm::vec4 rectColor;
 	rectColor.r = (f32)color.r / 255;
 	rectColor.g = (f32)color.g / 255;
 	rectColor.b = (f32)color.b / 255;
 	rectColor.a = (f32)color.a / 255;
 
-	prime::Mat4 transform = prime::Mat4::Translation({ rect.x, rect.y, 0.0f });
-        //* prime::Mat4::Scale({ rect.width, rect.height, 1.0f });
+	glm::mat4 transform = glm::translate(m_identity, { rect.x, rect.y, 0.0f })
+		* glm::scale(m_identity, { rect.width, rect.height, 1.0f });
 
 	for (size_t i = 0; i < 4; i++)
 	{
-		prime::Vec4 newPos = transform * m_vertices[i];
-		m_data.vertexbufferPtr->position = { newPos.x, newPos.y };
+		m_data.vertexbufferPtr->position = transform * m_vertices[i];
 		m_data.vertexbufferPtr->color = rectColor;
 		m_data.vertexbufferPtr++;
 	}
@@ -256,6 +265,52 @@ void Renderer2D::Present()
 {
 	m_context->SwapBuffers();
 }
+
+class Player
+{
+	Renderer2D* m_renderer;
+	prime::Window* m_window;
+	Rect2D m_rect;
+	f32 m_speed = 200.0f;
+
+public:
+	Player() : m_renderer(nullptr), m_window(nullptr) {}
+
+	void Init(Renderer2D* renderer, prime::Window* window)
+	{
+		const prime::Viewport* m_view = renderer->GetViewport();
+		m_rect.width = 50.0f;
+		m_rect.height = 50.0f;
+		m_rect.x = m_view->width / 2.0f - m_rect.width / 2.0f;
+		m_rect.y = m_view->height - m_rect.height * 2.0f;
+
+		m_renderer = renderer;
+		m_window = window;
+	}
+
+	void Render()
+	{
+		m_renderer->Draw(m_rect, Color(255, 0, 0, 255));
+	}
+
+	void Update(f32 deltaTime)
+	{
+		if (m_window->GetKeyState(prime::Key_Right)) {
+			m_rect.x += m_speed * deltaTime;
+		}
+
+		else if (m_window->GetKeyState(prime::Key_Left)) {
+			m_rect.x -= m_speed * deltaTime;
+		}
+	}
+
+	void Center()
+	{
+		const prime::Viewport* m_view = m_renderer->GetViewport();
+		m_rect.x = m_view->width / 2.0f - m_rect.width / 2.0f;
+		m_rect.y = m_view->height - m_rect.height * 2.0f;
+	}
+};
 
 void OnWindowResize(const prime::Window* w, u32 width, u32 height)
 {
@@ -287,26 +342,22 @@ b8 GameTest()
 	viewport.height = window.GetHeight();
 	renderer.SetViewport(viewport);
 
-	Rect2D rect;
-	Color red(255, 0, 0, 255);
-
-	Rect2D rect2;
-	//rect2.x = viewport.width - rect2.width;
-	rect2.x = 0.8f;
-	//rect.width = 100.0f;
+	Player m_player;
+	m_player.Init(&renderer, &window);
 
 	prime::SetWindowResizeCallback(OnWindowResize);
 
+	prime::Timestep timestep;
+
 	while (!window.ShouldClose())
 	{
-
-		// TODO: remove
-		//rect2.x = renderer.GetViewport()->width - rect2.width;
 		prime::PollEvents();
+		timestep.Tick();
+
+		m_player.Update(timestep.GetDT());
 
 		renderer.Clear();
-		//renderer.Draw(rect, red);
-		renderer.Draw(rect2, red);
+		m_player.Render();
 
 		renderer.Flush();
 		renderer.Present();
@@ -314,5 +365,6 @@ b8 GameTest()
 
 	renderer.Shutdown();
 	window.Destroy();
+
 	return PPASSED;
 }
