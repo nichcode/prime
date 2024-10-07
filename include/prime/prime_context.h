@@ -4,6 +4,7 @@
 #include "prime_viewport.h"
 #include "prime_topology.h"
 #include "prime_ref.h"
+#include "prime_blendmode.h"
 
 namespace prime {
 
@@ -62,6 +63,12 @@ namespace prime {
 		 * @param indexCount The number of indices to draw.
 		 */
 		virtual void DrawIndexed(PrimitiveTopology topology, u32 indexCount) = 0;
+
+		/**
+		 * @brief Set the blendmode for drawing operations.
+		 * @param blendmode The blendmode to use.
+		 */
+		virtual void SetBlendmode(Blendmode blendmode) = 0;
 
 	private:
 		static Ref<Context> Create(Device* device, Window* window);

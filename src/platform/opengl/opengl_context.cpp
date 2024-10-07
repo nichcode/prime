@@ -91,4 +91,15 @@ namespace prime {
 			SetWGLVSync(0);
 		}
 	}
+
+	void OpenGLContext::SetBlendmode(Blendmode blendmode)
+	{
+		if (blendmode == BlendmodeBlend) {
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
+		else if (blendmode == BlendmodeNone) {
+			glDisable(GL_BLEND);
+		}
+	}
 }

@@ -25,5 +25,6 @@ namespace prime {
 		virtual const prime::Viewport* GetViewport() override { return m_viewport; }
 
 		virtual void SetVSync(b8 vSync) override;
+		virtual void SetBlendmode(Blendmode blendmode) override;
 	};
 }

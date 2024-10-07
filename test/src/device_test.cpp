@@ -62,28 +62,24 @@ b8 DeviceTest()
 	layout.AddBufferElement({ prime::DataTypeFloat2 });
 	layout.ProcessElements();
 	vertexbuffer = device.CreateVertexBuffer(vertices, sizeof(vertices), prime::VertexbufferTypeStatic);
+	vertexbuffer->Bind();
 	vertexbuffer->SetLayout(layout);
 
-	u32 indices[6] = { 0,1, 2, 2, 3, 0 };
+	u32 indices[6] = { 0, 1, 2, 2, 3, 0 };
 	indexbuffer = device.CreateIndexBuffer(indices, sizeof(indices) / sizeof(u32));
 	indexbuffer->Bind();
 
 	shader = device.CreateShader("shaders/flat_color_vertex.glsl", "shaders/flat_color_pixel.glsl", true);
-	uniformbuffer = device.CreateUniformbuffer(16, 0);
 	texture2D = device.CreateTexture2D("textures/texture2d.png");
-
-	renderTarget = device.CreateRenderTarget(1000, 600, &viewport);
 
 	prime::Timestep timestep;
 
 	while (s_Running)
 	{
+		prime::PollEvents();
 		timestep.Tick();
 
-		prime::PollEvents();
-
 		texture2D->Bind();
-
 		shader->Bind();
 		shader->SetInt("u_Texture", 0);
 

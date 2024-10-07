@@ -1,6 +1,7 @@
 #pragma once
 
 #include "prime_assert.h"
+#include "prime_blendmode.h"
 #include "prime_defines.h"
 #include "prime_data_types.h"
 #include "prime_device.h"

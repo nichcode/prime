@@ -70,6 +70,7 @@ str s_pixelSrc = R"(
             case 14: color = texture(u_textures[14], v_textureCoords) * v_color; break;
             case 15: color = texture(u_textures[15], v_textureCoords) * v_color; break;
         }
+        //color = vec4(v_textureCoords, 0.0, 1.0);
     }
 )";
 
@@ -187,6 +188,11 @@ public:
 
 	void Flush();
 
+	void SetBlendmode(prime::Blendmode blendmode)
+	{
+		m_context->SetBlendmode(blendmode);
+	}
+
 	void Draw(Rect2D& rect, const Color& color);
 	void Draw(Sprite2D& sprite);
 	void Present();
@@ -213,10 +219,10 @@ void Renderer2D::Init(prime::Device* device, prime::Window* window)
 	m_vertices[2] = { 1.0f,  1.0f, 0.0f, 1.0f };
 	m_vertices[3] = { 0.0f,  1.0f, 0.0f, 1.0f };
 
-	m_texCoords[0] = { 0.0f, 0.0f };
-	m_texCoords[1] = { 1.0f, 0.0f };
-	m_texCoords[2] = { 1.0f, 1.0f };
-	m_texCoords[3] = { 0.0f, 1.0f };
+	m_texCoords[0] = { 0.0f, 1.0f };
+	m_texCoords[1] = { 1.0f, 1.0f };
+	m_texCoords[2] = { 1.0f, 0.0f };
+	m_texCoords[3] = { 0.0f, 0.0f };
 
 	// indices
 	u32* indices = new u32[m_data.maxIndices];
@@ -393,7 +399,7 @@ class Player
 	Renderer2D* m_renderer;
 	prime::Window* m_window;
 	Sprite2D m_sprite;
-	f32 m_speed = 200.0f;
+	f32 m_speed = 300.0f;
 
 public:
 	Player() : m_renderer(nullptr), m_window(nullptr) {}
@@ -401,12 +407,11 @@ public:
 	void Init(Renderer2D* renderer, prime::Window* window, prime::Device* device)
 	{
 		const prime::Viewport* m_view = renderer->GetViewport();
-		m_sprite.rect.width = 50.0f;
-		m_sprite.rect.height = 50.0f;
+		m_sprite.texture = device->CreateTexture2D("textures/player.png");
+		m_sprite.rect.width = (f32)m_sprite.texture->GetWidth();
+		m_sprite.rect.height = (f32)m_sprite.texture->GetHeight();
 		m_sprite.rect.x = m_view->width / 2.0f - m_sprite.rect.width / 2.0f;
 		m_sprite.rect.y = m_view->height - m_sprite.rect.height * 2.0f;
-
-		m_sprite.texture = device->CreateTexture2D("textures/texture2d.png");
 
 		m_renderer = renderer;
 		m_window = window;
@@ -458,6 +463,7 @@ b8 GameTest()
 	Renderer2D renderer;
 	renderer.Init(&device, &window);
 	renderer.SetClearColor(40, 40, 40, 255);
+	renderer.SetBlendmode(prime::BlendmodeBlend);
 
 	window.SetUserData(&renderer);
 
