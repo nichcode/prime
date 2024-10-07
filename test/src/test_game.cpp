@@ -70,7 +70,6 @@ str s_pixelSrc = R"(
             case 14: color = texture(u_textures[14], v_textureCoords) * v_color; break;
             case 15: color = texture(u_textures[15], v_textureCoords) * v_color; break;
         }
-        //color = vec4(v_textureCoords, 0.0, 1.0);
     }
 )";
 
@@ -109,22 +108,6 @@ public:
 	f32 height = 50.0f;
 };
 
-class Sprite2D
-{
-public:
-	Rect2D rect;
-	prime::Ref<prime::Texture2D> texture;
-	Color tintColor;
-
-	Sprite2D()
-	{
-		tintColor.r = 255;
-		tintColor.g = 255;
-		tintColor.b = 255;
-		tintColor.a = 255;
-	}
-};
-
 class Renderer2D
 {
 	struct SpriteVertex
@@ -159,11 +142,11 @@ class Renderer2D
 	glm::vec2 m_texCoords[4]{};
 	glm::mat4 m_matrix{};
 	glm::mat4 m_identity;
-	prime::Viewport* m_view;
+	prime::Viewport* view;
 	Data m_data;
 
 public:
-	Renderer2D() : m_device(nullptr), m_view(nullptr) 
+	Renderer2D() : m_device(nullptr), view(nullptr) 
 	{
 		m_identity = glm::mat4(1.0f);
 	}
@@ -193,8 +176,8 @@ public:
 		m_context->SetBlendmode(blendmode);
 	}
 
-	void Draw(Rect2D& rect, const Color& color);
-	void Draw(Sprite2D& sprite);
+	void Draw(const Rect2D& rect, const Color& color);
+	void Draw(Rect2D& rect, prime::Ref<prime::Texture2D>& texture, const Color& color = { 255, 255, 255, 255 });
 	void Present();
 
 private:
@@ -321,7 +304,7 @@ void Renderer2D::Flush()
 	m_data.vertexbufferPtr = m_data.vertexbufferBase;
 }
 
-void Renderer2D::Draw(Rect2D& rect, const Color& color)
+void Renderer2D::Draw(const Rect2D& rect, const Color& color)
 {
 	glm::vec4 rectColor;
 	rectColor.r = (f32)color.r / 255;
@@ -343,19 +326,19 @@ void Renderer2D::Draw(Rect2D& rect, const Color& color)
 	m_data.count += 6;
 }
 
-void Renderer2D::Draw(Sprite2D& sprite)
+void Renderer2D::Draw(Rect2D& rect, prime::Ref<prime::Texture2D>& texture, const Color& color)
 {
 	glm::vec4 rectColor;
-	rectColor.r = (f32)sprite.tintColor.r / 255;
-	rectColor.g = (f32)sprite.tintColor.g / 255;
-	rectColor.b = (f32)sprite.tintColor.b / 255;
-	rectColor.a = (f32)sprite.tintColor.a / 255;
+	rectColor.r = (f32)color.r / 255;
+	rectColor.g = (f32)color.g / 255;
+	rectColor.b = (f32)color.b / 255;
+	rectColor.a = (f32)color.a / 255;
 
-	glm::mat4 transform = glm::translate(m_identity, { sprite.rect.x, sprite.rect.y, 0.0f })
-		* glm::scale(m_identity, { sprite.rect.width, sprite.rect.height, 1.0f });
+	glm::mat4 transform = glm::translate(m_identity, { rect.x, rect.y, 0.0f })
+		* glm::scale(m_identity, { rect.width, rect.height, 1.0f });
 
 	f32 textureIndex = 0.0f;
-	if (sprite.texture.get()) { textureIndex = GetTextureIndex(sprite.texture); }
+	if (texture.get()) { textureIndex = GetTextureIndex(texture); }
 
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -398,7 +381,8 @@ class Player
 {
 	Renderer2D* m_renderer;
 	prime::Window* m_window;
-	Sprite2D m_sprite;
+	prime::Ref<prime::Texture2D> m_texture;
+	Rect2D m_rect;
 	f32 m_speed = 300.0f;
 
 public:
@@ -406,12 +390,12 @@ public:
 
 	void Init(Renderer2D* renderer, prime::Window* window, prime::Device* device)
 	{
-		const prime::Viewport* m_view = renderer->GetViewport();
-		m_sprite.texture = device->CreateTexture2D("textures/player.png");
-		m_sprite.rect.width = (f32)m_sprite.texture->GetWidth();
-		m_sprite.rect.height = (f32)m_sprite.texture->GetHeight();
-		m_sprite.rect.x = m_view->width / 2.0f - m_sprite.rect.width / 2.0f;
-		m_sprite.rect.y = m_view->height - m_sprite.rect.height * 2.0f;
+		const prime::Viewport* view = renderer->GetViewport();
+		m_texture = device->CreateTexture2D("textures/player.png");
+		m_rect.width = (f32)m_texture->GetWidth();
+		m_rect.height = (f32)m_texture->GetHeight();
+		m_rect.x = view->width / 2.0f - m_rect.width / 2.0f;
+		m_rect.y = view->height - m_rect.height * 2.0f;
 
 		m_renderer = renderer;
 		m_window = window;
@@ -419,25 +403,35 @@ public:
 
 	void Render()
 	{
-		m_renderer->Draw(m_sprite);
+		m_renderer->Draw(m_rect, m_texture);
 	}
 
 	void Update(f32 deltaTime)
 	{
+		const prime::Viewport* view = m_renderer->GetViewport();
+
 		if (m_window->GetKeyState(prime::Key_Right)) {
-			m_sprite.rect.x += m_speed * deltaTime;
+			m_rect.x += m_speed * deltaTime;
+
+			if (m_rect.x > view->width) {
+				m_rect.x = 0.0f - m_rect.width;
+			}
 		}
 
 		else if (m_window->GetKeyState(prime::Key_Left)) {
-			m_sprite.rect.x -= m_speed * deltaTime;
+			m_rect.x -= m_speed * deltaTime;
+
+			if (m_rect.x + m_rect.width < view->x) {
+				m_rect.x = view->width + m_rect.width;
+			}
 		}
 	}
 
 	void Center()
 	{
-		const prime::Viewport* m_view = m_renderer->GetViewport();
-		m_sprite.rect.x = m_view->width / 2.0f - m_sprite.rect.width / 2.0f;
-		m_sprite.rect.y = m_view->height - m_sprite.rect.height * 2.0f;
+		const prime::Viewport* view = m_renderer->GetViewport();
+		m_rect.x = view->width / 2.0f - m_rect.width / 2.0f;
+		m_rect.y = view->height - m_rect.height * 2.0f;
 	}
 };
 
@@ -487,9 +481,6 @@ b8 GameTest()
 		m_player.Update(timestep.GetDT());
 
 		renderer.Clear();
-
-		Rect2D rect;
-		renderer.Draw(rect, Color());
 		m_player.Render();
 
 		renderer.Flush();
