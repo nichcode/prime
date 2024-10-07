@@ -75,6 +75,19 @@ namespace prime {
 		 */
 		virtual str GetPath() const = 0;
 
+		/**
+		 * @brief Get the handle of the texture2d.
+		 * @return Texture2d handle
+		 */
+		virtual void* GetHandle() const = 0;
+
+		/**
+		 * @brief Check if two texture2ds are the same.
+		 * @param other The other texture2d.
+		 * @return True if they are the same othewise false.
+		 */
+		virtual bool operator==(const Texture2D& other) const = 0;
+
 	private:
 		static Ref<Texture2D> Create(Device* device, const TextureProperties& props);
 		static Ref<Texture2D> Create(Device* device, const str& filepath);
