@@ -22,15 +22,9 @@ namespace prime {
 		virtual u32 GetHeight() const override { return m_height; }
 		virtual str GetPath() const override { return m_path; }
 
-		virtual void* GetHandle() const override
+		virtual const void* GetHandle() const override
 		{
-			return (void*)m_id;
-		}
-
-		virtual bool operator==(const Texture2D& other) const override
-		{
-			void* handle = (void*)m_id;
-			return handle = other.GetHandle();
+			return &m_id;
 		}
 	};
 

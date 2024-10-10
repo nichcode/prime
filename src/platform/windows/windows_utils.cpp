@@ -7,8 +7,8 @@
 
 namespace prime {
 
-	static f64 s_clockFrequency;
-	static LARGE_INTEGER s_startTime;
+	static u64 s_clockFrequency;
+	static u64 s_startTime;
 
 	void Logger::SetLevel(u8 logType)
 	{
@@ -28,17 +28,15 @@ namespace prime {
 
 	void Time::Init()
 	{
-		LARGE_INTEGER frequency;
-		QueryPerformanceFrequency(&frequency);
-		s_clockFrequency = 1.0 / (f64)frequency.QuadPart;
-		QueryPerformanceCounter(&s_startTime);
+		QueryPerformanceFrequency((LARGE_INTEGER*)& s_clockFrequency);
+		QueryPerformanceCounter((LARGE_INTEGER*)&s_startTime);
 	}
 
 	f64 Time::Get()
 	{
-		LARGE_INTEGER now_time;
-		QueryPerformanceCounter(&now_time);
-		return (f64)now_time.QuadPart * (f64)s_clockFrequency;
+		u64 time;
+		QueryPerformanceCounter((LARGE_INTEGER*)&time);
+		return (f64)(time - s_startTime) / s_clockFrequency;
 	}
 
 	void Time::SetSleep(f64 miliSeconds)

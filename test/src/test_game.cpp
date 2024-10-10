@@ -5,6 +5,8 @@
 #include "glm/gtc/matrix_transform.hpp"
 
 #include <array>
+#include <cstdlib>
+#include <vector>
 
 #define MAX_TEXTURE_SLOTS 16
 
@@ -142,11 +144,10 @@ class Renderer2D
 	glm::vec2 m_texCoords[4]{};
 	glm::mat4 m_matrix{};
 	glm::mat4 m_identity;
-	prime::Viewport* view;
 	Data m_data;
 
 public:
-	Renderer2D() : m_device(nullptr), view(nullptr) 
+	Renderer2D() : m_device(nullptr)
 	{
 		m_identity = glm::mat4(1.0f);
 	}
@@ -158,6 +159,7 @@ public:
 	void Clear();
 
 	void SetViewport(prime::Viewport& viewport);
+	void SetLogicalSize(prime::Viewport& viewport);
 
 	const prime::Viewport* GetViewport()
 	{
@@ -271,14 +273,20 @@ void Renderer2D::Clear()
 
 void Renderer2D::SetViewport(prime::Viewport& viewport)
 {
+	if (m_context->GetViewport() ==nullptr) {
+		SetLogicalSize(viewport);
+	}
+	m_context->SetViewport(viewport);
+}
+
+void Renderer2D::SetLogicalSize(prime::Viewport& viewport)
+{
 	m_matrix = glm::ortho(viewport.x,
 		(f32)viewport.width,
 		(f32)viewport.height,
 		viewport.y,
 		-1.0f,
 		1.0f);
-
-	m_context->SetViewport(viewport);
 
 	m_data.uniformbuffer->Bind();
 	m_data.uniformbuffer->SetData(sizeof(glm::mat4), &m_matrix);
@@ -306,7 +314,7 @@ void Renderer2D::Flush()
 
 void Renderer2D::Draw(const Rect2D& rect, const Color& color)
 {
-	glm::vec4 rectColor;
+	glm::vec4 rectColor = glm::vec4(0.0f);
 	rectColor.r = (f32)color.r / 255;
 	rectColor.g = (f32)color.g / 255;
 	rectColor.b = (f32)color.b / 255;
@@ -328,7 +336,7 @@ void Renderer2D::Draw(const Rect2D& rect, const Color& color)
 
 void Renderer2D::Draw(Rect2D& rect, prime::Ref<prime::Texture2D>& texture, const Color& color)
 {
-	glm::vec4 rectColor;
+	glm::vec4 rectColor = glm::vec4(0.0f);
 	rectColor.r = (f32)color.r / 255;
 	rectColor.g = (f32)color.g / 255;
 	rectColor.b = (f32)color.b / 255;
@@ -361,7 +369,7 @@ f32 Renderer2D::GetTextureIndex(prime::Ref<prime::Texture2D>& texture)
 	f32 textureIndex = 0.0f;
 	for (uint32_t i = 1; i < m_data.textureIndex; i++)
 	{
-		if (*m_data.textureSlots[i] == *texture)
+		if (m_data.textureSlots[i]->GetHandle() == texture->GetHandle())
 		{
 			textureIndex = (f32)i;
 			break;
@@ -377,28 +385,146 @@ f32 Renderer2D::GetTextureIndex(prime::Ref<prime::Texture2D>& texture)
 	return textureIndex;
 }
 
+class PlayerBullet
+{
+	Renderer2D* m_renderer;
+	prime::Ref<prime::Texture2D> m_texture;
+	Rect2D m_rect;
+	f32 m_speed =  300.0f;
+	b8 m_shouldDestroy = false;
+	u32 m_ID;
+
+public:
+	PlayerBullet() : m_renderer(nullptr), m_ID(0) {}
+
+	void Init(Renderer2D* renderer, prime::Ref<prime::Texture2D>& texture, f32 x, f32 y, u32 id)
+	{
+		m_texture = texture;
+		m_rect.width = (f32)m_texture->GetWidth();
+		m_rect.height = (f32)m_texture->GetHeight();
+		m_rect.x = x;
+		m_rect.y = y;
+
+		m_ID = id;
+		m_renderer = renderer;
+	}
+
+	void Render()
+	{
+		m_renderer->Draw(m_rect, m_texture);
+	}
+
+	void Update(f32 deltaTime)
+	{
+		const prime::Viewport* view = m_renderer->GetViewport();
+		m_rect.y -= m_speed * deltaTime;
+
+		if (m_rect.y + m_rect.height < view->y) {
+			m_shouldDestroy = true;
+		}
+	}
+
+	b8 ShouldDestroy() {
+		return m_shouldDestroy;
+	}
+
+	bool operator==(const PlayerBullet& b)
+	{
+		return m_ID == b.m_ID;
+	}
+
+	bool operator!=(const PlayerBullet& b)
+	{
+		return m_ID != b.m_ID;
+	}
+};
+
 class Player
 {
 	Renderer2D* m_renderer;
-	prime::Window* m_window;
 	prime::Ref<prime::Texture2D> m_texture;
 	Rect2D m_rect;
 	f32 m_speed = 300.0f;
+	u32 m_bulletID;
 
 public:
-	Player() : m_renderer(nullptr), m_window(nullptr) {}
+	Player() : m_renderer(nullptr), m_bulletID(0) {}
 
-	void Init(Renderer2D* renderer, prime::Window* window, prime::Device* device)
+	void Init(Renderer2D* renderer, prime::Ref<prime::Texture2D> texture)
 	{
 		const prime::Viewport* view = renderer->GetViewport();
-		m_texture = device->CreateTexture2D("textures/player.png");
+		m_texture = texture;
 		m_rect.width = (f32)m_texture->GetWidth();
 		m_rect.height = (f32)m_texture->GetHeight();
 		m_rect.x = view->width / 2.0f - m_rect.width / 2.0f;
 		m_rect.y = view->height - m_rect.height * 2.0f;
+		m_renderer = renderer;
+	}
+
+	void Render()
+	{
+		m_renderer->Draw(m_rect, m_texture);
+	}
+
+	void Update(f32 deltaTime, prime::Window* window)
+	{
+		const prime::Viewport* view = m_renderer->GetViewport();
+
+		if (window->GetKeyState(prime::Key_Right)) {
+			m_rect.x += m_speed * deltaTime;
+
+			if (m_rect.x > view->width) {
+				m_rect.x = 0.0f - m_rect.width;
+			}
+		}
+
+		else if (window->GetKeyState(prime::Key_Left)) {
+			m_rect.x -= m_speed * deltaTime;
+
+			if (m_rect.x + m_rect.width < view->x) {
+				m_rect.x = view->width + m_rect.width;
+			}
+		}
+	}
+
+	void FireBullet(prime::Ref<prime::Texture2D> texture, std::vector<PlayerBullet>& bullets)
+	{
+		PlayerBullet bullet;
+		f32 centerX = m_rect.x + (m_rect.width / 2.0f) - 5.0f;
+		f32 centerY = m_rect.y - 15.0f;
+		bullet.Init(m_renderer, texture, centerX, centerY, m_bulletID);
+		bullets.emplace_back(bullet);
+
+		m_bulletID++;
+	}
+
+	void Center()
+	{
+		const prime::Viewport* view = m_renderer->GetViewport();
+		m_rect.x = view->width / 2.0f - m_rect.width / 2.0f;
+		m_rect.y = view->height - m_rect.height * 2.0f;
+	}
+};
+
+class Enemy
+{
+	Renderer2D* m_renderer;
+	prime::Ref<prime::Texture2D> m_texture;
+	Rect2D m_rect;
+	f32 m_speed = 150.0f;
+
+public:
+	Enemy() : m_renderer(nullptr) {}
+
+	void Init(Renderer2D* renderer, prime::Ref<prime::Texture2D>& texture, f32 x, f32 y)
+	{
+		m_texture = texture;
+		m_rect.width = (f32)m_texture->GetWidth();
+		m_rect.height = (f32)m_texture->GetHeight();
+		m_rect.x = x;
+		m_rect.y = y;
 
 		m_renderer = renderer;
-		m_window = window;
 	}
 
 	void Render()
@@ -410,30 +536,22 @@ public:
 	{
 		const prime::Viewport* view = m_renderer->GetViewport();
 
-		if (m_window->GetKeyState(prime::Key_Right)) {
-			m_rect.x += m_speed * deltaTime;
+		m_rect.x += m_speed * deltaTime;
 
-			if (m_rect.x > view->width) {
-				m_rect.x = 0.0f - m_rect.width;
-			}
+		if (m_rect.x + m_rect.width >= view->width) {
+			m_rect.x -= 5.0f;
+			m_speed *= -1;
 		}
-
-		else if (m_window->GetKeyState(prime::Key_Left)) {
-			m_rect.x -= m_speed * deltaTime;
-
-			if (m_rect.x + m_rect.width < view->x) {
-				m_rect.x = view->width + m_rect.width;
-			}
+		else if (m_rect.x <= view->x) {
+			m_rect.x += 5.0f;
+	        m_speed *= -1;
 		}
-	}
-
-	void Center()
-	{
-		const prime::Viewport* view = m_renderer->GetViewport();
-		m_rect.x = view->width / 2.0f - m_rect.width / 2.0f;
-		m_rect.y = view->height - m_rect.height * 2.0f;
 	}
 };
+
+Player player;
+prime::Ref<prime::Texture2D> pBulletTexture;
+std::vector<PlayerBullet> playerBullets;
 
 void OnWindowResize(const prime::Window* w, u32 width, u32 height)
 {
@@ -444,6 +562,13 @@ void OnWindowResize(const prime::Window* w, u32 width, u32 height)
 	renderer->SetViewport(view);
 }
 
+void OnKey(const prime::Window* window, u16 key, i32 scancode, u8 action)
+{
+	if (key == prime::Key_Space && action == PPRESS) {
+		player.FireBullet(pBulletTexture, playerBullets);
+	}
+}
+
 b8 GameTest()
 {
 	prime::Device device;
@@ -452,6 +577,8 @@ b8 GameTest()
 	prime::Window window;
 	prime::WindowProperties props;
 	props.title = "GameTest Window";
+	props.width = 1000;
+	props.height = 600;
 	window.Init(props);
 
 	Renderer2D renderer;
@@ -466,29 +593,76 @@ b8 GameTest()
 	viewport.height = window.GetHeight();
 	renderer.SetViewport(viewport);
 
-	Player m_player;
-	m_player.Init(&renderer, &window, &device);
+	prime::Ref<prime::Texture2D> playerTexture;
+	playerTexture = device.CreateTexture2D("textures/player.png");
+	player.Init(&renderer, playerTexture);
 
 	prime::SetWindowResizeCallback(OnWindowResize);
+	prime::SetWindowKeyCallback(OnKey);
 
 	prime::Timestep timestep;
+
+	// enemies
+	f32 enemyPosX[5] = {50.0f, 250.0f, 450.0f, 650.0f, 750.0f };
+	f32 enemyPosY[5] = { 100.0f, 150.0f, 200.0f, 250.0f, 200.0f };
+	prime::Ref<prime::Texture2D> enemyTexture;
+	enemyTexture = device.CreateTexture2D("textures/enemy.png");
+
+	std::vector<Enemy> enemies;
+	enemies.reserve(20);
+
+	for (int x = 0; x < 5; x++) {
+		Enemy enemy;
+		enemy.Init(&renderer, enemyTexture, enemyPosX[x], enemyPosY[x]);
+		enemies.emplace_back(enemy);
+	}
+
+	
+	pBulletTexture = device.CreateTexture2D("textures/player_bullet.png");
+	enemies.reserve(20);
 
 	while (!window.ShouldClose())
 	{
 		prime::PollEvents();
 		timestep.Tick();
 
-		m_player.Update(timestep.GetDT());
+		player.Update(timestep.GetDT(), &window);
+
+		for (Enemy& enemy : enemies) {
+			enemy.Update(timestep.GetDT());
+		}
+
+		for (PlayerBullet& bullet : playerBullets) {
+			bullet.Update(timestep.GetDT());
+		}
 
 		renderer.Clear();
-		m_player.Render();
+		player.Render();
+		for (Enemy& enemy : enemies) {
+			enemy.Render();
+		}
+
+		for (PlayerBullet& bullet : playerBullets) {
+			bullet.Render();
+		}
 
 		renderer.Flush();
 		renderer.Present();
+
+		for (PlayerBullet& bullet : playerBullets) {
+			if (bullet.ShouldDestroy()) {
+				auto it = std::find(playerBullets.begin(), playerBullets.end(), bullet);
+				if (it != playerBullets.end()) {
+					playerBullets.erase(it);
+				}
+				
+			}
+		}
 	}
 
 	renderer.Shutdown();
 	window.Destroy();
+	enemies.clear();
 
 	return PPASSED;
 }

@@ -197,7 +197,7 @@ namespace prime {
 
 	static void MapKeysNames(WindowData& data)
 	{
-		data.keynames[Key_A] = str("Key A");
+		data.keynames[Key_A] = "Key A";
 		data.keynames[Key_B] = "Key B";
 		data.keynames[Key_C] = "Key C";
 		data.keynames[Key_D] = "Key D";
