@@ -7,6 +7,7 @@
 #include <array>
 #include <cstdlib>
 #include <vector>
+#include <random>
 
 #define MAX_TEXTURE_SLOTS 16
 
@@ -376,6 +377,13 @@ f32 Renderer2D::GetTextureIndex(prime::Ref<prime::Texture2D>& texture)
 	return textureIndex;
 }
 
+std::random_device s_randomDevice;
+std::mt19937 s_engine(s_randomDevice());
+std::uniform_int_distribution<std::mt19937::result_type> s_uniformDist(0, 5);
+std::uniform_int_distribution<std::mt19937::result_type> s_uniformDistMeteorX(50, 900);
+std::uniform_int_distribution<std::mt19937::result_type> s_uniformDistMeteorY(50, 100);
+std::uniform_int_distribution<std::mt19937::result_type> s_uniformDistMeteorDir(0, 1);
+
 class PlayerBullet
 {
 	Renderer2D* m_renderer;
@@ -415,7 +423,7 @@ public:
 		}
 	}
 
-	b8 ShouldDestroy() 
+	b8 ShouldDestroy() const
 	{
 		return m_shouldDestroy;
 	}
@@ -568,13 +576,83 @@ public:
 	}
 };
 
+class Meteor
+{
+	Renderer2D* m_renderer;
+	prime::Ref<prime::Texture2D> m_texture;
+	prime::Rect m_rect;
+	f32 m_speed = 150.0f;
+	u32 m_ID;
+	f32 m_direction = 1.0f;
+
+public:
+	Meteor() : m_renderer(nullptr), m_ID(0) {}
+
+	void Init(Renderer2D* renderer, prime::Ref<prime::Texture2D>& texture, f32 x, u32 id, f32 direction)
+	{
+		m_texture = texture;
+		m_rect.width = (f32)m_texture->GetWidth();
+		m_rect.height = (f32)m_texture->GetHeight();
+		m_rect.x = x;
+		m_rect.y = (f32)s_uniformDistMeteorY(s_engine) * -1;
+
+		if (direction == 0.0f) {
+			m_direction = -1.0f;
+		}
+		else {
+			m_direction = 1.0f;
+		}
+		m_ID = id;
+		m_renderer = renderer;
+	}
+
+	void Render()
+	{
+		m_renderer->Draw(m_rect, m_texture);
+	}
+
+	void Update(f32 deltaTime)
+	{
+		const prime::Viewport* view = m_renderer->GetViewport();
+
+		m_rect.x += (m_speed * deltaTime * m_direction);
+		m_rect.y += m_speed * deltaTime;
+
+		if (m_rect.x > view->width || m_rect.x + m_rect.width < view->x) {
+			m_rect.x = (f32)s_uniformDistMeteorX(s_engine);
+			m_rect.y = (f32)s_uniformDistMeteorY(s_engine) * -1;
+		}
+		else if (m_rect.y > view->height) {
+			m_rect.x = (f32)s_uniformDistMeteorX(s_engine);
+			m_rect.y = (f32)s_uniformDistMeteorY(s_engine) * -1;
+		}
+	}
+
+	prime::Rect GetRect() const
+	{
+		return m_rect;
+	}
+
+	bool operator==(const Meteor& b)
+	{
+		return m_ID == b.m_ID;
+	}
+
+	bool operator!=(const Meteor& b)
+	{
+		return m_ID != b.m_ID;
+	}
+};
+
 Player player;
 prime::Ref<prime::Texture2D> pBulletTexture;
 std::vector<PlayerBullet> playerBullets;
 std::vector<Enemy> enemies;
+std::vector<Meteor> meteors;
 prime::Ref<prime::Texture2D> enemyTexture;
+prime::Ref<prime::Texture2D> meteorTexture;
 Renderer2D renderer;
-u32 enemiesCreated = 0;
+u32 enemiesCreated = 0, meteorsCreated = 0;
 
 f32 enemyPosX[5] = { 50.0f, 250.0f, 450.0f, 650.0f, 750.0f };
 f32 enemyPosY[5] = { 100.0f, 150.0f, 200.0f, 250.0f, 200.0f };
@@ -598,15 +676,24 @@ void OnKey(const prime::Window* window, u16 key, i32 scancode, u8 action)
 void GenerateEnemies()
 {
 	while (enemies.size() < 5) {
-
-		srand((u32)time(NULL));
-		int random = rand() % 5;
-
+		u32 random = s_uniformDist(s_engine);
 		Enemy enemy;
 		enemy.Init(&renderer, enemyTexture, enemyPosX[random], enemyPosY[random], enemiesCreated);
 		enemies.emplace_back(enemy);
 
 		enemiesCreated++;
+	}
+}
+
+void GenerateMeteors()
+{
+	while (meteors.size() < 30) {
+		Meteor meteor;
+		f32 x = (f32)s_uniformDistMeteorX(s_engine);
+		f32 dir = (f32)s_uniformDistMeteorDir(s_engine);
+		meteor.Init(&renderer, meteorTexture, x, meteorsCreated, dir);
+		meteors.emplace_back(meteor);
+		meteorsCreated++;
 	}
 }
 
@@ -642,8 +729,10 @@ b8 GameTest()
 
 	prime::Timestep timestep;
 	enemyTexture = device.CreateTexture2D("textures/enemy.png");
-
 	enemies.reserve(20);
+
+	meteorTexture = device.CreateTexture2D("textures/meteor.png");
+	meteors.reserve(30);
 
 	for (int x = 0; x < 5; x++) {
 		Enemy enemy;
@@ -653,7 +742,16 @@ b8 GameTest()
 	}
 	
 	pBulletTexture = device.CreateTexture2D("textures/player_bullet.png");
-	enemies.reserve(20);
+	playerBullets.reserve(20);
+
+	for (int x = 0; x < 30; x++) {
+		Meteor meteor;
+		f32 xPos = (f32)s_uniformDistMeteorX(s_engine);
+		f32 dir = (f32)s_uniformDistMeteorDir(s_engine);
+		meteor.Init(&renderer, meteorTexture, xPos, meteorsCreated, dir);
+		meteors.emplace_back(meteor);
+		meteorsCreated++;
+	}
 
 	while (!window.ShouldClose())
 	{
@@ -666,6 +764,11 @@ b8 GameTest()
 		for (Enemy& enemy : enemies) {
 			enemy.Update(timestep.GetDT());
 			enemy.Render();
+		}
+
+		for (Meteor& meteor : meteors) {
+			meteor.Update(timestep.GetDT());
+			meteor.Render();
 		}
 
 		for (PlayerBullet& bullet : playerBullets) {
@@ -694,9 +797,24 @@ b8 GameTest()
 					}
 				}
 			}
+
+			for (Meteor& meteor : meteors) {
+				if (bullet.GetRect().CollideRect(meteor.GetRect())) {
+					auto itBullet = std::find(playerBullets.begin(), playerBullets.end(), bullet);
+					if (itBullet != playerBullets.end()) {
+						playerBullets.erase(itBullet);
+					}
+
+					auto itMeteor = std::find(meteors.begin(), meteors.end(), meteor);
+					if (itMeteor != meteors.end()) {
+						meteors.erase(itMeteor);
+					}
+				}
+			}
 		}
 
 		GenerateEnemies();
+		GenerateMeteors();
 
 		player.Render();
 		renderer.Flush();
@@ -706,6 +824,8 @@ b8 GameTest()
 	renderer.Shutdown();
 	window.Destroy();
 	enemies.clear();
+	meteors.clear();
+	playerBullets.clear();
 
 	return PPASSED;
 }
