@@ -10,6 +10,7 @@
 #include "prime_logger.h"
 #include "prime_mousecodes.h"
 #include "prime_platform.h"
+#include "prime_rect.h"
 #include "prime_ref.h"
 #include "prime_render_target.h"	
 #include "prime_shader.h"

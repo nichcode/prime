@@ -101,15 +101,6 @@ struct Color
 	}
 };
 
-class Rect2D
-{
-public:
-	f32 x = 0.0f;
-	f32 y = 0.0f;
-	f32 width = 50.0f;
-	f32 height = 50.0f;
-};
-
 class Renderer2D
 {
 	struct SpriteVertex
@@ -178,8 +169,8 @@ public:
 		m_context->SetBlendmode(blendmode);
 	}
 
-	void Draw(const Rect2D& rect, const Color& color);
-	void Draw(Rect2D& rect, prime::Ref<prime::Texture2D>& texture, const Color& color = { 255, 255, 255, 255 });
+	void Draw(const prime::Rect& rect, const Color& color);
+	void Draw(prime::Rect& rect, prime::Ref<prime::Texture2D>& texture, const Color& color = { 255, 255, 255, 255 });
 	void Present();
 
 private:
@@ -312,7 +303,7 @@ void Renderer2D::Flush()
 	m_data.vertexbufferPtr = m_data.vertexbufferBase;
 }
 
-void Renderer2D::Draw(const Rect2D& rect, const Color& color)
+void Renderer2D::Draw(const prime::Rect& rect, const Color& color)
 {
 	glm::vec4 rectColor = glm::vec4(0.0f);
 	rectColor.r = (f32)color.r / 255;
@@ -334,7 +325,7 @@ void Renderer2D::Draw(const Rect2D& rect, const Color& color)
 	m_data.count += 6;
 }
 
-void Renderer2D::Draw(Rect2D& rect, prime::Ref<prime::Texture2D>& texture, const Color& color)
+void Renderer2D::Draw(prime::Rect& rect, prime::Ref<prime::Texture2D>& texture, const Color& color)
 {
 	glm::vec4 rectColor = glm::vec4(0.0f);
 	rectColor.r = (f32)color.r / 255;
@@ -389,7 +380,7 @@ class PlayerBullet
 {
 	Renderer2D* m_renderer;
 	prime::Ref<prime::Texture2D> m_texture;
-	Rect2D m_rect;
+	prime::Rect m_rect;
 	f32 m_speed =  300.0f;
 	b8 m_shouldDestroy = false;
 	u32 m_ID;
@@ -424,8 +415,14 @@ public:
 		}
 	}
 
-	b8 ShouldDestroy() {
+	b8 ShouldDestroy() 
+	{
 		return m_shouldDestroy;
+	}
+
+	prime::Rect GetRect() const
+	{
+		return m_rect;
 	}
 
 	bool operator==(const PlayerBullet& b)
@@ -443,7 +440,7 @@ class Player
 {
 	Renderer2D* m_renderer;
 	prime::Ref<prime::Texture2D> m_texture;
-	Rect2D m_rect;
+	prime::Rect m_rect;
 	f32 m_speed = 300.0f;
 	u32 m_bulletID;
 
@@ -504,19 +501,25 @@ public:
 		m_rect.x = view->width / 2.0f - m_rect.width / 2.0f;
 		m_rect.y = view->height - m_rect.height * 2.0f;
 	}
+
+	prime::Rect GetRect() const
+	{
+		return m_rect;
+	}
 };
 
 class Enemy
 {
 	Renderer2D* m_renderer;
 	prime::Ref<prime::Texture2D> m_texture;
-	Rect2D m_rect;
+	prime::Rect m_rect;
 	f32 m_speed = 150.0f;
+	u32 m_ID;
 
 public:
-	Enemy() : m_renderer(nullptr) {}
+	Enemy() : m_renderer(nullptr), m_ID(0) {}
 
-	void Init(Renderer2D* renderer, prime::Ref<prime::Texture2D>& texture, f32 x, f32 y)
+	void Init(Renderer2D* renderer, prime::Ref<prime::Texture2D>& texture, f32 x, f32 y, u32 id)
 	{
 		m_texture = texture;
 		m_rect.width = (f32)m_texture->GetWidth();
@@ -524,6 +527,7 @@ public:
 		m_rect.x = x;
 		m_rect.y = y;
 
+		m_ID = id;
 		m_renderer = renderer;
 	}
 
@@ -547,11 +551,33 @@ public:
 	        m_speed *= -1;
 		}
 	}
+
+	prime::Rect GetRect() const
+	{
+		return m_rect;
+	}
+
+	bool operator==(const Enemy& b)
+	{
+		return m_ID == b.m_ID;
+	}
+
+	bool operator!=(const Enemy& b)
+	{
+		return m_ID != b.m_ID;
+	}
 };
 
 Player player;
 prime::Ref<prime::Texture2D> pBulletTexture;
 std::vector<PlayerBullet> playerBullets;
+std::vector<Enemy> enemies;
+prime::Ref<prime::Texture2D> enemyTexture;
+Renderer2D renderer;
+u32 enemiesCreated = 0;
+
+f32 enemyPosX[5] = { 50.0f, 250.0f, 450.0f, 650.0f, 750.0f };
+f32 enemyPosY[5] = { 100.0f, 150.0f, 200.0f, 250.0f, 200.0f };
 
 void OnWindowResize(const prime::Window* w, u32 width, u32 height)
 {
@@ -569,6 +595,21 @@ void OnKey(const prime::Window* window, u16 key, i32 scancode, u8 action)
 	}
 }
 
+void GenerateEnemies()
+{
+	while (enemies.size() < 5) {
+
+		srand((u32)time(NULL));
+		int random = rand() % 5;
+
+		Enemy enemy;
+		enemy.Init(&renderer, enemyTexture, enemyPosX[random], enemyPosY[random], enemiesCreated);
+		enemies.emplace_back(enemy);
+
+		enemiesCreated++;
+	}
+}
+
 b8 GameTest()
 {
 	prime::Device device;
@@ -581,7 +622,6 @@ b8 GameTest()
 	props.height = 600;
 	window.Init(props);
 
-	Renderer2D renderer;
 	renderer.Init(&device, &window);
 	renderer.SetClearColor(40, 40, 40, 255);
 	renderer.SetBlendmode(prime::BlendmodeBlend);
@@ -601,22 +641,16 @@ b8 GameTest()
 	prime::SetWindowKeyCallback(OnKey);
 
 	prime::Timestep timestep;
-
-	// enemies
-	f32 enemyPosX[5] = {50.0f, 250.0f, 450.0f, 650.0f, 750.0f };
-	f32 enemyPosY[5] = { 100.0f, 150.0f, 200.0f, 250.0f, 200.0f };
-	prime::Ref<prime::Texture2D> enemyTexture;
 	enemyTexture = device.CreateTexture2D("textures/enemy.png");
 
-	std::vector<Enemy> enemies;
 	enemies.reserve(20);
 
 	for (int x = 0; x < 5; x++) {
 		Enemy enemy;
-		enemy.Init(&renderer, enemyTexture, enemyPosX[x], enemyPosY[x]);
+		enemy.Init(&renderer, enemyTexture, enemyPosX[x], enemyPosY[x], enemiesCreated);
 		enemies.emplace_back(enemy);
+		enemiesCreated++;
 	}
-
 	
 	pBulletTexture = device.CreateTexture2D("textures/player_bullet.png");
 	enemies.reserve(20);
@@ -626,38 +660,47 @@ b8 GameTest()
 		prime::PollEvents();
 		timestep.Tick();
 
+		renderer.Clear();
 		player.Update(timestep.GetDT(), &window);
 
 		for (Enemy& enemy : enemies) {
 			enemy.Update(timestep.GetDT());
-		}
-
-		for (PlayerBullet& bullet : playerBullets) {
-			bullet.Update(timestep.GetDT());
-		}
-
-		renderer.Clear();
-		player.Render();
-		for (Enemy& enemy : enemies) {
 			enemy.Render();
 		}
 
 		for (PlayerBullet& bullet : playerBullets) {
+			bullet.Update(timestep.GetDT());
 			bullet.Render();
 		}
 
-		renderer.Flush();
-		renderer.Present();
-
 		for (PlayerBullet& bullet : playerBullets) {
 			if (bullet.ShouldDestroy()) {
-				auto it = std::find(playerBullets.begin(), playerBullets.end(), bullet);
-				if (it != playerBullets.end()) {
-					playerBullets.erase(it);
+				auto itBullet = std::find(playerBullets.begin(), playerBullets.end(), bullet);
+				if (itBullet != playerBullets.end()) {
+					playerBullets.erase(itBullet);
 				}
-				
+			}
+
+			for (Enemy& enemy : enemies) {
+				if (bullet.GetRect().CollideRect(enemy.GetRect())) {
+					auto itBullet = std::find(playerBullets.begin(), playerBullets.end(), bullet);
+					if (itBullet != playerBullets.end()) {
+						playerBullets.erase(itBullet);
+					}
+
+					auto itEnemy = std::find(enemies.begin(), enemies.end(), enemy);
+					if (itEnemy != enemies.end()) {
+						enemies.erase(itEnemy);
+					}
+				}
 			}
 		}
+
+		GenerateEnemies();
+
+		player.Render();
+		renderer.Flush();
+		renderer.Present();
 	}
 
 	renderer.Shutdown();
