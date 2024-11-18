@@ -5,7 +5,7 @@
 namespace prime {
 
     // sprite
-    str sprite_v_shader_source = { 
+    static str sprite_vertex_shader_source = { 
 
     R"(
     #version 330 core
@@ -34,7 +34,33 @@ namespace prime {
     )" 
 };
 
-    str sprite_p_shader_source = {
+    static str sprite_vertex_shader_source_f = {
+
+    R"(
+    #version 330 core
+
+    layout(location = 0) in vec2 a_pos;
+    layout(location = 1) in vec4 a_color;
+    layout(location = 2) in vec2 a_tex_coords;
+
+    out vec4 v_color;
+    out vec2 v_tex_coords;
+
+    layout(std140) uniform projection_block
+    {
+	    mat4 u_view_projection;
+    };
+
+    void main()
+    {
+        v_color = a_color;
+        v_tex_coords = a_tex_coords;
+        gl_Position = u_view_projection * vec4(a_pos, 0.0, 1.0);
+    }
+    )"
+    };
+
+    static str sprite_pixel_shader_source = {
     
     R"(
     #version 330 core
@@ -72,5 +98,26 @@ namespace prime {
 
     )"
 };
+
+    static str sprite_pixel_shader_source_f = {
+
+    R"(
+    #version 330 core
+
+    layout(location = 0) out vec4 color;
+
+    in vec4 v_color;
+    in vec2 v_tex_coords;
+    in float v_tex_index;
+
+    uniform sampler2D u_texture;
+
+    void main()
+    {
+        color = texture(u_texture, v_tex_coords) * v_color;
+    }
+
+    )"
+    };
 
 }

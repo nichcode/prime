@@ -4,11 +4,9 @@
 #include "device.h"
 #include "rect2d.h"
 
-#include <array>
-
 namespace prime {
 
-	class DeferredRenderer2D
+	class ForwardRenderer2D
 	{
 	private:
 		struct SpriteData
@@ -18,23 +16,18 @@ namespace prime {
 			Ref<Shader> shader;
 
 			VertexbufferLayout layout;
-			SpriteVertex* vertexbuffer_base = nullptr;
-			SpriteVertex* vertexbuffer_ptr = nullptr;
-
-			std::array<Ref<Texture2D>, MAX_TEXTURE_SLOTS> tex_slots{};
-			u32 tex_index = 1, index_count = 0;
+			SpriteVertexF* vertexbuffer_base = nullptr;
+			SpriteVertexF* vertexbuffer_ptr = nullptr;
 		};
 
 	private:
 		Ref<Device> m_device;
 		Ref<Context> m_context;
-		u32* m_indices;
 		Ref<Uniformbuffer> m_projetion_buffer;
+		Ref<Texture2D> m_white_texture;
 		SpriteData m_sprite_data;
 
 	public:
-		DeferredRenderer2D();
-
 		void init(Ref<Device>& device, Ref<Context>& context);
 		void destroy();
 
@@ -44,13 +37,7 @@ namespace prime {
 
 		void set_view(Viewport& viewport);
 
-		void flush_sprites();
-		void flush();
-
 	private:
-		void LoadData(u32 sprite_max, b8 reset);
-		f32 get_texture_index(Ref<Texture2D>& texture);
-
-		void reset_sprite_batch();
+		void flush_sprites(Ref<Texture2D>& texture);
 	};
 }

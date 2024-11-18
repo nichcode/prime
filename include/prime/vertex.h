@@ -38,6 +38,13 @@ namespace prime {
 		TextureIDVertex texture_index;
 	};
 
+	struct SpriteVertexF
+	{
+		Position2DVertex pos;
+		ColorVertex color;
+		TextureVertex texture_coords;
+	};
+
 	enum DataType : u8
 	{
 		DataTypeNone,

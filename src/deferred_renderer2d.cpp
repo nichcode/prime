@@ -1,5 +1,6 @@
 
 #include "prime/deferred_renderer2d.h"
+#include "prime/vertex.h"
 #include "shader_sources.h"
 
 #include "platform/glm/glm.hpp"
@@ -18,10 +19,12 @@ namespace prime {
 		m_indices = nullptr;
 	}
 
-	void DeferredRenderer2D::init(Ref<Device>& device)
+	void DeferredRenderer2D::init(Ref<Device>& device, Ref<Context>& context)
 	{
 		PASSERT_MSG(device.get(), "Device is null");
+		PASSERT_MSG(context.get(), "Context is null");
 		m_device = device;
+		m_context = context;
 
 		s_identity = mat4(1.0f);
 
@@ -43,8 +46,8 @@ namespace prime {
 		s_tex_coords[3] = { 0.0f, 0.0f};
 
 		m_sprite_data.shader = m_device->create_shader(
-			sprite_v_shader_source,
-			sprite_p_shader_source,
+			sprite_vertex_shader_source,
+			sprite_pixel_shader_source,
 			false);
 
 		m_projetion_buffer = m_device->create_uniformbuffer(sizeof(mat4), 0);
@@ -179,10 +182,8 @@ namespace prime {
 		m_projetion_buffer->set_data(sizeof(mat4), &matrix);
 	}
 
-	void DeferredRenderer2D::flush_sprites(Ref<Context>& context)
+	void DeferredRenderer2D::flush_sprites()
 	{
-		PASSERT_MSG(context.get(), "Context is null");
-
 		if (m_sprite_data.index_count)
 		{
 			u32 data_size = (u32)((u8*)m_sprite_data.vertexbuffer_ptr - (u8*)m_sprite_data.vertexbuffer_base);
@@ -193,15 +194,15 @@ namespace prime {
 				m_sprite_data.tex_slots[i]->bind(i);
 			}
 
-			context->draw_indexed(prime::PrimitiveTopologyTriangles, m_sprite_data.index_count);
+			m_context->draw_indexed(prime::PrimitiveTopologyTriangles, m_sprite_data.index_count);
 		}
 
 		reset_sprite_batch();
 	}
 
-	void DeferredRenderer2D::flush(Ref<Context>& context)
+	void DeferredRenderer2D::flush()
 	{
-		flush_sprites(context);
+		flush_sprites();
 	}
 
 	void DeferredRenderer2D::LoadData(u32 sprite_max, b8 reset)

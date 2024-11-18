@@ -7,7 +7,7 @@ static Ref<Device> s_device;
 static Window s_window;
 static Ref<Context> s_context;
 static Viewport s_viewport;
-static DeferredRenderer2D s_renderer;
+static ForwardRenderer2D s_renderer;
 
 static void on_window_resize(const Window* w, u32 width, u32 height)
 {
@@ -18,11 +18,11 @@ static void on_window_resize(const Window* w, u32 width, u32 height)
 	s_renderer.set_view(view);
 }
 
-b8 deferred_renderer2D_test()
+b8 forward_renderer2D_test()
 {
 	s_device = Device::create(DeviceTypesOpenGL);
 	WindowProperties props;
-	props.title = "Deferred Renderer2D Test";
+	props.title = "Forward Renderer2D Test";
 	s_window.init(props);
 	s_context = s_device->create_context(&s_window);
 
@@ -47,16 +47,7 @@ b8 deferred_renderer2D_test()
 
 		s_context->clear();
 
-		s_renderer.draw(Rect2D(), {1.0f, 0.0f, 0.0f, 1.0f});
-
-		Rect2D rect;
-		rect.x = 100.0f;
-		rect.y = 200.0f;
-		rect.width = 200.0f;
-		rect.height = 200.0f;
-		s_renderer.draw(rect, texture, { 0.0f, 1.0f, 0.0f, 1.0f });
-
-		s_renderer.flush();
+		s_renderer.draw(Rect2D(), texture);
 
 		s_context->swap_buffers();
 	}

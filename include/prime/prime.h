@@ -4,6 +4,7 @@
 #include "color.h"
 #include "defines.h"
 #include "device.h"
+#include "forward_renderer2d.h"
 #include "keycodes.h"
 #include "logger.h"
 #include "mousecodes.h"
