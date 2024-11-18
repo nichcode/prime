@@ -1,15 +1,15 @@
 #pragma once
 
-#include "prime/prime_defines.h"
+#include "prime/defines.h"
 #include <Windows.h>
 
 namespace prime {
 
-	void DummyWglContext();
+	void dummy_wgl_context();
 
-	HGLRC CreateWglContext(HWND window);
-	void DeleteWglContext(HGLRC context);
-	void UpdateWglContext(HWND window);
+	HGLRC create_wgl_context(HWND window);
+	void delete_wgl_context(HGLRC context);
+	void update_wgl_context(HWND window);
 
-	void SetWGLVSync(int interval);
+	void set_wgl_vsync(int interval);
 }

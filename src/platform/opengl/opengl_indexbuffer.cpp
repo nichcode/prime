@@ -1,6 +1,5 @@
 
 #include "opengl_indexbuffer.h"
-#include "prime/prime_device.h"
 #include "platform/glad/glad.h"
 
 namespace prime {
@@ -21,12 +20,12 @@ namespace prime {
 		m_id = 0;
 	}
 
-	void OpenGLIndexbuffer::Bind()
+	void OpenGLIndexbuffer::bind()
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_id);
 	}
 
-	void OpenGLIndexbuffer::Unbind()
+	void OpenGLIndexbuffer::unbind()
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}

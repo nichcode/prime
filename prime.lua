@@ -20,7 +20,8 @@ project "prime"
 
     removefiles {
         "src/platform/windows/**.h",
-        "src/platform/windows/**.cpp"
+        "src/platform/windows/**.cpp",
+        "src/platform/glm/**.cpp"
     }
 
     includedirs {

@@ -1,24 +1,24 @@
 
 #include "wgl_context.h"
-#include "prime/prime_assert.h"
+#include "prime/assert.h"
 
 #include "platform/glad/glad_wgl.h"
 
 namespace prime {
 
-	void DummyWglContext()
+	void dummy_wgl_context()
 	{
-        WNDCLASSEX windowClass = {};
-        windowClass.style = CS_OWNDC;
-        windowClass.lpfnWndProc = DefWindowProc;
-        windowClass.lpszClassName = L"PrimeDummyWindow";
-        windowClass.cbSize = sizeof(WNDCLASSEX);
+        WNDCLASSEX window_class = {};
+        window_class.style = CS_OWNDC;
+        window_class.lpfnWndProc = DefWindowProc;
+        window_class.lpszClassName = L"PrimeDummyWindow";
+        window_class.cbSize = sizeof(WNDCLASSEX);
 
-        auto classId = RegisterClassEx(&windowClass);
+        auto class_id = RegisterClassEx(&window_class);
 
-        HWND dummyWindow = CreateWindowEx(
+        HWND dummy_window = CreateWindowEx(
             0,
-            MAKEINTATOM(classId),
+            MAKEINTATOM(class_id),
             L"PrimeDummyWindow",
             0,
             CW_USEDEFAULT,
@@ -27,12 +27,12 @@ namespace prime {
             CW_USEDEFAULT,
             0,
             0,
-            windowClass.hInstance,
+            window_class.hInstance,
             0);
 
-        PASSERT(dummyWindow);
+        PASSERT(dummy_window);
 
-        HDC dummyDC = GetDC(dummyWindow);
+        HDC dummy_dc = GetDC(dummy_window);
 
         PIXELFORMATDESCRIPTOR pfd = {};
         pfd.nSize = sizeof(pfd);
@@ -45,26 +45,26 @@ namespace prime {
         pfd.cDepthBits = 24;
         pfd.cStencilBits = 8;
 
-        int pixelFormat = ChoosePixelFormat(dummyDC, &pfd);
-        SetPixelFormat(dummyDC, pixelFormat, &pfd);
+        int pixel_format = ChoosePixelFormat(dummy_dc, &pfd);
+        SetPixelFormat(dummy_dc, pixel_format, &pfd);
 
-        HGLRC dummyContext = wglCreateContext(dummyDC);
-        PASSERT(dummyContext);
+        HGLRC dummy_context = wglCreateContext(dummy_dc);
+        PASSERT(dummy_context);
 
-        bool res = wglMakeCurrent(dummyDC, dummyContext);
+        bool res = wglMakeCurrent(dummy_dc, dummy_context);
         PASSERT(res);
 
-        u8 wglStatus = gladLoadWGL(dummyDC);
-        PASSERT_MSG(wglStatus, "WGL failed to initialize");
+        u8 wgl_status = gladLoadWGL(dummy_dc);
+        PASSERT_MSG(wgl_status, "WGL failed to initialize");
 
-		u8 glStatus = gladLoadGL();
-		PASSERT_MSG(glStatus, "GL failed to initialize");
+		u8 gl_status = gladLoadGL();
+		PASSERT_MSG(gl_status, "GL failed to initialize");
 
-		if (dummyWindow) {
-			wglMakeCurrent(dummyDC, 0);
-			wglDeleteContext(dummyContext);
-			ReleaseDC(dummyWindow, dummyDC);
-			DestroyWindow(dummyWindow);
+		if (dummy_window) {
+			wglMakeCurrent(dummy_dc, 0);
+			wglDeleteContext(dummy_context);
+			ReleaseDC(dummy_window, dummy_dc);
+			DestroyWindow(dummy_window);
 
 			PASSERT_MSG(GLVersion.major >= 4 || 
 				(GLVersion.major == 3 && GLVersion.minor >= 3),
@@ -72,11 +72,11 @@ namespace prime {
 		}
 	}
 
-	HGLRC CreateWglContext(HWND window)
+	HGLRC create_wgl_context(HWND window)
 	{
-		auto hDC = GetDC(window);
+		auto hdc = GetDC(window);
 
-		int pixelFormatAttributes[] = {
+		int pixel_format_attrib[] = {
 			WGL_DRAW_TO_WINDOW_ARB, GL_TRUE,
 			WGL_SUPPORT_OPENGL_ARB, GL_TRUE,
 			WGL_DOUBLE_BUFFER_ARB, GL_TRUE,
@@ -88,39 +88,39 @@ namespace prime {
 			0
 		};
 
-		int pixelFormat = 0;
-		UINT numFormats = 0;
-		wglChoosePixelFormatARB(hDC, pixelFormatAttributes, nullptr, 1, &pixelFormat, &numFormats);
-		PASSERT(numFormats);
+		int pixel_format = 0;
+		UINT num_format = 0;
+		wglChoosePixelFormatARB(hdc, pixel_format_attrib, nullptr, 1, &pixel_format, &num_format);
+		PASSERT(num_format);
 
-		PIXELFORMATDESCRIPTOR pixelFormatDesc = {};
-		DescribePixelFormat(hDC, pixelFormat, sizeof(PIXELFORMATDESCRIPTOR), &pixelFormatDesc);
-		SetPixelFormat(hDC, pixelFormat, &pixelFormatDesc);
+		PIXELFORMATDESCRIPTOR pixel_format_desc = {};
+		DescribePixelFormat(hdc, pixel_format, sizeof(PIXELFORMATDESCRIPTOR), &pixel_format_desc);
+		SetPixelFormat(hdc, pixel_format, &pixel_format_desc);
 
-		int openGLAttributes[] = {
+		int opengl_attrib[] = {
 			WGL_CONTEXT_MAJOR_VERSION_ARB, GLVersion.major,
 			WGL_CONTEXT_MINOR_VERSION_ARB, GLVersion.minor,
 			WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
 			0
 		};
 
-		HGLRC context = wglCreateContextAttribsARB(hDC, 0, openGLAttributes);
+		HGLRC context = wglCreateContextAttribsARB(hdc, 0, opengl_attrib);
 		PASSERT_MSG(context, "WGL context creation failed");
 		wglMakeCurrent(GetDC(window), context);
 		return context;
 	}
 
-	void DeleteWglContext(HGLRC context)
+	void delete_wgl_context(HGLRC context)
 	{
 		wglDeleteContext(context);
 	}
 
-	void UpdateWglContext(HWND window)
+	void update_wgl_context(HWND window)
 	{
 		SwapBuffers(GetDC(window));
 	}
 
-	void SetWGLVSync(int interval)
+	void set_wgl_vsync(int interval)
 	{
 		wglSwapIntervalEXT(interval);
 	}

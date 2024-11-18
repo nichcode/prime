@@ -1,7 +1,6 @@
 
 #include "opengl_render_target.h"
-#include "prime/prime_assert.h"
-#include "prime/prime_device.h"
+#include "prime/assert.h"
 #include "platform/glad/glad.h"
 
 #include <format>
@@ -63,13 +62,13 @@ namespace prime {
 		m_textureHandle = 0;
 	}
 
-	void OpenGLRenderTarget::Bind()
+	void OpenGLRenderTarget::bind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, m_id);
 		glViewport(0, 0, m_width, m_height);
 	}
 
-	void OpenGLRenderTarget::Unbind()
+	void OpenGLRenderTarget::unbind()
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glViewport((i32)m_view->x, (i32)m_view->y, m_view->width, m_view->height);

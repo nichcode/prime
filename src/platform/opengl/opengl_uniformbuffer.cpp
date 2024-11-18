@@ -1,7 +1,6 @@
 
 #include "opengl_uniformbuffer.h"
 #include "platform/glad/glad.h"
-#include "prime/prime_device.h"
 
 namespace prime {
 
@@ -19,17 +18,17 @@ namespace prime {
 		m_id = 0;
 	}
 
-	void OpenGLUniformbuffer::Bind()
+	void OpenGLUniformbuffer::bind()
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, m_id);
 	}
 
-	void OpenGLUniformbuffer::Unbind()
+	void OpenGLUniformbuffer::unbind()
 	{
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	}
 
-	void OpenGLUniformbuffer::SetData(u32 size, void* data)
+	void OpenGLUniformbuffer::set_data(u32 size, void* data)
 	{
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);
 	}

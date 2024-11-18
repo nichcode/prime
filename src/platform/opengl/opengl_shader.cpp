@@ -1,8 +1,7 @@
 
 #include "opengl_shader.h"
-#include "prime/prime_assert.h"
+#include "prime/assert.h"
 #include "platform/glad/glad.h"
-#include "prime/prime_device.h"
 
 #include <vector>
 #include <format>
@@ -10,31 +9,31 @@
 
 namespace prime {
 
-	static GLuint CreateShader(i32 type, const str& shaderSource)
+	static GLuint create_shader(i32 type, const str& shader_source)
 	{
 		int status = GL_FALSE;
-		int maxLength = 0;
+		int max_length = 0;
 
 		GLuint shader = glCreateShader(type);
-		const char* source = shaderSource.c_str();
+		const char* source = shader_source.c_str();
 		glShaderSource(shader, 1, &source, NULL);
 		glCompileShader(shader);
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
-		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &maxLength);
+		glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
 
 		if (status != GL_TRUE)
 		{
-			std::vector<GLchar> infoLog(maxLength);
-			glGetShaderInfoLog(shader, maxLength, &maxLength, infoLog.data());
+			std::vector<GLchar> info_log(max_length);
+			glGetShaderInfoLog(shader, max_length, &max_length, info_log.data());
 
 			if (type == GL_VERTEX_SHADER)
 			{
-				str msg = std::format("Vertex shader compilation error : {}", infoLog.data());
+				str msg = std::format("Vertex shader compilation error : {}", info_log.data());
 				PERROR(msg);
 			}
 			else if (type == GL_FRAGMENT_SHADER)
 			{
-				str msg = std::format("Pixel shader compilation error : {}", infoLog.data());
+				str msg = std::format("Pixel shader compilation error : {}", info_log.data());
 				PERROR(msg);
 			}
 			PASSERT(false);
@@ -42,7 +41,7 @@ namespace prime {
 		return shader;
 	}
 
-	static str ReadFile(const str& filepath)
+	static str read_file(const str& filepath)
 	{
 		str result;
 		str msg = std::format("Could not read from file '{0}'", filepath);
@@ -66,42 +65,42 @@ namespace prime {
 		return result;
 	}
 
-	OpenGLShader::OpenGLShader(const str& vSource, const str& pSource, b8 load)
+	OpenGLShader::OpenGLShader(const str& v_source, const str& p_source, b8 load)
 	{
 		if (load) {
-			m_vShader = CreateShader(GL_VERTEX_SHADER, ReadFile(vSource));
-			m_pShader = CreateShader(GL_FRAGMENT_SHADER, ReadFile(pSource));
+			m_v_shader = create_shader(GL_VERTEX_SHADER, read_file(v_source));
+			m_p_shader = create_shader(GL_FRAGMENT_SHADER, read_file(p_source));
 		}
 		else {
-			m_vShader = CreateShader(GL_VERTEX_SHADER, vSource);
-			m_pShader = CreateShader(GL_FRAGMENT_SHADER, pSource);
+			m_v_shader = create_shader(GL_VERTEX_SHADER, v_source);
+			m_p_shader = create_shader(GL_FRAGMENT_SHADER, p_source);
 		}
 
 		int status = GL_FALSE;
-		int maxLength = 0;
+		int max_length = 0;
 
 		m_id = glCreateProgram();
-		glAttachShader(m_id, m_vShader);
-		glAttachShader(m_id, m_pShader);
+		glAttachShader(m_id, m_v_shader);
+		glAttachShader(m_id, m_p_shader);
 		glLinkProgram(m_id);
 
 		glValidateProgram(m_id);
 		glGetProgramiv(m_id, GL_LINK_STATUS, &status);
-		glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &maxLength);
+		glGetProgramiv(m_id, GL_INFO_LOG_LENGTH, &max_length);
 		if (status != GL_TRUE)
 		{
-			std::vector<GLchar> infoLog(maxLength);
-			glGetProgramInfoLog(m_id, maxLength, &maxLength, infoLog.data());
+			std::vector<GLchar> info_log(max_length);
+			glGetProgramInfoLog(m_id, max_length, &max_length, info_log.data());
 
-			str msg = std::format("shader link error : {}", infoLog.data());
+			str msg = std::format("shader link error : {}", info_log.data());
 			PERROR(msg);
 
 			glDeleteProgram(m_id);
 			m_id = 0;
 			PASSERT(false);
 		}
-		glDeleteShader(m_vShader);
-		glDeleteShader(m_pShader);
+		glDeleteShader(m_v_shader);
+		glDeleteShader(m_p_shader);
 	}
 
 	OpenGLShader::~OpenGLShader()
@@ -110,78 +109,78 @@ namespace prime {
 		m_id = 0;
 	}
 
-	void OpenGLShader::Bind()
+	void OpenGLShader::bind()
 	{
 		glUseProgram(m_id);
 	}
 
-	void OpenGLShader::Unbind()
+	void OpenGLShader::unbind()
 	{
 		glUseProgram(0);
 	}
 
-	void OpenGLShader::SetInt(const str& name, i32 data)
+	void OpenGLShader::set_int(const str& name, i32 data)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniform1i(location, data);
 	}
 
-	void OpenGLShader::SetIntArray(const str& name, i32* data, u32 count)
+	void OpenGLShader::set_int_array(const str& name, i32* data, u32 count)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniform1iv(location, count, data);
 	}
 
-	void OpenGLShader::SetFloat(const str& name, f32 data)
+	void OpenGLShader::set_float(const str& name, f32 data)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniform1f(location, data);
 	}
 
-	void OpenGLShader::SetFloat2(const str& name, f32 data, f32 data2)
+	void OpenGLShader::set_float2(const str& name, f32 data, f32 data2)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniform2f(location, data, data2);
 	}
 
-	void OpenGLShader::SetFloat3(const str& name, f32 data, f32 data2, f32 data3)
+	void OpenGLShader::set_float3(const str& name, f32 data, f32 data2, f32 data3)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniform3f(location, data, data2, data3);
 	}
 
-	void OpenGLShader::SetFloat4(const str& name, f32 data, f32 data2, f32 data3, f32 data4)
+	void OpenGLShader::set_float4(const str& name, f32 data, f32 data2, f32 data3, f32 data4)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniform4f(location, data, data2, data3, data4);
 	}
 	
-	void OpenGLShader::SetMat2(const str& name, f32* data)
+	void OpenGLShader::set_mat2(const str& name, f32* data)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniformMatrix2fv(location, 1, GL_FALSE, data);
 	}
 
-	void OpenGLShader::SetMat3(const str& name, f32* data)
+	void OpenGLShader::set_mat3(const str& name, f32* data)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniformMatrix3fv(location, 1, GL_FALSE, data);
 	}
 
-	void OpenGLShader::SetMat4(const str& name, f32* data)
+	void OpenGLShader::set_mat4(const str& name, f32* data)
 	{
-		GLint location = GetUniformLocation(name);
+		GLint location = get_uniform_location(name);
 		glUniformMatrix4fv(location, 1, GL_FALSE, data);
 	}
 
-	i32 OpenGLShader::GetUniformLocation(const str& name)
+	i32 OpenGLShader::get_uniform_location(const str& name)
 	{
-		auto it = m_uniformLocations.find(name);
-		if (it == m_uniformLocations.end())
+		auto it = m_uniform_locations.find(name);
+		if (it == m_uniform_locations.end())
 		{
-			m_uniformLocations[name] = glGetUniformLocation(m_id, name.c_str());
+			m_uniform_locations[name] = glGetUniformLocation(m_id, name.c_str());
 		}
 
-		return m_uniformLocations[name];
+		return m_uniform_locations[name];
 	}
 }

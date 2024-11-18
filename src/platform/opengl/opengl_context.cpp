@@ -1,7 +1,7 @@
 
 #include "opengl_context.h"
-#include "prime/prime_window.h"
-#include "prime/prime_assert.h"
+#include "prime/window.h"
+#include "prime/assert.h"
 #include "platform/glad/glad.h"
 
 #ifdef PPLATFORM_WINDOWS
@@ -17,11 +17,11 @@ namespace prime {
 	{
 		switch (topology)
 		{
-		case prime::PrimitiveTopologyNone:
+		case PrimitiveTopologyNone:
 			PASSERT_MSG(false, "Primitive Topology can not be None");
 			break;
 
-		case prime::PrimitiveTopologyTriangles:
+		case PrimitiveTopologyTriangles:
 			return GL_TRIANGLES;
 			break;
 		}
@@ -32,7 +32,7 @@ namespace prime {
 	OpenGLContext::OpenGLContext(Window* window)
 	{
 #ifdef PPLATFORM_WINDOWS
-		m_handle = CreateWglContext((HWND)window->GetHandle());
+		m_handle = create_wgl_context((HWND)window->get_handle());
 #endif // PPLATFORM_WINDOWS
 
 		m_window = window;
@@ -45,54 +45,54 @@ namespace prime {
 	OpenGLContext::~OpenGLContext()
 	{
 #ifdef PPLATFORM_WINDOWS
-		DeleteWglContext(HGLRC(m_handle));
+		delete_wgl_context(HGLRC(m_handle));
 #endif // PPLATFORM_WINDOWS
 	}
 
-	void OpenGLContext::SetClearColor(f32 r, f32 g, f32 b, f32 a)
+	void OpenGLContext::set_clear_color(const Color& color)
 	{
-		glClearColor(r, g, b, a);
+		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void OpenGLContext::Clear()
+	void OpenGLContext::clear()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	void OpenGLContext::DrawIndexed(PrimitiveTopology topology, u32 indexCount)
+	void OpenGLContext::draw_indexed(PrimitiveTopology topology, u32 indexCount)
 	{
 		if (m_viewport == nullptr) {
-			PASSERT_MSG(false, "Cannot swap buffer without viewport");
+			PASSERT_MSG(false, "No viewport found");
 		}
 
 		GLenum type = TopologyToOpenGL(topology);
 		glDrawElements(type, indexCount, GL_UNSIGNED_INT, nullptr);
 	}
 
-	void OpenGLContext::SwapBuffers()
+	void OpenGLContext::swap_buffers()
 	{
 #ifdef PPLATFORM_WINDOWS
-		UpdateWglContext((HWND)m_window->GetHandle());
+		update_wgl_context((HWND)m_window->get_handle());
 #endif // PPLATFORM_WINDOWS
 	}
 
-	void OpenGLContext::SetViewport(const Viewport& viewport)
+	void OpenGLContext::set_viewport(const Viewport& viewport)
 	{
 		m_viewport = &viewport;
 		glViewport((i32)viewport.y, (i32)viewport.x, viewport.width, viewport.height);
 	}
 
-	void OpenGLContext::SetVSync(b8 vSync)
+	void OpenGLContext::set_vsync(b8 vSync)
 	{
 		if (vSync) {
-			SetWGLVSync(1);
+			set_wgl_vsync(1);
 		}
 		else {
-			SetWGLVSync(0);
+			set_wgl_vsync(0);
 		}
 	}
 
-	void OpenGLContext::SetBlendmode(Blendmode blendmode)
+	void OpenGLContext::set_blendmode(Blendmode blendmode)
 	{
 		if (blendmode == BlendmodeBlend) {
 			glEnable(GL_BLEND);

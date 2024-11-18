@@ -1,17 +1,16 @@
 
-#include "prime/prime_test.h"
-#include "prime/prime_device.h"
+#include "prime/test_manager.h"
 
-b8 WindowTest();
-b8 DeviceTest();
-b8 GameTest();
+using namespace prime;
+
+b8 context_test();
+b8 deferred_renderer2D_test();
 
 int main(int argc, char** argv) 
 {
-	//prime::TestManager::AddTest(WindowTest, "WindowTest");
-	//prime::TestManager::AddTest(DeviceTest, "DeviceTest");
-	prime::TestManager::AddTest(GameTest, "GameTest");
-	prime::TestManager::Run();
+	TestManager::add_test(context_test, "context_test");
+	TestManager::add_test(deferred_renderer2D_test, "deferred_renderer2D_test");
+	TestManager::run();
 
 	return 0;
 }

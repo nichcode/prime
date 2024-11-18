@@ -1,79 +1,77 @@
 
-#include "prime/prime_window.h"
-#include "prime/prime_assert.h"
-#include "prime/prime_utils.h"
+#include "prime/window.h"
+#include "prime/assert.h"
+#include "prime/utils.h"
 
 #ifdef PPLATFORM_WINDOWS
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif // !WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <windowsx.h>
 
 namespace prime {
 
-	static HINSTANCE s_hInstance = NULL;
-	wstr s_className = L"PrimeWindowClass";
-	wstr s_windowPropName = L"PrimeWindow";
-	wstr s_dataPropName = L"PrimeData";
+	static HINSTANCE s_instance = NULL;
+	wstr s_class_name = L"PrimeWindowClass";
+	wstr s_window_prop_name = L"PrimeWindow";
+	wstr s_data_prop_name = L"PrimeData";
 
 	struct Callbacks
 	{
-		CloseFunc Close = nullptr;
-		KeyFunc Key = nullptr;
-		MouseButtonFunc Mouse = nullptr;
-		MouseMovedFunc MouseMoved = nullptr;
-		MouseScrolledFunc MouseScrolled = nullptr;
-		WindowPosFunc WindowPos = nullptr;
-		WindowResizeFunc WindowResize = nullptr;
-		WindowFocusFunc WindowFocus = nullptr;
+		CloseFunc close = nullptr;
+		KeyFunc key = nullptr;
+		MouseButtonFunc mouse = nullptr;
+		MouseMovedFunc mouse_moved = nullptr;
+		MouseScrolledFunc mouse_scrolled = nullptr;
+		WindowPosFunc window_pos = nullptr;
+		WindowResizeFunc window_resize = nullptr;
+		WindowFocusFunc window_focus = nullptr;
 	};
 
-	static i32 s_WindowCount = 0;
-	static Callbacks s_Callbacks;
+	static i32 s_window_count = 0;
+	static Callbacks s_callbacks;
 
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-	static void RegisterWindowClass()
+	static LRESULT CALLBACK window_proc(HWND h_wnd, UINT u_msg, WPARAM w_param, LPARAM l_param);
+
+	static void register_window_class()
 	{
-		s_hInstance = GetModuleHandle(nullptr);
+		s_instance = GetModuleHandle(nullptr);
 
 		WNDCLASSEX wc;
 		memset(&wc, 0, sizeof(wc));
 		wc.cbSize = sizeof(WNDCLASSEX);
 		wc.style = CS_OWNDC;// | CS_VREDRAW | CS_HREDRAW;
-		wc.lpfnWndProc = WindowProc;
+		wc.lpfnWndProc = window_proc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
-		wc.hInstance = s_hInstance;
-		wc.hIcon = LoadIcon(s_hInstance, IDI_WINLOGO);
+		wc.hInstance = s_instance;
+		wc.hIcon = LoadIcon(s_instance, IDI_WINLOGO);
 		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wc.hbrBackground = nullptr;
-		wc.lpszClassName = s_className.c_str();
+		wc.lpszClassName = s_class_name.c_str();
 
 		auto result = RegisterClassEx(&wc);
 		PASSERT_MSG(result, "Window registration failed");
 	}
 
-	static void UneegisterWindowClass()
+	static void unregister_window_class()
 	{
-		UnregisterClass(s_className.c_str(), s_hInstance);
+		UnregisterClass(s_class_name.c_str(), s_instance);
 	}
 
-	static void CenterWindow(HWND handle, i32 *xPos, i32* yPos, u32 width, u32 height)
+	static void center_window(HWND handle, i32 *x_pos, i32* y_pos, u32 width, u32 height)
 	{
-		MONITORINFO monitorInfo = {};
-		monitorInfo.cbSize = sizeof(MONITORINFO);
+		MONITORINFO monitor_info = {};
+		monitor_info.cbSize = sizeof(MONITORINFO);
 
-		GetMonitorInfo(MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST), &monitorInfo);
-		int x = (monitorInfo.rcMonitor.right - monitorInfo.rcMonitor.left - width) / 2;
-		int y = (monitorInfo.rcMonitor.bottom - monitorInfo.rcMonitor.top - height) / 2;
+		GetMonitorInfo(MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST), &monitor_info);
+		int x = (monitor_info.rcMonitor.right - monitor_info.rcMonitor.left - width) / 2;
+		int y = (monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top - height) / 2;
 
-		*xPos = x;
-		*yPos = y;;
+		*x_pos = x;
+		*y_pos = y;;
 		SetWindowPos(handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 	}
 
-	static void MapKeys(WindowData& data)
+	static void map_keys(WindowData& data)
 	{
 		data.keycodes[0x01E] = Key_A;
 		data.keycodes[0x030] = Key_B;
@@ -195,7 +193,7 @@ namespace prime {
 		}*/
 	}
 
-	static void MapKeysNames(WindowData& data)
+	static void map_key_names(WindowData& data)
 	{
 		data.keynames[Key_A] = "Key A";
 		data.keynames[Key_B] = "Key B";
@@ -310,7 +308,7 @@ namespace prime {
 		data.keynames[Key_PEqual] = "Key PEqual";
 	}
 
-	static void ProcessKey(Window* window, WindowData* data, u16 key, i32 scancode, u8 action)
+	static void process_key(Window* window, WindowData* data, u16 key, i32 scancode, u8 action)
 	{
 		PASSERT_MSG(key >= 0 && key < Key_Max, "Invalid Key");
 		PASSERT_MSG(action == PRELEASE || action == PPRESS, "Invalid action");
@@ -335,12 +333,12 @@ namespace prime {
 			action = PREPEAT;
 		}
 
-		if (s_Callbacks.Key) {
-			s_Callbacks.Key(window, key, scancode, action);
+		if (s_callbacks.key) {
+			s_callbacks.key(window, key, scancode, action);
 		}
 	}
 
-	static void ProcessMouse(Window* window, WindowData* data, u16 button, u8 action)
+	static void process_mouse(Window* window, WindowData* data, u16 button, u8 action)
 	{
 		PASSERT_MSG(button >= 0 && button < Mouse_Max, "Invalid Key");
 		PASSERT_MSG(action == PRELEASE || action == PPRESS, "Invalid action");
@@ -352,26 +350,26 @@ namespace prime {
 			data->mouse[button] = action;
 		}
 
-		if (s_Callbacks.Mouse) {
-			s_Callbacks.Mouse(window, button, action);
+		if (s_callbacks.mouse) {
+			s_callbacks.mouse(window, button, action);
 		}
 	}
 
-	static void ProcessMouseMoved(Window* window, WindowData* data, i32 x, i32 y)
+	static void process_mouse_moved(Window* window, WindowData* data, i32 x, i32 y)
 	{
-		data->mousePos[0] = x;
-		data->mousePos[1] = y;
+		data->mouse_pos[0] = x;
+		data->mouse_pos[1] = y;
 
-		if (s_Callbacks.MouseMoved) {
-			s_Callbacks.MouseMoved(window, x, y);
+		if (s_callbacks.mouse_moved) {
+			s_callbacks.mouse_moved(window, x, y);
 		}
 	}
 
-	static void ProcessWindowFocus(Window* window, WindowData* data, b8 focused)
+	static void process_window_focus(Window* window, WindowData* data, b8 focused)
 	{
-		data->isFocused = focused;
-		if (s_Callbacks.WindowFocus) {
-			s_Callbacks.WindowFocus(window, focused);
+		data->is_focused = focused;
+		if (s_callbacks.window_focus) {
+			s_callbacks.window_focus(window, focused);
 		}
 
 		if (focused == false) {
@@ -381,35 +379,35 @@ namespace prime {
 			for (key = 0; key <= Key_Max; key++) {
 				if (data->keys[key] == PPRESS) {
 					const i32 scancode = data->scancodes[key];
-					ProcessKey(window, data, key, scancode, PRELEASE);
+					process_key(window, data, key, scancode, PRELEASE);
 				}
 			}
 
 			// proces mouse buttons
 			for (button = 0; button <= Mouse_Max; button++) {
 				if (data->mouse[button] == PPRESS) {
-					ProcessMouse(window, data, button, PRELEASE);
+					process_mouse(window, data, button, PRELEASE);
 				}
 			}
 		}
 	}
 
-	static LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+	static LRESULT CALLBACK window_proc(HWND h_wnd, UINT u_msg, WPARAM w_param, LPARAM l_param)
 	{
-		prime::Window* window = (prime::Window*)GetPropW(hWnd, s_windowPropName.c_str());
-		prime::WindowData* data = (prime::WindowData*)GetPropW(hWnd, s_dataPropName.c_str());
+		prime::Window* window = (prime::Window*)GetPropW(h_wnd, s_window_prop_name.c_str());
+		prime::WindowData* data = (prime::WindowData*)GetPropW(h_wnd, s_data_prop_name.c_str());
 
 		if (!window) {
 			// no window created
-			return DefWindowProc(hWnd, uMsg, wParam, lParam);
+			return DefWindowProc(h_wnd, u_msg, w_param, l_param);
 		}
 
-		switch (uMsg)
+		switch (u_msg)
 		{
 		case WM_CLOSE: {
-			data->shouldClose = true;
-			if (s_Callbacks.Close) {
-				s_Callbacks.Close(window);
+			data->should_close = true;
+			if (s_callbacks.close) {
+				s_callbacks.close(window);
 			}
 
 			return 0;
@@ -423,13 +421,13 @@ namespace prime {
 			i32 key, scancode;
 
 			// from GLFW
-			const u8 action = (HIWORD(lParam) & KF_UP) ? PRELEASE : PPRESS;
-			scancode = (HIWORD(lParam) & (KF_EXTENDED | 0xff));
+			const u8 action = (HIWORD(l_param) & KF_UP) ? PRELEASE : PPRESS;
+			scancode = (HIWORD(l_param) & (KF_EXTENDED | 0xff));
 			if (!scancode)
 			{
 				// NOTE: Some synthetic key messages have a scancode of zero
 				// HACK: Map the virtual key back to a usable scancode
-				scancode = MapVirtualKeyW((UINT)wParam, MAPVK_VK_TO_VSC);
+				scancode = MapVirtualKeyW((UINT)w_param, MAPVK_VK_TO_VSC);
 			}
 
 			// HACK: Alt+PrtSc has a different scancode than just PrtSc
@@ -444,9 +442,9 @@ namespace prime {
 			key = data->keycodes[scancode];
 
 			// The Ctrl keys require special handling
-			if (wParam == VK_CONTROL)
+			if (w_param == VK_CONTROL)
 			{
-				if (HIWORD(lParam) & KF_EXTENDED)
+				if (HIWORD(l_param) & KF_EXTENDED)
 				{
 					// Right side keys have the extended key bit set
 					key = Key_RightControl;
@@ -481,29 +479,29 @@ namespace prime {
 					key = Key_LeftControl;
 				}
 			}
-			else if (wParam == VK_PROCESSKEY)
+			else if (w_param == VK_PROCESSKEY)
 			{
 				// IME notifies that keys have been filtered by setting the
 				// virtual key-code to VK_PROCESSKEY
 				break;
 			}
 
-			if (action == PRELEASE && wParam == VK_SHIFT)
+			if (action == PRELEASE && w_param == VK_SHIFT)
 			{
 				// HACK: Release both Shift keys on Shift up event, as when both
 				//       are pressed the first release does not emit any event
 				// NOTE: The other half of this is in _glfwPollEventsWin32
-				ProcessKey(window, data, Key_LeftShift, scancode, action);
-				ProcessKey(window, data, Key_RightShift, scancode, action);
+				process_key(window, data, Key_LeftShift, scancode, action);
+				process_key(window, data, Key_RightShift, scancode, action);
 			}
-			else if (wParam == VK_SNAPSHOT)
+			else if (w_param == VK_SNAPSHOT)
 			{
 				// HACK: Key down is not reported for the Print Screen key
-				ProcessKey(window, data, key, scancode, PPRESS);
-				ProcessKey(window, data, key, scancode, PRELEASE);
+				process_key(window, data, key, scancode, PPRESS);
+				process_key(window, data, key, scancode, PRELEASE);
 			}
 			else {
-				ProcessKey(window, data, key, scancode, action);
+				process_key(window, data, key, scancode, action);
 			}
 
 			break;
@@ -519,53 +517,53 @@ namespace prime {
 		case WM_XBUTTONUP: {
 			i32 button, action;
 
-			if (uMsg == WM_LBUTTONDOWN || uMsg == WM_LBUTTONUP) {
+			if (u_msg == WM_LBUTTONDOWN || u_msg == WM_LBUTTONUP) {
 				button = Mouse_ButtonLeft;
 			}
 				
-			else if (uMsg == WM_RBUTTONDOWN || uMsg == WM_RBUTTONUP) {
+			else if (u_msg == WM_RBUTTONDOWN || u_msg == WM_RBUTTONUP) {
 				button = Mouse_ButtonRight;
 			}
 				
-			else if (uMsg == WM_MBUTTONDOWN || uMsg == WM_MBUTTONUP) {
+			else if (u_msg == WM_MBUTTONDOWN || u_msg == WM_MBUTTONUP) {
 				button = Mouse_ButtonMiddle;
 			}
 
-			if (uMsg == WM_LBUTTONDOWN || uMsg == WM_RBUTTONDOWN ||
-				uMsg == WM_MBUTTONDOWN || uMsg == WM_XBUTTONDOWN) {
+			if (u_msg == WM_LBUTTONDOWN || u_msg == WM_RBUTTONDOWN ||
+				u_msg == WM_MBUTTONDOWN || u_msg == WM_XBUTTONDOWN) {
 				action = PPRESS;
 			}
 			else {
 				action = PRELEASE;
 			}
 
-			if (uMsg == WM_LBUTTONDOWN) {
-				SetCapture(hWnd);
+			if (u_msg == WM_LBUTTONDOWN) {
+				SetCapture(h_wnd);
 			}
-			else if (uMsg == WM_LBUTTONUP) {
+			else if (u_msg == WM_LBUTTONUP) {
 				ReleaseCapture();
 			}
 
-			ProcessMouse(window, data, button, action);
-			if (uMsg == WM_XBUTTONDOWN || uMsg == WM_XBUTTONUP) { return true; }
+			process_mouse(window, data, button, action);
+			if (u_msg == WM_XBUTTONDOWN || u_msg == WM_XBUTTONUP) { return true; }
 
 			return 0;
 			break;
 		}
 
 		case WM_MOUSEMOVE: {
-			const int x = GET_X_LPARAM(lParam);
-			const int y = GET_Y_LPARAM(lParam);
+			const int x = GET_X_LPARAM(l_param);
+			const int y = GET_Y_LPARAM(l_param);
 
-			ProcessMouseMoved(window, data, x, y);
+			process_mouse_moved(window, data, x, y);
 
 			return 0;
 			break;
 		}
 
 		case WM_MOUSEWHEEL: {
-			if (s_Callbacks.MouseScrolled) {
-				s_Callbacks.MouseScrolled(window, 0.0, (f32)HIWORD(wParam) / (f32)WHEEL_DELTA);
+			if (s_callbacks.mouse_scrolled) {
+				s_callbacks.mouse_scrolled(window, 0.0, (f32)HIWORD(w_param) / (f32)WHEEL_DELTA);
 			}
 
 			return 0;
@@ -573,13 +571,13 @@ namespace prime {
 		}
 
 		case WM_MOVE: {
-			i32 x = GET_X_LPARAM(lParam);
-			i32 y = GET_Y_LPARAM(lParam);
-			data->props.xPos = x;
-			data->props.yPos = y;
+			i32 x = GET_X_LPARAM(l_param);
+			i32 y = GET_Y_LPARAM(l_param);
+			data->props.x_pos = x;
+			data->props.y_pos = y;
 
-			if (s_Callbacks.WindowPos) {
-				s_Callbacks.WindowPos(window, x, y);
+			if (s_callbacks.window_pos) {
+				s_callbacks.window_pos(window, x, y);
 			}
 
 			return 0;
@@ -587,15 +585,15 @@ namespace prime {
 		}
 
 		case WM_SIZE: {
-			const u32 width = (u32)LOWORD(lParam);
-			const u32 height = (u32)HIWORD(lParam);
+			const u32 width = (u32)LOWORD(l_param);
+			const u32 height = (u32)HIWORD(l_param);
 
 			if (width != data->props.width || height != data->props.height) {
 				data->props.width = width;
 				data->props.height = height;
 
-				if (s_Callbacks.WindowResize) {
-					s_Callbacks.WindowResize(window, width, height);
+				if (s_callbacks.window_resize) {
+					s_callbacks.window_resize(window, width, height);
 				}
 			}
 			return 0;
@@ -603,14 +601,14 @@ namespace prime {
 		}
 
 		case WM_SETFOCUS: {
-			ProcessWindowFocus(window, data, true);
+			process_window_focus(window, data, true);
 
 			return 0;
 			break;
 		}
 
 		case WM_KILLFOCUS: {
-			ProcessWindowFocus(window, data, false);
+			process_window_focus(window, data, false);
 
 			return 0;
 			break;
@@ -618,53 +616,53 @@ namespace prime {
 
 		case WM_PAINT: {
 			PAINTSTRUCT ps;
-			HDC hdc = BeginPaint(hWnd, &ps);
+			HDC hdc = BeginPaint(h_wnd, &ps);
 			HBRUSH brush = CreateSolidBrush(0);
 			FillRect(hdc, &ps.rcPaint, brush);
-			EndPaint(hWnd, &ps);
+			EndPaint(h_wnd, &ps);
 			DeleteObject(brush);
 		}
 
 		}
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
+		return DefWindowProc(h_wnd, u_msg, w_param, l_param);
 	}
 
-	void Window::Init(const WindowProperties& props)
+	void Window::init(const WindowProperties& props)
 	{
-		if (s_WindowCount == 0) {
-			RegisterWindowClass();
+		if (s_window_count == 0) {
+			register_window_class();
 		}
 
 		m_data.props = props;
 		u32 style = WS_OVERLAPPEDWINDOW;
-		u32 exStyle = WS_EX_OVERLAPPEDWINDOW;
+		u32 ex_style = WS_EX_OVERLAPPEDWINDOW;
 
 		RECT rect = { 0, 0, 0, 0 };
 		rect.right = props.width;
 		rect.bottom = props.height;
-		AdjustWindowRectEx(&rect, style, 0, exStyle);
+		AdjustWindowRectEx(&rect, style, 0, ex_style);
 
-		wstr title = StringToWideString(props.title);
+		wstr title = str_to_wstr(props.title);
 
 		HWND window = CreateWindowEx(
-			exStyle,
-			s_className.c_str(),
+			ex_style,
+			s_class_name.c_str(),
 			title.c_str(),
 			style,
-			props.xPos,
-			props.yPos,
+			props.x_pos,
+			props.y_pos,
 			rect.right - rect.left,
 			rect.bottom - rect.top,
 			0,
 			0,
-			s_hInstance,
+			s_instance,
 			0);
 
 		PASSERT_MSG(window, "Window creation failed");
 
 		if (window) {
-			SetPropW(window, s_dataPropName.c_str(), &m_data);
-			SetPropW(window, s_windowPropName.c_str(), this);
+			SetPropW(window, s_data_prop_name.c_str(), &m_data);
+			SetPropW(window, s_window_prop_name.c_str(), this);
 
 			u8 flags = 0;
 			if (props.hidden) {
@@ -681,63 +679,63 @@ namespace prime {
 			}
 
 			if (props.center) {
-				CenterWindow(window, &m_data.props.xPos, &m_data.props.yPos, props.width, props.height);
+				center_window(window, &m_data.props.x_pos, &m_data.props.y_pos, props.width, props.height);
 			}
 			ShowWindow(window, flags);
 			
-			MapKeys(m_data);
-			MapKeysNames(m_data);
+			map_keys(m_data);
+			map_key_names(m_data);
 			m_handle = window;
-			++s_WindowCount;
+			++s_window_count;
 		}
 	}
 
-	void Window::Destroy()
+	void Window::destroy()
 	{
 		DestroyWindow((HWND)m_handle);
 		m_handle = nullptr;
-		m_userData = nullptr;
-		--s_WindowCount;
-		if (s_WindowCount == 0) {
-			UneegisterWindowClass();
+		m_user_data = nullptr;
+		--s_window_count;
+		if (s_window_count == 0) {
+			unregister_window_class();
 		}
 	}
 
-	void Window::Hide()
+	void Window::hide()
 	{
 		m_data.props.hidden = true;
 		ShowWindow((HWND)m_handle, SW_HIDE);
 	}
 
-	void Window::Show()
+	void Window::show()
 	{
 		m_data.props.hidden = false;
 		ShowWindow((HWND)m_handle, SW_SHOW);
 	}
 
-	void Window::SetTitle(const str& title)
+	void Window::set_title(const str& title)
 	{
 		m_data.props.title = title;
-		wstr windowtitle = StringToWideString(title);
-		SetWindowText((HWND)m_handle, windowtitle.c_str());
+		wstr window_title = str_to_wstr(title);
+		SetWindowText((HWND)m_handle, window_title.c_str());
 	}
 
-	void Window::SetPos(i32 xPos, i32 yPos)
+	void Window::set_pos(i32 x_pos, i32 y_pos)
 	{
 		RECT rect = { 0, 0, 0, 0 };
-		rect.left = xPos;
-		rect.right = xPos;
-		rect.top = yPos;
-		rect.bottom = yPos;
+		rect.left = x_pos;
+		rect.right = x_pos;
+		rect.top = y_pos;
+		rect.bottom = y_pos;
 		AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, 0, WS_EX_OVERLAPPEDWINDOW);
 
-		m_data.props.xPos = xPos;
-		m_data.props.yPos = yPos;
+		m_data.props.x_pos = x_pos;
+		m_data.props.y_pos = y_pos;
 		SetWindowPos((HWND)m_handle, NULL, rect.left, rect.top, 0, 0,
 			SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE);
 	}
 
-	void Window::SetSize(u32 width, u32 height)
+	void Window::set_size(u32 width, u32 height)
 	{
 		b8 valid = width > 0 && height > 0;
 		PASSERT_MSG(valid, "invalid Parameter");
@@ -755,7 +753,7 @@ namespace prime {
 			SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER);
 	}
 
-	void PollEvents()
+	void poll_events()
 	{
 		MSG msg;
 		while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -766,8 +764,8 @@ namespace prime {
 		// from GLFW
 		HWND handle = GetActiveWindow();
 		if (handle) {
-			prime::WindowData* data = (prime::WindowData*)GetPropW(handle, s_dataPropName.c_str());
-			prime::Window* window = (prime::Window*)GetPropW(handle, s_windowPropName.c_str());
+			prime::WindowData* data = (prime::WindowData*)GetPropW(handle, s_data_prop_name.c_str());
+			prime::Window* window = (prime::Window*)GetPropW(handle, s_window_prop_name.c_str());
 			if (data) {
 				int i;
 				const int keys[4][2] = {
@@ -785,90 +783,90 @@ namespace prime {
 					if ((GetKeyState(vk) & 0x8000)) { continue; }
 					if (data->keycodes[key] != PPRESS) { continue; }
 
-					ProcessKey(window, data, key, scancode, PRELEASE);
+					process_key(window, data, key, scancode, PRELEASE);
 				}
 			}
 		}
 
 	}
 
-	wstr StringToWideString(const str& string)
+	wstr str_to_wstr(const str& string)
 	{
 		if (string.empty()) { return wstr(); }
 		int len = MultiByteToWideChar(CP_UTF8, 0, string.c_str(), -1, 0, 0);
 		if (len == 0) { return wstr(); }
 
-		wchar_t* wideStr = new wchar_t[len];
-		MultiByteToWideChar(CP_UTF8, 0, string.c_str(), -1, wideStr, len);
+		wchar_t* wide_str = new wchar_t[len];
+		MultiByteToWideChar(CP_UTF8, 0, string.c_str(), -1, wide_str, len);
 
-		wstr wideString(wideStr);
-		return wideString;
+		wstr wide_string(wide_str);
+		return wide_string;
 	}
 
-	str WideStringToString(const wstr& wideString)
+	str wstr_to_str(const wstr& wide_string)
 	{
-		if (wideString.empty()) { return str(); }
-		int len = WideCharToMultiByte(CP_UTF8, 0, wideString.c_str(), -1, NULL, 0, NULL, NULL);
+		if (wide_string.empty()) { return str(); }
+		int len = WideCharToMultiByte(CP_UTF8, 0, wide_string.c_str(), -1, NULL, 0, NULL, NULL);
 		if (len == 0) { return str(); }
 
-		char* charStr = new char[len];
-		WideCharToMultiByte(CP_UTF8, 0, wideString.c_str(), -1, charStr, len, NULL, NULL);
-		return charStr;
+		char* char_str = new char[len];
+		WideCharToMultiByte(CP_UTF8, 0, wide_string.c_str(), -1, char_str, len, NULL, NULL);
+		return char_str;
 	}
 
-	void SetWindowCloseCallback(CloseFunc func)
+	void set_window_close_callback(CloseFunc func)
 	{
 		if (func) {
-			s_Callbacks.Close = func;
-		}
-	}
-
-	void SetWindowKeyCallback(KeyFunc func)
-	{
-		if (func) {
-			s_Callbacks.Key = func;
+			s_callbacks.close = func;
 		}
 	}
 
-	void SetWindowMouseButtonCallback(MouseButtonFunc func)
+	void set_window_key_callback(KeyFunc func)
 	{
 		if (func) {
-			s_Callbacks.Mouse = func;
+			s_callbacks.key = func;
 		}
 	}
 
-	void SetWindowMouseMovedCallback(MouseMovedFunc func)
+	void set_window_mouse_button_callback(MouseButtonFunc func)
 	{
 		if (func) {
-			s_Callbacks.MouseMoved = func;
+			s_callbacks.mouse = func;
+		}
+	}
+
+	void set_window_mouse_moved_callback(MouseMovedFunc func)
+	{
+		if (func) {
+			s_callbacks.mouse_moved = func;
 		}
 	}
 	
-	void SetWindowMouseScrolledCallback(MouseScrolledFunc func)
+	void set_window_mouse_scrolled_callback(MouseScrolledFunc func)
 	{
 		if (func) {
-			s_Callbacks.MouseScrolled = func;
+			s_callbacks.mouse_scrolled = func;
 		}
 	}
 	
-	void SetWindowPosCallback(WindowPosFunc func)
+	void set_window_pos_callback(WindowPosFunc func)
 	{
 		if (func) {
-			s_Callbacks.WindowPos = func;
+			s_callbacks.window_pos = func;
 		}
 	}
 	
-	void SetWindowResizeCallback(WindowResizeFunc func)
+	void set_window_resize_callback(WindowResizeFunc func)
 	{
 		if (func) {
-			s_Callbacks.WindowResize = func;
+			s_callbacks.window_resize = func;
 		}
 	}
 	
-	void SetWindowFocusCallback(WindowFocusFunc func)
+	void set_window_focus_callback(WindowFocusFunc func)
 	{
 		if (func) {
-			s_Callbacks.WindowFocus = func;
+			s_callbacks.window_focus = func;
 		}
 	}
 }
