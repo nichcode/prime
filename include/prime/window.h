@@ -42,11 +42,13 @@ namespace prime {
 
 		/**
 		 * @brief The left position of the window.
+		 * if window is centered on creation this does nothing.
 		 */
 		i32 x_pos = 100;
 
 		/**
 		 * @brief The bottom position of the window.
+		 * if window is centered on creation this does nothing.
 		 */
 		i32 y_pos = 100;
 	};
@@ -74,7 +76,7 @@ namespace prime {
 	/**
 	* @brief Window scrolled callback.
 	*/
-	using MouseScrolledFunc = void(*)(const Window* window, f32 xOffset, f32 yOffset);
+	using MouseScrolledFunc = void(*)(const Window* window, f32 x_offset, f32 y_offset);
 
 	/**
 	* @brief Window position callback.

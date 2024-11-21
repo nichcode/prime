@@ -555,7 +555,7 @@ namespace prime {
 			const int x = GET_X_LPARAM(l_param);
 			const int y = GET_Y_LPARAM(l_param);
 
-			process_mouse_moved(window, data, x, y);
+			if (data->is_focused) { process_mouse_moved(window, data, x, y); }
 
 			return 0;
 			break;
@@ -631,6 +631,7 @@ namespace prime {
 	{
 		if (s_window_count == 0) {
 			register_window_class();
+			m_data.is_focused = true;
 		}
 
 		m_data.props = props;
