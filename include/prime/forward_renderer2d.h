@@ -26,6 +26,7 @@ namespace prime {
 		Ref<Uniformbuffer> m_projetion_buffer;
 		Ref<Texture2D> m_white_texture;
 		SpriteData m_sprite_data;
+		Viewport m_view;
 
 	public:
 		void init(Ref<Device>& device, Ref<Context>& context);
@@ -36,6 +37,7 @@ namespace prime {
 		void draw(const Rect2D& rect, Ref<Texture2D>& texture, const Color& tint_color);
 
 		void set_view(Viewport& viewport);
+		void set_scale(f32 scale_x, f32 scale_y);
 
 	private:
 		void flush_sprites(Ref<Texture2D>& texture);

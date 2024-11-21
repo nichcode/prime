@@ -13,6 +13,7 @@ namespace prime {
 	wstr s_class_name = L"PrimeWindowClass";
 	wstr s_window_prop_name = L"PrimeWindow";
 	wstr s_data_prop_name = L"PrimeData";
+	static WINDOWPLACEMENT s_wnd_placement;
 
 	struct Callbacks
 	{
@@ -38,7 +39,7 @@ namespace prime {
 		WNDCLASSEX wc;
 		memset(&wc, 0, sizeof(wc));
 		wc.cbSize = sizeof(WNDCLASSEX);
-		wc.style = CS_OWNDC;// | CS_VREDRAW | CS_HREDRAW;
+		wc.style = CS_OWNDC;
 		wc.lpfnWndProc = window_proc;
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
@@ -57,18 +58,20 @@ namespace prime {
 		UnregisterClass(s_class_name.c_str(), s_instance);
 	}
 
-	static void center_window(HWND handle, i32 *x_pos, i32* y_pos, u32 width, u32 height)
+	static void center_window(HWND window, int *x_pos, int *y_pos, u32 width, u32 height)
 	{
-		MONITORINFO monitor_info = {};
+		MONITORINFO monitor_info;
 		monitor_info.cbSize = sizeof(MONITORINFO);
+		GetMonitorInfo(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST), &monitor_info);
+		u32 max_width = monitor_info.rcMonitor.right;
+		u32 max_height = monitor_info.rcMonitor.bottom;
 
-		GetMonitorInfo(MonitorFromWindow(handle, MONITOR_DEFAULTTONEAREST), &monitor_info);
-		int x = (monitor_info.rcMonitor.right - monitor_info.rcMonitor.left - width) / 2;
-		int y = (monitor_info.rcMonitor.bottom - monitor_info.rcMonitor.top - height) / 2;
+		int x = (max_width - width) / 2;
+		int y = (max_height - height) / 2;
 
 		*x_pos = x;
-		*y_pos = y;;
-		SetWindowPos(handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+		*y_pos = y;
+		SetWindowPos(window, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 	}
 
 	static void map_keys(WindowData& data)
@@ -700,6 +703,15 @@ namespace prime {
 		if (s_window_count == 0) {
 			unregister_window_class();
 		}
+	}
+
+	b8 Window::is_maximized() const
+	{
+		GetWindowPlacement((HWND)m_handle, &s_wnd_placement);
+		if (s_wnd_placement.showCmd == SW_SHOWMAXIMIZED) {
+			return true;
+		}
+		return false;
 	}
 
 	void Window::hide()

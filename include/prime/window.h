@@ -107,6 +107,8 @@ namespace prime {
 		u8 mouse[Mouse_Max + 1] = {};
 
 		i32 mouse_pos[2] = {};
+		u32 max_width = 0;
+		u32 max_height = 0;
 
 		WindowData()
 		{
@@ -192,6 +194,13 @@ namespace prime {
 		 * @return PINLINE True if the window's close button has been clicked else false.
 		 */
 		PINLINE b8 should_close() const { return m_data.should_close; }
+
+		/**
+		 * @brief Check to see if the window is maximized.
+		 *
+		 * @return True if maximized otherwise false.
+		 */
+		b8 is_maximized() const;
 
 		/**
 		 * @brief Hide the window. If the window is already hidden, this does nothing.

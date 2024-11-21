@@ -16,6 +16,13 @@ static void on_window_resize(const Window* w, u32 width, u32 height)
 	view.height = height;
 	s_context->set_viewport(view);
 	s_renderer.set_view(view);
+
+	if (w->is_maximized()) {
+		s_renderer.set_scale(2.0f, 2.0f);
+	}
+	else {
+		s_renderer.set_scale(1.0f, 1.0f);
+	}
 }
 
 b8 forward_renderer2D_test()

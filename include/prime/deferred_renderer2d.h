@@ -31,6 +31,7 @@ namespace prime {
 		u32* m_indices;
 		Ref<Uniformbuffer> m_projetion_buffer;
 		SpriteData m_sprite_data;
+		Viewport m_view;
 
 	public:
 		DeferredRenderer2D();
@@ -43,6 +44,7 @@ namespace prime {
 		void draw(const Rect2D& rect, Ref<Texture2D>& texture, const Color& tint_color);
 
 		void set_view(Viewport& viewport);
+		void set_scale(f32 scale_x, f32 scale_y);
 
 		void flush_sprites();
 		void flush();

@@ -16,12 +16,20 @@ static void on_window_resize(const Window* w, u32 width, u32 height)
 	view.height = height;
 	s_context->set_viewport(view);
 	s_renderer.set_view(view);
+
+	if (w->is_maximized()) {
+		s_renderer.set_scale(2.0f, 2.0f);
+	}
+	else {
+		s_renderer.set_scale(1.0f, 1.0f);
+	}
 }
 
 b8 deferred_renderer2D_test()
 {
 	s_device = Device::create(DeviceTypesOpenGL);
 	WindowProperties props;
+	props.center = true;
 	props.title = "Deferred Renderer2D Test";
 	s_window.init(props);
 	s_context = s_device->create_context(&s_window);
@@ -51,10 +59,7 @@ b8 deferred_renderer2D_test()
 
 		Rect2D rect;
 		rect.x = 100.0f;
-		rect.y = 200.0f;
-		rect.width = 200.0f;
-		rect.height = 200.0f;
-		s_renderer.draw(rect, texture, { 0.0f, 1.0f, 0.0f, 1.0f });
+		s_renderer.draw(rect, texture);
 
 		s_renderer.flush();
 

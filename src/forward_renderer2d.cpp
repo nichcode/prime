@@ -164,6 +164,26 @@ namespace prime {
 			-1.0f,
 			1.0f);
 
+		m_view = viewport;
+		m_projetion_buffer->bind();
+		m_projetion_buffer->set_data(sizeof(mat4), &matrix);
+	}
+
+	void ForwardRenderer2D::set_scale(f32 scale_x, f32 scale_y)
+	{
+		PASSERT_MSG(scale_x, "Scale x invalid");
+		PASSERT_MSG(scale_y, "Scale y invalid");
+		f32 width = (f32)m_view.width / scale_x;
+		f32 height = (f32)m_view.height / scale_y;
+
+		mat matrix = ortho(
+			m_view.x,
+			width,
+			height,
+			m_view.y,
+			-1.0f,
+			1.0f);
+
 		m_projetion_buffer->bind();
 		m_projetion_buffer->set_data(sizeof(mat4), &matrix);
 	}
