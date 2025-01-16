@@ -2,7 +2,7 @@
 #include "prime/prime.h"
 
 b8 
-prStringTest()
+stringTest()
 {
 	PR_INFO("");
 	PR_INFO("Begin String Test");

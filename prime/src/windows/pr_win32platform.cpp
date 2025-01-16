@@ -24,8 +24,8 @@ prInit()
 void
 prShutdown()
 {
-	PR_INFO("Prime Shutdown!");
 	s_TotalAllocated = 0;
+	PR_INFO("Prime Shutdown!");
 }
 
 void*

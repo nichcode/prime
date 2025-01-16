@@ -1,7 +1,8 @@
 
 #include "prime/pr_string.h"
-#include "prime/pr_memory.h"
 #include "prime/pr_log.h"
+#include "prime/pr_memory.h"
+#include "prime/pr_linear_allocator.h"
 
 #include <string>
 #include <stdarg.h>
@@ -10,6 +11,7 @@ struct PrString
 {
 	u64 length = 0;
 	char* buffer = nullptr;
+	PrAllocator* allocator = nullptr;
 };
 
 PrString*
@@ -29,6 +31,32 @@ prStringCreate(const char* string)
 }
 
 PrString*
+prStringCreateA(PrAllocator* allocator, const char* string)
+{
+	if (string) {
+		u64 length = strlen(string);
+		PrString* str = (PrString*)prAllocatorAlloc(allocator, sizeof(PrString));
+		str->length = length;
+		str->buffer = (char*)prAllocatorAlloc(allocator, length + 1);
+		prMemCopy(str->buffer, (void*)string, length);
+		str->buffer[length] = 0;
+		str->allocator = allocator;
+
+		return str;
+	}
+	return nullptr;
+}
+
+void
+prStringDestroy(PrString* string)
+{
+	if (string && string->allocator == nullptr) {
+		prMemFree(string->buffer, string->length + 1);
+		prMemFree(string, sizeof(PrString));
+	}
+}
+
+PrString*
 prStringCopy(const PrString* string)
 {
 	if (string) {
@@ -43,15 +71,20 @@ prStringCopy(const PrString* string)
 	return nullptr;
 }
 
-void
-prStringDestroy(PrString* string)
+PrString*
+prStringCopyA(PrAllocator* allocator, const PrString* string)
 {
 	if (string) {
-		prMemFree((char*)string->buffer, string->length + 1);
-		string->buffer = nullptr;
-		prMemFree(string, sizeof(PrString));
-		string = nullptr;
+		PrString* str = (PrString*)prAllocatorAlloc(allocator, sizeof(PrString));
+		str->length = string->length;
+		str->buffer = (char*)prAllocatorAlloc(allocator, string->length + 1);
+		prMemCopy(str->buffer, (void*)string->buffer, string->length);
+		str->buffer[string->length] = 0;
+		str->allocator = allocator;
+
+		return str;
 	}
+	return nullptr;
 }
 
 const char*

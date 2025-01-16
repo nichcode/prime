@@ -4,15 +4,22 @@
 #include "pr_log.h"
 
 struct PrString;
+struct PrAllocator;
 
 PR_API PrString*
 prStringCreate(const char* string);
 
 PR_API PrString*
-prStringCopy(const PrString* string);
+prStringCreateA(PrAllocator* allocator, const char* string);
 
 PR_API void
 prStringDestroy(PrString* string);
+
+PR_API PrString*
+prStringCopy(const PrString* string);
+
+PR_API PrString*
+prStringCopyA(PrAllocator* allocator, const PrString* string);
 
 PR_API const char*
 prStringGetBuffer(PrString* string);
