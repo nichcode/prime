@@ -6,9 +6,16 @@
 #include "pr_memory.h"
 #include "pr_string.h"
 #include "pr_test.h"
+#include "pr_window.h"
 
 PR_API b8
 prInit();
 
 PR_API void
 prShutdown();
+
+PR_API f32
+prTimeGet();
+
+PR_API void
+prTimeSleep(f64 milli_secs);

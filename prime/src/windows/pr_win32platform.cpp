@@ -1,21 +1,38 @@
 
-#include "prime/prime.h"
+#include "pr_win32platform.h"
 
 #ifdef PR_PLATFORM_WINDOWS
 
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#include <Windows.h>
-#endif // !WIN32_LEAN_AND_MEAN
+#include <memory>
+#include <string>
 
 #include "pr_platform.h"
-#include <memory>
-
-static u64 s_TotalAllocated = 0;
 
 b8
 prInit()
 {
+	s_Instance = GetModuleHandle(nullptr);
+
+	WNDCLASSEX wc = {};
+	wc.cbClsExtra = 0;
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.cbWndExtra = 0;
+	wc.hbrBackground = NULL;
+	wc.hCursor = LoadCursor(s_Instance, IDC_ARROW);
+	wc.hIcon = LoadIcon(s_Instance, IDI_APPLICATION);
+	wc.hIconSm = LoadIcon(s_Instance, IDI_APPLICATION);
+	wc.hInstance = s_Instance;
+	wc.lpfnWndProc = prWinProc;
+	wc.lpszClassName = s_ClassName;
+	wc.lpszMenuName = NULL;
+	wc.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+
+	ATOM success = RegisterClassEx(&wc);
+	PR_ASSERT_MSG(success, "Window Registration Failed");
+
+	QueryPerformanceFrequency((LARGE_INTEGER*)&s_ClockFrequency);
+	QueryPerformanceCounter((LARGE_INTEGER*)&s_StartTime);
+
 	s_TotalAllocated = 0;
 	PR_INFO("Prime Initialized!");
 	return PR_PASSED;
@@ -24,6 +41,7 @@ prInit()
 void
 prShutdown()
 {
+	UnregisterClassA(s_ClassName, s_Instance);
 	s_TotalAllocated = 0;
 	PR_INFO("Prime Shutdown!");
 }
@@ -91,6 +109,20 @@ prPlatformConsoleWrite(const char* message, PrLogLevel level)
 	LPDWORD number_written = 0;
 	WriteConsoleA(console, message, (DWORD)length, number_written, 0);
 	SetConsoleTextAttribute(console, 15);
+}
+
+f32
+prTimeGet()
+{
+	u64 time;
+	QueryPerformanceCounter((LARGE_INTEGER*)&time);
+	return (f32)(time - s_StartTime) / s_ClockFrequency;
+}
+
+void
+prTimeSleep(f64 milli_secs)
+{
+	Sleep((DWORD)milli_secs);
 }
 
 #endif // PR_PLATFORM_WINDOWS

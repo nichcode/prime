@@ -7,6 +7,9 @@ stringTest();
 b8
 linearAllocatorTest();
 
+b8
+windowTest();
+
 int
 main()
 {
@@ -21,6 +24,11 @@ main()
 	allocator_test.function = linearAllocatorTest;
 	allocator_test.name = "linearAllocatorTest";
 	prTestsAdd(allocator_test);
+
+	PrTestEntry window_test;
+	window_test.function = windowTest;
+	window_test.name = "windowTest";
+	prTestsAdd(window_test);
 
 	prTestsRun();
 	prShutdown();
