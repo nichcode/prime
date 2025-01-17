@@ -10,8 +10,8 @@ struct PrTestEntry
 	PrimeTestFunc function = nullptr;
 };
 
-void
+PR_API void
 prTestsAdd(const PrTestEntry& test_entry);
 
-void
+PR_API void
 prTestsRun();

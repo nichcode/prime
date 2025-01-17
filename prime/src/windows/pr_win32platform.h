@@ -12,8 +12,8 @@
 
 static u64 s_TotalAllocated = 0;
 static HINSTANCE s_Instance;
-static const char* s_ClassName = "PrWindowClass";
-static const char* s_PropName = "PrWindowHandle";
+static const wchar_t* s_ClassName = L"PrWindowClass";
+static const wchar_t* s_PropName = L"PrWindowHandle";
 static u64 s_ClockFrequency = 0;
 static u64 s_StartTime = 0;
 static WINDOWPLACEMENT s_WndPlacement;

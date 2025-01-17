@@ -1,5 +1,6 @@
 
 #include "prime/pr_test.h"
+#include "prime/pr_string.h"
 
 #include <vector>
 
@@ -23,21 +24,22 @@ prTestsRun()
 	for (auto& test : s_Tests) {
 		b8 result = test.function();
 
-		// TODO:
-
-		/*if (result) {
-			PrimeString* msg = primeStringFormat("[SUCCESS]: %s", test.name);
-			PRIME_INFO(msg->buffer);
+		if (result) {
+			PrString* msg = prStringFormat("[SUCCESS]: %s", test.name);
+			prStringLog(msg);
+			prStringDestroy(msg);
 			++passed;
 		}
 
 		else {
-			PrimeString* msg = primeStringFormat("[FAILED]: %s", test.name);
-			PRIME_INFO(msg->buffer);
+			PrString* msg = prStringFormat("[FAILED]: %s", test.name);
+			prStringLog(msg);
+			prStringDestroy(msg);
 			++failed;
-		}*/
+		}
 	}
-	//PrimeString* msg = primeStringFormat("Results: %i passed, %i failed", passed, failed);
-	//PRIME_INFO(msg->buffer);
+	PrString* msg = prStringFormat("Results: %i passed, %i failed", passed, failed);
+	prStringLog(msg);
+	prStringDestroy(msg);
 	s_Tests.clear();
 }

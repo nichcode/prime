@@ -2,7 +2,7 @@
 #include "prime/pr_string.h"
 #include "prime/pr_log.h"
 #include "prime/pr_memory.h"
-#include "prime/pr_linear_allocator.h"
+#include "pr_platform.h"
 
 #include <string>
 #include <stdarg.h>
@@ -11,9 +11,15 @@ struct PrString
 {
 	u64 length = 0;
 	char* buffer = nullptr;
-	PrAllocator* allocator = nullptr;
 };
 
+struct PrWideString
+{
+	u64 length = 0;
+	wchar_t* buffer = nullptr;
+};
+
+// string
 PrString*
 prStringCreate(const char* string)
 {
@@ -30,19 +36,35 @@ prStringCreate(const char* string)
 	return nullptr;
 }
 
-PrString*
-prStringCreateA(PrAllocator* allocator, const char* string)
+PrString* 
+prStringCreateFromPrString(const PrString* string)
 {
 	if (string) {
-		u64 length = strlen(string);
-		PrString* str = (PrString*)prAllocatorAlloc(allocator, sizeof(PrString));
+		u64 length = strlen(string->buffer);
+		PrString* str = (PrString*)prMemAlloc(sizeof(PrString));
 		str->length = length;
-		str->buffer = (char*)prAllocatorAlloc(allocator, length + 1);
-		prMemCopy(str->buffer, (void*)string, length);
+		str->buffer = (char*)prMemAlloc(length + 1);
+		prMemCopy(str->buffer, (void*)string->buffer, length);
 		str->buffer[length] = 0;
-		str->allocator = allocator;
 
 		return str;
+	}
+	return nullptr;
+}
+
+PrString* 
+prStringCreateFromPrWideString(const PrWideString* wide_string)
+{
+	if (wide_string) {
+		int len = prPlatformWideCharToMultiByte(wide_string->buffer, 0, nullptr);
+		if (len == 0) {
+			return nullptr;
+		}
+
+		PrString* string = (PrString*)prMemAlloc(sizeof(PrString));
+		string->length = len;
+		string->buffer = (char*)prMemAlloc(len + 1);
+		prPlatformWideCharToMultiByte(wide_string->buffer, len, string->buffer);
 	}
 	return nullptr;
 }
@@ -50,53 +72,28 @@ prStringCreateA(PrAllocator* allocator, const char* string)
 void
 prStringDestroy(PrString* string)
 {
-	if (string && string->allocator == nullptr) {
+	if (string) {
 		prMemFree(string->buffer, string->length + 1);
 		prMemFree(string, sizeof(PrString));
 	}
 }
 
-PrString*
-prStringCopy(const PrString* string)
-{
-	if (string) {
-		PrString* str = (PrString*)prMemAlloc(sizeof(PrString));
-		str->length = string->length;
-		str->buffer = (char*)prMemAlloc(string->length + 1);
-		prMemCopy(str->buffer, (void*)string->buffer, string->length);
-		str->buffer[string->length] = 0;
-		
-		return str;
-	}
-	return nullptr;
-}
-
-PrString*
-prStringCopyA(PrAllocator* allocator, const PrString* string)
-{
-	if (string) {
-		PrString* str = (PrString*)prAllocatorAlloc(allocator, sizeof(PrString));
-		str->length = string->length;
-		str->buffer = (char*)prAllocatorAlloc(allocator, string->length + 1);
-		prMemCopy(str->buffer, (void*)string->buffer, string->length);
-		str->buffer[string->length] = 0;
-		str->allocator = allocator;
-
-		return str;
-	}
-	return nullptr;
-}
-
 const char*
-prStringGetBuffer(PrString* string)
+prStringGetBuffer(const PrString* string)
 {
-	return string->buffer;
+	if (string) {
+		return string->buffer;
+	}
+	return nullptr;
 }
 
 u64
-prStringGetLength(PrString* string)
+prStringGetLength(const PrString* string)
 {
-	return string->length;
+	if (string) {
+		return string->length;
+	}
+	return 0;
 }
 
 PrString*
@@ -144,3 +141,94 @@ prStringLog(PrString* string)
 {
 	prLogInfo(prStringGetBuffer(string));
 }
+
+
+// wide string
+PrWideString*
+prWideStringCreate(const wchar_t* wide_string)
+{
+	if (wide_string) {
+		u64 length = wcslen(wide_string);
+		PrWideString* str = (PrWideString*)prMemAlloc(sizeof(PrWideString));
+		str->length = length;
+		str->buffer = (wchar_t*)prMemAlloc(length * sizeof(wchar_t));
+		prMemCopy(str->buffer, (void*)wide_string, length);
+		str->buffer[length] = 0;
+
+		return str;
+	}
+	return nullptr;
+}
+
+PrWideString*
+prWideStringCreateFromPrString(const PrString* string)
+{
+	if (string) {
+		int len = prPlatformMultiByteToWideChar(string->buffer, 0, nullptr);
+		if (len == 0) {
+			return nullptr;
+		}
+
+		PrWideString* str = (PrWideString*)prMemAlloc(sizeof(PrWideString));
+		str->length = len;
+
+		str->buffer = (wchar_t*)prMemAlloc(sizeof(wchar_t) * len);
+		prPlatformMultiByteToWideChar(string->buffer, len, str->buffer);
+
+		return str;
+	}
+	return nullptr;
+}
+
+PrWideString* 
+prWideStringCreateFromCString(const char* string)
+{
+	if (string) {
+		int len = prPlatformMultiByteToWideChar(string, 0, nullptr);
+		if (len == 0) {
+			return nullptr;
+		}
+
+		PrWideString* str = (PrWideString*)prMemAlloc(sizeof(PrWideString));
+		str->length = len;
+		str->buffer = (wchar_t*)prMemAlloc(len * sizeof(wchar_t));
+		prPlatformMultiByteToWideChar(string, len, str->buffer);
+
+		return str;
+	}
+	return nullptr;
+}
+
+void
+prWideStringDestroy(PrWideString* wide_string)
+{
+	if (wide_string) {
+		prMemFree(wide_string->buffer, wide_string->length * sizeof(wchar_t));
+		prMemFree(wide_string, sizeof(PrWideString));
+	}
+}
+
+const wchar_t*
+prWideStringGetBuffer(const PrWideString* wide_string)
+{
+	if (wide_string) {
+		return wide_string->buffer;
+	}
+	return nullptr;
+}
+
+u64
+prWideStringGetLength(const PrWideString* wide_string)
+{
+	if (wide_string) {
+		return wide_string->length;
+	}
+	return 0;
+}
+
+void
+prWideStringLog(PrWideString* wide_string)
+{
+	prStringLog(prStringCreateFromPrWideString(wide_string));
+}
+

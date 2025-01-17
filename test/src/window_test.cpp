@@ -90,8 +90,8 @@ onWindowFocused(PrWindow* window, b8 focused)
 b8
 windowTest()
 {
-	PR_INFO("");
-	PR_INFO("Begin Window Test");
+	prLogInfo("");
+	prLogInfo("Begin Window Test");
 
 	PrWindow* window = prWindowCreate("Prime Window", 640, 480);
 
@@ -111,8 +111,8 @@ windowTest()
 
 	prWindowDestroy(window);
 
-	PR_INFO("End Window Test");
-	PR_INFO("");
+	prLogInfo("End Window Test");
+	prLogInfo("");
 
 	return PR_PASSED;
 }
@@ -120,8 +120,8 @@ windowTest()
 b8
 multiWindowTest()
 {
-	PR_INFO("");
-	PR_INFO("Begin Multi Window Test");
+	prLogInfo("");
+	prLogInfo("Begin Multi Window Test");
 
 	PrWindow* window1 = prWindowCreate("Prime Window 1", 640, 480);
 	PrWindow* window2 = prWindowCreate("Prime Window 2", 640, 480);
@@ -143,8 +143,8 @@ multiWindowTest()
 	prWindowDestroy(window1);
 	prWindowDestroy(window2);
 
-	PR_INFO("End Multi Window Test");
-	PR_INFO("");
+	prLogInfo("End Multi Window Test");
+	prLogInfo("");
 
 	return PR_PASSED;
 }

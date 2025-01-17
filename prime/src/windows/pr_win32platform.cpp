@@ -7,15 +7,16 @@
 #include <string>
 
 #include "pr_platform.h"
+#include "prime/pr_string.h"
 
 b8
 prInit()
 {
-	s_Instance = GetModuleHandle(nullptr);
+	s_Instance = GetModuleHandleW(nullptr);
 
-	WNDCLASSEX wc = {};
+	WNDCLASSEXW wc = {};
 	wc.cbClsExtra = 0;
-	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.cbSize = sizeof(WNDCLASSEXW);
 	wc.cbWndExtra = 0;
 	wc.hbrBackground = NULL;
 	wc.hCursor = LoadCursor(s_Instance, IDC_ARROW);
@@ -41,7 +42,7 @@ prInit()
 void
 prShutdown()
 {
-	UnregisterClassA(s_ClassName, s_Instance);
+	UnregisterClassW(s_ClassName, s_Instance);
 	s_TotalAllocated = 0;
 	PR_INFO("Prime Shutdown!");
 }
@@ -91,7 +92,7 @@ prMemCopy(void* memory_dest, const void* memory_src, u64 size)
 }
 
 void
-prPlatformConsoleWrite(const char* message, PrLogLevel level)
+prPlatformConsoleWrite(const PrString* message, PrLogLevel level)
 {
 	b8 error = level > PrLogLevelWarn;
 	HANDLE console = NULL;
@@ -105,9 +106,16 @@ prPlatformConsoleWrite(const char* message, PrLogLevel level)
 	}
 
 	SetConsoleTextAttribute(console, levels[level]);
-	u64 length = strlen(message);
-	LPDWORD number_written = 0;
-	WriteConsoleA(console, message, (DWORD)length, number_written, 0);
+
+	PrWideString* wide_str = prWideStringCreateFromPrString(message);
+	DWORD number_written = 0;
+
+	WriteConsoleW(console, 
+		prWideStringGetBuffer(wide_str), 
+		(DWORD)prWideStringGetLength(wide_str),
+		&number_written, 0);
+
+	prWideStringDestroy(wide_str);
 	SetConsoleTextAttribute(console, 15);
 }
 
@@ -123,6 +131,24 @@ void
 prTimeSleep(f64 milli_secs)
 {
 	Sleep((DWORD)milli_secs);
+}
+
+i32
+prPlatformMultiByteToWideChar(
+	const char* string,
+	u32 string_len,
+	wchar_t* wide_string)
+{
+	return MultiByteToWideChar(CP_UTF8, 0, string, -1, wide_string, string_len);
+}
+
+i32
+prPlatformWideCharToMultiByte(
+	const wchar_t* wide_string,
+	u32 wide_string_len,
+	char* string)
+{
+	return WideCharToMultiByte(CP_UTF8, 0, wide_string, -1, string, wide_string_len, 0, 0);
 }
 
 #endif // PR_PLATFORM_WINDOWS

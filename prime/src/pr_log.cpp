@@ -18,7 +18,7 @@ prLog(PrLogLevel level, const char* message, ...)
 
 	PrString* out_msg = prStringFormat("%s%s\n", levels[level], prStringGetBuffer(formatted));
 
-	prPlatformConsoleWrite(prStringGetBuffer(out_msg), level);
+	prPlatformConsoleWrite(out_msg, level);
 
 	prStringDestroy(formatted);
 	prStringDestroy(out_msg);

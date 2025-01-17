@@ -35,6 +35,8 @@ workspace "prime"
         "4006"
     }
 
+    characterset ("Unicode")
+
     linkoptions {
         "-IGNORE:4006"
     }

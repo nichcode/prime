@@ -74,6 +74,12 @@
 #define PR_FILE __FILE__
 #define PR_INLINE extern "C" inline
 
+#ifdef __cplusplus
+#define PR_CPP 1
+#else
+#define PR_CPP 0
+#endif // __cplusplus
+
 /** @brief debug breakpoint. */
 #ifdef PR_PLATFORM_WINDOWS
 #define PR_BREAK __debugbreak();

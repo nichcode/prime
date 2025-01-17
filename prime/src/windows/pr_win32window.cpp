@@ -414,9 +414,14 @@ prWindowCreate(const char* title, u32 width, u32 height)
 	rect.bottom = height;
 	AdjustWindowRectEx(&rect, style, 0, ex_style);
 
-	HWND hwnd = CreateWindowExA(ex_style,
+	PrWindow* window = (PrWindow*)prMemAlloc(sizeof(PrWindow));
+	window->title = prStringCreate(title);
+
+	PrWideString* wide_Str = prWideStringCreateFromPrString(window->title);
+
+	HWND hwnd = CreateWindowExW(ex_style,
 		s_ClassName,
-		title,
+		prWideStringGetBuffer(wide_Str),
 		style,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -429,16 +434,15 @@ prWindowCreate(const char* title, u32 width, u32 height)
 
 	PR_ASSERT_MSG(hwnd, "Window Creation Failed");
 
-	PrWindow* window = (PrWindow*)prMemAlloc(sizeof(PrWindow));
+	
 	window->handle = hwnd;
 	UpdateWindow(window->handle);
 	prWindowCenter(window, width, height);
 	ShowWindow(window->handle, SW_NORMAL);
-	SetPropA(window->handle, s_PropName, window);
+	SetPropW(window->handle, s_PropName, window);
 
 	window->width = width;
 	window->height = height;
-	window->title = prStringCreate(title);
 	prMemZero(window->keycodes, 512);
 	prMemZero(window->scancodes, PrKey_Max + 1);
 	prWindowMapKeys(window);
@@ -484,7 +488,7 @@ prWindowPollEvents()
 	HWND handle = GetActiveWindow();
 	if (handle) {
 
-		PrWindow* window = (PrWindow*)GetPropA(handle, s_PropName);
+		PrWindow* window = (PrWindow*)GetPropW(handle, s_PropName);
 		if (window) {
 			int i;
 			const int keys[4][2] = {
@@ -644,7 +648,8 @@ prWindowSetTitle(PrWindow* window, const char* title)
 {
 	PR_ASSERT_MSG(window, "Window is null");
 	window->title = prStringCreate(title);
-	SetWindowText(window->handle, title);
+	PrWideString* wide_str = prWideStringCreateFromPrString(window->title);
+	SetWindowTextW(window->handle, prWideStringGetBuffer(wide_str));
 }
 
 void
