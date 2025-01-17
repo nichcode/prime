@@ -10,6 +10,9 @@ linearAllocatorTest();
 b8
 windowTest();
 
+b8
+multiWindowTest();
+
 int
 main()
 {
@@ -29,6 +32,11 @@ main()
 	window_test.function = windowTest;
 	window_test.name = "windowTest";
 	prTestsAdd(window_test);
+
+	PrTestEntry multi_window_test;
+	multi_window_test.function = multiWindowTest;
+	multi_window_test.name = "multiWindowTest";
+	prTestsAdd(multi_window_test);
 
 	prTestsRun();
 	prShutdown();

@@ -1,8 +1,6 @@
 
 #include "prime/prime.h"
 
-static PrWindow* window = nullptr;
-
 static void 
 onWindowClose(PrWindow* window)
 {
@@ -95,7 +93,7 @@ windowTest()
 	PR_INFO("");
 	PR_INFO("Begin Window Test");
 
-	window = prWindowCreate("Prime Window", 640, 480);
+	PrWindow* window = prWindowCreate("Prime Window", 640, 480);
 
 	// callbacks
 	prWindowSetCloseCallback(onWindowClose);
@@ -113,7 +111,39 @@ windowTest()
 
 	prWindowDestroy(window);
 
-	PR_INFO("End PrWindow Test");
+	PR_INFO("End Window Test");
+	PR_INFO("");
+
+	return PR_PASSED;
+}
+
+b8
+multiWindowTest()
+{
+	PR_INFO("");
+	PR_INFO("Begin Multi Window Test");
+
+	PrWindow* window1 = prWindowCreate("Prime Window 1", 640, 480);
+	PrWindow* window2 = prWindowCreate("Prime Window 2", 640, 480);
+
+	// callbacks
+	prWindowSetCloseCallback(onWindowClose);
+	prWindowSetKeyCallback(onWindowKey);
+	prWindowSetButtonCallback(onWindowButton);
+	prWindowSetMouseMovedCallback(onWindowMouseMoved);
+	prWindowSetMouseScrolledCallback(onWindowMouseScrolled);
+	prWindowSetPosCallback(onWindowPos);
+	prWindowSetSizeCallback(onWindowResize);
+	prWindowSetFocusCallback(onWindowFocused);
+
+	while (!prWindowShouldClose(window1)) {
+		prWindowPollEvents();
+	}
+
+	prWindowDestroy(window1);
+	prWindowDestroy(window2);
+
+	PR_INFO("End Multi Window Test");
 	PR_INFO("");
 
 	return PR_PASSED;
