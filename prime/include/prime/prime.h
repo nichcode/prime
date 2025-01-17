@@ -1,6 +1,8 @@
 #pragma once
 
+#include "pr_context.h"
 #include "pr_defines.h"
+#include "pr_device.h"
 #include "pr_log.h"
 #include "pr_memory.h"
 #include "pr_string.h"

@@ -1,5 +1,7 @@
 
 #include "pr_win32platform.h"
+#include "pr_platform.h"
+#include "pr_types.h"
 
 #ifdef PR_PLATFORM_WINDOWS
 
@@ -8,31 +10,6 @@
 static std::string s_Keynames[PrKey_Max + 1] = {};
 static std::string s_Buttonnames[PrButton_Max + 1] = {};
 static b8 s_Init = false;
-
-struct PrWindow
-{
-	HWND handle = nullptr;
-	HGLRC context = nullptr;
-	u32 width = 0;
-	u32 height = 0;
-	PrString* title = nullptr;
-	b8 shouldClose = false, isFocused = false;
-	b8 isHidden = false;
-
-	u16 keycodes[512] = {};
-	u16 scancodes[PrKey_Max + 1] = {};
-
-	u8 keys[PrKey_Max + 1] = {};
-	u8 buttons[PrButton_Max + 1] = {};
-
-	i32 mousePos[2] = {};
-	u32 minWidth = 0, maxWidth = 0;
-	u32 minHeight = 0, maxHeight = 0;
-
-	void* userData = nullptr;
-	i32 posX = 0;
-	i32 posY = 0;
-};
 
 struct PrCallbacks
 {

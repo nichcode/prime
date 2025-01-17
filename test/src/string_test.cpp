@@ -21,29 +21,3 @@ stringTest()
 	prLogInfo("");
 	return PR_PASSED;
 }
-
-b8
-stringTestCpp()
-{
-	prLogInfo("");
-	prLogInfo("Begin String Test Cpp");
-
-	PrStringClass string;
-	string = "my name is Prime Strings";
-
-	PrString* str = prStringCreate("Created with C");
-
-	PrStringClass string2;
-	string2 = string;
-
-	PrStringClass string3;
-	string3 = str;
-
-	prLogInfo(string.getBuffer());
-	prLogInfo(string2.getBuffer());
-	prLogInfo(string3.getBuffer());
-
-	prLogInfo("End String Test Cpp");
-	prLogInfo("");
-	return PR_PASSED;
-}

@@ -68,6 +68,10 @@ workspace "prime"
 
     include "prime/prime.lua"
 
+    group "vendor"
+        include "vendor/glad/glad.lua"
+    group ""
+
     -- prime-test
     if (_OPTIONS["buildTest"]) then
         include "test/test.lua"

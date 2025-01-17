@@ -29,7 +29,12 @@ project "prime"
 
     includedirs {   
         "include",
-        "src"
+        "src",
+        "%{wks.location}/vendor/glad/include"
+    }
+
+    links {
+        "glad"
     }
 
     filter "system:windows"

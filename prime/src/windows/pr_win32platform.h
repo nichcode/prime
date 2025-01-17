@@ -6,9 +6,9 @@
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif // !WIN32_LEAN_AND_MEAN
 #include <Windows.h>
 #include <windowsx.h>
-#endif // !WIN32_LEAN_AND_MEAN
 
 static u64 s_TotalAllocated = 0;
 static HINSTANCE s_Instance;

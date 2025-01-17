@@ -3,6 +3,9 @@
 #include "prime/pr_log.h"
 
 struct PrString;
+struct PrDevice;
+struct PrContext;
+struct PrWindow;
 
 void
 prPlatformConsoleWrite(const PrString* message, PrLogLevel level);
