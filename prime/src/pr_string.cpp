@@ -3,6 +3,10 @@
 #include "pr_platform.h"
 #include "prime/pr_memory.h"
 
+#include "prime/pr_vec2.h"
+#include "prime/pr_vec3.h"
+#include "prime/pr_vec4.h"
+
 #include <string>
 #include <stdarg.h>
 
@@ -230,5 +234,24 @@ void
 prWideStringLog(PrWideString* wide_string)
 {
 	prStringLog(prStringCreateFromPrWideString(wide_string));
+}
+
+
+PrString*
+prVec2ToString(const PrVec2& vec)
+{
+	return prStringFormat("Vec2(%.2f, %.2f)", vec.x, vec.y);
+}
+
+PrString*
+prVec3ToString(const PrVec3& vec)
+{
+	return prStringFormat("Vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
+}
+
+PrString*
+prVec4ToString(const PrVec4& vec)
+{
+	return prStringFormat("Vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
 }
 

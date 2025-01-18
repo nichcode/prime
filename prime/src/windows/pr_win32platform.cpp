@@ -60,11 +60,7 @@ void*
 prMemAlloc(u64 size)
 {
 	s_TotalAllocated += size;
-	void* block = malloc(size);
-	if (block) {
-		memset(block, 0, size);
-	}
-	return block;
+	return (void*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
 }
 
 void
@@ -72,7 +68,7 @@ prMemFree(void* memory, u64 size)
 {
 	if (memory) {
 		s_TotalAllocated -= size;
-		free(memory);
+		HeapFree(GetProcessHeap(), 0, memory);
 	}
 }
 

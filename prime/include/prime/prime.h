@@ -3,10 +3,14 @@
 #include "pr_defines.h"
 #include "pr_device.h"
 #include "pr_log.h"
+#include "pr_maths.h"
 #include "pr_memory.h"
 #include "pr_native.h"
 #include "pr_string.h"
 #include "pr_test.h"
+#include "pr_vec2.h"
+#include "pr_vec3.h"
+#include "pr_vec4.h"
 #include "pr_window.h"
 
 PR_API b8
