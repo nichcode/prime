@@ -11,7 +11,7 @@ contextTestGL()
 	PrDevice* device = prDeviceCreate(PrDriverTypeOpenGL, window);
 
 	prDeviceMakeActive(device);
-	prDeviceSetClearColor(device, prColorFromf32(.2f, .2f, .2f, 1.0f));
+	prDeviceSetClearColor(device, prColorFromF32(.2f, .2f, .2f, 1.0f));
 	prDeviceSetVsync(device, true);
 
 	while (!prWindowShouldClose(window)) {
@@ -37,7 +37,7 @@ contextTestDx11()
 
 	PrWindow* window = prWindowCreate("Prime Window Dx11", 640, 480);
 	PrDevice* device = prDeviceCreate(PrDriverTypeDirectX11, window);
-	prDeviceSetClearColor(device, prColorFromf32(.2f, .2f, .2f, 1.0f));
+	prDeviceSetClearColor(device, prColorFromF32(.2f, .2f, .2f, 1.0f));
 
 	prDeviceMakeActive(device);
 	prDeviceSetVsync(device, true);
@@ -66,14 +66,14 @@ multiContextTest()
 	// dx11
 	PrWindow* window_dx11 = prWindowCreate("Prime Window Dx11", 640, 480);
 	PrDevice* device_dx11 = prDeviceCreate(PrDriverTypeDirectX11, window_dx11);
-	prDeviceSetClearColor(device_dx11, prColorFromf32(.2f, .2f, .2f, 1.0f));
+	prDeviceSetClearColor(device_dx11, prColorFromF32(.2f, .2f, .2f, 1.0f));
 	prDeviceMakeActive(device_dx11);
 	prDeviceSetVsync(device_dx11, true);
 
 	// gl
 	PrWindow* window_gl = prWindowCreate("Prime Window GL", 640, 480);
 	PrDevice* device_gl = prDeviceCreate(PrDriverTypeOpenGL, window_gl);
-	prDeviceSetClearColor(device_gl, prColorFromf32(.2f, .2f, .2f, 1.0f));
+	prDeviceSetClearColor(device_gl, prColorFromF32(.2f, .2f, .2f, 1.0f));
 	prDeviceMakeActive(device_gl);
 	prDeviceSetVsync(device_gl, true);
 

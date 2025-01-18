@@ -5,7 +5,6 @@
 #include "pr_math.h"
 #include "pr_vec3.h"
 #include "pr_vec4.h"
-#include "pr_quat.h"
 
 struct PrMat4
 {
@@ -29,8 +28,8 @@ PR_INLINE PrMat4
 prMat4Mul(const PrMat4& mat1, const PrMat4& mat2)
 {
     PrMat4 matrix = prMat4Identity();
-    const f32* m1_ptr = mat1.data;
-    const f32* m2_ptr = mat2.data;
+    const f32* m1_ptr = mat2.data;
+    const f32* m2_ptr = mat1.data;
     f32* dst_ptr = matrix.data;
 
     for (i32 i = 0; i < 4; ++i) {
@@ -264,7 +263,6 @@ prMat4Scale(const PrVec3 scale)
     matrix.data[5] = scale.y;
     matrix.data[10] = scale.z;
     return matrix;
-    return matrix;
 }
 
 PR_INLINE PrMat4
@@ -421,54 +419,19 @@ prMat4MulVec4(const PrMat4& matrix, PrVec4& vec)
     );
 }
 
-PR_INLINE PrMat4
-prQuatToMat4(PrQuat& quat) 
-{
-    PrMat4 out_matrix = prMat4Identity();
-
-    // https://stackoverflow.com/questions/1556260/convert-quaternion-rotation-to-rotation-matrix
-
-    PrQuat n = prQuatNormalize(quat);
-
-    out_matrix.data[0] = 1.0f - 2.0f * n.y * n.y - 2.0f * n.z * n.z;
-    out_matrix.data[1] = 2.0f * n.x * n.y - 2.0f * n.z * n.w;
-    out_matrix.data[2] = 2.0f * n.x * n.z + 2.0f * n.y * n.w;
-
-    out_matrix.data[4] = 2.0f * n.x * n.y + 2.0f * n.z * n.w;
-    out_matrix.data[5] = 1.0f - 2.0f * n.x * n.x - 2.0f * n.z * n.z;
-    out_matrix.data[6] = 2.0f * n.y * n.z - 2.0f * n.x * n.w;
-
-    out_matrix.data[8] = 2.0f * n.x * n.z - 2.0f * n.y * n.w;
-    out_matrix.data[9] = 2.0f * n.y * n.z + 2.0f * n.x * n.w;
-    out_matrix.data[10] = 1.0f - 2.0f * n.x * n.x - 2.0f * n.y * n.y;
-
-    return out_matrix;
-}
-
-PR_INLINE PrMat4
-prMat4TranslationRotationScale(PrVec3 t, PrQuat r, PrVec3 s)
-{
-    PrMat4 out_matrix;
-
-    out_matrix.data[0] = (1.0f - 2.0f * (r.y * r.y + r.z * r.z)) * s.x;
-    out_matrix.data[1] = (r.x * r.y + r.z * r.w) * s.x * 2.0f;
-    out_matrix.data[2] = (r.x * r.z - r.y * r.w) * s.x * 2.0f;
-    out_matrix.data[3] = 0.0f;
-    out_matrix.data[4] = (r.x * r.y - r.z * r.w) * s.y * 2.0f;
-    out_matrix.data[5] = (1.0f - 2.0f * (r.x * r.x + r.z * r.z)) * s.y;
-    out_matrix.data[6] = (r.y * r.z + r.x * r.w) * s.y * 2.0f;
-    out_matrix.data[7] = 0.0f;
-    out_matrix.data[8] = (r.x * r.z + r.y * r.w) * s.z * 2.0f;
-    out_matrix.data[9] = (r.y * r.z - r.x * r.w) * s.z * 2.0f;
-    out_matrix.data[10] = (1.0f - 2.0f * (r.x * r.x + r.y * r.y)) * s.z;
-    out_matrix.data[11] = 0.0f;
-    out_matrix.data[12] = t.x;
-    out_matrix.data[13] = t.y;
-    out_matrix.data[14] = t.z;
-    out_matrix.data[15] = 1.0f;
-
-    return out_matrix;
-}
-
 PR_API PrString*
 prMat4ToString(const PrMat4& matrix);
+
+#ifdef __cplusplus
+
+inline PrMat4 operator * (const PrMat4& mat1, const PrMat4& mat2)
+{
+    return prMat4Mul(mat1, mat2);
+}
+
+inline PrMat4& operator *= (PrMat4& mat1, const PrMat4& mat2)
+{
+    return prMat4Mul(mat1, mat2);
+}
+
+#endif // __cplusplus

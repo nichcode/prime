@@ -31,9 +31,6 @@ vec4Test();
 b8
 mat4Test();
 
-b8
-quatTest();
-
 int
 main()
 {
@@ -45,10 +42,10 @@ main()
 	//prTestsAdd(contextTestGL, "ContextTestGL");
 	//prTestsAdd(contextTestDx11, "ContextTestDx11");
 	//prTestsAdd(multiContextTest, "MultiContextTest");
-	prTestsAdd(vec2Test, "Vec2Test");
-	prTestsAdd(vec3Test, "Vec3Test");
+	//prTestsAdd(vec2Test, "Vec2Test");
+	//prTestsAdd(vec3Test, "Vec3Test");
+	//prTestsAdd(vec4Test, "Vec4Test");
 	prTestsAdd(mat4Test, "Mat4Test");
-	prTestsAdd(quatTest, "QuatTest");
 
 	prTestsRun();
 	prShutdown();

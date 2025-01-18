@@ -22,7 +22,7 @@ prColorFromU8(u8 r, u8 g, u8 b, u8 a)
 }
 
 PR_INLINE PrColor
-prColorFromf32(f32 r, f32 g, f32 b, f32 a)
+prColorFromF32(f32 r, f32 g, f32 b, f32 a)
 {
     PrColor color;
     color.r = r;
@@ -30,4 +30,28 @@ prColorFromf32(f32 r, f32 g, f32 b, f32 a)
     color.b = b;
     color.a = a;
     return color;
+}
+
+PR_INLINE u32
+prColorToU32(const PrColor& color)
+{
+    u32 r = (u32)(color.r * 255.0f);
+    u32 g = (u32)(color.g * 255.0f);
+    u32 b = (u32)(color.b * 255.0f);
+
+    u32 out_color = (((r & 0x0FF) << 16) | ((g & 0x0FF) << 8) | (b & 0x0FF));
+}
+
+PR_INLINE PrColor
+prColorFromU32(u32 rgba)
+{
+    PrColor color;
+    u32 r = (rgba >> 16) & 0x0FF;
+    u32 g = (rgba >> 8) & 0x0FF;
+    u32 b = (rgba) & 0x0FF;
+
+    color.r = (f32)r / 255.0f;
+    color.r = (f32)g / 255.0f;
+    color.r = (f32)b / 255.0f;
+    color.a = 1.0f / 255.0f;
 }

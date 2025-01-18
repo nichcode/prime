@@ -260,10 +260,10 @@ PrString*
 prMat4ToString(const PrMat4& matrix)
 {
 	const f32* d = matrix.data;
-	PrString* str1 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[0], d[1], d[2], d[3]);
-	PrString* str2 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[4], d[5], d[6], d[7]);
-	PrString* str3 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[8], d[9], d[10], d[11]);
-	PrString* str4 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[12], d[13], d[14], d[15]);
+	PrString* str1 = prStringFormat("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
+	PrString* str2 = prStringFormat("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
+	PrString* str3 = prStringFormat("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
+	PrString* str4 = prStringFormat("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
 
 	PrString* str = prStringFormat("Mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
 		prStringGetBuffer(str1),
@@ -282,10 +282,4 @@ prMat4ToString(const PrMat4& matrix)
 		d[13], d[14], d[15]);*/
 	
 	return str;
-}
-
-PR_API PrString*
-prQuatToString(const PrQuat& vec)
-{
-	return prStringFormat("Quat(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
 }

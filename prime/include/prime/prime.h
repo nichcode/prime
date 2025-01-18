@@ -7,7 +7,6 @@
 #include "pr_math.h"
 #include "pr_memory.h"
 #include "pr_native.h"
-#include "pr_quat.h"
 #include "pr_string.h"
 #include "pr_test.h"
 #include "pr_vec2.h"

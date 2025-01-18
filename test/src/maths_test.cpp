@@ -10,13 +10,13 @@ vec2Test()
 	PrString* string = nullptr;
 	PrVec2 x = prVec2Create(10.0f, 20.0f);
 	PrVec2 y = prVec2Create(20.0f, 10.0f);
-	PrVec2 result = prVec2Add(x, y);
+	PrVec2 result = x + y;
 
-	result = prVec2Add(result, { 10.0f, 10.0f });
-	result = prVec2Sub(result, { 10.0f, 10.0f });
-	result = prVec2Div(result, { 2.0f, 2.0f });
-	result = prVec2Mul(result, { 2.0f, 2.0f });
-	result = prVec2Scale(result, 2.0f);
+	result += prVec2Create(10.0f, 10.0f);
+	result -= prVec2Create(10.0f, 10.0f);
+	result /= prVec2Create(2.0f, 2.0f);
+	result *= prVec2Create(2.0f, 2.0f);
+	result *= 2.0f;
 
 	string = prVec2ToString(result);
 	prStringLog(string);
@@ -36,13 +36,13 @@ vec3Test()
 	PrString* string = nullptr;
 	PrVec3 x = prVec3Create(10.0f, 20.0f, 20.0f);
 	PrVec3 y = prVec3Create(20.0f, 10.0f, 10.0f);
-	PrVec3 result = prVec3Add(x, y);
+	PrVec3 result = x + y;
 
-	result = prVec3Add(result, prVec3Create(10.0f, 10.0f, 10.0f));
-	result = prVec3Sub(result, prVec3Create(10.0f, 10.0f, 10.0f));
-	result = prVec3Div(result, prVec3Create(2.0f, 2.0f, 2.0f));
-	result = prVec3Mul(result, prVec3Create(2.0f, 2.0f, 2.0f));
-	result = prVec3Scale(result, 2.0f);
+	result += prVec3Create(10.0f, 10.0f, 10.0f);
+	result -= prVec3Create(10.0f, 10.0f, 10.0f);
+	result /= prVec3Create(2.0f, 2.0f, 2.0f);
+	result *= prVec3Create(2.0f, 2.0f, 2.0f);
+	result *= 2.0f;
 
 	string = prVec3ToString(result);
 	prStringLog(string);
@@ -62,13 +62,13 @@ vec4Test()
 	PrString* string = nullptr;
 	PrVec4 x = prVec4Create(10.0f, 20.0f, 20.0f, 20.0f);
 	PrVec4 y = prVec4Create(20.0f, 10.0f, 10.0f, 10.0f);
-	PrVec4 result = prVec4Add(x, y);
+	PrVec4 result = x + y;
 
-	result = prVec4Add(result, prVec4Create(10.0f, 10.0f, 10.0f, 10.0f));
-	result = prVec4Sub(result, prVec4Create(10.0f, 10.0f, 10.0f, 10.0f));
-	result = prVec4Div(result, prVec4Create(2.0f, 2.0f, 2.0f, 2.0f));
-	result = prVec4Mul(result, prVec4Create(2.0f, 2.0f, 2.0f, 2.0f));
-	result = prVec4Scale(result, 2.0f);
+	result += prVec4Create(10.0f, 10.0f, 10.0f, 10.0f);
+	result -= prVec4Create(10.0f, 10.0f, 10.0f, 10.0f);
+	result /= prVec4Create(2.0f, 2.0f, 2.0f, 2.0f);
+	result *= prVec4Create(2.0f, 2.0f, 2.0f, 2.0f);
+	result *= 2.0f;
 
 	string = prVec4ToString(result);
 	prStringLog(string);
@@ -80,35 +80,51 @@ vec4Test()
 }
 
 b8
-quatTest()
-{
-	prLogInfo("");
-	prLogInfo("Begin Quat Test");
-
-	PrString* string = nullptr;
-	PrQuat quat = prQuatCreate(1.0f, 2.0f, 10.0f, 20.0f);
-
-	string = prQuatToString(quat);
-	prStringLog(string);
-	prStringDestroy(string);
-
-	prLogInfo("End Quat Test");
-	prLogInfo("");
-	return PR_PASSED;
-}
-
-b8
 mat4Test()
 {
 	prLogInfo("");
 	prLogInfo("Begin Mat4 Test");
 
-	PrString* string = nullptr;
-	PrMat4 mat4 = prMat4Identity();
+	PrString* string_ortho = nullptr;
+	PrString* string_perps = nullptr;
+	PrString* string_translation = nullptr;
+	PrString* string_rotation = nullptr;
+	PrString* string_scale = nullptr;
+	PrString* string_trs = nullptr;
+	PrString* string_inverse = nullptr;
 
-	string = prMat4ToString(mat4);
-	prStringLog(string);
-	prStringDestroy(string);
+	PrMat4 ortho = prMat4Orthographic(0.0f, 640.0f, 480.0f, 0.0f, 1.0f, -1.0f);
+
+	PrMat4 perps = prMat4Perspective(45.0f, 640.0f / 480.0f, 30.0f, 1000.0f);
+	PrMat4 translation = prMat4Translation({2.0f, 11.0f, -2.0f});
+	PrMat4 rotation = prMat4RotationZ(45.0f);
+	PrMat4 scale = prMat4Scale({ 2.0f, 2.0f, 2.0f });
+	PrMat4 trs = translation * rotation * scale;
+	PrMat4 inverse = prMat4Inverse(trs);
+
+	string_ortho = prMat4ToString(ortho);
+	string_perps = prMat4ToString(perps);
+	string_translation = prMat4ToString(translation);
+	string_rotation = prMat4ToString(rotation);
+	string_scale = prMat4ToString(scale);
+	string_trs = prMat4ToString(trs);
+	string_inverse = prMat4ToString(inverse);
+
+	prStringLog(string_ortho);
+	prStringLog(string_perps);
+	prStringLog(string_translation);
+	prStringLog(string_rotation);
+	prStringLog(string_scale);
+	prStringLog(string_trs);
+	prStringLog(string_inverse);
+
+	prStringDestroy(string_ortho);
+	prStringDestroy(string_perps);
+	prStringDestroy(string_translation);
+	prStringDestroy(string_rotation);
+	prStringDestroy(string_scale);
+	prStringDestroy(string_trs);
+	prStringDestroy(string_inverse);
 
 	prLogInfo("End Mat4 Test");
 	prLogInfo("");
