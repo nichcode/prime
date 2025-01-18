@@ -3,11 +3,15 @@
 
 #ifdef PR_PLATFORM_WINDOWS
 
+#include "pr_wglcontext.h"
+
 #include <memory>
 #include <string>
 
 #include "pr_platform.h"
 #include "prime/pr_string.h"
+
+static b8 s_WGLInit = false;
 
 b8
 prInit()
@@ -35,6 +39,11 @@ prInit()
 	QueryPerformanceCounter((LARGE_INTEGER*)&s_StartTime);
 
 	s_TotalAllocated = 0;
+	if (!s_WGLInit) {
+		prWGLContextCreateDummy();
+		s_WGLInit = true;
+	}
+
 	PR_INFO("Prime Initialized!");
 	return PR_PASSED;
 }

@@ -1,11 +1,35 @@
 
 #include "pr_win32platform.h"
 #include "pr_platform.h"
-#include "pr_types.h"
 
 #ifdef PR_PLATFORM_WINDOWS
 
 #include <string>
+
+struct PrWindow
+{
+	HWND handle = nullptr;
+	PrDriverContext* context = nullptr;
+	u32 width = 0;
+	u32 height = 0;
+	PrString* title = nullptr;
+	b8 shouldClose = false, isFocused = false;
+	b8 isHidden = false;
+
+	u16 keycodes[512] = {};
+	u16 scancodes[PrKey_Max + 1] = {};
+
+	u8 keys[PrKey_Max + 1] = {};
+	u8 buttons[PrButton_Max + 1] = {};
+
+	i32 mousePos[2] = {};
+	u32 minWidth = 0, maxWidth = 0;
+	u32 minHeight = 0, maxHeight = 0;
+
+	void* userData = nullptr;
+	i32 posX = 0;
+	i32 posY = 0;
+};
 
 static std::string s_Keynames[PrKey_Max + 1] = {};
 static std::string s_Buttonnames[PrButton_Max + 1] = {};
@@ -796,6 +820,32 @@ prWindowMaximized(PrWindow* window)
 		return true;
 	}
 	return false;
+}
+
+HWND 
+prWin32GetWindowHandle(PrWindow* window)
+{
+	PR_ASSERT_MSG(window, "Window is null");
+	return window->handle;
+}
+
+HINSTANCE 
+prWin32GetHInstance(PrWindow* window)
+{
+	PR_ASSERT_MSG(window, "Window is null");
+	return s_Instance;
+}
+
+void
+prPlatformWin32WindowSetContext(PrWindow* window, PrDriverContext* context)
+{
+	window->context = context;
+}
+
+b8
+prPlatformWin32HasContext(PrWindow* window)
+{
+	return window->context;
 }
 
 LRESULT CALLBACK

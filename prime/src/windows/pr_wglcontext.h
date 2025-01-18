@@ -1,5 +1,7 @@
 #pragma once
 
+#include "prime/pr_defines.h"
+
 #ifdef PR_PLATFORM_WINDOWS
 
 #ifndef WIN32_LEAN_AND_MEAN

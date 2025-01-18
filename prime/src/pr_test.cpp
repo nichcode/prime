@@ -7,11 +7,11 @@
 static std::vector<PrTestEntry> s_Tests;
 
 void 
-prTestsAdd(const PrTestEntry& test_entry)
+prTestsAdd(PrTestFunc function, const char* name)
 {
 	PrTestEntry test;
-	test.function = test_entry.function;
-	test.name = test_entry.name;
+	test.function = function;
+	test.name = name;
 	s_Tests.push_back(test);
 }
 

@@ -2,16 +2,16 @@
 
 #include "pr_defines.h"
 
-using PrimeTestFunc = b8(*)();
+using PrTestFunc = b8(*)();
 
 struct PrTestEntry
 {
 	const char* name = nullptr;
-	PrimeTestFunc function = nullptr;
+	PrTestFunc function = nullptr;
 };
 
 PR_API void
-prTestsAdd(const PrTestEntry& test_entry);
+prTestsAdd(PrTestFunc function, const char* name);
 
 PR_API void
 prTestsRun();

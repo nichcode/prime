@@ -24,7 +24,9 @@ project "prime"
 
     removefiles {
         "src/windows/**.h",
-        "src/windows/**.cpp"
+        "src/windows/**.cpp",
+        "src/directx11/**.h",
+        "src/directx11/**.cpp"
     }
 
     includedirs {   
@@ -40,5 +42,11 @@ project "prime"
     filter "system:windows"
         files {
             "src/windows/**.h",
-            "src/windows/**.cpp"
+            "src/windows/**.cpp",
+            "src/directx11/**.h",
+            "src/directx11/**.cpp"
+        }
+
+        links {
+            "d3d11.lib"
         }

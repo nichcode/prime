@@ -1,10 +1,23 @@
 
 #include "prime/pr_string.h"
-#include "pr_types.h"
 #include "pr_platform.h"
+#include "prime/pr_memory.h"
 
 #include <string>
 #include <stdarg.h>
+
+struct PrString
+{
+	u64 length = 0;
+	char* buffer = nullptr;
+};
+
+struct PrWideString
+{
+	u64 length = 0;
+	wchar_t* buffer = nullptr;
+};
+
 
 // string
 PrString*
