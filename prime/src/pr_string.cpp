@@ -6,6 +6,7 @@
 #include "prime/pr_vec2.h"
 #include "prime/pr_vec3.h"
 #include "prime/pr_vec4.h"
+#include "prime/pr_mat4.h"
 
 #include <string>
 #include <stdarg.h>
@@ -255,3 +256,36 @@ prVec4ToString(const PrVec4& vec)
 	return prStringFormat("Vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
 }
 
+PrString*
+prMat4ToString(const PrMat4& matrix)
+{
+	const f32* d = matrix.data;
+	PrString* str1 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[0], d[1], d[2], d[3]);
+	PrString* str2 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[4], d[5], d[6], d[7]);
+	PrString* str3 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[8], d[9], d[10], d[11]);
+	PrString* str4 = prStringFormat("[%.2f %.2f %.2f %.2f]", d[12], d[13], d[14], d[15]);
+
+	PrString* str = prStringFormat("Mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
+		prStringGetBuffer(str1),
+		prStringGetBuffer(str2),
+		prStringGetBuffer(str3),
+		prStringGetBuffer(str4));
+
+	prStringDestroy(str1);
+	prStringDestroy(str2);
+	prStringDestroy(str3);
+	prStringDestroy(str4);
+
+	/*PrString* str = prStringFormat(
+		"Mat4([%.2f %.2f %.2f %.2f] \n\t [%.2f %.2f %.2f %.2f] \n\t \ [%.2f %.2f %.2f %.2f] \n\t [%.2f %.2f %.2f %.2f])",
+		d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], d[8], d[9], d[10], d[11], d[12],
+		d[13], d[14], d[15]);*/
+	
+	return str;
+}
+
+PR_API PrString*
+prQuatToString(const PrQuat& vec)
+{
+	return prStringFormat("Quat(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
+}

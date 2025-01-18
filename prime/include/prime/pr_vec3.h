@@ -42,6 +42,42 @@ prVec3One()
 }
 
 PR_INLINE PrVec3
+prVec3Up()
+{
+    return prVec3Create(0.0f, 1.0f, 0.0f);
+}
+
+PR_INLINE PrVec3
+prVec3Down()
+{
+    return prVec3Create(0.0f, -1.0f, 0.0f);
+}
+
+PR_INLINE PrVec3
+prVec3Right()
+{
+    return prVec3Create(1.0f, 0.0f, 0.0f);
+}
+
+PR_INLINE PrVec3
+prVec3Left()
+{
+    return prVec3Create(-1.0f, 0.0f, 0.0f);
+}
+
+PR_INLINE PrVec3
+prVec3Forward()
+{
+    return prVec3Create(0.0f, 0.0f, -1.0f);
+}
+
+PR_INLINE PrVec3
+prVec3Back()
+{
+    return prVec3Create(0.0f, 0.0f, 1.0f);
+}
+
+PR_INLINE PrVec3
 prVec3Add(const PrVec3& vec1, const PrVec3& vec2)
 {
     return prVec3Create(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z);
@@ -57,6 +93,12 @@ PR_INLINE PrVec3
 prVec3Div(const PrVec3& vec1, const PrVec3& vec2)
 {
     return prVec3Create(vec1.x / vec2.x, vec1.y / vec2.y, vec1.z / vec2.z);
+}
+
+PR_INLINE PrVec3
+prVec3DivScaler(const PrVec3& vec1, f32 scaler)
+{
+    return prVec3Create(vec1.x / scaler, vec1.y / scaler, vec1.z / scaler);
 }
 
 PR_INLINE PrVec3
@@ -92,6 +134,13 @@ prVec3Normalize(PrVec3& vec)
     vec.z /= length;
 }
 
+PR_INLINE PrVec3
+prVec3Normalized(PrVec3& vec)
+{
+    prVec3Normalize(vec);
+    return vec;
+}
+
 PR_INLINE f32
 prVec3DistanceSquared(const PrVec3& vec1, const PrVec3& vec2)
 {
@@ -106,11 +155,42 @@ prVec3Distance(const PrVec3& vec1, const PrVec3& vec2)
     return prVec3Length(vec);
 }
 
+PR_INLINE b8
+prVec3Equal(const PrVec3& vec1, const PrVec3& vec2)
+{
+    return vec1.x == vec2.x && vec1.y == vec2.y && vec1.z == vec2.z;
+}
+
+PR_INLINE b8
+prVec3NotEqual(const PrVec3& vec1, const PrVec3& vec2)
+{
+    return vec1.x != vec2.x && vec1.y != vec2.y && vec1.z != vec2.z;
+}
+
+PR_INLINE f32
+prVec3Dot(const PrVec3& vec1, const PrVec3& vec2)
+{
+    f32 p = 0;
+    p += vec1.x * vec2.x;
+    p += vec1.y * vec2.y;
+    p += vec1.z * vec2.z;
+    return p;
+}
+
+PR_INLINE PrVec3
+prVec3Cross(const PrVec3& vec1, const PrVec3& vec2)
+{
+    return prVec3Create(
+        vec1.y * vec2.z - vec1.z * vec2.y,
+        vec1.z * vec2.x - vec1.x * vec2.z,
+        vec1.x * vec2.y - vec1.y * vec2.x
+    );
+}
+
 PR_API PrString*
 prVec3ToString(const PrVec3& vec);
 
 #ifdef __cplusplus
-
 
 inline PrVec3 operator + (const PrVec3& vec1, const PrVec3& vec2)
 {
@@ -175,6 +255,16 @@ inline PrVec3& operator *= (PrVec3& vec1, f32 scaler)
     vec1.y *= scaler;
     vec1.z *= scaler;
     return vec1;
+}
+
+inline b8 operator == (const PrVec3& vec1, const PrVec3& vec2)
+{
+    return prVec3Equal(vec1, vec2);
+}
+
+inline b8 operator != (const PrVec3& vec1, const PrVec3& vec2)
+{
+    return prVec3NotEqual(vec1, vec2);
 }
 
 #endif // __cplusplus

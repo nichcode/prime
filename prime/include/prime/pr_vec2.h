@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pr_maths.h"
+#include "pr_math.h"
 
 struct PrVec2
 {
@@ -30,6 +30,30 @@ prVec2One()
 }
 
 PR_INLINE PrVec2
+prVec2Up()
+{
+    return prVec2Create(0.0f, 1.0f);
+}
+
+PR_INLINE PrVec2
+prVec2Down()
+{
+    return prVec2Create(0.0f, -1.0f);
+}
+
+PR_INLINE PrVec2
+prVec2Right()
+{
+    return prVec2Create(1.0f, 0.0f);
+}
+
+PR_INLINE PrVec2
+prVec2Left()
+{
+    return prVec2Create(-1.0f, 0.0f);
+}
+
+PR_INLINE PrVec2
 prVec2Add(const PrVec2& vec1, const PrVec2& vec2)
 {
     return prVec2Create(vec1.x + vec2.x, vec1.y + vec2.y);
@@ -45,6 +69,12 @@ PR_INLINE PrVec2
 prVec2Div(const PrVec2& vec1, const PrVec2& vec2)
 {
     return prVec2Create(vec1.x / vec2.x, vec1.y / vec2.y);
+}
+
+PR_INLINE PrVec2
+prVec2DivScale(const PrVec2& vec1, f32 scaler)
+{
+    return prVec2Create(vec1.x / scaler, vec1.y / scaler);
 }
 
 PR_INLINE PrVec2
@@ -79,6 +109,13 @@ prVec2Normalize(PrVec2& vec)
     vec.y /= length;
 }
 
+PR_INLINE PrVec2
+prVec2Normalized(PrVec2& vec)
+{
+    prVec2Normalize(vec);
+    return vec;
+}
+
 PR_INLINE f32
 prVec2DistanceSquared(const PrVec2& vec1, const PrVec2& vec2)
 {
@@ -91,6 +128,18 @@ prVec2Distance(const PrVec2& vec1, const PrVec2& vec2)
 {
     PrVec2 vec = prVec2Create(vec1.x - vec2.x, vec1.y - vec2.y);
     return prVec2Length(vec);
+}
+
+PR_INLINE b8
+prVec2Equal(const PrVec2& vec1, const PrVec2& vec2)
+{
+    return vec1.x == vec2.x && vec1.y == vec2.y;
+}
+
+PR_INLINE b8
+prVec2NotEqual(const PrVec2& vec1, const PrVec2& vec2)
+{
+    return vec1.x != vec2.x && vec1.y != vec2.y;
 }
 
 PR_API PrString*
@@ -157,6 +206,16 @@ inline PrVec2& operator *= (PrVec2& vec1, f32 scaler)
     vec1.x *= scaler;
     vec1.y *= scaler;
     return vec1;
+}
+
+inline b8 operator == (const PrVec2& vec1, const PrVec2& vec2)
+{
+    return prVec2Equal(vec1, vec2);
+}
+
+inline b8 operator != (const PrVec2& vec1, const PrVec2& vec2)
+{
+    return prVec2NotEqual(vec1, vec2);
 }
 
 #endif // __cplusplus

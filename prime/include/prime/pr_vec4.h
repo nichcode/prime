@@ -56,6 +56,42 @@ prVec4One()
 }
 
 PR_INLINE PrVec4
+prVec4Up()
+{
+    return prVec4Create(0.0f, 1.0f, 0.0f, 0.0f);
+}
+
+PR_INLINE PrVec4
+prVec4Down()
+{
+    return prVec4Create(0.0f, -1.0f, 0.0f, 0.0f);
+}
+
+PR_INLINE PrVec4
+prVec4Right()
+{
+    return prVec4Create(1.0f, 0.0f, 0.0f, 0.0f);
+}
+
+PR_INLINE PrVec4
+prVec4Left()
+{
+    return prVec4Create(-1.0f, 0.0f, 0.0f, 0.0f);
+}
+
+PR_INLINE PrVec4
+prVec4Forward()
+{
+    return prVec4Create(0.0f, 0.0f, -1.0f, 0.0f);
+}
+
+PR_INLINE PrVec4
+prVec4Back()
+{
+    return prVec4Create(0.0f, 0.0f, 1.0f, 0.0f);
+}
+
+PR_INLINE PrVec4
 prVec4Add(const PrVec4& vec1, const PrVec4& vec2)
 {
     return prVec4Create(vec1.x + vec2.x, vec1.y + vec2.y, vec1.z + vec2.z, vec1.w + vec2.w);
@@ -107,6 +143,13 @@ prVec4Normalize(PrVec4& vec)
     vec.w /= length;
 }
 
+PR_INLINE PrVec4
+prVec4Normalized(PrVec4& vec)
+{
+    prVec4Normalize(vec);
+    return vec;
+}
+
 PR_INLINE f32
 prVec4DistanceSquared(const PrVec4& vec1, const PrVec4& vec2)
 {
@@ -119,6 +162,18 @@ prVec4Distance(const PrVec4& vec1, const PrVec4& vec2)
 {
     PrVec4 vec = prVec4Create(vec1.x - vec2.x, vec1.y - vec2.y, vec1.z - vec2.z, vec1.w - vec2.w);
     return prVec4Length(vec);
+}
+
+PR_INLINE b8
+prVec4Equal(const PrVec4& vec1, const PrVec4& vec2)
+{
+    return vec1.x == vec2.x && vec1.y == vec2.y && vec1.z == vec2.z && vec1.w == vec2.w;
+}
+
+PR_INLINE b8
+prVec4NotEqual(const PrVec4& vec1, const PrVec4& vec2)
+{
+    return vec1.x != vec2.x && vec1.y != vec2.y && vec1.z != vec2.z && vec1.w != vec2.w;
 }
 
 PR_API PrString*
@@ -195,6 +250,16 @@ inline PrVec4& operator *= (PrVec4& vec1, f32 scaler)
     vec1.z *= scaler;
     vec1.w *= scaler;
     return vec1;
+}
+
+inline b8 operator == (const PrVec4& vec1, const PrVec4& vec2)
+{
+    return prVec4Equal(vec1, vec2);
+}
+
+inline b8 operator != (const PrVec4& vec1, const PrVec4& vec2)
+{
+    return prVec4NotEqual(vec1, vec2);
 }
 
 #endif // __cplusplus
