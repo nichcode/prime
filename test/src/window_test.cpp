@@ -2,149 +2,149 @@
 #include "prime/prime.h"
 
 static void 
-onWindowClose(PrWindow* window)
+onWindowClose(prime_Window* window)
 {
-	PrString* msg = prStringFormat("%s is closed",
-		prStringGetBuffer(prWindowGetTitle(window)));
+	prime_String* msg = prime_FormatString("%s is closed",
+		prime_GetCstr(prime_GetWindowTitle(window)));
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void
-onWindowResize(PrWindow* window, u32 width, u32 height)
+onWindowResize(prime_Window* window, u32 width, u32 height)
 {
-	PrString* msg = prStringFormat("%s - size(%i, %i)",
-		prStringGetBuffer(prWindowGetTitle(window)), width, height);
+	prime_String* msg = prime_FormatString("%s - size(%i, %i)",
+		prime_GetCstr(prime_GetWindowTitle(window)), width, height);
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void 
-onWindowKey(PrWindow* window, u16 key, i32 scancode, u8 action)
+onWindowKey(prime_Window* window, u16 key, i32 scancode, u8 action)
 {
-	PrString* msg = prStringFormat("%s - %s, %s)",
-		prStringGetBuffer(prWindowGetTitle(window)),
-		prStringGetBuffer(prWindowGetKeyName(window, key)),
-		prStringGetBuffer(prWindowGetActionName(window, action)));
+	prime_String* msg = prime_FormatString("%s - %s, %s)",
+		prime_GetCstr(prime_GetWindowTitle(window)),
+		prime_GetCstr(prime_GetWindowKeyName(window, key)),
+		prime_GetCstr(prime_GetWindowActionName(window, action)));
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void 
-onWindowButton(PrWindow* window, u16 button, u8 action)
+onWindowButton(prime_Window* window, u16 button, u8 action)
 {
-	PrString* msg = prStringFormat("%s - %s, %s)",
-		prStringGetBuffer(prWindowGetTitle(window)),
-		prStringGetBuffer(prWindowGetButtonName(window, button)),
-		prStringGetBuffer(prWindowGetActionName(window, action)));
+	prime_String* msg = prime_FormatString("%s - %s, %s)",
+		prime_GetCstr(prime_GetWindowTitle(window)),
+		prime_GetCstr(prime_GetWindowButtonName(window, button)),
+		prime_GetCstr(prime_GetWindowActionName(window, action)));
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void 
-onWindowMouseMoved(PrWindow* window, i32 x, i32 y)
+onWindowMouseMoved(prime_Window* window, i32 x, i32 y)
 {
-	PrString* msg = prStringFormat("%s - mousePos(%i, %i))",
-		prStringGetBuffer(prWindowGetTitle(window)), x, y);
+	prime_String* msg = prime_FormatString("%s - mousePos(%i, %i))",
+		prime_GetCstr(prime_GetWindowTitle(window)), x, y);
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void 
-onWindowMouseScrolled(PrWindow* window, f32 x_offset, f32 y_offset)
+onWindowMouseScrolled(prime_Window* window, f32 x_offset, f32 y_offset)
 {
-	PrString* msg = prStringFormat("%s - mouseScroll(%i, %i))",
-		prStringGetBuffer(prWindowGetTitle(window)), x_offset, y_offset);
+	prime_String* msg = prime_FormatString("%s - mouseScroll(%i, %i))",
+		prime_GetCstr(prime_GetWindowTitle(window)), x_offset, y_offset);
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void
-onWindowPos(PrWindow* window, i32 x, i32 y)
+onWindowPos(prime_Window* window, i32 x, i32 y)
 {
-	PrString* msg = prStringFormat("%s - windowPos(%i, %i))",
-		prStringGetBuffer(prWindowGetTitle(window)), x, y);
+	prime_String* msg = prime_FormatString("%s - windowPos(%i, %i))",
+		prime_GetCstr(prime_GetWindowTitle(window)), x, y);
 
-	prStringLog(msg);
-	prStringDestroy(msg);
+	prime_LogString(msg);
+	prime_DestroyString(msg);
 }
 
 static void 
-onWindowFocused(PrWindow* window, b8 focused)
+onWindowFocused(prime_Window* window, b8 focused)
 {
 	if (focused) {
-		PrString* msg = prStringFormat("%s is focused)",
-			prStringGetBuffer(prWindowGetTitle(window)));
+		prime_String* msg = prime_FormatString("%s is focused)",
+			prime_GetCstr(prime_GetWindowTitle(window)));
 
-		prStringLog(msg);
-		prStringDestroy(msg);
+		prime_LogString(msg);
+		prime_DestroyString(msg);
 	}
 }
 
 b8
 windowTest()
 {
-	prLogInfo("");
-	prLogInfo("Begin Window Test");
+	prime_LogInfo("");
+	prime_LogInfo("Begin Window Test");
 
-	PrWindow* window = prWindowCreate("Prime Window", 640, 480);
+	prime_Window* window = prime_CreateWindow("Prime Window", 640, 480);
 
 	// callbacks
-	prWindowSetCloseCallback(onWindowClose);
-	prWindowSetKeyCallback(onWindowKey);
-	prWindowSetButtonCallback(onWindowButton);
-	prWindowSetMouseMovedCallback(onWindowMouseMoved);
-	prWindowSetMouseScrolledCallback(onWindowMouseScrolled);
-	prWindowSetPosCallback(onWindowPos);
-	prWindowSetSizeCallback(onWindowResize);
-	prWindowSetFocusCallback(onWindowFocused);
+	prime_SetWindowCloseCallback(onWindowClose);
+	prime_SetWindowKeyCallback(onWindowKey);
+	prime_SetWindowButtonCallback(onWindowButton);
+	prime_SetWindowMouseMovedCallback(onWindowMouseMoved);
+	prime_SetWindowMouseScrolledCallback(onWindowMouseScrolled);
+	prime_SetWindowPosCallback(onWindowPos);
+	prime_SetWindowSizeCallback(onWindowResize);
+	prime_SetWindowFocusCallback(onWindowFocused);
 
-	while (!prWindowShouldClose(window)) {
-		prWindowPollEvents();
+	while (!prime_WindowShouldClose(window)) {
+		prime_PollEvents();
 	}
 
-	prWindowDestroy(window);
+	prime_DestroyWindow(window);
 
-	prLogInfo("End Window Test");
-	prLogInfo("");
+	prime_LogInfo("End Window Test");
+	prime_LogInfo("");
 
-	return PR_PASSED;
+	return PRIME_PASSED;
 }
 
 b8
 multiWindowTest()
 {
-	prLogInfo("");
-	prLogInfo("Begin Multi Window Test");
+	prime_LogInfo("");
+	prime_LogInfo("Begin Multi Window Test");
 
-	PrWindow* window1 = prWindowCreate("Prime Window 1", 640, 480);
-	PrWindow* window2 = prWindowCreate("Prime Window 2", 640, 480);
+	prime_Window* window1 = prime_CreateWindow("Prime Window 1", 640, 480);
+	prime_Window* window2 = prime_CreateWindow("Prime Window 2", 640, 480);
 
 	// callbacks
-	prWindowSetCloseCallback(onWindowClose);
-	prWindowSetKeyCallback(onWindowKey);
-	prWindowSetButtonCallback(onWindowButton);
-	prWindowSetMouseMovedCallback(onWindowMouseMoved);
-	prWindowSetMouseScrolledCallback(onWindowMouseScrolled);
-	prWindowSetPosCallback(onWindowPos);
-	prWindowSetSizeCallback(onWindowResize);
-	prWindowSetFocusCallback(onWindowFocused);
+	prime_SetWindowCloseCallback(onWindowClose);
+	prime_SetWindowKeyCallback(onWindowKey);
+	prime_SetWindowButtonCallback(onWindowButton);
+	prime_SetWindowMouseMovedCallback(onWindowMouseMoved);
+	prime_SetWindowMouseScrolledCallback(onWindowMouseScrolled);
+	prime_SetWindowPosCallback(onWindowPos);
+	prime_SetWindowSizeCallback(onWindowResize);
+	prime_SetWindowFocusCallback(onWindowFocused);
 
-	while (!prWindowShouldClose(window1)) {
-		prWindowPollEvents();
+	while (!prime_WindowShouldClose(window1)) {
+		prime_PollEvents();
 	}
 
-	prWindowDestroy(window1);
-	prWindowDestroy(window2);
+	prime_DestroyWindow(window1);
+	prime_DestroyWindow(window2);
 
-	prLogInfo("End Multi Window Test");
-	prLogInfo("");
+	prime_LogInfo("End Multi Window Test");
+	prime_LogInfo("");
 
-	return PR_PASSED;
+	return PRIME_PASSED;
 }

@@ -4,100 +4,100 @@
 b8
 contextTestGL()
 {
-	prLogInfo("");
-	prLogInfo("Begin Context Test GL");
+	prime_LogInfo("");
+	prime_LogInfo("Begin Context Test GL");
 
-	PrWindow* window = prWindowCreate("Prime Window GL", 640, 480);
-	PrDevice* device = prDeviceCreate(PrDriverTypeOpenGL, window);
+	prime_Window* window = prime_CreateWindow("Prime Window GL", 640, 480);
+	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL, window);
 
-	prDeviceMakeActive(device);
-	prDeviceSetClearColor(device, prColorFromF32(.2f, .2f, .2f, 1.0f));
-	prDeviceSetVsync(device, true);
+	prime_MakeActive(device);
+	prime_SetClearColor(device, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_SetVsync(device, true);
 
-	while (!prWindowShouldClose(window)) {
-		prWindowPollEvents();
+	while (!prime_WindowShouldClose(window)) {
+		prime_PollEvents();
 
-		prDeviceClear(device);
-		prDeviceSwapbuffers(device);
+		prime_Clear(device);
+		prime_Swapbuffers(device);
 	}
 
-	prDeviceDestroy(device);
-	prWindowDestroy(window);
+	prime_DestroyDevice(device);
+	prime_DestroyWindow(window);
 
-	prLogInfo("End Context Test GL");
-	prLogInfo("");
-	return PR_PASSED;
+	prime_LogInfo("End Context Test GL");
+	prime_LogInfo("");
+	return PRIME_PASSED;
 }
 
 b8
 contextTestDx11()
 {
-	prLogInfo("");
-	prLogInfo("Begin Context Test Dx11");
+	prime_LogInfo("");
+	prime_LogInfo("Begin Context Test Dx11");
 
-	PrWindow* window = prWindowCreate("Prime Window Dx11", 640, 480);
-	PrDevice* device = prDeviceCreate(PrDriverTypeDirectX11, window);
-	prDeviceSetClearColor(device, prColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_Window* window = prime_CreateWindow("Prime Window Dx11", 640, 480);
+	prime_Device* device = prime_CreateDevice(prime_DeviceTypeDx11, window);
+	prime_SetClearColor(device, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
 
-	prDeviceMakeActive(device);
-	prDeviceSetVsync(device, true);
+	prime_MakeActive(device);
+	prime_SetVsync(device, true);
 
-	while (!prWindowShouldClose(window)) {
-		prWindowPollEvents();
+	while (!prime_WindowShouldClose(window)) {
+		prime_PollEvents();
 
-		prDeviceClear(device);
-		prDeviceSwapbuffers(device);
+		prime_Clear(device);
+		prime_Swapbuffers(device);
 	}
 
-	prDeviceDestroy(device);
-	prWindowDestroy(window);
+	prime_DestroyDevice(device);
+	prime_DestroyWindow(window);
 
-	prLogInfo("End Context Test Dx11");
-	prLogInfo("");
-	return PR_PASSED;
+	prime_LogInfo("End Context Test Dx11");
+	prime_LogInfo("");
+	return PRIME_PASSED;
 }
 
 b8
 multiContextTest()
 {
-	prLogInfo("");
-	prLogInfo("Begin Multi Context Test");
+	prime_LogInfo("");
+	prime_LogInfo("Begin Multi Context Test");
 
 	// dx11
-	PrWindow* window_dx11 = prWindowCreate("Prime Window Dx11", 640, 480);
-	PrDevice* device_dx11 = prDeviceCreate(PrDriverTypeDirectX11, window_dx11);
-	prDeviceSetClearColor(device_dx11, prColorFromF32(.2f, .2f, .2f, 1.0f));
-	prDeviceMakeActive(device_dx11);
-	prDeviceSetVsync(device_dx11, true);
+	prime_Window* window_dx11 = prime_CreateWindow("Prime Window Dx11", 640, 480);
+	prime_Device* device_dx11 = prime_CreateDevice(prime_DeviceTypeDx11, window_dx11);
+	prime_SetClearColor(device_dx11, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_MakeActive(device_dx11);
+	prime_SetVsync(device_dx11, true);
 
 	// gl
-	PrWindow* window_gl = prWindowCreate("Prime Window GL", 640, 480);
-	PrDevice* device_gl = prDeviceCreate(PrDriverTypeOpenGL, window_gl);
-	prDeviceSetClearColor(device_gl, prColorFromF32(.2f, .2f, .2f, 1.0f));
-	prDeviceMakeActive(device_gl);
-	prDeviceSetVsync(device_gl, true);
+	prime_Window* window_gl = prime_CreateWindow("Prime Window GL", 640, 480);
+	prime_Device* device_gl = prime_CreateDevice(prime_DeviceTypeGL, window_gl);
+	prime_SetClearColor(device_gl, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_MakeActive(device_gl);
+	prime_SetVsync(device_gl, true);
 
-	while (!prWindowShouldClose(window_dx11)) {
-		prWindowPollEvents();
+	while (!prime_WindowShouldClose(window_dx11)) {
+		prime_PollEvents();
 
 		// dx11
-		prDeviceClear(device_dx11);
-		prDeviceSwapbuffers(device_dx11);
+		prime_Clear(device_dx11);
+		prime_Swapbuffers(device_dx11);
 		
 		// gl
-		prDeviceClear(device_gl);
-		prDeviceSwapbuffers(device_gl);
+		prime_Clear(device_gl);
+		prime_Swapbuffers(device_gl);
 	}
 
 	// dx11
-	prDeviceDestroy(device_dx11);
-	prWindowDestroy(window_dx11);
+	prime_DestroyDevice(device_dx11);
+	prime_DestroyWindow(window_dx11);
 
 	// gl
-	prDeviceDestroy(device_gl);
-	prWindowDestroy(window_gl);
+	prime_DestroyDevice(device_gl);
+	prime_DestroyWindow(window_gl);
 
-	prLogInfo("End Multi Context Test");
-	prLogInfo("");
-	return PR_PASSED;
+	prime_LogInfo("End Multi Context Test");
+	prime_LogInfo("");
+	return PRIME_PASSED;
 }

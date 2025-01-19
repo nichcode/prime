@@ -2,7 +2,7 @@
 
 #include "prime/prime.h"
 
-#ifdef PR_PLATFORM_WINDOWS
+#ifdef PRIME_PLATFORM_WINDOWS
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -19,6 +19,6 @@ static u64 s_StartTime = 0;
 static WINDOWPLACEMENT s_WndPlacement;
 
 LRESULT CALLBACK
-prWinProc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
+prime_WinProc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
-#endif // PR_PLATFORM_WINDOWS
+#endif // PRIME_PLATFORM_WINDOWS

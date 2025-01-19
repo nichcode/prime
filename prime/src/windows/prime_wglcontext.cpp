@@ -1,12 +1,12 @@
 
-#include "pr_wglcontext.h"
-#include "prime/pr_log.h"
+#include "prime_wglcontext.h"
+#include "prime/prime_log.h"
 
 #include "glad/glad_wgl.h"
 #include "glad/glad.h"
 
 void 
-prWGLContextCreateDummy()
+prime_WGLContextCreateDummy()
 {
     WNDCLASSEXW window_class = {};
     window_class.style = CS_OWNDC;
@@ -30,7 +30,7 @@ prWGLContextCreateDummy()
         window_class.hInstance,
         0);
 
-    PR_ASSERT_MSG(dummy_window, "Prime Dummy Window Creation Failed");;
+    PRIME_ASSERT_MSG(dummy_window, "Prime Dummy Window Creation Failed");;
 
     HDC dummy_dc = GetDC(dummy_window);
 
@@ -49,16 +49,16 @@ prWGLContextCreateDummy()
     SetPixelFormat(dummy_dc, pixel_format, &pfd);
 
     HGLRC dummy_context = wglCreateContext(dummy_dc);
-    PR_ASSERT(dummy_context);
+    PRIME_ASSERT(dummy_context);
 
     bool res = wglMakeCurrent(dummy_dc, dummy_context);
-    PR_ASSERT(res);
+    PRIME_ASSERT(res);
 
     u8 wgl_status = gladLoadWGL(dummy_dc);
-    PR_ASSERT_MSG(wgl_status, "WGL failed to initialize");
+    PRIME_ASSERT_MSG(wgl_status, "WGL failed to initialize");
 
     u8 gl_status = gladLoadGL();
-    PR_ASSERT_MSG(gl_status, "GL failed to initialize");
+    PRIME_ASSERT_MSG(gl_status, "GL failed to initialize");
 
     if (dummy_window) {
         wglMakeCurrent(dummy_dc, 0);
@@ -66,14 +66,14 @@ prWGLContextCreateDummy()
         ReleaseDC(dummy_window, dummy_dc);
         DestroyWindow(dummy_window);
 
-        PR_ASSERT_MSG(GLVersion.major >= 4 ||
+        PRIME_ASSERT_MSG(GLVersion.major >= 4 ||
             (GLVersion.major == 3 && GLVersion.minor >= 3),
             "Prime requires at least OpenGL version 3.3!");
     }
 }
 
 HGLRC 
-prWGLContextCreate(HWND window)
+prime_WGLContextCreate(HWND window)
 {
     auto hdc = GetDC(window);
 
@@ -92,7 +92,7 @@ prWGLContextCreate(HWND window)
     int pixel_format = 0;
     UINT num_format = 0;
     wglChoosePixelFormatARB(hdc, pixel_format_attrib, nullptr, 1, &pixel_format, &num_format);
-    PR_ASSERT(num_format);
+    PRIME_ASSERT(num_format);
 
     PIXELFORMATDESCRIPTOR pixel_format_desc = {};
     DescribePixelFormat(hdc, pixel_format, sizeof(PIXELFORMATDESCRIPTOR), &pixel_format_desc);
@@ -106,26 +106,26 @@ prWGLContextCreate(HWND window)
     };
 
     HGLRC context = wglCreateContextAttribsARB(hdc, 0, opengl_attrib);
-    PR_ASSERT_MSG(context, "WGL context creation failed");
+    PRIME_ASSERT_MSG(context, "WGL context creation failed");
     wglMakeCurrent(GetDC(window), context);
     return context;
 }
 
 void 
-prWGLContextDestroy(HGLRC context)
+prime_WGLContextDestroy(HGLRC context)
 {
     wglDeleteContext(context);
     context = nullptr;
 }
 
 void 
-prWGLContextMakeCurrent(HWND window, HGLRC context)
+prime_WGLContextMakeCurrent(HWND window, HGLRC context)
 {
     wglMakeCurrent(GetDC(window), context);
 }
 
 void 
-prWGLContextSetVsync(int interval)
+prime_WGLContextSetVsync(int interval)
 {
     wglSwapIntervalEXT(interval);
 }

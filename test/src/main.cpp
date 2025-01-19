@@ -34,20 +34,20 @@ mat4Test();
 int
 main()
 {
-	prInit();
+	prime_Init();
 
-	//prTestsAdd(stringTest, "StringTest");
-	//prTestsAdd(windowTest, "WindowTest");
-	//prTestsAdd(multiWindowTest, "MultiWindowTest");
-	//prTestsAdd(contextTestGL, "ContextTestGL");
-	//prTestsAdd(contextTestDx11, "ContextTestDx11");
-	//prTestsAdd(multiContextTest, "MultiContextTest");
-	//prTestsAdd(vec2Test, "Vec2Test");
-	//prTestsAdd(vec3Test, "Vec3Test");
-	//prTestsAdd(vec4Test, "Vec4Test");
-	prTestsAdd(mat4Test, "Mat4Test");
+	prime_AddTest(stringTest, "StringTest");
+	prime_AddTest(windowTest, "WindowTest");
+	prime_AddTest(multiWindowTest, "MultiWindowTest");
+	prime_AddTest(contextTestGL, "ContextTestGL");
+	prime_AddTest(contextTestDx11, "ContextTestDx11");
+	prime_AddTest(multiContextTest, "MultiContextTest");
+	prime_AddTest(vec2Test, "Vec2Test");
+	prime_AddTest(vec3Test, "Vec3Test");
+	prime_AddTest(vec4Test, "Vec4Test");
+	prime_AddTest(mat4Test, "Mat4Test");
 
-	prTestsRun();
-	prShutdown();
+	prime_RunTests();
+	prime_Shutdown();
 	return 0;
 }

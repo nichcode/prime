@@ -1,27 +1,26 @@
 #pragma once
 
-#include "pr_defines.h"
-#include "pr_device.h"
-#include "pr_log.h"
-#include "pr_mat4.h"
-#include "pr_math.h"
-#include "pr_memory.h"
-#include "pr_native.h"
-#include "pr_string.h"
-#include "pr_test.h"
-#include "pr_vec2.h"
-#include "pr_vec3.h"
-#include "pr_vec4.h"
-#include "pr_window.h"
+#include "prime_buttons.h"
+#include "prime_color.h"
+#include "prime_defines.h"
+#include "prime_device.h"
+#include "prime_keys.h"
+#include "prime_log.h"
+#include "prime_math.h"
+#include "prime_memory.h"
+#include "prime_native.h"
+#include "prime_string.h"
+#include "prime_test.h"
+#include "prime_window.h"
 
-PR_API b8
-prInit();
+PRIME_API b8
+prime_Init();
 
-PR_API void
-prShutdown();
+PRIME_API void
+prime_Shutdown();
 
-PR_API f32
-prTimeGet();
+PRIME_API f32
+prime_GetTime();
 
-PR_API void
-prTimeSleep(f64 milli_secs);
+PRIME_API void
+prime_Sleep(f64 milli_secs);

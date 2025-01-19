@@ -4,20 +4,20 @@
 b8 
 stringTest()
 {
-	prLogInfo("");
-	prLogInfo("Begin String Test");
+	prime_LogInfo("");
+	prime_LogInfo("Begin String Test");
 
-	PrString* string = nullptr;
-	PrString* string2 = nullptr;
-	string = prStringCreate("Them");
-	string2 = prStringCreateFromPrString(string);
+	prime_String* string = nullptr;
+	prime_String* string2 = nullptr;
+	string = prime_CstrToString("Them");
+	string2 = prime_CopyString(string);
 
-	prStringLog(string);
+	prime_LogString(string);
 
-	prStringDestroy(string);
-	prStringDestroy(string2);
+	prime_DestroyString(string);
+	prime_DestroyString(string2);
 
-	prLogInfo("End String Test");
-	prLogInfo("");
-	return PR_PASSED;
+	prime_LogInfo("End String Test");
+	prime_LogInfo("");
+	return PRIME_PASSED;
 }

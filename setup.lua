@@ -57,7 +57,7 @@ workspace "prime"
         runtime "Debug"
 
         defines {
-            "PR_CONFIG_DEBUG"
+            "PRIME_CONFIG_DEBUG"
         }
 
     filter "configurations:Release"

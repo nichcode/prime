@@ -14,8 +14,8 @@ project "prime"
 
     if (_OPTIONS["buildDll"]) then
         defines {
-            "PR_BUILD_DLL",
-            "PR_EXPORT_DLL"
+            "PRIME_BUILD_DLL",
+            "PRIME_EXPORT_DLL"
         }
         kind "SharedLib"
     else
