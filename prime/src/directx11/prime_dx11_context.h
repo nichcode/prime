@@ -1,32 +1,32 @@
 #pragma once
 
 #include "prime/prime_color.h"
+#include "prime/prime_context.h"
 
-struct prime_Window;
 struct prime_ContextHandle;
 
 #ifdef PRIME_PLATFORM_WINDOWS
 
 prime_ContextHandle*
-prime_Dx11CreateContext(prime_Window* window);
+dx11_CreateContext(prime_Window* window);
 
 void
-prime_Dx11GDestroy(prime_ContextHandle* context_handle);
+dx11_GDestroy(prime_ContextHandle* context_handle);
 
 void
-prime_Dx11Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle);
+dx11_Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle);
 
 void
-prime_Dx11SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color);
+dx11_SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color);
 
 void
-prime_Dx11Clear(prime_ContextHandle* context_handle);
+dx11_Clear(prime_ContextHandle* context_handle);
 
 void
-prime_Dx11MakeActive(prime_Window* window, prime_ContextHandle* context_handle);
+dx11_MakeActive(prime_Window* window, prime_ContextHandle* context_handle);
 
 void
-prime_Dx11SetVsync(prime_ContextHandle* context_handle, b8 vsync);
+dx11_SetVsync(prime_ContextHandle* context_handle, b8 vsync);
 
 #endif // PRIME_PLATFORM_WINDOWS
 

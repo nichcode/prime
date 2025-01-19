@@ -16,8 +16,25 @@ struct prime_ContextHandle
 	prime_Color color;
 };
 
+inline static 
+GLenum topologyToOpenGL(prime_Topology topology)
+{
+	switch (topology)
+	{
+	case prime_TopologyTriangles:
+		return GL_TRIANGLES;
+		break;
+
+	case prime_TopologyLines:
+		return GL_LINES;
+		break;
+	}
+	return 0;
+	PRIME_ASSERT_MSG(false, "Invalid Primitive Topology");
+}
+
 prime_ContextHandle*
-prime_GLCreateContext(prime_Window* window)
+gl_CreateContext(prime_Window* window)
 {
 	prime_ContextHandle* context_handle = nullptr;
 	context_handle = (prime_ContextHandle*)prime_MemAlloc(sizeof(prime_ContextHandle));
@@ -33,7 +50,7 @@ prime_GLCreateContext(prime_Window* window)
 }
 
 void
-prime_GLGDestroy(prime_ContextHandle* context_handle)
+gl_GDestroyContext(prime_ContextHandle* context_handle)
 {
 #ifdef PRIME_PLATFORM_WINDOWS
 	prime_WGLContextDestroy(context_handle->handle);
@@ -42,7 +59,7 @@ prime_GLGDestroy(prime_ContextHandle* context_handle)
 }
 
 void
-prime_GLSwapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
+gl_Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
 {
 #ifdef PRIME_PLATFORM_WINDOWS
 	HWND handle = prime_GetWin32WindowHandle(window);
@@ -51,20 +68,20 @@ prime_GLSwapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
 }
 
 void
-prime_GLSetClearColor(prime_ContextHandle* context_handle, const prime_Color& color)
+gl_SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color)
 {
 	context_handle->color = color;
 	glClearColor(color.r, color.g, color.b, color.a);
 }
 
 void
-prime_GLClear(prime_ContextHandle* context_handle)
+gl_Clear(prime_ContextHandle* context_handle)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void
-prime_GLMakeActive(prime_Window* window, prime_ContextHandle* context_handle)
+gl_MakeActive(prime_Window* window, prime_ContextHandle* context_handle)
 {
 #ifdef PRIME_PLATFORM_WINDOWS
 	HWND handle = prime_GetWin32WindowHandle(window);
@@ -76,7 +93,7 @@ prime_GLMakeActive(prime_Window* window, prime_ContextHandle* context_handle)
 }
 
 void
-prime_GLSetVsync(prime_ContextHandle* context_handle, b8 vsync)
+gl_SetVsync(prime_ContextHandle* context_handle, b8 vsync)
 {
 #ifdef PRIME_PLATFORM_WINDOWS
 	if (vsync) {
@@ -86,4 +103,24 @@ prime_GLSetVsync(prime_ContextHandle* context_handle, b8 vsync)
 		prime_WGLContextSetVsync(0);
 	}
 #endif // PRIME_PLATFORM_WINDOWS
+}
+
+void
+gl_SetViewport(prime_ContextHandle* context_handle, const prime_Viewport* viewport)
+{
+	glViewport((i32)viewport->x, (i32)viewport->y, viewport->width, viewport->height);
+}
+
+void
+gl_DrawIndexed(prime_ContextHandle* context_handle, prime_Topology topology, u32 count)
+{
+	GLenum type = topologyToOpenGL(topology);
+
+	if (topology == prime_TopologyLines) {
+		glDrawArrays(type, 0, count);
+	}
+	else if (topology == prime_TopologyTriangles) {
+		
+		glDrawElements(type, count, GL_UNSIGNED_INT, nullptr);
+	}
 }

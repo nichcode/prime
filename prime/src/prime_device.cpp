@@ -3,6 +3,7 @@
 #include "prime/prime_memory.h"
 #include "prime/prime_log.h"
 #include "prime/prime_context.h"
+#include "prime/prime_buffers.h"
 #include "prime_utils.h"
 
 #include <map>
@@ -10,11 +11,12 @@
 
 static u32 s_IDIndex = 1;
 static std::map<u32, std::vector<prime_Context*>> s_DeviceContexts;
+static std::map<u32, std::vector<prime_Vertexbuffer*>> s_DeviceVertexbuffers;
+static std::map<u32, std::vector<prime_Indexbuffer*>> s_DeviceIndexbuffers;
 
 struct prime_Device
 {
 	u32 id = 0;
-	prime_Context* active_context;
 	prime_DeviceType type;
 };
 
@@ -32,12 +34,28 @@ void
 prime_DestroyDevice(prime_Device* device)
 {
 	PRIME_ASSERT_MSG(device, "Device is null");
+	// contexts
 	auto& device_contexts = s_DeviceContexts[device->id];
 	for (prime_Context* context : device_contexts) {
 		prime_DestroyContext(context);
 	}
 
+	// vertexbuffer
+	auto& device_vertexbuffers = s_DeviceVertexbuffers[device->id];
+	for (prime_Vertexbuffer* vertexbuffer : device_vertexbuffers) {
+		prime_DestroyVertexbuffer(vertexbuffer);
+	}
+
+	// indexbuffer
+	auto& device_indexbuffers = s_DeviceIndexbuffers[device->id];
+	for (prime_Indexbuffer* indexbuffer : device_indexbuffers) {
+		prime_DestroyIndexbuffer(indexbuffer);
+	}
+
 	s_DeviceContexts[device->id].clear();
+	s_DeviceVertexbuffers[device->id].clear();
+	s_DeviceIndexbuffers[device->id].clear();
+	
 	device->id = 0;
 	s_IDIndex--;
 	prime_MemFree(device, sizeof(prime_Device));
@@ -65,5 +83,41 @@ prime_RemoveContext(prime_Device* device, prime_Context* context)
 	if (it != device_contexts.end())
 	{
 		device_contexts.erase(it);
+	}
+}
+
+void
+prime_AddVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
+{
+	s_DeviceVertexbuffers[device->id].push_back(vertexbuffer);
+}
+
+void
+prime_RemoveVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
+{
+	auto& device_vertexbuffers = s_DeviceVertexbuffers[device->id];
+
+	auto it = std::find(device_vertexbuffers.begin(), device_vertexbuffers.end(), vertexbuffer);
+	if (it != device_vertexbuffers.end())
+	{
+		device_vertexbuffers.erase(it);
+	}
+}
+
+void
+prime_AddIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
+{
+	s_DeviceIndexbuffers[device->id].push_back(indexbuffer);
+}
+
+void
+prime_RemoveIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
+{
+	auto& device_indexbuffers = s_DeviceIndexbuffers[device->id];
+
+	auto it = std::find(device_indexbuffers.begin(), device_indexbuffers.end(), indexbuffer);
+	if (it != device_indexbuffers.end())
+	{
+		device_indexbuffers.erase(it);
 	}
 }

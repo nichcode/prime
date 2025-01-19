@@ -515,65 +515,49 @@ prime_PollEvents()
 void
 prime_SetWindowCloseCallback(prime_WindowCloseFunc func)
 {
-	if (func) {
-		s_Callbacks.close = func;
-	}
+	s_Callbacks.close = func;
 }
 
 void
 prime_SetWindowKeyCallback(prime_WindowKeyFunc func)
 {
-	if (func) {
-		s_Callbacks.key = func;
-	}
+	s_Callbacks.key = func;
 }
 
 void
 prime_SetWindowButtonCallback(prime_WindowButtonFunc func)
 {
-	if (func) {
-		s_Callbacks.button = func;
-	}
+	s_Callbacks.button = func;
 }
 
 void
 prime_SetWindowMouseMovedCallback(prime_WindowMouseMovedFunc func)
 {
-	if (func) {
-		s_Callbacks.mouseMoved = func;
-	}
+	s_Callbacks.mouseMoved = func;
 }
 
 void
 prime_SetWindowMouseScrolledCallback(prime_WindowMouseScrolledFunc func)
 {
-	if (func) {
-		s_Callbacks.mouseScrolled = func;
-	}
+	s_Callbacks.mouseScrolled = func;
 }
 
 void
 prime_SetWindowPosCallback(prime_WindowPosFunc func)
 {
-	if (func) {
-		s_Callbacks.windowPos = func;
-	}
+	s_Callbacks.windowPos = func;
 }
 
 void
 prime_SetWindowSizeCallback(prime_WindowSizeFunc func)
 {
-	if (func) {
-		s_Callbacks.windowSize = func;
-	}
+	s_Callbacks.windowSize = func;
 }
 
 void
 prime_SetWindowFocusCallback(prime_WindowFocusFunc func)
 {
-	if (func) {
-		s_Callbacks.windowFocus = func;
-	}
+	s_Callbacks.windowFocus = func;
 }
 
 void

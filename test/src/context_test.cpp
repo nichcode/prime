@@ -8,7 +8,7 @@ contextTestGL()
 	prime_LogInfo("Begin Context Test GL");
 
 	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL);
-	prime_Window* window = prime_CreateWindow("Prime Window GL", 640, 480);
+	prime_Window* window = prime_CreateWindow("Begin Context Test GL", 640, 480);
 	prime_Context* context = prime_CreateContext(device, window);
 
 	prime_MakeActive(context);
@@ -36,7 +36,7 @@ contextTestDx11()
 	prime_LogInfo("");
 	prime_LogInfo("Begin Context Test Dx11");
 
-	prime_Window* window = prime_CreateWindow("Prime Window Dx11", 640, 480);
+	prime_Window* window = prime_CreateWindow("Begin Context Test Dx11", 640, 480);
 	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL);
 	prime_Context* context = prime_CreateContext(device, window);
 
@@ -67,7 +67,7 @@ multiContextTest()
 	prime_LogInfo("Begin Multi Context Test");
 
 	// dx11
-	prime_Window* dx11_window = prime_CreateWindow("Prime Window Dx11", 640, 480);
+	prime_Window* dx11_window = prime_CreateWindow("Begin Multi Context Test Dx11", 640, 480);
 	prime_Device* dx11_device = prime_CreateDevice(prime_DeviceTypeDx11);
 	prime_Context* dx11_context = prime_CreateContext(dx11_device, dx11_window);
 
@@ -76,7 +76,7 @@ multiContextTest()
 	prime_SetVsync(dx11_context, true);
 
 	// gl
-	prime_Window* gl_window = prime_CreateWindow("Prime Window GL", 640, 480);
+	prime_Window* gl_window = prime_CreateWindow("Begin Multi Context Test GL", 640, 480);
 	prime_Device* gl_device = prime_CreateDevice(prime_DeviceTypeGL);
 	prime_Context* gl_context = prime_CreateContext(gl_device, gl_window);
 

@@ -1,27 +1,32 @@
 #pragma once
 
-#include "prime/prime_color.h"
+#include "prime/prime_context.h"
 
-struct prime_Window;
 struct prime_ContextHandle;
 
 prime_ContextHandle*
-prime_GLCreateContext(prime_Window* window);
+gl_CreateContext(prime_Window* window);
 
 void
-prime_GLGDestroy(prime_ContextHandle* context_handle);
+gl_GDestroyContext(prime_ContextHandle* context_handle);
 
 void
-prime_GLSwapbuffer(prime_Window* window, prime_ContextHandle* context_handle);
+gl_Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle);
 
 void
-prime_GLSetClearColor(prime_ContextHandle* context_handle, const prime_Color& color);
+gl_SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color);
 
 void
-prime_GLClear(prime_ContextHandle* context_handle);
+gl_Clear(prime_ContextHandle* context_handle);
 
 void
-prime_GLMakeActive(prime_Window* window, prime_ContextHandle* context_handle);
+gl_MakeActive(prime_Window* window, prime_ContextHandle* context_handle);
 
 void
-prime_GLSetVsync(prime_ContextHandle* context_handle, b8 vsync);
+gl_SetVsync(prime_ContextHandle* context_handle, b8 vsync);
+
+void
+gl_SetViewport(prime_ContextHandle* context_handle, const prime_Viewport* viewport);
+
+void
+gl_DrawIndexed(prime_ContextHandle* context_handle, prime_Topology topology, u32 count);

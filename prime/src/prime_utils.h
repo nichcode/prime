@@ -5,9 +5,10 @@
 
 struct prime_Window;
 struct prime_String;
-struct prime_Window;
-struct prime_Context;
 struct prime_ContextHandle;
+struct prime_Context;
+struct prime_Vertexbuffer;
+struct prime_Indexbuffer;
 
 #ifdef PRIME_PLATFORM_WINDOWS
 
@@ -47,3 +48,15 @@ prime_AddContext(prime_Device* device, prime_Context* context);
 
 void
 prime_RemoveContext(prime_Device* device, prime_Context* context);
+
+void
+prime_AddVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
+
+void
+prime_RemoveVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
+
+void
+prime_AddIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
+
+void
+prime_RemoveIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);

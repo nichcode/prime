@@ -20,6 +20,7 @@ struct prime_BufferLayout
 
 struct prime_Vertexbuffer
 {
+	prime_Device* device = nullptr;
 	prime_VertexbufferType type;
 	prime_BufferLayout* layout = nullptr;
 	prime_VertexbufferHandle* handle = nullptr;
@@ -29,6 +30,17 @@ struct prime_Vertexbuffer
 	void(*unbindFunc)(prime_VertexbufferHandle* handle);
 	void(*setLayoutFunc)(const prime_BufferElement* element, u32 stride);
 	void(*setDataFunc)(prime_VertexbufferHandle* handle, const void* data, u32 size);
+};
+
+struct prime_Indexbuffer
+{
+	u32 count = 0;
+	prime_Device* device = nullptr;
+	prime_IndexbufferHandle* handle = nullptr;
+
+	void(*destroyFunc)(prime_IndexbufferHandle* handle);
+	void(*bindFunc)(prime_IndexbufferHandle* handle);
+	void(*unbindFunc)(prime_IndexbufferHandle* handle);
 };
 
 prime_BufferLayout*
@@ -65,6 +77,7 @@ prime_CreateVertexbuffer(prime_Device* device, const void* data, u32 size, prime
 	PRIME_ASSERT_MSG(device, "Device is null");
 	prime_Vertexbuffer* vertexbuffer = (prime_Vertexbuffer*)prime_MemAlloc(sizeof(prime_Vertexbuffer));
 	vertexbuffer->type = type;
+	vertexbuffer->device = device;
 
 	switch (prime_GetDeviceType(device))
 	{
@@ -76,19 +89,20 @@ prime_CreateVertexbuffer(prime_Device* device, const void* data, u32 size, prime
 #endif // PRIME_PLATFORM_WINDOWS
 
 	case prime_DeviceTypeGL: {
-		vertexbuffer->handle = prime_GLCreateVertexbufferHandle(data, size, type);
+		vertexbuffer->handle = gl_CreateVertexbuffer(data, size, type);
 
 		// function ppinters
-		vertexbuffer->bindFunc = prime_GLBindVertexbufferHandle;
-		vertexbuffer->destroyFunc = prime_GLDestroyVertexbufferHandle;
-		vertexbuffer->setDataFunc = prime_GLSetVertexbufferHandleData;
-		vertexbuffer->setLayoutFunc = prime_GLSetVertexbufferLayout;
-		vertexbuffer->unbindFunc = prime_GLUnbindVertexbufferHandle;
+		vertexbuffer->bindFunc = gl_BindVertexbuffer;
+		vertexbuffer->destroyFunc = gl_DestroyVertexbuffer;
+		vertexbuffer->setDataFunc = gl_SetVertexbufferData;
+		vertexbuffer->setLayoutFunc = gl_SetVertexbufferLayout;
+		vertexbuffer->unbindFunc = gl_UnbindVertexbuffer;
 
 		break;
 	}
 
 	}
+	prime_AddVertexbuffer(device, vertexbuffer);
 	return vertexbuffer;
 }
 
@@ -103,6 +117,8 @@ prime_DestroyVertexbuffer(prime_Vertexbuffer* vertexbuffer)
 	vertexbuffer->setDataFunc = nullptr;
 	vertexbuffer->setLayoutFunc = nullptr;
 	vertexbuffer->unbindFunc = nullptr;
+	prime_RemoveVertexbuffer(vertexbuffer->device, vertexbuffer);
+	vertexbuffer->device = nullptr;
 	prime_MemFree(vertexbuffer, sizeof(prime_Vertexbuffer));
 }
 
@@ -160,4 +176,72 @@ prime_SetVertexbufferData(prime_Vertexbuffer* vertexbuffer, const void* data, u3
 	else {
 		PRIME_WARN("Cannot set data to a static vertexbuffer.");
 	}
+}
+
+prime_Indexbuffer* 
+prime_CreateIndexbuffer(prime_Device* device, u32* indices, u32 count)
+{
+	PRIME_ASSERT_MSG(device, "Device is null");
+	prime_Indexbuffer* indexbuffer = (prime_Indexbuffer*)prime_MemAlloc(sizeof(prime_Indexbuffer));
+	indexbuffer->device = device;
+	indexbuffer->count = count;
+
+	switch (prime_GetDeviceType(device))
+	{
+#ifdef PRIME_PLATFORM_WINDOWS
+	case prime_DeviceTypeDx11: {
+		PRIME_ASSERT_MSG(false, "Dx11 indexbuffer not implemented yet");
+		break;
+	}
+#endif // PRIME_PLATFORM_WINDOWS
+
+	case prime_DeviceTypeGL: {
+		indexbuffer->handle = gl_CreateIndexbuffer(indices, count);
+
+		// function ppinters
+		indexbuffer->bindFunc = gl_BindIndexbuffer;
+		indexbuffer->destroyFunc = gl_DestroyIndexbuffer;
+		indexbuffer->unbindFunc = gl_UnbindIndexbuffer;
+
+		break;
+	}
+
+	}
+	prime_AddIndexbuffer(device, indexbuffer);
+	return indexbuffer;
+}
+
+void
+prime_DestroyIndexbuffer(prime_Indexbuffer* indexbuffer)
+{
+	PRIME_ASSERT_MSG(indexbuffer, "indexbuffer is null");
+	indexbuffer->destroyFunc(indexbuffer->handle);
+
+	indexbuffer->bindFunc = nullptr;
+	indexbuffer->destroyFunc = nullptr;
+	indexbuffer->unbindFunc = nullptr;
+	prime_RemoveIndexbuffer(indexbuffer->device, indexbuffer);
+	indexbuffer->device = nullptr;
+	prime_MemFree(indexbuffer, sizeof(prime_Indexbuffer));
+}
+
+void 
+prime_BindIndexbuffer(prime_Indexbuffer* indexbuffer)
+{
+	PRIME_ASSERT_MSG(indexbuffer, "indexbuffer is null");
+	indexbuffer->bindFunc(indexbuffer->handle);
+}
+
+void 
+prime_UnbindIndexbuffer(prime_Indexbuffer* indexbuffer)
+{
+	PRIME_ASSERT_MSG(indexbuffer, "indexbuffer is null");
+	indexbuffer->unbindFunc(indexbuffer->handle);
+}
+
+u32 
+prime_GetIndexbufferCount(prime_Indexbuffer* indexbuffer)
+{
+	PRIME_ASSERT_MSG(indexbuffer, "indexbuffer is null");
+	return indexbuffer->count;
 }

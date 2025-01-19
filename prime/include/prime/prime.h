@@ -13,6 +13,7 @@
 #include "prime_native.h"
 #include "prime_string.h"
 #include "prime_test.h"
+#include "prime_viewport.h"
 #include "prime_window.h"
 
 PRIME_API b8
@@ -26,3 +27,6 @@ prime_GetTime();
 
 PRIME_API void
 prime_Sleep(f64 milli_secs);
+
+PRIME_API void
+prime_UnSetWindowCallbacks();

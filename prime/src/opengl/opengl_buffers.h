@@ -3,21 +3,34 @@
 #include "prime/prime_buffers.h"
 
 struct prime_VertexbufferHandle;
+struct prime_IndexbufferHandle;
 
 prime_VertexbufferHandle*
-prime_GLCreateVertexbufferHandle(const void* data, u32 size, prime_VertexbufferType type);
+gl_CreateVertexbuffer(const void* data, u32 size, prime_VertexbufferType type);
 
 void
-prime_GLDestroyVertexbufferHandle(prime_VertexbufferHandle* handle);
+gl_DestroyVertexbuffer(prime_VertexbufferHandle* handle);
 
 void
-prime_GLBindVertexbufferHandle(prime_VertexbufferHandle* handle);
+gl_BindVertexbuffer(prime_VertexbufferHandle* handle);
 
 void
-prime_GLUnbindVertexbufferHandle(prime_VertexbufferHandle* handle);
+gl_UnbindVertexbuffer(prime_VertexbufferHandle* handle);
 
 void
-prime_GLSetVertexbufferLayout(const prime_BufferElement* element, u32 stride);
+gl_SetVertexbufferLayout(const prime_BufferElement* element, u32 stride);
 
 void
-prime_GLSetVertexbufferHandleData(prime_VertexbufferHandle* handle, const void* data, u32 size);
+gl_SetVertexbufferData(prime_VertexbufferHandle* handle, const void* data, u32 size);
+
+prime_IndexbufferHandle*
+gl_CreateIndexbuffer(u32* indices, u32 count);
+
+void
+gl_DestroyIndexbuffer(prime_IndexbufferHandle* handle);
+
+void
+gl_BindIndexbuffer(prime_IndexbufferHandle* handle);
+
+void
+gl_UnbindIndexbuffer(prime_IndexbufferHandle* handle);

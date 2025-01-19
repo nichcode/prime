@@ -21,7 +21,7 @@ struct prime_ContextHandle
 };
 
 prime_ContextHandle*
-prime_Dx11CreateContext(prime_Window* window)
+dx11_CreateContext(prime_Window* window)
 {
 	prime_ContextHandle* context_handle = nullptr;
 	context_handle = (prime_ContextHandle*)prime_MemAlloc(sizeof(prime_ContextHandle));
@@ -76,7 +76,7 @@ prime_Dx11CreateContext(prime_Window* window)
 }
 
 void
-prime_Dx11GDestroy(prime_ContextHandle* context_handle)
+dx11_GDestroy(prime_ContextHandle* context_handle)
 {
 	if (context_handle->context_handle) {
 		context_handle->context_handle->Release();
@@ -103,19 +103,19 @@ prime_Dx11GDestroy(prime_ContextHandle* context_handle)
 }
 
 void 
-prime_Dx11Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
+dx11_Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
 {
 	context_handle->swapChain->Present(context_handle->vSync, 0);
 }
 
 void 
-prime_Dx11MakeActive(prime_Window* window, prime_ContextHandle* context_handle)
+dx11_MakeActive(prime_Window* window, prime_ContextHandle* context_handle)
 {
 	// TODO:
 }
 
 void 
-prime_Dx11SetVsync(prime_ContextHandle* context_handle, b8 vsync)
+dx11_SetVsync(prime_ContextHandle* context_handle, b8 vsync)
 {
 	if (vsync) {
 		context_handle->vSync = 1;
@@ -126,13 +126,13 @@ prime_Dx11SetVsync(prime_ContextHandle* context_handle, b8 vsync)
 }
 
 void 
-prime_Dx11SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color)
+dx11_SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color)
 {
 	context_handle->color = color;
 }
 
 void 
-prime_Dx11Clear(prime_ContextHandle* context_handle)
+dx11_Clear(prime_ContextHandle* context_handle)
 {
 	const f32 color[] = {
 		context_handle->color.r,

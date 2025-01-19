@@ -33,7 +33,7 @@ b8
 mat4Test();
 
 b8
-staticVertexbufferTestGL();
+staticBufferTestGL();
 
 b8
-dynamicVertexbufferTestGL();
+dynamicBufferTestGL();

@@ -93,7 +93,7 @@ windowTest()
 	prime_LogInfo("");
 	prime_LogInfo("Begin Window Test");
 
-	prime_Window* window = prime_CreateWindow("Prime Window", 640, 480);
+	prime_Window* window = prime_CreateWindow("Begin Window Test", 640, 480);
 
 	// callbacks
 	prime_SetWindowCloseCallback(onWindowClose);
@@ -123,8 +123,8 @@ multiWindowTest()
 	prime_LogInfo("");
 	prime_LogInfo("Begin Multi Window Test");
 
-	prime_Window* window1 = prime_CreateWindow("Prime Window 1", 640, 480);
-	prime_Window* window2 = prime_CreateWindow("Prime Window 2", 640, 480);
+	prime_Window* window1 = prime_CreateWindow("Begin Multi Window Test Window 1", 640, 480);
+	prime_Window* window2 = prime_CreateWindow("Begin Multi Window Test Window 2", 640, 480);
 
 	// callbacks
 	prime_SetWindowCloseCallback(onWindowClose);
@@ -145,6 +145,8 @@ multiWindowTest()
 
 	prime_LogInfo("End Multi Window Test");
 	prime_LogInfo("");
+
+	prime_UnSetWindowCallbacks();
 
 	return PRIME_PASSED;
 }

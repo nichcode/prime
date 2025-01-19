@@ -5,6 +5,7 @@
 
 struct prime_Device;
 struct prime_Vertexbuffer;
+struct prime_Indexbuffer;
 struct prime_BufferLayout;
 
 enum prime_BufferDataType
@@ -139,6 +140,21 @@ prime_GetBufferLayout(prime_Vertexbuffer* vertexbuffer);
 PRIME_API void
 prime_SetVertexbufferData(prime_Vertexbuffer* vertexbuffer,
     const void* data, u32 size);
+
+PRIME_API prime_Indexbuffer*
+prime_CreateIndexbuffer(prime_Device* device, u32* indices, u32 count);
+
+PRIME_API void
+prime_DestroyIndexbuffer(prime_Indexbuffer* indexbuffer);
+
+PRIME_API void
+prime_BindIndexbuffer(prime_Indexbuffer* indexbuffer);
+
+PRIME_API void
+prime_UnbindIndexbuffer(prime_Indexbuffer* indexbuffer);
+
+PRIME_API u32
+prime_GetIndexbufferCount(prime_Indexbuffer* indexbuffer);
 
 PRIME_INLINE prime_BufferElement
 prime_CreateBufferElement(prime_BufferDataType type)
