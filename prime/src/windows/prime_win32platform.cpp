@@ -68,6 +68,7 @@ prime_MemFree(void* memory, u64 size)
 	if (memory) {
 		s_TotalAllocated -= size;
 		HeapFree(GetProcessHeap(), 0, memory);
+		memory = nullptr;
 	}
 }
 

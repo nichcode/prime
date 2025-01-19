@@ -1,7 +1,9 @@
 #pragma once
 
+#include "prime_buffers.h"
 #include "prime_buttons.h"
 #include "prime_color.h"
+#include "prime_context.h"
 #include "prime_defines.h"
 #include "prime_device.h"
 #include "prime_keys.h"

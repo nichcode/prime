@@ -1,5 +1,5 @@
 
-#include "prime/prime.h"
+#include "tests.h"
 
 static void 
 onWindowClose(prime_Window* window)

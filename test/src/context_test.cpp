@@ -1,5 +1,5 @@
 
-#include "prime/prime.h"
+#include "tests.h"
 
 b8
 contextTestGL()
@@ -7,18 +7,19 @@ contextTestGL()
 	prime_LogInfo("");
 	prime_LogInfo("Begin Context Test GL");
 
+	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL);
 	prime_Window* window = prime_CreateWindow("Prime Window GL", 640, 480);
-	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL, window);
+	prime_Context* context = prime_CreateContext(device, window);
 
-	prime_MakeActive(device);
-	prime_SetClearColor(device, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
-	prime_SetVsync(device, true);
+	prime_MakeActive(context);
+	prime_SetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_SetVsync(context, true);
 
 	while (!prime_WindowShouldClose(window)) {
 		prime_PollEvents();
 
-		prime_Clear(device);
-		prime_Swapbuffers(device);
+		prime_Clear(context);
+		prime_Swapbuffers(context);
 	}
 
 	prime_DestroyDevice(device);
@@ -36,17 +37,19 @@ contextTestDx11()
 	prime_LogInfo("Begin Context Test Dx11");
 
 	prime_Window* window = prime_CreateWindow("Prime Window Dx11", 640, 480);
-	prime_Device* device = prime_CreateDevice(prime_DeviceTypeDx11, window);
-	prime_SetClearColor(device, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL);
+	prime_Context* context = prime_CreateContext(device, window);
 
-	prime_MakeActive(device);
-	prime_SetVsync(device, true);
+	prime_SetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+
+	prime_MakeActive(context);
+	prime_SetVsync(context, true);
 
 	while (!prime_WindowShouldClose(window)) {
 		prime_PollEvents();
 
-		prime_Clear(device);
-		prime_Swapbuffers(device);
+		prime_Clear(context);
+		prime_Swapbuffers(context);
 	}
 
 	prime_DestroyDevice(device);
@@ -64,38 +67,42 @@ multiContextTest()
 	prime_LogInfo("Begin Multi Context Test");
 
 	// dx11
-	prime_Window* window_dx11 = prime_CreateWindow("Prime Window Dx11", 640, 480);
-	prime_Device* device_dx11 = prime_CreateDevice(prime_DeviceTypeDx11, window_dx11);
-	prime_SetClearColor(device_dx11, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
-	prime_MakeActive(device_dx11);
-	prime_SetVsync(device_dx11, true);
+	prime_Window* dx11_window = prime_CreateWindow("Prime Window Dx11", 640, 480);
+	prime_Device* dx11_device = prime_CreateDevice(prime_DeviceTypeDx11);
+	prime_Context* dx11_context = prime_CreateContext(dx11_device, dx11_window);
+
+	prime_SetClearColor(dx11_context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_MakeActive(dx11_context);
+	prime_SetVsync(dx11_context, true);
 
 	// gl
-	prime_Window* window_gl = prime_CreateWindow("Prime Window GL", 640, 480);
-	prime_Device* device_gl = prime_CreateDevice(prime_DeviceTypeGL, window_gl);
-	prime_SetClearColor(device_gl, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
-	prime_MakeActive(device_gl);
-	prime_SetVsync(device_gl, true);
+	prime_Window* gl_window = prime_CreateWindow("Prime Window GL", 640, 480);
+	prime_Device* gl_device = prime_CreateDevice(prime_DeviceTypeGL);
+	prime_Context* gl_context = prime_CreateContext(gl_device, gl_window);
 
-	while (!prime_WindowShouldClose(window_dx11)) {
+	prime_SetClearColor(gl_context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_MakeActive(gl_context);
+	prime_SetVsync(gl_context, true);
+
+	while (!prime_WindowShouldClose(dx11_window)) {
 		prime_PollEvents();
 
 		// dx11
-		prime_Clear(device_dx11);
-		prime_Swapbuffers(device_dx11);
-		
+		prime_Clear(dx11_context);
+		prime_Swapbuffers(dx11_context);
+
 		// gl
-		prime_Clear(device_gl);
-		prime_Swapbuffers(device_gl);
+		prime_Clear(gl_context);
+		prime_Swapbuffers(gl_context);
 	}
 
 	// dx11
-	prime_DestroyDevice(device_dx11);
-	prime_DestroyWindow(window_dx11);
+	prime_DestroyDevice(dx11_device);
+	prime_DestroyWindow(dx11_window);
 
 	// gl
-	prime_DestroyDevice(device_gl);
-	prime_DestroyWindow(window_gl);
+	prime_DestroyDevice(gl_device);
+	prime_DestroyWindow(gl_window);
 
 	prime_LogInfo("End Multi Context Test");
 	prime_LogInfo("");

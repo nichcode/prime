@@ -14,7 +14,7 @@
 #else
 
 #ifdef _MSC_VER
-#define PRIME_API __declspec(dllexport)
+#define PRIME_API __declspec(dllimport)
 #else
 #define PRIME_API __attribute__((visibility("default")))
 #endif // _MSC_VER

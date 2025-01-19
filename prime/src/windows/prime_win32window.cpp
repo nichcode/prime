@@ -9,7 +9,7 @@
 struct prime_Window
 {
 	HWND handle = nullptr;
-	prime_Context* context = nullptr;
+	prime_ContextHandle* contextHandle = nullptr;
 	u32 width = 0;
 	u32 height = 0;
 	prime_String* title = nullptr;
@@ -466,7 +466,6 @@ prime_DestroyWindow(prime_Window* window)
 	window->isFocused = false;
 	window->userData = nullptr;
 	prime_MemFree(window, sizeof(prime_Window));
-	window = nullptr;
 }
 
 b8
@@ -837,15 +836,15 @@ prime_GetWin32HInstance(prime_Window* window)
 }
 
 void
-prime_SetWindowContext(prime_Window* window, prime_Context* context)
+prime_SetWindowContextHandle(prime_Window* window, prime_ContextHandle* context_handle)
 {
-	window->context = context;
+	window->contextHandle = context_handle;
 }
 
 b8
-prime_WindowHasContext(prime_Window* window)
+prime_WindowHasContextHandle(prime_Window* window)
 {
-	return window->context;
+	return window->contextHandle;
 }
 
 LRESULT CALLBACK

@@ -2,67 +2,29 @@
 #include "prime/prime_device.h"
 #include "prime/prime_memory.h"
 #include "prime/prime_log.h"
+#include "prime/prime_context.h"
 #include "prime_utils.h"
 
-#include "opengl/prime_opengl_api.h"
+#include <map>
+#include <vector>
 
-#ifdef PRIME_PLATFORM_WINDOWS
-#include "directx11/prime_dx11_api.h"
-#endif // PRIME_PLATFORM_WINDOWS
+static u32 s_IDIndex = 1;
+static std::map<u32, std::vector<prime_Context*>> s_DeviceContexts;
 
 struct prime_Device
 {
-	prime_Window* window = nullptr;
-	prime_Context* context;
+	u32 id = 0;
+	prime_Context* active_context;
 	prime_DeviceType type;
-	b8 vSync = false;
-
-	void(*destroyFunc)(prime_Context* context);
-	void(*swapbuffersFunc)(prime_Window* window, prime_Context* context);
-	void(*setColorFunc)(prime_Context* context, const prime_Color& color);
-	void(*clearFunc)(prime_Context* context);
-	void(*makeActiveFunc)(prime_Window* window, prime_Context* context);
-	void(*setVsyncFunc)(prime_Context* context, b8 vsync);
 };
 
 prime_Device*
-prime_CreateDevice(prime_DeviceType device_type, prime_Window* window)
+prime_CreateDevice(prime_DeviceType device_type)
 {
-	PRIME_ASSERT_MSG(window, "Window is null");
-	PRIME_ASSERT_MSG(!prime_WindowHasContext(window), "Window already has context");
 	prime_Device* device = (prime_Device*)prime_MemAlloc(sizeof(prime_Device));
 	device->type = device_type;
-	device->window = window;
-
-	switch (device_type)
-	{
-	case prime_DeviceTypeDx11: {
-		device->context = prime_Dx11CreateContext(window);
-
-		// function pointers
-		device->clearFunc = prime_Dx11Clear;
-		device->destroyFunc = prime_Dx11GDestroy;
-		device->makeActiveFunc = prime_Dx11MakeActive;
-		device->setColorFunc = prime_Dx11SetClearColor;
-		device->setVsyncFunc = prime_Dx11SetVsync;
-		device->swapbuffersFunc = prime_Dx11Swapbuffer;
-		break;
-	}
-
-	case prime_DeviceTypeGL: {
-		device->context = prime_GLCreateContext(window);
-
-		// function pointers
-		device->clearFunc = prime_GLClear;
-		device->destroyFunc = prime_GLGDestroy;
-		device->makeActiveFunc = prime_GLMakeActive;
-		device->setColorFunc = prime_GLSetClearColor;
-		device->setVsyncFunc = prime_GLSetVsync;
-		device->swapbuffersFunc = prime_GLSwapbuffer;
-		break;
-	}
-
-	}
+	device->id = s_IDIndex;
+	s_IDIndex++;
 	return device;
 }
 
@@ -70,43 +32,38 @@ void
 prime_DestroyDevice(prime_Device* device)
 {
 	PRIME_ASSERT_MSG(device, "Device is null");
-	device->destroyFunc(device->context);
+	auto& device_contexts = s_DeviceContexts[device->id];
+	for (prime_Context* context : device_contexts) {
+		prime_DestroyContext(context);
+	}
+
+	s_DeviceContexts[device->id].clear();
+	device->id = 0;
+	s_IDIndex--;
 	prime_MemFree(device, sizeof(prime_Device));
-	device = nullptr;
+}
+
+prime_DeviceType
+prime_GetDeviceType(prime_Device* device)
+{
+	PRIME_ASSERT_MSG(device, "Device is null");
+	return device->type;
 }
 
 void
-prime_Swapbuffers(prime_Device* device)
+prime_AddContext(prime_Device* device, prime_Context* context)
 {
-	PRIME_ASSERT_MSG(device, "Device is null");
-	device->swapbuffersFunc(device->window, device->context);
+	s_DeviceContexts[device->id].push_back(context);
 }
 
 void
-prime_SetClearColor(prime_Device* device, const prime_Color& color)
+prime_RemoveContext(prime_Device* device, prime_Context* context)
 {
-	PRIME_ASSERT_MSG(device, "Device is null");
-	device->setColorFunc(device->context, color);
-}
+	auto& device_contexts = s_DeviceContexts[device->id];
 
-void
-prime_Clear(prime_Device* device)
-{
-	PRIME_ASSERT_MSG(device, "Device is null");
-	device->clearFunc(device->context);
-}
-
-void
-prime_MakeActive(prime_Device* device)
-{
-	PRIME_ASSERT_MSG(device, "Device is null");
-	device->makeActiveFunc(device->window, device->context);
-}
-
-void
-prime_SetVsync(prime_Device* device, b8 vsync)
-{
-	PRIME_ASSERT_MSG(device, "Device is null");
-	device->setVsyncFunc(device->context, vsync);
-	device->vSync = true;
+	auto it = std::find(device_contexts.begin(), device_contexts.end(), context);
+	if (it != device_contexts.end())
+	{
+		device_contexts.erase(it);
+	}
 }

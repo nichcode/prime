@@ -1,5 +1,5 @@
 
-#include "prime/prime.h"
+#include "tests.h"
 
 b8 
 stringTest()
