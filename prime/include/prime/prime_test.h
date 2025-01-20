@@ -11,7 +11,7 @@ struct prime_TestEntry
 };
 
 PRIME_API void
-prime_AddTest(prime_TestFunc function, const char* name);
+prime_TestManagerAddTest(prime_TestFunc function, const char* name);
 
 PRIME_API void
-prime_RunTests();
+prime_TestManagerRunTests();

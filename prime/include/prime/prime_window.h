@@ -15,16 +15,16 @@ using prime_WindowSizeFunc = void(*)(prime_Window* window, u32 width, u32 height
 using prime_WindowFocusFunc = void(*)(prime_Window* window, b8 focused);
 
 PRIME_API prime_Window*
-prime_CreateWindow(const char* title, u32 width, u32 height);
+prime_WindowCreate(const char* title, u32 width, u32 height);
 
 PRIME_API void
-prime_DestroyWindow(prime_Window* window);
+prime_WindowDestroy(prime_Window* window);
 
 PRIME_API b8
 prime_WindowShouldClose(prime_Window* window);
 
 PRIME_API void
-prime_PollEvents();
+prime_WindowPollEvents();
 
 PRIME_API void 
 prime_SetWindowCloseCallback(prime_WindowCloseFunc func);
@@ -51,10 +51,10 @@ PRIME_API void
 prime_SetWindowFocusCallback(prime_WindowFocusFunc func);
 
 PRIME_API void
-prime_HideWindow(prime_Window* window);
+prime_WindowHide(prime_Window* window);
 
 PRIME_API void
-prime_ShowWindow(prime_Window* window);
+prime_WindowShow(prime_Window* window);
 
 PRIME_API void
 prime_SetWindowSize(prime_Window* window, u32 width, u32 height);

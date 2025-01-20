@@ -2,18 +2,6 @@
 
 #include "prime_defines.h"
 
-struct prime_String;
-struct prime_WString;
-
-enum prime_LogLevel
-{
-    prime_LogLevelTrace,
-    prime_LogLevelInfo,
-    prime_LogLevelWarn,
-    prime_LogLevelError,
-    prime_LogLevelFatal
-};
-
 PRIME_API void
 prime_Log(prime_LogLevel level, const char* message, ...);
 
@@ -67,7 +55,7 @@ prime_LogWString(prime_WString* wide_string);
 #define PRIME_FATAL(message, ...)           prime_LogFatal(message, __VA_ARGS__)
 #define PRIME_ASSERT(expr)                  prime_Assert(expr, PRIME_FILE, PRIME_LINE)
 #define PRIME_ASSERT_MSG(expr, message)     prime_AssertMsg(expr, PRIME_FILE, PRIME_LINE, message)
-#define PRIME_LOG_STRING(string)            prime_LogStringLo(string)
+#define PRIME_LOG_STRING(string)            prime_LogString(string)
 #define PRIME_LOG_WSTRING(wide_string)      prime_LogWString(wide_string)
 #else
 #define PRIME_TRACE(message, ...)         
@@ -81,11 +69,3 @@ prime_LogWString(prime_WString* wide_string);
 #define PRIME_LOG_STRING(string)
 #define PRIME_LOG_WSTRING(wide_string)
 #endif // PRIME_CONFIG_DEBUG
-
-
-#ifdef PR_CONFIG_DEBUG
-
-#else
-#define PR_STRING_LOG(message, ...)         
-#define PR_WSTRING_LOG(message, ...)         
-#endif // PR_CONFIG_DEBUG

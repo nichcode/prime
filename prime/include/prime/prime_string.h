@@ -2,50 +2,47 @@
 
 #include "prime_defines.h"
 
-struct prime_String;
-struct prime_WString;
+PRIME_API prime_String*
+prime_StringFromCstr(const char* string);
 
 PRIME_API prime_String*
-prime_CstrToString(const char* string);
+prime_StringCopy(const prime_String* string);
 
 PRIME_API prime_String*
-prime_CopyString(const prime_String* string);
-
-PRIME_API prime_String*
-primeWStringToString(const prime_WString* wide_string);
+prime_StringFromWString(const prime_WString* wide_string);
 
 PRIME_API void
-prime_DestroyString(prime_String* string);
+prime_StringDestroy(prime_String* string);
 
 PRIME_API const char*
-prime_GetCstr(const prime_String* string);
+prime_StringGetCstr(const prime_String* string);
 
 PRIME_API u64
-prime_GetStringLength(const prime_String* string);
+prime_StringGetLength(const prime_String* string);
 
 PRIME_API prime_String*
-prime_FormatString(const char* fmt, ...);
+prime_StringFormat(const char* fmt, ...);
 
 PRIME_API prime_String*
-prime_FormatStringWithArgs(const char* fmt, char* va_listp);
+prime_StringFormatArgs(const char* fmt, char* va_listp);
 
 PRIME_API prime_WString*
-prime_CopyWString(const prime_WString* wide_string);
+prime_WStringCopy(const prime_WString* wide_string);
 
 PRIME_API prime_WString*
-prime_WstrToWString(const wchar_t* wide_string);
+prime_WStringFromWstr(const wchar_t* wide_string);
 
 PRIME_API prime_WString*
-prime_StringToWString(const prime_String* string);
+prime_WStringFromString(const prime_String* string);
 
 PRIME_API prime_WString*
-prime_CstrToWString(const char* string);
+prime_WStringFromCstr(const char* string);
 
 PRIME_API void
-prime_DestroyWString(prime_WString* wide_string);
+prime_WStringDestroy(prime_WString* wide_string);
 
 PRIME_API const wchar_t*
-prime_GetWstr(const prime_WString* wide_string);
+prime_WStringGetWstr(const prime_WString* wide_string);
 
 PRIME_API u64
-prime_GetWStringLength(const prime_WString* wide_string);
+prime_WStringGetLength(const prime_WString* wide_string);

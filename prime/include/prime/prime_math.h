@@ -13,8 +13,6 @@
 #define PRIME_FLOAT_MIN -3.40282e+38F
 #define PRIME_FLOAT_MAX 3.40282e+38F
 
-struct prime_String;
-
 struct prime_Vec2
 {
 	f32 x = 0.0f;
@@ -42,16 +40,16 @@ struct prime_Mat4
 };
 
 PRIME_API f32
-prime_Sqrt(f32 number);
+prime_MathSqrt(f32 number);
 
 PRIME_API f32
-prime_Tan(f32 x);
+prime_MathTan(f32 x);
 
 PRIME_API f32
-prime_Cos(f32 x);
+prime_MathCos(f32 x);
 
 PRIME_API f32
-prime_Sin(f32 x);
+prime_MathSin(f32 x);
 
 PRIME_INLINE f32 
 prime_RadiansToDegree(f32 radians) 
@@ -155,7 +153,7 @@ prime_Vec2LengthSquared(const prime_Vec2& vec)
 PRIME_INLINE f32
 prime_Vec2Length(const prime_Vec2& vec)
 {
-    return prime_Sqrt(vec.x * vec.x + vec.y * vec.y);
+    return prime_MathSqrt(vec.x * vec.x + vec.y * vec.y);
 }
 
 PRIME_INLINE void
@@ -315,7 +313,7 @@ prime_Vec3LengthSquared(const prime_Vec3& vec)
 PRIME_INLINE f32
 prime_Vec3Length(const prime_Vec3& vec)
 {
-    return prime_Sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+    return prime_MathSqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
 PRIME_INLINE void
@@ -503,7 +501,7 @@ prime_Vec4LengthSquared(const prime_Vec4& vec)
 PRIME_INLINE f32
 prime_Vec4Length(const prime_Vec4& vec)
 {
-    return prime_Sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
+    return prime_MathSqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
 }
 
 PRIME_INLINE void
@@ -608,7 +606,7 @@ prime_Mat4Orthographic(f32 left, f32 right, f32 bottom, f32 top,
 PRIME_INLINE prime_Mat4
 prime_Mat4Perspective(f32 fov_radians, f32 aspect_ratio, f32 near_clip, f32 far_clip)
 {
-    f32 half_tan_fov = prime_Tan(fov_radians * 0.5f);
+    f32 half_tan_fov = prime_MathTan(fov_radians * 0.5f);
     prime_Mat4 matrix;
     prime_MemZero(matrix.data, sizeof(f32) * 16);
     matrix.data[0] = 1.0f / (aspect_ratio * half_tan_fov);
@@ -810,8 +808,8 @@ PRIME_INLINE prime_Mat4
 prime_Mat4RotationX(f32 angle_radians)
 {
     prime_Mat4 matrix = prime_Mat4Identity();
-    f32 c = prime_Cos(angle_radians);
-    f32 s = prime_Sin(angle_radians);
+    f32 c = prime_MathCos(angle_radians);
+    f32 s = prime_MathSin(angle_radians);
 
     matrix.data[5] = c;
     matrix.data[6] = s;
@@ -824,8 +822,8 @@ PRIME_INLINE prime_Mat4
 prime_Mat4RotationY(f32 angle_radians)
 {
     prime_Mat4 matrix = prime_Mat4Identity();
-    f32 c = prime_Cos(angle_radians);
-    f32 s = prime_Sin(angle_radians);
+    f32 c = prime_MathCos(angle_radians);
+    f32 s = prime_MathSin(angle_radians);
 
     matrix.data[0] = c;
     matrix.data[2] = -s;
@@ -838,8 +836,8 @@ PRIME_INLINE prime_Mat4
 prime_Mat4RotationZ(f32 angle_radians)
 {
     prime_Mat4 matrix = prime_Mat4Identity();
-    f32 c = prime_Cos(angle_radians);
-    f32 s = prime_Sin(angle_radians);
+    f32 c = prime_MathCos(angle_radians);
+    f32 s = prime_MathSin(angle_radians);
 
     matrix.data[0] = c;
     matrix.data[1] = s;
