@@ -7,12 +7,12 @@ staticBufferTestGL()
 	prime_LogInfo("");
 	prime_LogInfo("Begin Static Buffer Test GL");
 
-	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL);
-	prime_Window* window = prime_CreateWindow("Begin Static Buffer Test GL", 640, 480);
-	prime_Context* context = prime_CreateContext(device, window);
-	prime_MakeActive(context);
-	prime_SetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
-	prime_SetVsync(context, true);
+	prime_Device* device = prime_DeviceCreate(prime_DeviceTypeGL);
+	prime_Window* window = prime_WindowCreate("Begin Static Buffer Test GL", 640, 480);
+	prime_Context* context = prime_ContextCreate(device, window);
+	prime_ContextMakeActive(context);
+	prime_ContextSetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_ContextSetVsync(context, true);
 
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f, // left  
@@ -22,33 +22,33 @@ staticBufferTestGL()
 
 	u32 indices[] = { 0, 1, 2 };
 
-	prime_BufferLayout* layout = prime_CreateBufferLayout();
-	prime_AddBufferElement(layout, prime_CreateBufferElement(prime_BufferDataTypeFloat3));
+	prime_BufferLayout* layout = prime_BufferLayoutCreate();
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat3));
 
-	prime_Vertexbuffer* vertexbuffer = prime_CreateVertexbuffer(
+	prime_Vertexbuffer* vertexbuffer = prime_VertexbufferCreate(
 		device,
 		vertices,
 		sizeof(vertices),
 		prime_VertexbufferTypeStatic
 	);
 
-	prime_SetBufferLayout(vertexbuffer, layout);
+	prime_BufferLayoutSet(vertexbuffer, layout);
 
-	prime_Indexbuffer* indexbuffer = prime_CreateIndexbuffer(
+	prime_Indexbuffer* indexbuffer = prime_IndexbufferCreate(
 		device, indices, 3);
 
 	while (!prime_WindowShouldClose(window)) {
 
-		prime_PollEvents();
+		prime_WindowPollEvents();
 
-		prime_Clear(context);
-		prime_DrawIndexed(context, prime_TopologyTriangles, 3);
-		prime_Swapbuffers(context);
+		prime_ContextClear(context);
+		prime_ContextDrawIndexed(context, prime_DrawModeTriangles, 3);
+		prime_ContextSwapbuffers(context);
 	}
 
-	prime_DestroyBufferLayout(layout);
-	prime_DestroyDevice(device);
-	prime_DestroyWindow(window);
+	prime_BufferLayoutDestroy(layout);
+	prime_DeviceDestroy(device);
+	prime_WindowDestroy(window);
 
 	prime_LogInfo("End Static Buffer Test GL");
 	prime_LogInfo("");
@@ -61,12 +61,12 @@ dynamicBufferTestGL()
 	prime_LogInfo("");
 	prime_LogInfo("Begin Dynamic Buffer Test GL");
 
-	prime_Device* device = prime_CreateDevice(prime_DeviceTypeGL);
-	prime_Window* window = prime_CreateWindow("Begin Dynamic Buffer Test GL", 640, 480);
-	prime_Context* context = prime_CreateContext(device, window);
-	prime_MakeActive(context);
-	prime_SetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
-	prime_SetVsync(context, true);
+	prime_Device* device = prime_DeviceCreate(prime_DeviceTypeGL);
+	prime_Window* window = prime_WindowCreate("Begin Dynamic Buffer Test GL", 640, 480);
+	prime_Context* context = prime_ContextCreate(device, window);
+	prime_ContextMakeActive(context);
+	prime_ContextSetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
+	prime_ContextSetVsync(context, true);
 
 	float vertices[] = {
 		-0.5f, -0.5f, 0.0f, // left  
@@ -76,35 +76,35 @@ dynamicBufferTestGL()
 
 	u32 indices[] = { 0, 1, 2 };
 
-	prime_BufferLayout* layout = prime_CreateBufferLayout();
-	prime_AddBufferElement(layout, prime_CreateBufferElement(prime_BufferDataTypeFloat3));
+	prime_BufferLayout* layout = prime_BufferLayoutCreate();
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat3));
 
-	prime_Vertexbuffer* vertexbuffer = prime_CreateVertexbuffer(
+	prime_Vertexbuffer* vertexbuffer = prime_VertexbufferCreate(
 		device,
 		nullptr,
 		sizeof(vertices),
 		prime_VertexbufferTypeDynamic
 	);
 
-	prime_SetBufferLayout(vertexbuffer, layout);
+	prime_BufferLayoutSet(vertexbuffer, layout);
 
-	prime_Indexbuffer* indexbuffer = prime_CreateIndexbuffer(
+	prime_Indexbuffer* indexbuffer = prime_IndexbufferCreate(
 		device, indices, 3);
 
-	prime_SetVertexbufferData(vertexbuffer, vertices, sizeof(vertices));
+	prime_VertexbufferSetData(vertexbuffer, vertices, sizeof(vertices));
 
 	while (!prime_WindowShouldClose(window)) {
 
-		prime_PollEvents();
+		prime_WindowPollEvents();
 
-		prime_Clear(context);
-		prime_DrawIndexed(context, prime_TopologyTriangles, 3);
-		prime_Swapbuffers(context);
+		prime_ContextClear(context);
+		prime_ContextDrawIndexed(context, prime_DrawModeTriangles, 3);
+		prime_ContextSwapbuffers(context);
 	}
 
-	prime_DestroyBufferLayout(layout);
-	prime_DestroyDevice(device);
-	prime_DestroyWindow(window);
+	prime_BufferLayoutDestroy(layout);
+	prime_DeviceDestroy(device);
+	prime_WindowDestroy(window);
 
 
 	prime_LogInfo("Begin Dynamic Buffer Test GL");

@@ -20,7 +20,7 @@ vec2Test()
 
 	string = prime_Vec2ToString(result);
 	prime_LogString(string);
-	prime_DestroyString(string);
+	prime_StringDestroy(string);
 
 	prime_LogInfo("End Vec2 Test");
 	prime_LogInfo("");
@@ -46,7 +46,7 @@ vec3Test()
 
 	string = prime_Vec3ToString(result);
 	prime_LogString(string);
-	prime_DestroyString(string);
+	prime_StringDestroy(string);
 
 	prime_LogInfo("End Vec3 Test");
 	prime_LogInfo("");
@@ -72,7 +72,7 @@ vec4Test()
 
 	string = prime_Vec4ToString(result);
 	prime_LogString(string);
-	prime_DestroyString(string);
+	prime_StringDestroy(string);
 
 	prime_LogInfo("End Vec4 Test");
 	prime_LogInfo("");
@@ -118,13 +118,13 @@ mat4Test()
 	prime_LogString(string_trs);
 	prime_LogString(string_inverse);
 
-	prime_DestroyString(string_ortho);
-	prime_DestroyString(string_perps);
-	prime_DestroyString(string_translation);
-	prime_DestroyString(string_rotation);
-	prime_DestroyString(string_scale);
-	prime_DestroyString(string_trs);
-	prime_DestroyString(string_inverse);
+	prime_StringDestroy(string_ortho);
+	prime_StringDestroy(string_perps);
+	prime_StringDestroy(string_translation);
+	prime_StringDestroy(string_rotation);
+	prime_StringDestroy(string_scale);
+	prime_StringDestroy(string_trs);
+	prime_StringDestroy(string_inverse);
 
 	prime_LogInfo("End Mat4 Test");
 	prime_LogInfo("");

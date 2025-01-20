@@ -52,13 +52,13 @@ PRIME_API f32
 prime_MathSin(f32 x);
 
 PRIME_INLINE f32 
-prime_RadiansToDegree(f32 radians) 
+prime_MathsRadiansToDegree(f32 radians) 
 {
 	return radians * PRIME_RAD_TO_DEG_MULTIPLIER;
 }
 
 PRIME_INLINE f32
-prime_DegreeToRadians(f32 degrees)
+prime_MathsDegreeToRadians(f32 degrees)
 {
 	return degrees * PRIME_DEG_TO_RAD_MULTIPLIER;
 }

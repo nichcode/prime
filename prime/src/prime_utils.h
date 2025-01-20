@@ -1,14 +1,6 @@
 #pragma once
 
-#include "prime/prime_log.h"
-#include "prime/prime_device.h"
-
-struct prime_Window;
-struct prime_String;
-struct prime_ContextHandle;
-struct prime_Context;
-struct prime_Vertexbuffer;
-struct prime_Indexbuffer;
+#include "prime/prime_defines.h"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 
@@ -20,43 +12,40 @@ struct prime_Indexbuffer;
 #endif // PR_PLATFORM_WINDOWS
 
 void
-prime_SetWindowContextHandle(prime_Window* window, prime_ContextHandle* context_handle);
+windowSetContextHandle(prime_Window* window, prime_Context* context);
 
 b8
-prime_WindowHasContextHandle(prime_Window* window);
+windowHasContextHandle(prime_Window* window);
 
 void
-prime_ConsoleWrite(const prime_String* message, prime_LogLevel level);
+consoleWrite(const prime_String* message, prime_LogLevel level);
 
 i32
-prime_MultiByteToWideChar(
+multiByteToWideChar(
     const char* string,
     u32 string_len,
     wchar_t* wide_string);
 
 i32
-prime_WideCharToMultiByte(
+wideCharToMultiByte(
     const wchar_t* wide_string,
     u32 wide_string_len,
     char* string);
 
-prime_DeviceType
-prime_GetDeviceType(prime_Device* device);
+void
+appendContext(prime_Device* device, prime_Context* context);
 
 void
-prime_AddContext(prime_Device* device, prime_Context* context);
+popContext(prime_Device* device, prime_Context* context);
 
 void
-prime_RemoveContext(prime_Device* device, prime_Context* context);
+appendVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
 
 void
-prime_AddVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
+popVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
 
 void
-prime_RemoveVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
+appendIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
 
 void
-prime_AddIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
-
-void
-prime_RemoveIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
+popIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);

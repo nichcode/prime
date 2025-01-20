@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 
 void 
-prime_WGLContextCreateDummy()
+wgl_ContextCreateDummy()
 {
     WNDCLASSEXW window_class = {};
     window_class.style = CS_OWNDC;
@@ -73,7 +73,7 @@ prime_WGLContextCreateDummy()
 }
 
 HGLRC 
-prime_WGLContextCreate(HWND window)
+wgl_ContextCreate(HWND window)
 {
     auto hdc = GetDC(window);
 
@@ -112,20 +112,20 @@ prime_WGLContextCreate(HWND window)
 }
 
 void 
-prime_WGLContextDestroy(HGLRC context)
+wgl_ContextDestroy(HGLRC context)
 {
     wglDeleteContext(context);
     context = nullptr;
 }
 
 void 
-prime_WGLContextMakeCurrent(HWND window, HGLRC context)
+wgl_ContextMakeCurrent(HWND window, HGLRC context)
 {
     wglMakeCurrent(GetDC(window), context);
 }
 
 void 
-prime_WGLContextSetVsync(int interval)
+wgl_ContextSetVsync(int interval)
 {
     wglSwapIntervalEXT(interval);
 }

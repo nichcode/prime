@@ -41,7 +41,7 @@ prime_Init()
 
 	s_TotalAllocated = 0;
 	if (!s_WGLInit) {
-		prime_WGLContextCreateDummy();
+		wgl_ContextCreateDummy();
 		s_WGLInit = true;
 	}
 
@@ -97,7 +97,7 @@ prime_MemCopy(void* memory_dest, const void* memory_src, u64 size)
 }
 
 void
-prime_ConsoleWrite(const prime_String* message, prime_LogLevel level)
+consoleWrite(const prime_String* message, prime_LogLevel level)
 {
 	b8 error = level > prime_LogLevelWarn;
 	HANDLE console = NULL;
@@ -112,20 +112,20 @@ prime_ConsoleWrite(const prime_String* message, prime_LogLevel level)
 
 	SetConsoleTextAttribute(console, levels[level]);
 
-	prime_WString* wide_str = prime_StringToWString(message);
+	prime_WString* wide_str = prime_WStringFromString(message);
 	DWORD number_written = 0;
 
 	WriteConsoleW(console,
-		prime_GetWstr(wide_str),
-		(DWORD)prime_GetWStringLength(wide_str),
+		prime_WStringGetWstr(wide_str),
+		(DWORD)prime_WStringGetLength(wide_str),
 		&number_written, 0);
 
-	prime_DestroyWString(wide_str);
+	prime_WStringDestroy(wide_str);
 	SetConsoleTextAttribute(console, 15);
 }
 
 f32
-prime_GetTime()
+prime_TimeGet()
 {
 	u64 time;
 	QueryPerformanceCounter((LARGE_INTEGER*)&time);
@@ -139,7 +139,7 @@ prime_Sleep(f64 milli_secs)
 }
 
 i32
-prime_MultiByteToWideChar(
+multiByteToWideChar(
 	const char* string,
 	u32 string_len,
 	wchar_t* wide_string)
@@ -148,7 +148,7 @@ prime_MultiByteToWideChar(
 }
 
 i32
-prime_WideCharToMultiByte(
+wideCharToMultiByte(
 	const wchar_t* wide_string,
 	u32 wide_string_len,
 	char* string)

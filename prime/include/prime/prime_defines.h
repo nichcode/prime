@@ -256,6 +256,34 @@ enum prime_LogLevel
 	prime_LogLevelFatal
 };
 
+enum prime_DataType
+{
+	prime_DataTypeInt,
+	prime_DataTypeInt2,
+	prime_DataTypeInt3,
+	prime_DataTypeInt4,
+	prime_DataTypeFloat,
+	prime_DataTypeFloat2,
+	prime_DataTypeFloat3,
+	prime_DataTypeFloat4,
+	prime_DataTypeMat3,
+	prime_DataTypeMat4,
+	prime_DataTypeBool,
+};
+
+enum prime_VertexbufferType
+{
+	prime_VertexbufferTypeStatic,
+	prime_VertexbufferTypeDynamic
+};
+
+struct prime_BufferElement
+{
+	prime_DataType type = prime_DataTypeFloat3;
+	u32 size = 0;
+	u64 offset = 0;
+};
+
 struct prime_Viewport
 {
 	f32 x = 0.0f;
@@ -316,4 +344,78 @@ prime_ColorFromU32(u32 rgba)
 	color.r = (f32)g / 255.0f;
 	color.r = (f32)b / 255.0f;
 	color.a = 1.0f / 255.0f;
+}
+
+PRIME_INLINE u32
+prime_DataTypeGetSize(prime_DataType type)
+{
+	switch (type)
+	{
+	case prime_DataTypeInt:
+	case prime_DataTypeFloat: {
+		return 4;
+	}
+
+	case prime_DataTypeInt2:
+	case prime_DataTypeFloat2: {
+		return 8;
+	}
+
+	case prime_DataTypeInt3:
+	case prime_DataTypeFloat3: {
+		return 12;
+	}
+
+	case prime_DataTypeInt4:
+	case prime_DataTypeFloat4: {
+		return 16;
+	}
+
+	case prime_DataTypeMat3:     return 4 * 3 * 3;
+	case prime_DataTypeMat4:     return 4 * 4 * 4;
+	case prime_DataTypeBool:     return 1;
+	}
+	return 0;
+}
+
+PRIME_INLINE u32
+prime_DataTypeGetCount(prime_DataType type)
+{
+	switch (type)
+	{
+	case prime_DataTypeFloat:
+	case prime_DataTypeInt:
+	case prime_DataTypeBool: {
+		return 1;
+	}
+
+	case prime_DataTypeFloat2:
+	case prime_DataTypeInt2: {
+		return 2;
+	}
+
+	case prime_DataTypeFloat3:
+	case prime_DataTypeInt3: {
+		return 3;
+	}
+
+	case prime_DataTypeFloat4:
+	case prime_DataTypeInt4: {
+		return 4;
+	}
+
+
+	case prime_DataTypeMat3:     return 9;
+	case prime_DataTypeMat4:     return 16;
+	}
+	return 0;
+}
+
+PRIME_INLINE prime_BufferElement
+prime_BufferElementCreate(prime_DataType type)
+{
+	prime_BufferElement element;
+	element.type = type;
+	element.size = prime_DataTypeGetSize(type);
+	return element;
 }

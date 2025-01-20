@@ -9,10 +9,10 @@
 #include <Windows.h>
 
 PRIME_API HWND 
-prime_Win32GetWindowHandle(prime_Window* window);
+prime_WindowGetWin32Handle(prime_Window* window);
 
 PRIME_API HINSTANCE 
-prime_Win32GetHInstance(prime_Window* window);
+prime_WindowGetWin32HInstance(prime_Window* window);
 
 #endif // PRIME_PLATFORM_WINDOWS
 

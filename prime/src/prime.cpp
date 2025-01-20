@@ -2,14 +2,14 @@
 #include "prime/prime.h"
 
 PRIME_API void
-prime_UnSetWindowCallbacks()
+prime_WindowCallbacksReset()
 {
-	prime_SetWindowCloseCallback(nullptr);
-	prime_SetWindowKeyCallback(nullptr);
-	prime_SetWindowButtonCallback(nullptr);
-	prime_SetWindowMouseMovedCallback(nullptr);
-	prime_SetWindowMouseScrolledCallback(nullptr);
-	prime_SetWindowPosCallback(nullptr);
-	prime_SetWindowSizeCallback(nullptr);
-	prime_SetWindowFocusCallback(nullptr);
+	prime_WindowSetCloseCallback(nullptr);
+	prime_WindowSetKeyCallback(nullptr);
+	prime_WindowSetButtonCallback(nullptr);
+	prime_WindowSetMouseMovedCallback(nullptr);
+	prime_WindowSetMouseScrolledCallback(nullptr);
+	prime_WindowSetPosCallback(nullptr);
+	prime_WindowSetSizeCallback(nullptr);
+	prime_WindowSetFocusCallback(nullptr);
 }

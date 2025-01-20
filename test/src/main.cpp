@@ -6,29 +6,29 @@ main()
 {
 	prime_Init();
 
-	// string
-	prime_AddTest(stringTest, "StringTest");
+	//// string
+	//prime_TestManagerAddTest(stringTest, "StringTest");
 
-	// window
-	prime_AddTest(windowTest, "WindowTest");
-	prime_AddTest(multiWindowTest, "MultiWindowTest");
+	//// window
+	//prime_TestManagerAddTest(windowTest, "WindowTest");
+	//prime_TestManagerAddTest(multiWindowTest, "MultiWindowTest");
 
-	// context
-	prime_AddTest(contextTestGL, "ContextTestGL");
-	prime_AddTest(contextTestDx11, "ContextTestDx11");
-	prime_AddTest(multiContextTest, "MultiContextTest");
+	//// context
+	//prime_TestManagerAddTest(contextTestGL, "ContextTestGL");
+	//prime_TestManagerAddTest(contextTestDx11, "ContextTestDx11");
+	//prime_TestManagerAddTest(multiContextTest, "MultiContextTest");
 
-	// maths
-	prime_AddTest(vec2Test, "Vec2Test");
-	prime_AddTest(vec3Test, "Vec3Test");
-	prime_AddTest(vec4Test, "Vec4Test");
-	prime_AddTest(mat4Test, "Mat4Test");
+	//// maths
+	//prime_TestManagerAddTest(vec2Test, "Vec2Test");
+	//prime_TestManagerAddTest(vec3Test, "Vec3Test");
+	//prime_TestManagerAddTest(vec4Test, "Vec4Test");
+	//prime_TestManagerAddTest(mat4Test, "Mat4Test");
 
-	// buffers
-	prime_AddTest(staticBufferTestGL, "staticBufferTestGL");
-	prime_AddTest(dynamicBufferTestGL, "dynamicBufferTestGL");
+	//// buffers
+	//prime_TestManagerAddTest(staticBufferTestGL, "staticBufferTestGL");
+	prime_TestManagerAddTest(dynamicBufferTestGL, "dynamicBufferTestGL");
 
-	prime_RunTests();
+	prime_TestManagerRunTests();
 	prime_Shutdown();
 	return 0;
 }

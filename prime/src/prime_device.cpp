@@ -21,7 +21,7 @@ struct prime_Device
 };
 
 prime_Device*
-prime_CreateDevice(prime_DeviceType device_type)
+prime_DeviceCreate(prime_DeviceType device_type)
 {
 	prime_Device* device = (prime_Device*)prime_MemAlloc(sizeof(prime_Device));
 	device->type = device_type;
@@ -31,25 +31,25 @@ prime_CreateDevice(prime_DeviceType device_type)
 }
 
 void
-prime_DestroyDevice(prime_Device* device)
+prime_DeviceDestroy(prime_Device* device)
 {
 	PRIME_ASSERT_MSG(device, "Device is null");
 	// contexts
 	auto& device_contexts = s_DeviceContexts[device->id];
 	for (prime_Context* context : device_contexts) {
-		prime_DestroyContext(context);
+		prime_ContextDestroy(context);
 	}
 
 	// vertexbuffer
 	auto& device_vertexbuffers = s_DeviceVertexbuffers[device->id];
 	for (prime_Vertexbuffer* vertexbuffer : device_vertexbuffers) {
-		prime_DestroyVertexbuffer(vertexbuffer);
+		prime_VertexbufferDestroy(vertexbuffer);
 	}
 
 	// indexbuffer
 	auto& device_indexbuffers = s_DeviceIndexbuffers[device->id];
 	for (prime_Indexbuffer* indexbuffer : device_indexbuffers) {
-		prime_DestroyIndexbuffer(indexbuffer);
+		prime_IndexbufferDestroy(indexbuffer);
 	}
 
 	s_DeviceContexts[device->id].clear();
@@ -62,20 +62,20 @@ prime_DestroyDevice(prime_Device* device)
 }
 
 prime_DeviceType
-prime_GetDeviceType(prime_Device* device)
+prime_DeviceGetType(prime_Device* device)
 {
 	PRIME_ASSERT_MSG(device, "Device is null");
 	return device->type;
 }
 
 void
-prime_AddContext(prime_Device* device, prime_Context* context)
+appendContext(prime_Device* device, prime_Context* context)
 {
 	s_DeviceContexts[device->id].push_back(context);
 }
 
 void
-prime_RemoveContext(prime_Device* device, prime_Context* context)
+popContext(prime_Device* device, prime_Context* context)
 {
 	auto& device_contexts = s_DeviceContexts[device->id];
 
@@ -87,13 +87,13 @@ prime_RemoveContext(prime_Device* device, prime_Context* context)
 }
 
 void
-prime_AddVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
+appendVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
 {
 	s_DeviceVertexbuffers[device->id].push_back(vertexbuffer);
 }
 
 void
-prime_RemoveVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
+popVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
 {
 	auto& device_vertexbuffers = s_DeviceVertexbuffers[device->id];
 
@@ -105,13 +105,13 @@ prime_RemoveVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
 }
 
 void
-prime_AddIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
+appendIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
 {
 	s_DeviceIndexbuffers[device->id].push_back(indexbuffer);
 }
 
 void
-prime_RemoveIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
+popIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
 {
 	auto& device_indexbuffers = s_DeviceIndexbuffers[device->id];
 

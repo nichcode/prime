@@ -9,7 +9,7 @@
 struct prime_Window
 {
 	HWND handle = nullptr;
-	prime_ContextHandle* contextHandle = nullptr;
+	prime_Context* contextHandle = nullptr;
 	u32 width = 0;
 	u32 height = 0;
 	prime_String* title = nullptr;
@@ -405,7 +405,7 @@ centerWindow(prime_Window* window, u32 width, u32 height)
 }
 
 prime_Window*
-prime_CreateWindow(const char* title, u32 width, u32 height)
+prime_WindowCreate(const char* title, u32 width, u32 height)
 {
 	u32 style = WS_OVERLAPPEDWINDOW;
 	u32 ex_style = WS_EX_APPWINDOW;
@@ -416,13 +416,13 @@ prime_CreateWindow(const char* title, u32 width, u32 height)
 	AdjustWindowRectEx(&rect, style, 0, ex_style);
 
 	prime_Window* window = (prime_Window*)prime_MemAlloc(sizeof(prime_Window));
-	window->title = prime_CstrToString(title);
+	window->title = prime_StringFromCstr(title);
 
-	prime_WString* wide_str = prime_StringToWString(window->title);
+	prime_WString* wide_str = prime_WStringFromString(window->title);
 
 	HWND hwnd = CreateWindowExW(ex_style,
 		s_ClassName,
-		prime_GetWstr(wide_str),
+		prime_WStringGetWstr(wide_str),
 		style,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -459,7 +459,7 @@ prime_CreateWindow(const char* title, u32 width, u32 height)
 }
 
 void
-prime_DestroyWindow(prime_Window* window)
+prime_WindowDestroy(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	DestroyWindow(window->handle);
@@ -476,7 +476,7 @@ prime_WindowShouldClose(prime_Window* window)
 }
 
 void
-prime_PollEvents()
+prime_WindowPollEvents()
 {
 	MSG msg;
 	while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -513,55 +513,55 @@ prime_PollEvents()
 }
 
 void
-prime_SetWindowCloseCallback(prime_WindowCloseFunc func)
+prime_WindowSetCloseCallback(prime_WindowCloseFunc func)
 {
 	s_Callbacks.close = func;
 }
 
 void
-prime_SetWindowKeyCallback(prime_WindowKeyFunc func)
+prime_WindowSetKeyCallback(prime_WindowKeyFunc func)
 {
 	s_Callbacks.key = func;
 }
 
 void
-prime_SetWindowButtonCallback(prime_WindowButtonFunc func)
+prime_WindowSetButtonCallback(prime_WindowButtonFunc func)
 {
 	s_Callbacks.button = func;
 }
 
 void
-prime_SetWindowMouseMovedCallback(prime_WindowMouseMovedFunc func)
+prime_WindowSetMouseMovedCallback(prime_WindowMouseMovedFunc func)
 {
 	s_Callbacks.mouseMoved = func;
 }
 
 void
-prime_SetWindowMouseScrolledCallback(prime_WindowMouseScrolledFunc func)
+prime_WindowSetMouseScrolledCallback(prime_WindowMouseScrolledFunc func)
 {
 	s_Callbacks.mouseScrolled = func;
 }
 
 void
-prime_SetWindowPosCallback(prime_WindowPosFunc func)
+prime_WindowSetPosCallback(prime_WindowPosFunc func)
 {
 	s_Callbacks.windowPos = func;
 }
 
 void
-prime_SetWindowSizeCallback(prime_WindowSizeFunc func)
+prime_WindowSetSizeCallback(prime_WindowSizeFunc func)
 {
 	s_Callbacks.windowSize = func;
 }
 
 void
-prime_SetWindowFocusCallback(prime_WindowFocusFunc func)
+prime_WindowSetFocusCallback(prime_WindowFocusFunc func)
 {
 	s_Callbacks.windowFocus = func;
 }
 
 void
-prime_HideWindow(prime_Window* window)
+prime_WindowHide(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	window->isHidden = true;
@@ -569,7 +569,7 @@ prime_HideWindow(prime_Window* window)
 }
 
 void
-prime_ShowWindow(prime_Window* window)
+prime_WindowShow(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	window->isHidden = false;
@@ -577,7 +577,7 @@ prime_ShowWindow(prime_Window* window)
 }
 
 void
-prime_SetWindowSize(prime_Window* window, u32 width, u32 height)
+prime_WindowSetSize(prime_Window* window, u32 width, u32 height)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	PRIME_ASSERT_MSG(width > 0 && height > 0, "invalid Parameter");
@@ -611,7 +611,7 @@ prime_SetWindowSize(prime_Window* window, u32 width, u32 height)
 }
 
 void
-prime_SetWindowPos(prime_Window* window, i32 x, i32 y)
+prime_WindowSetPos(prime_Window* window, i32 x, i32 y)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	RECT rect = { 0, 0, 0, 0 };
@@ -628,16 +628,16 @@ prime_SetWindowPos(prime_Window* window, i32 x, i32 y)
 }
 
 void
-prime_SetWindowTitle(prime_Window* window, const char* title)
+prime_WindowSetTitle(prime_Window* window, const char* title)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
-	window->title = prime_CstrToString(title);
-	prime_WString* wide_str = prime_StringToWString(window->title);
-	SetWindowTextW(window->handle, prime_GetWstr(wide_str));
+	window->title = prime_StringFromCstr(title);
+	prime_WString* wide_str = prime_WStringFromString(window->title);
+	SetWindowTextW(window->handle, prime_WStringGetWstr(wide_str));
 }
 
 void
-prime_SetWindowMinSize(prime_Window* window, u32 width, u32 height)
+prime_WindowSetMinSize(prime_Window* window, u32 width, u32 height)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	window->minWidth = width;
@@ -645,7 +645,7 @@ prime_SetWindowMinSize(prime_Window* window, u32 width, u32 height)
 }
 
 void
-prime_SetWindowMaxSize(prime_Window* window, u32 width, u32 height)
+prime_WindowSetMaxSize(prime_Window* window, u32 width, u32 height)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	window->maxWidth = width;
@@ -653,7 +653,7 @@ prime_SetWindowMaxSize(prime_Window* window, u32 width, u32 height)
 }
 
 void
-prime_SetWindowUserData(prime_Window* window, void* data)
+prime_WindowSetUserData(prime_Window* window, void* data)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	if (data) {
@@ -663,77 +663,77 @@ prime_SetWindowUserData(prime_Window* window, void* data)
 }
 
 const u32
-prime_GetWindowWidth(prime_Window* window)
+prime_WindowGetWidth(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->width;
 }
 
 const u32
-prime_GetWindowHeight(prime_Window* window)
+prime_WindowGetHeight(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->height;
 }
 
 const u32
-prime_GetWindowMinWidth(prime_Window* window)
+prime_WindowGetMinWidth(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->minWidth;
 }
 
 const u32
-prime_GetWindowMinHeight(prime_Window* window)
+prime_WindowGetMinHeight(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->minHeight;
 }
 
 const u32
-prime_GetWindowMaxWidth(prime_Window* window)
+prime_WindowGetMaxWidth(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->maxWidth;
 }
 
 const u32
-prime_GetWindowMaxHeight(prime_Window* window)
+prime_WindowGetMaxHeight(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->maxHeight;
 }
 
 const i32
-prime_GetWindowPosX(prime_Window* window)
+prime_WindowGetPosX(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->posX;
 }
 
 const i32
-prime_GetWindowPosY(prime_Window* window)
+prime_WindowGetPosY(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->posY;
 }
 
 prime_String*
-prime_GetWindowTitle(prime_Window* window)
+prime_WindowGetTitle(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->title;
 }
 
 void*
-prime_GetWindowUserData(prime_Window* window)
+prime_WindowGetUserData(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->userData;
 }
 
 b8
-prime_GetWindowKeyState(prime_Window* window, u16 key)
+prime_WindowGetKeyState(prime_Window* window, u16 key)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	PRIME_ASSERT_MSG(key >= 0, "Invalid key");
@@ -742,7 +742,7 @@ prime_GetWindowKeyState(prime_Window* window, u16 key)
 }
 
 b8
-prime_GetWindowButtonState(prime_Window* window, u16 button)
+prime_WindowGetButtonState(prime_Window* window, u16 button)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	PRIME_ASSERT_MSG(button >= 0, "Invalid button");
@@ -751,51 +751,51 @@ prime_GetWindowButtonState(prime_Window* window, u16 button)
 }
 
 prime_String* 
-prime_GetWindowKeyName(prime_Window* window, u16 key)
+prime_WindowGetKeyName(prime_Window* window, u16 key)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	PRIME_ASSERT_MSG(key >= 0, "Invalid key");
 	PRIME_ASSERT_MSG(key < prime_KeyMax, "Invalid key");
-	return prime_CstrToString(s_Keynames[key].c_str());
+	return prime_StringFromCstr(s_Keynames[key].c_str());
 }
 
 prime_String*
-prime_GetWindowButtonName(prime_Window* window, u16 button)
+prime_WindowGetButtonName(prime_Window* window, u16 button)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	PRIME_ASSERT_MSG(button >= 0, "Invalid button");
 	PRIME_ASSERT_MSG(button < prime_ButtonMax, "Invalid button");
-	return prime_CstrToString(s_Buttonnames[button].c_str());
+	return prime_StringFromCstr(s_Buttonnames[button].c_str());
 }
 
 prime_String*
-prime_GetWindowActionName(prime_Window* window, u8 action)
+prime_WindowGetActionName(prime_Window* window, u8 action)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	prime_String* str = nullptr;
 
 	if (action == PRIME_RELEASE) {
-		return prime_CstrToString("RELEASE");
+		return prime_StringFromCstr("RELEASE");
 	}
 	else if (action == PRIME_PRESS) {
-		return prime_CstrToString("PRESS");
+		return prime_StringFromCstr("PRESS");
 	}
 	else if (action == PRIME_REPEAT) {
-		return prime_CstrToString("REPEAT");
+		return prime_StringFromCstr("REPEAT");
 	}
 	PRIME_ASSERT_MSG(false, "Invalid action");
 	return nullptr;
 }
 
 const b8
-prime_IsWindowHidden(prime_Window* window)
+prime_WindowHidden(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->isHidden;
 }
 
 const b8
-prime_IsWindowMaximized(prime_Window* window)
+prime_WindowMaximized(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	GetWindowPlacement(window->handle, &s_WndPlacement);
@@ -806,27 +806,27 @@ prime_IsWindowMaximized(prime_Window* window)
 }
 
 HWND 
-prime_GetWin32WindowHandle(prime_Window* window)
+prime_WindowGetWin32Handle(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return window->handle;
 }
 
 HINSTANCE 
-prime_GetWin32HInstance(prime_Window* window)
+prime_WindowGetWin32HInstance(prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
 	return s_Instance;
 }
 
 void
-prime_SetWindowContextHandle(prime_Window* window, prime_ContextHandle* context_handle)
+windowSetContextHandle(prime_Window* window, prime_Context* context)
 {
-	window->contextHandle = context_handle;
+	window->contextHandle = context;
 }
 
 b8
-prime_WindowHasContextHandle(prime_Window* window)
+windowHasContextHandle(prime_Window* window)
 {
 	return window->contextHandle;
 }

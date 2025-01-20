@@ -13,15 +13,15 @@ prime_Log(prime_LogLevel level, const char* message, ...)
 
 	va_list arg_ptr;
 	va_start(arg_ptr, message);
-	prime_String* formatted = prime_FormatString(message, arg_ptr);
+	prime_String* formatted = prime_StringFormat(message, arg_ptr);
 	va_end(arg_ptr);
 
-	prime_String* out_msg = prime_FormatString("%s%s\n", levels[level], prime_GetCstr(formatted));
+	prime_String* out_msg = prime_StringFormat("%s%s\n", levels[level], prime_StringGetCstr(formatted));
 
-	prime_ConsoleWrite(out_msg, level);
+	consoleWrite(out_msg, level);
 
-	prime_DestroyString(formatted);
-	prime_DestroyString(out_msg);
+	prime_StringDestroy(formatted);
+	prime_StringDestroy(out_msg);
 }
 
 void 
@@ -29,9 +29,9 @@ prime_Assert(bool expr, const char* file, u32 line)
 {
 	if (expr) {}
 	else {
-		prime_String* str = prime_FormatString("Assertion failed in '%s' at line '%i'", file, line);
-		prime_LogError(prime_GetCstr(str));
-		prime_DestroyString(str);
+		prime_String* str = prime_StringFormat("Assertion failed in '%s' at line '%i'", file, line);
+		prime_LogError(prime_StringGetCstr(str));
+		prime_StringDestroy(str);
 		PRIME_BREAK;
 	}
 }
@@ -41,9 +41,9 @@ prime_AssertMsg(bool expr, const char* file, u32 line, const char* message)
 {
 	if (expr) {}
 	else {
-		prime_String* str = prime_FormatString("Assertion failed in '%s' at line '%i' \n'%s'", file, line, message);
-		prime_LogError(prime_GetCstr(str));
-		prime_DestroyString(str);
+		prime_String* str = prime_StringFormat("Assertion failed in '%s' at line '%i' \n'%s'", file, line, message);
+		prime_LogError(prime_StringGetCstr(str));
+		prime_StringDestroy(str);
 		PRIME_BREAK;
 	}
 }
@@ -51,13 +51,13 @@ prime_AssertMsg(bool expr, const char* file, u32 line, const char* message)
 void
 prime_LogString(prime_String* string)
 {
-	prime_LogInfo(prime_GetCstr(string));
+	prime_LogInfo(prime_StringGetCstr(string));
 }
 
 void
 prime_LogWString(prime_WString* wide_string)
 {
-	prime_String* string = primeWStringToString(wide_string);
+	prime_String* string = prime_StringFromWString(wide_string);
 	prime_LogString(string);
-	prime_DestroyString(string);
+	prime_StringDestroy(string);
 }

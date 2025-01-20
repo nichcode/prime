@@ -4,11 +4,10 @@
 #include "prime/prime_memory.h"
 
 #include "prime/prime_native.h"
-#include "prime_utils.h"
 #include "windows/prime_wglcontext.h"
 #include "glad/glad.h"
 
-struct prime_ContextHandle
+struct gl_Context
 {
 #ifdef PRIME_PLATFORM_WINDOWS
 	HGLRC handle = nullptr;
@@ -17,109 +16,110 @@ struct prime_ContextHandle
 };
 
 inline static 
-GLenum topologyToOpenGL(prime_Topology topology)
+GLenum drawModeToOpenGL(prime_DrawMode draw_mode)
 {
-	switch (topology)
+	switch (draw_mode)
 	{
-	case prime_TopologyTriangles:
+	case prime_DrawModeTriangles:
 		return GL_TRIANGLES;
 		break;
 
-	case prime_TopologyLines:
+	case prime_DrawModeLines:
 		return GL_LINES;
 		break;
 	}
 	return 0;
-	PRIME_ASSERT_MSG(false, "Invalid Primitive Topology");
 }
 
-prime_ContextHandle*
-gl_CreateContext(prime_Window* window)
+void*
+gl_ContextCreate(prime_Window* window)
 {
-	prime_ContextHandle* context_handle = nullptr;
-	context_handle = (prime_ContextHandle*)prime_MemAlloc(sizeof(prime_ContextHandle));
+	gl_Context* context = nullptr;
+	context = (gl_Context*)prime_MemAlloc(sizeof(gl_Context));
 
 #ifdef PRIME_PLATFORM_WINDOWS
-	HWND window_handle = prime_GetWin32WindowHandle(window);
-	context_handle->handle = prime_WGLContextCreate(window_handle);
-	if (context_handle->handle) {
-		prime_SetWindowContextHandle(window, context_handle);
-	}
+	HWND window_handle = prime_WindowGetWin32Handle(window);
+	context->handle = wgl_ContextCreate(window_handle);
 #endif // PRIME_PLATFORM_WINDOWS
-	return context_handle;
+	return context;
 }
 
 void
-gl_GDestroyContext(prime_ContextHandle* context_handle)
+gl_ContextDestroy(void* handle)
 {
+	gl_Context* context = (gl_Context*)handle;
+
 #ifdef PRIME_PLATFORM_WINDOWS
-	prime_WGLContextDestroy(context_handle->handle);
+	wgl_ContextDestroy(context->handle);
 #endif // PRIME_PLATFORM_WINDOWS
-	prime_MemFree(context_handle, sizeof(prime_ContextHandle));
+	prime_MemFree(handle, sizeof(gl_Context));
 }
 
 void
-gl_Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
+gl_ContextSwapbuffer(prime_Window* window, void* handle)
 {
 #ifdef PRIME_PLATFORM_WINDOWS
-	HWND handle = prime_GetWin32WindowHandle(window);
-	SwapBuffers(GetDC(handle));
+	HWND window_handle = prime_WindowGetWin32Handle(window);
+	SwapBuffers(GetDC(window_handle));
 #endif // PRIME_PLATFORM_WINDOWS
 }
 
 void
-gl_SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color)
+gl_ContextSetClearColor(void* handle, const prime_Color& color)
 {
-	context_handle->color = color;
+	gl_Context* context = (gl_Context*)handle;
+	context->color = color;
 	glClearColor(color.r, color.g, color.b, color.a);
 }
 
 void
-gl_Clear(prime_ContextHandle* context_handle)
+gl_ContextClear(void* handle)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void
-gl_MakeActive(prime_Window* window, prime_ContextHandle* context_handle)
+gl_ContextMakeActive(prime_Window* window, void* handle)
 {
+	gl_Context* context = (gl_Context*)handle;
+
 #ifdef PRIME_PLATFORM_WINDOWS
-	HWND handle = prime_GetWin32WindowHandle(window);
-	prime_WGLContextMakeCurrent(handle, context_handle->handle);
+	HWND window_handle = prime_WindowGetWin32Handle(window);
+	wgl_ContextMakeCurrent(window_handle, context->handle);
 #endif // PRIME_PLATFORM_WINDOWS
 
-	const prime_Color& color = context_handle->color;
+	const prime_Color& color = context->color;
 	glClearColor(color.r, color.g, color.b, color.a);
 }
 
 void
-gl_SetVsync(prime_ContextHandle* context_handle, b8 vsync)
+gl_ContextSetVsync(void* handle, b8 vsync)
 {
 #ifdef PRIME_PLATFORM_WINDOWS
 	if (vsync) {
-		prime_WGLContextSetVsync(1);
+		wgl_ContextSetVsync(1);
 	}
 	else {
-		prime_WGLContextSetVsync(0);
+		wgl_ContextSetVsync(0);
 	}
 #endif // PRIME_PLATFORM_WINDOWS
 }
 
 void
-gl_SetViewport(prime_ContextHandle* context_handle, const prime_Viewport* viewport)
+gl_ContextSetViewport(void* handle, const prime_Viewport* viewport)
 {
 	glViewport((i32)viewport->x, (i32)viewport->y, viewport->width, viewport->height);
 }
 
 void
-gl_DrawIndexed(prime_ContextHandle* context_handle, prime_Topology topology, u32 count)
+gl_ContextDrawIndexed(void* handle, prime_DrawMode draw_mode, u32 count)
 {
-	GLenum type = topologyToOpenGL(topology);
+	GLenum type = drawModeToOpenGL(draw_mode);
 
-	if (topology == prime_TopologyLines) {
+	if (draw_mode == prime_DrawModeLines) {
 		glDrawArrays(type, 0, count);
 	}
-	else if (topology == prime_TopologyTriangles) {
+	else if (draw_mode == prime_DrawModeTriangles) {
 		
 		glDrawElements(type, count, GL_UNSIGNED_INT, nullptr);
 	}

@@ -2,9 +2,6 @@
 
 #include "prime_defines.h"
 
-struct prime_Window;
-struct prime_String;
-
 using prime_WindowCloseFunc = void(*)(prime_Window* window);
 using prime_WindowKeyFunc = void(*)(prime_Window* window, u16 key, i32 scancode, u8 action);
 using prime_WindowButtonFunc = void(*)(prime_Window* window, u16 button, u8 action);
@@ -27,28 +24,28 @@ PRIME_API void
 prime_WindowPollEvents();
 
 PRIME_API void 
-prime_SetWindowCloseCallback(prime_WindowCloseFunc func);
+prime_WindowSetCloseCallback(prime_WindowCloseFunc func);
 
 PRIME_API void
-prime_SetWindowKeyCallback(prime_WindowKeyFunc func);
+prime_WindowSetKeyCallback(prime_WindowKeyFunc func);
 
 PRIME_API void
-prime_SetWindowButtonCallback(prime_WindowButtonFunc func);
+prime_WindowSetButtonCallback(prime_WindowButtonFunc func);
 
 PRIME_API void
-prime_SetWindowMouseMovedCallback(prime_WindowMouseMovedFunc func);
+prime_WindowSetMouseMovedCallback(prime_WindowMouseMovedFunc func);
 
 PRIME_API void
-prime_SetWindowMouseScrolledCallback(prime_WindowMouseScrolledFunc func);
+prime_WindowSetMouseScrolledCallback(prime_WindowMouseScrolledFunc func);
 
 PRIME_API void
-prime_SetWindowPosCallback(prime_WindowPosFunc func);
+prime_WindowSetPosCallback(prime_WindowPosFunc func);
 
 PRIME_API void
-prime_SetWindowSizeCallback(prime_WindowSizeFunc func);
+prime_WindowSetSizeCallback(prime_WindowSizeFunc func);
 
 PRIME_API void
-prime_SetWindowFocusCallback(prime_WindowFocusFunc func);
+prime_WindowSetFocusCallback(prime_WindowFocusFunc func);
 
 PRIME_API void
 prime_WindowHide(prime_Window* window);
@@ -57,70 +54,70 @@ PRIME_API void
 prime_WindowShow(prime_Window* window);
 
 PRIME_API void
-prime_SetWindowSize(prime_Window* window, u32 width, u32 height);
+prime_WindowSetSize(prime_Window* window, u32 width, u32 height);
 
 PRIME_API void
-prime_SetWindowPos(prime_Window* window, i32 x, i32 y);
+prime_WindowSetPos(prime_Window* window, i32 x, i32 y);
 
 PRIME_API void
-prime_SetWindowTitle(prime_Window* window, const char* title);
+prime_WindowSetTitle(prime_Window* window, const char* title);
 
 PRIME_API void
-prime_SetWindowMinSize(prime_Window* window, u32 width, u32 height);
+prime_WindowSetMinSize(prime_Window* window, u32 width, u32 height);
 
 PRIME_API void
-prime_SetWindowMaxSize(prime_Window* window, u32 width, u32 height);
+prime_WindowSetMaxSize(prime_Window* window, u32 width, u32 height);
 
 PRIME_API void
-prime_SetWindowUserData(prime_Window* window, void* data);
+prime_WindowSetUserData(prime_Window* window, void* data);
 
 PRIME_API const u32 
-prime_GetWindowWidth(prime_Window* window);
+prime_WindowGetWidth(prime_Window* window);
 
 PRIME_API const u32
-prime_GetWindowHeight(prime_Window* window);
+prime_WindowGetHeight(prime_Window* window);
 
 PRIME_API const u32
-prime_GetWindowMinWidth(prime_Window* window);
+prime_WindowGetMinWidth(prime_Window* window);
 
 PRIME_API const u32
-prime_GetWindowMinHeight(prime_Window* window);
+prime_WindowGetMinHeight(prime_Window* window);
 
 PRIME_API const u32
-prime_GetWindowMaxWidth(prime_Window* window);
+prime_WindowGetMaxWidth(prime_Window* window);
 
 PRIME_API const u32
-prime_GetWindowMaxHeight(prime_Window* window);
+prime_WindowGetMaxHeight(prime_Window* window);
 
 PRIME_API const i32
-prime_GetWindowPosX(prime_Window* window);
+prime_WindowGetPosX(prime_Window* window);
 
 PRIME_API const i32
-prime_GetWindowPosY(prime_Window* window);
+prime_WindowGetPosY(prime_Window* window);
 
 PRIME_API prime_String*
-prime_GetWindowTitle(prime_Window* window);
+prime_WindowGetTitle(prime_Window* window);
 
 PRIME_API void*
-prime_GetWindowUserData(prime_Window* window);
+prime_WindowGetUserData(prime_Window* window);
 
 PRIME_API b8 
-prime_GetWindowKeyState(prime_Window* window, u16 key);
+prime_WindowGetKeyState(prime_Window* window, u16 key);
 
 PRIME_API b8
-prime_GetWindowButtonState(prime_Window* window, u16 button);
+prime_WindowGetButtonState(prime_Window* window, u16 button);
 
 PRIME_API prime_String*
-prime_GetWindowKeyName(prime_Window* window, u16 key);
+prime_WindowGetKeyName(prime_Window* window, u16 key);
 
 PRIME_API prime_String*
-prime_GetWindowButtonName(prime_Window* window, u16 button);
+prime_WindowGetButtonName(prime_Window* window, u16 button);
 
 PRIME_API prime_String*
-prime_GetWindowActionName(prime_Window* window, u8 action);
+prime_WindowGetActionName(prime_Window* window, u8 action);
 
 PRIME_API const b8
-prime_IsWindowHidden(prime_Window* window);
+prime_WindowHidden(prime_Window* window);
 
 PRIME_API const b8
-prime_IsWindowMaximized(prime_Window* window);
+prime_WindowMaximized(prime_Window* window);

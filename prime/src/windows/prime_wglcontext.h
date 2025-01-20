@@ -10,18 +10,18 @@
 #include <Windows.h>
 
 void 
-prime_WGLContextCreateDummy();
+wgl_ContextCreateDummy();
 
 HGLRC 
-prime_WGLContextCreate(HWND window);
+wgl_ContextCreate(HWND window);
 
 void 
-prime_WGLContextDestroy(HGLRC context);
+wgl_ContextDestroy(HGLRC context);
 
 void 
-prime_WGLContextMakeCurrent(HWND window, HGLRC context);
+wgl_ContextMakeCurrent(HWND window, HGLRC context);
 
 void 
-prime_WGLContextSetVsync(int interval);
+wgl_ContextSetVsync(int interval);
 
 #endif // PRIME_PLATFORM_WINDOWS

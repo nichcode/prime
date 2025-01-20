@@ -3,28 +3,27 @@
 #include "prime/prime_log.h"
 #include "prime/prime_memory.h"
 #include "prime/prime_native.h"
-#include "prime_utils.h"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 
 // TODO: check direct verion to see if we support 11
 #include <d3d11.h>
 
-struct prime_ContextHandle
+struct dx11_Context
 {
 	ID3D11Device* device = nullptr;
-	ID3D11DeviceContext* context_handle = nullptr;
+	ID3D11DeviceContext* handle = nullptr;
 	IDXGISwapChain* swapChain = nullptr;
 	ID3D11RenderTargetView* view = nullptr;
 	prime_Color color;
 	u32 vSync = 0;
 };
 
-prime_ContextHandle*
-dx11_CreateContext(prime_Window* window)
+void*
+dx11_ContextCreate(prime_Window* window)
 {
-	prime_ContextHandle* context_handle = nullptr;
-	context_handle = (prime_ContextHandle*)prime_MemAlloc(sizeof(prime_ContextHandle));
+	dx11_Context* context = nullptr;
+	context = (dx11_Context*)prime_MemAlloc(sizeof(dx11_Context));
 
 	DXGI_SWAP_CHAIN_DESC desc;
 	desc.BufferDesc.Width = 0;
@@ -41,7 +40,7 @@ dx11_CreateContext(prime_Window* window)
 	desc.Windowed = true;
 	desc.Flags = 0;
 	desc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
-	desc.OutputWindow = prime_GetWin32WindowHandle(window);
+	desc.OutputWindow = prime_WindowGetWin32Handle(window);
 
 	D3D11CreateDeviceAndSwapChain(
 		nullptr,
@@ -52,97 +51,100 @@ dx11_CreateContext(prime_Window* window)
 		0,
 		D3D11_SDK_VERSION,
 		&desc,
-		&context_handle->swapChain,
-		&context_handle->device,
+		&context->swapChain,
+		&context->device,
 		nullptr,
-		&context_handle->context_handle
+		&context->handle
 	);
 
 	ID3D11Resource* back_buffer = nullptr;
-	context_handle->swapChain->GetBuffer(0, 
+	context->swapChain->GetBuffer(0, 
 		__uuidof(ID3D11Resource),
 		reinterpret_cast<void**>(&back_buffer));
 
 	PRIME_ASSERT_MSG(back_buffer, "Swapchain Back buffer is null");
-	context_handle->device->CreateRenderTargetView(back_buffer, nullptr, &context_handle->view);
+	context->device->CreateRenderTargetView(back_buffer, nullptr, &context->view);
 
-	PRIME_ASSERT_MSG(context_handle->view, "View creation failed");
+	PRIME_ASSERT_MSG(context->view, "View creation failed");
 	back_buffer->Release();
 
-	if (context_handle->context_handle) {
-		prime_SetWindowContextHandle(window, context_handle);
-	}
-	return context_handle;
+	return context;
 }
 
 void
-dx11_GDestroy(prime_ContextHandle* context_handle)
+dx11_ContextDestroy(void* handle)
 {
-	if (context_handle->context_handle) {
-		context_handle->context_handle->Release();
+	dx11_Context* dx11_context = (dx11_Context*)handle;
+
+	if (dx11_context->handle) {
+		dx11_context->handle->Release();
 	}
 
-	if (context_handle->swapChain) {
-		context_handle->swapChain->Release();
+	if (dx11_context->swapChain) {
+		dx11_context->swapChain->Release();
 	}
 
-	if (context_handle->device) {
-		context_handle->device->Release();
+	if (dx11_context->device) {
+		dx11_context->device->Release();
 	}
 
-	if (context_handle->view) {
-		context_handle->view->Release();
+	if (dx11_context->view) {
+		dx11_context->view->Release();
 	}
 
-	context_handle->context_handle = nullptr;
-	context_handle->swapChain = nullptr;
-	context_handle->view = nullptr;
-	context_handle->device = nullptr;
+	dx11_context->handle = nullptr;
+	dx11_context->swapChain = nullptr;
+	dx11_context->view = nullptr;
+	dx11_context->device = nullptr;
 
-	prime_MemFree(context_handle, sizeof(prime_ContextHandle));
+	prime_MemFree(handle, sizeof(dx11_Context));
 }
 
 void 
-dx11_Swapbuffer(prime_Window* window, prime_ContextHandle* context_handle)
+dx11_ContextSwapbuffer(prime_Window* window, void* handle)
 {
-	context_handle->swapChain->Present(context_handle->vSync, 0);
+	dx11_Context* dx11_context = (dx11_Context*)handle;
+	dx11_context->swapChain->Present(dx11_context->vSync, 0);
 }
 
 void 
-dx11_MakeActive(prime_Window* window, prime_ContextHandle* context_handle)
+dx11_ContextMakeActive(prime_Window* window, void* handle)
 {
 	// TODO:
 }
 
 void 
-dx11_SetVsync(prime_ContextHandle* context_handle, b8 vsync)
+dx11_ContextSetVsync(void* handle, b8 vsync)
 {
+	dx11_Context* dx11_context = (dx11_Context*)handle;
 	if (vsync) {
-		context_handle->vSync = 1;
+		dx11_context->vSync = 1;
 	}
 	else {
-		context_handle->vSync = 0;
+		dx11_context->vSync = 0;
 	}
 }
 
 void 
-dx11_SetClearColor(prime_ContextHandle* context_handle, const prime_Color& color)
+dx11_ContextSetClearColor(void* handle, const prime_Color& color)
 {
-	context_handle->color = color;
+	dx11_Context* dx11_context = (dx11_Context*)handle;
+	dx11_context->color = color;
 }
 
 void 
-dx11_Clear(prime_ContextHandle* context_handle)
+dx11_ContextClear(void* handle)
 {
+	dx11_Context* dx11_context = (dx11_Context*)handle;
 	const f32 color[] = {
-		context_handle->color.r,
-		context_handle->color.g,
-		context_handle->color.b,
-		context_handle->color.a,
+		dx11_context->color.r,
+		dx11_context->color.g,
+		dx11_context->color.b,
+		dx11_context->color.a,
 	};
 
-	context_handle->context_handle->ClearRenderTargetView(
-		context_handle->view,
+	dx11_context->handle->ClearRenderTargetView(
+		dx11_context->view,
 		color
 	);
 }

@@ -23,7 +23,7 @@ struct prime_WString
 
 // string
 prime_String*
-prime_CstrToString(const char* string)
+prime_StringFromCstr(const char* string)
 {
 	if (string) {
 		u64 length = strlen(string);
@@ -39,7 +39,7 @@ prime_CstrToString(const char* string)
 }
 
 prime_String* 
-prime_CopyString(const prime_String* string)
+prime_StringCopy(const prime_String* string)
 {
 	if (string) {
 		u64 length = strlen(string->buffer);
@@ -55,10 +55,10 @@ prime_CopyString(const prime_String* string)
 }
 
 prime_String* 
-primeWStringToString(const prime_WString* wide_string)
+prime_StringFromWString(const prime_WString* wide_string)
 {
 	if (wide_string) {
-		int len = prime_WideCharToMultiByte(wide_string->buffer, 0, nullptr);
+		int len = wideCharToMultiByte(wide_string->buffer, 0, nullptr);
 		if (len == 0) {
 			return nullptr;
 		}
@@ -66,13 +66,13 @@ primeWStringToString(const prime_WString* wide_string)
 		prime_String* string = (prime_String*)prime_MemAlloc(sizeof(prime_String));
 		string->length = len;
 		string->buffer = (char*)prime_MemAlloc(len + 1);
-		prime_WideCharToMultiByte(wide_string->buffer, len, string->buffer);
+		wideCharToMultiByte(wide_string->buffer, len, string->buffer);
 	}
 	return nullptr;
 }
 
 void
-prime_DestroyString(prime_String* string)
+prime_StringDestroy(prime_String* string)
 {
 	if (string) {
 		prime_MemFree(string->buffer, string->length + 1);
@@ -81,7 +81,7 @@ prime_DestroyString(prime_String* string)
 }
 
 const char*
-prime_GetCstr(const prime_String* string)
+prime_StringGetCstr(const prime_String* string)
 {
 	if (string) {
 		return string->buffer;
@@ -90,7 +90,7 @@ prime_GetCstr(const prime_String* string)
 }
 
 u64
-prime_GetStringLength(const prime_String* string)
+prime_StringGetLength(const prime_String* string)
 {
 	if (string) {
 		return string->length;
@@ -99,7 +99,7 @@ prime_GetStringLength(const prime_String* string)
 }
 
 prime_String*
-prime_FormatString(const char* fmt, ...)
+prime_StringFormat(const char* fmt, ...)
 {
 	if (!fmt) {
 		return nullptr;
@@ -107,13 +107,13 @@ prime_FormatString(const char* fmt, ...)
 
 	va_list arg_ptr;
 	va_start(arg_ptr, fmt);
-	prime_String* result = prime_FormatStringWithArgs(fmt, arg_ptr);
+	prime_String* result = prime_StringFormatArgs(fmt, arg_ptr);
 	va_end(arg_ptr);
 	return result;
 }
 
 prime_String*
-prime_FormatStringWithArgs(const char* fmt, char* va_listp)
+prime_StringFormatArgs(const char* fmt, char* va_listp)
 {
 	if (!fmt) {
 		return 0;
@@ -141,7 +141,7 @@ prime_FormatStringWithArgs(const char* fmt, char* va_listp)
 
 // wide string
 prime_WString*
-prime_CopyWString(const prime_WString* wide_string)
+prime_WStringCopy(const prime_WString* wide_string)
 {
 	if (wide_string) {
 		prime_WString* str = (prime_WString*)prime_MemAlloc(sizeof(prime_WString));
@@ -156,7 +156,7 @@ prime_CopyWString(const prime_WString* wide_string)
 }
 
 prime_WString*
-prime_WstrToWString(const wchar_t* wide_string)
+prime_WStringFromWstr(const wchar_t* wide_string)
 {
 	if (wide_string) {
 		u64 length = wcslen(wide_string);
@@ -172,10 +172,10 @@ prime_WstrToWString(const wchar_t* wide_string)
 }
 
 prime_WString*
-prime_StringToWString(const prime_String* string)
+prime_WStringFromString(const prime_String* string)
 {
 	if (string) {
-		int len = prime_MultiByteToWideChar(string->buffer, 0, nullptr);
+		int len = multiByteToWideChar(string->buffer, 0, nullptr);
 		if (len == 0) {
 			return nullptr;
 		}
@@ -184,7 +184,7 @@ prime_StringToWString(const prime_String* string)
 		str->length = len;
 
 		str->buffer = (wchar_t*)prime_MemAlloc(sizeof(wchar_t) * len);
-		prime_MultiByteToWideChar(string->buffer, len, str->buffer);
+		multiByteToWideChar(string->buffer, len, str->buffer);
 
 		return str;
 	}
@@ -192,10 +192,10 @@ prime_StringToWString(const prime_String* string)
 }
 
 prime_WString* 
-prime_CstrToWString(const char* string)
+prime_WStringFromCstr(const char* string)
 {
 	if (string) {
-		int len = prime_MultiByteToWideChar(string, 0, nullptr);
+		int len = multiByteToWideChar(string, 0, nullptr);
 		if (len == 0) {
 			return nullptr;
 		}
@@ -203,7 +203,7 @@ prime_CstrToWString(const char* string)
 		prime_WString* str = (prime_WString*)prime_MemAlloc(sizeof(prime_WString));
 		str->length = len;
 		str->buffer = (wchar_t*)prime_MemAlloc(len * sizeof(wchar_t));
-		prime_MultiByteToWideChar(string, len, str->buffer);
+		multiByteToWideChar(string, len, str->buffer);
 
 		return str;
 	}
@@ -211,7 +211,7 @@ prime_CstrToWString(const char* string)
 }
 
 void
-prime_DestroyWString(prime_WString* wide_string)
+prime_WStringDestroy(prime_WString* wide_string)
 {
 	if (wide_string) {
 		prime_MemFree(wide_string->buffer, wide_string->length * sizeof(wchar_t));
@@ -220,7 +220,7 @@ prime_DestroyWString(prime_WString* wide_string)
 }
 
 const wchar_t*
-prime_GetWstr(const prime_WString* wide_string)
+prime_WStringGetWstr(const prime_WString* wide_string)
 {
 	if (wide_string) {
 		return wide_string->buffer;
@@ -229,7 +229,7 @@ prime_GetWstr(const prime_WString* wide_string)
 }
 
 u64
-prime_GetWStringLength(const prime_WString* wide_string)
+prime_WStringGetLength(const prime_WString* wide_string)
 {
 	if (wide_string) {
 		return wide_string->length;
@@ -241,40 +241,40 @@ prime_GetWStringLength(const prime_WString* wide_string)
 prime_String*
 prime_Vec2ToString(const prime_Vec2& vec)
 {
-	return prime_FormatString("Vec2(%.2f, %.2f)", vec.x, vec.y);
+	return prime_StringFormat("Vec2(%.2f, %.2f)", vec.x, vec.y);
 }
 
 prime_String*
 prime_Vec3ToString(const prime_Vec3& vec)
 {
-	return prime_FormatString("Vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
+	return prime_StringFormat("Vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
 }
 
 prime_String*
 prime_Vec4ToString(const prime_Vec4& vec)
 {
-	return prime_FormatString("Vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
+	return prime_StringFormat("Vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
 }
 
 prime_String*
 prime_Mat4ToString(const prime_Mat4& matrix)
 {
 	const f32* d = matrix.data;
-	prime_String* str1 = prime_FormatString("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
-	prime_String* str2 = prime_FormatString("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
-	prime_String* str3 = prime_FormatString("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
-	prime_String* str4 = prime_FormatString("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
+	prime_String* str1 = prime_StringFormat("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
+	prime_String* str2 = prime_StringFormat("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
+	prime_String* str3 = prime_StringFormat("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
+	prime_String* str4 = prime_StringFormat("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
 
-	prime_String* str = prime_FormatString("Mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
-		prime_GetCstr(str1),
-		prime_GetCstr(str2),
-		prime_GetCstr(str3),
-		prime_GetCstr(str4));
+	prime_String* str = prime_StringFormat("Mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
+		prime_StringGetCstr(str1),
+		prime_StringGetCstr(str2),
+		prime_StringGetCstr(str3),
+		prime_StringGetCstr(str4));
 
-	prime_DestroyString(str1);
-	prime_DestroyString(str2);
-	prime_DestroyString(str3);
-	prime_DestroyString(str4);
+	prime_StringDestroy(str1);
+	prime_StringDestroy(str2);
+	prime_StringDestroy(str3);
+	prime_StringDestroy(str4);
 	
 	return str;
 }

@@ -8,7 +8,7 @@
 static std::vector<prime_TestEntry> s_Tests;
 
 void 
-prime_AddTest(prime_TestFunc function, const char* name)
+prime_TestManagerAddTest(prime_TestFunc function, const char* name)
 {
 	prime_TestEntry test;
 	test.function = function;
@@ -17,7 +17,7 @@ prime_AddTest(prime_TestFunc function, const char* name)
 }
 
 void 
-prime_RunTests()
+prime_TestManagerRunTests()
 {
 	u32 passed = 0;
 	u32 failed = 0;
@@ -26,21 +26,21 @@ prime_RunTests()
 		b8 result = test.function();
 
 		if (result) {
-			prime_String* msg = prime_FormatString("[SUCCESS]: %s", test.name);
+			prime_String* msg = prime_StringFormat("[SUCCESS]: %s", test.name);
 			prime_LogString(msg);
-			prime_DestroyString(msg);
+			prime_StringDestroy(msg);
 			++passed;
 		}
 
 		else {
-			prime_String* msg = prime_FormatString("[FAILED]: %s", test.name);
+			prime_String* msg = prime_StringFormat("[FAILED]: %s", test.name);
 			prime_LogString(msg);
-			prime_DestroyString(msg);
+			prime_StringDestroy(msg);
 			++failed;
 		}
 	}
-	prime_String* msg = prime_FormatString("Results: %i passed, %i failed", passed, failed);
+	prime_String* msg = prime_StringFormat("Results: %i passed, %i failed", passed, failed);
 	prime_LogString(msg);
-	prime_DestroyString(msg);
+	prime_StringDestroy(msg);
 	s_Tests.clear();
 }
