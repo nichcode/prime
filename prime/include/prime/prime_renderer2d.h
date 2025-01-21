@@ -27,6 +27,9 @@ PRIME_API void
 prime_Renderer2DEnd(prime_Renderer2D* renderer2d);
 
 PRIME_API void
+prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, prime_Rect2D rect);
+
+PRIME_API void
 prime_Renderer2DPresent(prime_Renderer2D* renderer2d);
 
 PRIME_API const prime_Viewport& 

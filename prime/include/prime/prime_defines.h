@@ -37,6 +37,7 @@
 #define PRIME_FUNC __FUNCTION__
 #define PRIME_FILE __FILE__
 #define PRIME_INLINE extern "C" inline
+#define PRIME_MAX_RENDERER2D_SPRITES 1000
 
 /** @brief debug breakpoint. */
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -295,6 +296,14 @@ struct prime_Viewport
 	u32 height = 0;
 };
 
+struct prime_Rect2D
+{
+	f32 x = 0.0f;
+	f32 y = 0.0f;
+	f32 width = 50.0f;
+	f32 height = 50.0f;
+};
+
 struct prime_Color
 {
 	f32 r = 0.0f;
@@ -421,4 +430,15 @@ prime_BufferElementCreate(prime_DataType type)
 	element.type = type;
 	element.size = prime_DataTypeGetSize(type);
 	return element;
+}
+
+PRIME_INLINE prime_Rect2D
+prime_Rect2DCreate(f32 x, f32 y, f32 width, f32 height)
+{
+	prime_Rect2D rect;
+	rect.x = x;
+	rect.y = y;
+	rect.width = width;
+	rect.height = height;
+	return rect;
 }

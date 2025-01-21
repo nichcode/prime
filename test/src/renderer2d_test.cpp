@@ -18,6 +18,8 @@ renderer2DTestGL()
 		prime_Renderer2DClear(renderer);
 		prime_Renderer2DBegin(renderer);
 
+		prime_Renderer2DDrawRect(renderer, prime_Rect2DCreate(50.0f, 0.0f, 50.0f, 50.0f));
+
 		prime_Renderer2DEnd(renderer);
 		prime_Renderer2DPresent(renderer);
 	}

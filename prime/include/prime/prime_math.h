@@ -57,7 +57,7 @@ prime_MathsRadiansToDegree(f32 radians)
 	return radians * PRIME_RAD_TO_DEG_MULTIPLIER;
 }
 
-PRIME_INLINE f32
+PRIME_INLINE const f32
 prime_MathsDegreeToRadians(f32 degrees)
 {
 	return degrees * PRIME_DEG_TO_RAD_MULTIPLIER;
@@ -127,7 +127,7 @@ prime_Vec2Div(const prime_Vec2& vec1, const prime_Vec2& vec2)
 }
 
 PRIME_INLINE prime_Vec2
-prime_Vec2DivScale(const prime_Vec2& vec1, f32 scaler)
+prime_Vec2DivScale(const prime_Vec2& vec1, const f32 scaler)
 {
     return prime_Vec2Create(vec1.x / scaler, vec1.y / scaler);
 }
@@ -139,7 +139,7 @@ prime_Vec2Mul(const prime_Vec2& vec1, const prime_Vec2& vec2)
 }
 
 PRIME_INLINE prime_Vec2
-prime_Vec2Scale(const prime_Vec2& vec, f32 scaler)
+prime_Vec2Scale(const prime_Vec2& vec, const f32 scaler)
 {
     return prime_Vec2Create(vec.x * scaler, vec.y * scaler);
 }
@@ -287,7 +287,7 @@ prime_Vec3Div(const prime_Vec3& vec1, const prime_Vec3& vec2)
 }
 
 PRIME_INLINE prime_Vec3
-prime_Vec3DivScaler(const prime_Vec3& vec1, f32 scaler)
+prime_Vec3DivScaler(const prime_Vec3& vec1, const f32 scaler)
 {
     return prime_Vec3Create(vec1.x / scaler, vec1.y / scaler, vec1.z / scaler);
 }
@@ -299,7 +299,7 @@ prime_Vec3Mul(const prime_Vec3& vec1, const prime_Vec3& vec2)
 }
 
 PRIME_INLINE prime_Vec3
-prime_Vec3Scale(const prime_Vec3& vec, f32 scaler)
+prime_Vec3Scale(const prime_Vec3& vec, const f32 scaler)
 {
     return prime_Vec3Create(vec.x * scaler, vec.y * scaler, vec.z * scaler);
 }
@@ -487,7 +487,7 @@ prime_Vec4Mul(const prime_Vec4& vec1, const prime_Vec4& vec2)
 }
 
 PRIME_INLINE prime_Vec4
-prime_Vec4Scale(const prime_Vec4& vec, f32 scaler)
+prime_Vec4Scale(const prime_Vec4& vec, const f32 scaler)
 {
     return prime_Vec4Create(vec.x * scaler, vec.y * scaler, vec.z * scaler, vec.w * scaler);
 }
@@ -937,7 +937,7 @@ prime_Mat4Position(const prime_Mat4& matrix)
 }
 
 PRIME_INLINE prime_Vec3
-prime_Mat4MulVec3(const prime_Mat4& matrix, prime_Vec3& vec)
+prime_Vec3MulMat4(const prime_Vec3& vec, const prime_Mat4& matrix)
 {
     return prime_Vec3Create(
         vec.x * matrix.data[0] + vec.y * matrix.data[1] + vec.z * matrix.data[2] + matrix.data[3],
@@ -947,14 +947,50 @@ prime_Mat4MulVec3(const prime_Mat4& matrix, prime_Vec3& vec)
     );
 }
 
+PRIME_INLINE prime_Vec2
+prime_Mat4MulVec2(const prime_Mat4& matrix, const prime_Vec2& vec)
+{
+    const f32* m = matrix.data;
+
+    return prime_Vec2Create(
+        m[0] * vec.x + m[4] * vec.y + m[8],
+        m[1] * vec.x + m[5] * vec.y + m[9]
+    );
+}
+
+PRIME_INLINE prime_Vec3
+prime_Mat4MulVec3(const prime_Mat4& matrix, const prime_Vec3& vec)
+{
+    const f32* m = matrix.data;
+
+    return prime_Vec3Create(
+        m[0] * vec.x + m[4] * vec.y + m[8] * vec.z + m[12],
+        m[1] * vec.x + m[5] * vec.y + m[9] * vec.z + m[13],
+        m[2] * vec.x + m[6] * vec.y + m[10] * vec.z + m[14]
+    );
+}
+
 PRIME_INLINE prime_Vec4
-prime_Mat4MulVec4(const prime_Mat4& matrix, prime_Vec4& vec)
+prime_Vec4MulMat4(const prime_Vec4& vec, const prime_Mat4& matrix)
 {
     return prime_Vec4Create(
         vec.x * matrix.data[0] + vec.y * matrix.data[1] + vec.z * matrix.data[2] + vec.w * matrix.data[3],
         vec.x * matrix.data[4] + vec.y * matrix.data[5] + vec.z * matrix.data[6] + vec.w * matrix.data[7],
         vec.x * matrix.data[8] + vec.y * matrix.data[9] + vec.z * matrix.data[10] + vec.w * matrix.data[11],
         vec.x * matrix.data[12] + vec.y * matrix.data[13] + vec.z * matrix.data[14] + vec.w * matrix.data[15]
+    );
+}
+
+PRIME_INLINE prime_Vec4
+prime_Mat4MulVec4(const prime_Mat4& matrix, const prime_Vec4& vec)
+{
+    const f32* m = matrix.data;
+
+    return prime_Vec4Create(
+        m[0] * vec.x + m[4] * vec.y + m[8] * vec.z + m[12] * vec.w,
+        m[1] * vec.x + m[5] * vec.y + m[9] * vec.z + m[13] * vec.w,
+        m[2] * vec.x + m[6] * vec.y + m[10] * vec.z + m[14] * vec.w,
+        m[3] * vec.x + m[7] * vec.y + m[11] * vec.z + m[15] * vec.w
     );
 }
 
@@ -1197,6 +1233,21 @@ inline prime_Mat4 operator * (const prime_Mat4& mat1, const prime_Mat4& mat2)
 inline prime_Mat4& operator *= (prime_Mat4& mat1, const prime_Mat4& mat2)
 {
     return prime_Mat4Mul(mat1, mat2);
+}
+
+inline prime_Vec4 operator * (const prime_Mat4& mat, const prime_Vec4& vec)
+{
+    return prime_Mat4MulVec4(mat, vec);
+}
+
+inline prime_Vec4 operator * (const prime_Vec4& vec, const prime_Mat4& mat)
+{
+    return prime_Vec4MulMat4(vec, mat);
+}
+
+inline prime_Vec3 operator * (const prime_Vec3& vec, const prime_Mat4& mat)
+{
+    return prime_Vec3MulMat4(vec, mat);
 }
 
 #endif // __cplusplus

@@ -17,9 +17,9 @@ static const char* s_SpriteVertexSource = {
 	    mat4 u_ViewProjection;
     };
 
-
     void main()
     {
+        
         gl_Position = u_ViewProjection * vec4(a_Position, 0.0, 1.0);
     }
 
