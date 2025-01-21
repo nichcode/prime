@@ -40,3 +40,6 @@ dynamicBufferTestGL();
 
 b8
 shaderTestGL();
+
+b8
+renderer2DTestGL();

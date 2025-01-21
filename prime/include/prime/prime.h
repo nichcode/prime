@@ -9,6 +9,7 @@
 #include "prime_math.h"
 #include "prime_memory.h"
 #include "prime_native.h"
+#include "prime_renderer2d.h"
 #include "prime_shader.h"
 #include "prime_string.h"
 #include "prime_test.h"
