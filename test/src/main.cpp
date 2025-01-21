@@ -26,7 +26,8 @@ main()
 
 	//// buffers
 	//prime_TestManagerAddTest(staticBufferTestGL, "staticBufferTestGL");
-	prime_TestManagerAddTest(dynamicBufferTestGL, "dynamicBufferTestGL");
+	//prime_TestManagerAddTest(dynamicBufferTestGL, "dynamicBufferTestGL");
+	prime_TestManagerAddTest(shaderTestGL, "shaderTestGL");
 
 	prime_TestManagerRunTests();
 	prime_Shutdown();

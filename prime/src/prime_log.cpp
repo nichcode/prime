@@ -18,7 +18,7 @@ prime_Log(prime_LogLevel level, const char* message, ...)
 
 	prime_String* out_msg = prime_StringFormat("%s%s\n", levels[level], prime_StringGetCstr(formatted));
 
-	consoleWrite(out_msg, level);
+	prime_ConsoleWrite(out_msg, level);
 
 	prime_StringDestroy(formatted);
 	prime_StringDestroy(out_msg);

@@ -820,13 +820,13 @@ prime_WindowGetWin32HInstance(prime_Window* window)
 }
 
 void
-windowSetContextHandle(prime_Window* window, prime_Context* context)
+prime_WindowSetContextHandle(prime_Window* window, prime_Context* context)
 {
 	window->contextHandle = context;
 }
 
 b8
-windowHasContextHandle(prime_Window* window)
+prime_WindowHasContextHandle(prime_Window* window)
 {
 	return window->contextHandle;
 }

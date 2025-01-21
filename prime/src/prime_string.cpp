@@ -58,7 +58,7 @@ prime_String*
 prime_StringFromWString(const prime_WString* wide_string)
 {
 	if (wide_string) {
-		int len = wideCharToMultiByte(wide_string->buffer, 0, nullptr);
+		int len = prime_WideCharToMultiByte(wide_string->buffer, 0, nullptr);
 		if (len == 0) {
 			return nullptr;
 		}
@@ -66,7 +66,7 @@ prime_StringFromWString(const prime_WString* wide_string)
 		prime_String* string = (prime_String*)prime_MemAlloc(sizeof(prime_String));
 		string->length = len;
 		string->buffer = (char*)prime_MemAlloc(len + 1);
-		wideCharToMultiByte(wide_string->buffer, len, string->buffer);
+		prime_WideCharToMultiByte(wide_string->buffer, len, string->buffer);
 	}
 	return nullptr;
 }
@@ -175,7 +175,7 @@ prime_WString*
 prime_WStringFromString(const prime_String* string)
 {
 	if (string) {
-		int len = multiByteToWideChar(string->buffer, 0, nullptr);
+		int len = prime_MultiByteToWideChar(string->buffer, 0, nullptr);
 		if (len == 0) {
 			return nullptr;
 		}
@@ -184,7 +184,7 @@ prime_WStringFromString(const prime_String* string)
 		str->length = len;
 
 		str->buffer = (wchar_t*)prime_MemAlloc(sizeof(wchar_t) * len);
-		multiByteToWideChar(string->buffer, len, str->buffer);
+		prime_MultiByteToWideChar(string->buffer, len, str->buffer);
 
 		return str;
 	}
@@ -195,7 +195,7 @@ prime_WString*
 prime_WStringFromCstr(const char* string)
 {
 	if (string) {
-		int len = multiByteToWideChar(string, 0, nullptr);
+		int len = prime_MultiByteToWideChar(string, 0, nullptr);
 		if (len == 0) {
 			return nullptr;
 		}
@@ -203,7 +203,7 @@ prime_WStringFromCstr(const char* string)
 		prime_WString* str = (prime_WString*)prime_MemAlloc(sizeof(prime_WString));
 		str->length = len;
 		str->buffer = (wchar_t*)prime_MemAlloc(len * sizeof(wchar_t));
-		multiByteToWideChar(string, len, str->buffer);
+		prime_MultiByteToWideChar(string, len, str->buffer);
 
 		return str;
 	}

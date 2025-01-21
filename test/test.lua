@@ -14,7 +14,8 @@ project "prime-test"
 
     files {
         "src/**.h",
-        "src/**.cpp"
+        "src/**.cpp",
+        "shaders/**.glsl"
     }
 
     includedirs {

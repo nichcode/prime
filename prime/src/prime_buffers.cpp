@@ -103,7 +103,7 @@ prime_VertexbufferCreate(prime_Device* device, const void* data, u32 size, prime
 	}
 
 	}
-	appendVertexbuffer(device, vertexbuffer);
+	prime_AppendVertexbuffer(device, vertexbuffer);
 	return vertexbuffer;
 }
 
@@ -118,7 +118,7 @@ prime_VertexbufferDestroy(prime_Vertexbuffer* vertexbuffer)
 	vertexbuffer->setDataFunc = nullptr;
 	vertexbuffer->setLayoutFunc = nullptr;
 	vertexbuffer->unbindFunc = nullptr;
-	popVertexbuffer(vertexbuffer->device, vertexbuffer);
+	prime_PopVertexbuffer(vertexbuffer->device, vertexbuffer);
 	vertexbuffer->device = nullptr;
 	prime_MemFree(vertexbuffer, sizeof(prime_Vertexbuffer));
 }
@@ -208,7 +208,7 @@ prime_IndexbufferCreate(prime_Device* device, u32* indices, u32 count)
 	}
 
 	}
-	appendIndexbuffer(device, indexbuffer);
+	prime_AppendIndexbuffer(device, indexbuffer);
 	return indexbuffer;
 }
 
@@ -221,7 +221,7 @@ prime_IndexbufferDestroy(prime_Indexbuffer* indexbuffer)
 	indexbuffer->bindFunc = nullptr;
 	indexbuffer->destroyFunc = nullptr;
 	indexbuffer->unbindFunc = nullptr;
-	popIndexbuffer(indexbuffer->device, indexbuffer);
+	prime_PopIndexbuffer(indexbuffer->device, indexbuffer);
 	indexbuffer->device = nullptr;
 	prime_MemFree(indexbuffer, sizeof(prime_Indexbuffer));
 }

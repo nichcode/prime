@@ -12,10 +12,14 @@ stringTest()
 	string = prime_StringFromCstr("Them");
 	string2 = prime_StringCopy(string);
 
+	prime_String* loaded_str = prime_LoadFile("src/main.cpp");
+
 	prime_LogString(string);
+	prime_LogString(loaded_str);
 
 	prime_StringDestroy(string);
 	prime_StringDestroy(string2);
+	prime_StringDestroy(loaded_str);
 
 	prime_LogInfo("End String Test");
 	prime_LogInfo("");

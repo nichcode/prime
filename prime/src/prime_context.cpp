@@ -31,7 +31,7 @@ prime_Context*
 prime_ContextCreate(prime_Device* device, prime_Window* window)
 {
 	PRIME_ASSERT_MSG(window, "Window is null");
-	PRIME_ASSERT_MSG(!windowHasContextHandle(window), "Window already has context");
+	PRIME_ASSERT_MSG(!prime_WindowHasContextHandle(window), "Window already has context");
 	prime_Context* context = (prime_Context*)prime_MemAlloc(sizeof(prime_Context));
 	context->window = window;
 	context->device = device;
@@ -72,9 +72,9 @@ prime_ContextCreate(prime_Device* device, prime_Window* window)
 
 	}
 	if (context->handle) {
-		windowSetContextHandle(window, context);
+		prime_WindowSetContextHandle(window, context);
 	}
-	appendContext(device, context);
+	prime_AppendContext(device, context);
 	return context;
 }
 
@@ -91,7 +91,7 @@ prime_ContextDestroy(prime_Context* context)
 	context->setVsyncFunc = nullptr;
 	context->swapbuffersFunc = nullptr;
 
-	popContext(context->device, context);
+	prime_PopContext(context->device, context);
 	context->device = nullptr;
 	context->handle = nullptr;
 	context->window = nullptr;

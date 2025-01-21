@@ -37,3 +37,6 @@ staticBufferTestGL();
 
 b8
 dynamicBufferTestGL();
+
+b8
+shaderTestGL();

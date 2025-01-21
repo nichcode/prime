@@ -12,40 +12,46 @@
 #endif // PR_PLATFORM_WINDOWS
 
 void
-windowSetContextHandle(prime_Window* window, prime_Context* context);
+prime_WindowSetContextHandle(prime_Window* window, prime_Context* context);
 
 b8
-windowHasContextHandle(prime_Window* window);
+prime_WindowHasContextHandle(prime_Window* window);
 
 void
-consoleWrite(const prime_String* message, prime_LogLevel level);
+prime_ConsoleWrite(const prime_String* message, prime_LogLevel level);
 
 i32
-multiByteToWideChar(
+prime_MultiByteToWideChar(
     const char* string,
     u32 string_len,
     wchar_t* wide_string);
 
 i32
-wideCharToMultiByte(
+prime_WideCharToMultiByte(
     const wchar_t* wide_string,
     u32 wide_string_len,
     char* string);
 
 void
-appendContext(prime_Device* device, prime_Context* context);
+prime_AppendContext(prime_Device* device, prime_Context* context);
 
 void
-popContext(prime_Device* device, prime_Context* context);
+prime_PopContext(prime_Device* device, prime_Context* context);
 
 void
-appendVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
+prime_AppendVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
 
 void
-popVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
+prime_PopVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer);
 
 void
-appendIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
+prime_AppendIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
 
 void
-popIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
+prime_PopIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer);
+
+void
+prime_AppendShader(prime_Device* device, prime_Shader* shader);
+
+void
+prime_PopShader(prime_Device* device, prime_Shader* shader);

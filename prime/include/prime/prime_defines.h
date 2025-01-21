@@ -106,6 +106,7 @@ struct prime_Indexbuffer;
 struct prime_BufferLayout;
 struct prime_String;
 struct prime_WString;
+struct prime_Shader;
 
 enum prime_Button
 {

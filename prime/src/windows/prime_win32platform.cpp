@@ -97,7 +97,7 @@ prime_MemCopy(void* memory_dest, const void* memory_src, u64 size)
 }
 
 void
-consoleWrite(const prime_String* message, prime_LogLevel level)
+prime_ConsoleWrite(const prime_String* message, prime_LogLevel level)
 {
 	b8 error = level > prime_LogLevelWarn;
 	HANDLE console = NULL;
@@ -139,7 +139,7 @@ prime_Sleep(f64 milli_secs)
 }
 
 i32
-multiByteToWideChar(
+prime_MultiByteToWideChar(
 	const char* string,
 	u32 string_len,
 	wchar_t* wide_string)
@@ -148,7 +148,7 @@ multiByteToWideChar(
 }
 
 i32
-wideCharToMultiByte(
+prime_WideCharToMultiByte(
 	const wchar_t* wide_string,
 	u32 wide_string_len,
 	char* string)

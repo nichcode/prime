@@ -4,15 +4,22 @@
 #include "prime/prime_log.h"
 #include "prime/prime_context.h"
 #include "prime/prime_buffers.h"
+#include "prime/prime_shader.h"
 #include "prime_utils.h"
 
 #include <map>
 #include <vector>
 
-static u32 s_IDIndex = 1;
-static std::map<u32, std::vector<prime_Context*>> s_DeviceContexts;
-static std::map<u32, std::vector<prime_Vertexbuffer*>> s_DeviceVertexbuffers;
-static std::map<u32, std::vector<prime_Indexbuffer*>> s_DeviceIndexbuffers;
+struct Data
+{
+	u32 index = 1;
+	std::map<u32, std::vector<prime_Context*>> contexts;
+	std::map<u32, std::vector<prime_Vertexbuffer*>> vertexbuffers;
+	std::map<u32, std::vector<prime_Indexbuffer*>> indexbuffers;
+	std::map<u32, std::vector<prime_Shader*>> shaders;
+};
+
+static Data s_Data;
 
 struct prime_Device
 {
@@ -25,8 +32,8 @@ prime_DeviceCreate(prime_DeviceType device_type)
 {
 	prime_Device* device = (prime_Device*)prime_MemAlloc(sizeof(prime_Device));
 	device->type = device_type;
-	device->id = s_IDIndex;
-	s_IDIndex++;
+	device->id = s_Data.index;
+	s_Data.index++;
 	return device;
 }
 
@@ -35,29 +42,36 @@ prime_DeviceDestroy(prime_Device* device)
 {
 	PRIME_ASSERT_MSG(device, "Device is null");
 	// contexts
-	auto& device_contexts = s_DeviceContexts[device->id];
-	for (prime_Context* context : device_contexts) {
+	auto& contexts = s_Data.contexts[device->id];
+	for (prime_Context* context : contexts) {
 		prime_ContextDestroy(context);
 	}
 
 	// vertexbuffer
-	auto& device_vertexbuffers = s_DeviceVertexbuffers[device->id];
-	for (prime_Vertexbuffer* vertexbuffer : device_vertexbuffers) {
+	auto& vertexbuffers = s_Data.vertexbuffers[device->id];
+	for (prime_Vertexbuffer* vertexbuffer : vertexbuffers) {
 		prime_VertexbufferDestroy(vertexbuffer);
 	}
 
 	// indexbuffer
-	auto& device_indexbuffers = s_DeviceIndexbuffers[device->id];
-	for (prime_Indexbuffer* indexbuffer : device_indexbuffers) {
+	auto& indexbuffers = s_Data.indexbuffers[device->id];
+	for (prime_Indexbuffer* indexbuffer : indexbuffers) {
 		prime_IndexbufferDestroy(indexbuffer);
 	}
 
-	s_DeviceContexts[device->id].clear();
-	s_DeviceVertexbuffers[device->id].clear();
-	s_DeviceIndexbuffers[device->id].clear();
+	// shaders
+	auto& shaders = s_Data.shaders[device->id];
+	for (prime_Shader* shader : shaders) {
+		prime_ShaderDestroy(shader);
+	}
+
+	s_Data.contexts[device->id].clear();
+	s_Data.vertexbuffers[device->id].clear();
+	s_Data.indexbuffers[device->id].clear();
+	s_Data.shaders[device->id].clear();
 	
 	device->id = 0;
-	s_IDIndex--;
+	s_Data.index--;
 	prime_MemFree(device, sizeof(prime_Device));
 }
 
@@ -69,55 +83,73 @@ prime_DeviceGetType(prime_Device* device)
 }
 
 void
-appendContext(prime_Device* device, prime_Context* context)
+prime_AppendContext(prime_Device* device, prime_Context* context)
 {
-	s_DeviceContexts[device->id].push_back(context);
+	s_Data.contexts[device->id].push_back(context);
 }
 
 void
-popContext(prime_Device* device, prime_Context* context)
+prime_PopContext(prime_Device* device, prime_Context* context)
 {
-	auto& device_contexts = s_DeviceContexts[device->id];
+	auto& contexts = s_Data.contexts[device->id];
 
-	auto it = std::find(device_contexts.begin(), device_contexts.end(), context);
-	if (it != device_contexts.end())
+	auto it = std::find(contexts.begin(), contexts.end(), context);
+	if (it != contexts.end())
 	{
-		device_contexts.erase(it);
+		contexts.erase(it);
 	}
 }
 
 void
-appendVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
+prime_AppendVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
 {
-	s_DeviceVertexbuffers[device->id].push_back(vertexbuffer);
+	s_Data.vertexbuffers[device->id].push_back(vertexbuffer);
 }
 
 void
-popVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
+prime_PopVertexbuffer(prime_Device* device, prime_Vertexbuffer* vertexbuffer)
 {
-	auto& device_vertexbuffers = s_DeviceVertexbuffers[device->id];
+	auto& vertexbuffers = s_Data.vertexbuffers[device->id];
 
-	auto it = std::find(device_vertexbuffers.begin(), device_vertexbuffers.end(), vertexbuffer);
-	if (it != device_vertexbuffers.end())
+	auto it = std::find(vertexbuffers.begin(), vertexbuffers.end(), vertexbuffer);
+	if (it != vertexbuffers.end())
 	{
-		device_vertexbuffers.erase(it);
+		vertexbuffers.erase(it);
 	}
 }
 
 void
-appendIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
+prime_AppendIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
 {
-	s_DeviceIndexbuffers[device->id].push_back(indexbuffer);
+	s_Data.indexbuffers[device->id].push_back(indexbuffer);
 }
 
 void
-popIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
+prime_PopIndexbuffer(prime_Device* device, prime_Indexbuffer* indexbuffer)
 {
-	auto& device_indexbuffers = s_DeviceIndexbuffers[device->id];
+	auto& indexbuffers = s_Data.indexbuffers[device->id];
 
-	auto it = std::find(device_indexbuffers.begin(), device_indexbuffers.end(), indexbuffer);
-	if (it != device_indexbuffers.end())
+	auto it = std::find(indexbuffers.begin(), indexbuffers.end(), indexbuffer);
+	if (it != indexbuffers.end())
 	{
-		device_indexbuffers.erase(it);
+		indexbuffers.erase(it);
+	}
+}
+
+void
+prime_AppendShader(prime_Device* device, prime_Shader* shader)
+{
+	s_Data.shaders[device->id].push_back(shader);
+}
+
+void
+prime_PopShader(prime_Device* device, prime_Shader* shader)
+{
+	auto& shaders = s_Data.shaders[device->id];
+
+	auto it = std::find(shaders.begin(), shaders.end(), shader);
+	if (it != shaders.end())
+	{
+		shaders.erase(it);
 	}
 }
