@@ -14,7 +14,7 @@ shaderTestGL()
 	prime_ContextSetClearColor(context, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
 	prime_ContextSetVsync(context, true);
 
-	float vertices[] = {
+	f32 vertices[] = {
 		-0.5f, -0.5f, // left  
 		 0.5f, -0.5f, // right 
 		 0.0f,  0.5f // top   

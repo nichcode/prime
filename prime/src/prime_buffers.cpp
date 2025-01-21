@@ -104,11 +104,11 @@ prime_VertexbufferCreate(prime_Device* device, const void* data, u32 size, prime
 		vertexbuffer->handle = gl_VertexbufferCreate(data, size, type);
 
 		// function ppinters
+		vertexbuffer->destroyFunc = gl_VertexbufferDestroy;
 		vertexbuffer->bindFunc = gl_VertexbufferBind;
-		vertexbuffer->destroyFunc = gl_VertexbufferUnbind;
+		vertexbuffer->unbindFunc = gl_VertexbufferUnbind;
 		vertexbuffer->setDataFunc = gl_VertexbufferSetData;
 		vertexbuffer->setLayoutFunc = gl_VertexbufferSetLayout;
-		vertexbuffer->unbindFunc = gl_VertexbufferUnbind;
 
 		break;
 	}
@@ -211,8 +211,8 @@ prime_IndexbufferCreate(prime_Device* device, u32* indices, u32 count)
 		indexbuffer->handle = gl_IndexbufferCreate(indices, count);
 
 		// function ppinters
-		indexbuffer->bindFunc = gl_IndexbufferDestroy;
-		indexbuffer->destroyFunc = gl_IndexbufferBind;
+		indexbuffer->destroyFunc = gl_IndexbufferDestroy;
+		indexbuffer->bindFunc = gl_IndexbufferBind;
 		indexbuffer->unbindFunc = gl_IndexbufferUnbind;
 
 		break;
@@ -278,8 +278,8 @@ prime_UniformbufferCreate(prime_Device* device, u32 size, u32 binding)
 		uniformbuffer->handle = gl_UniformbufferCreate(size, binding);
 
 		// function ppinters
-		uniformbuffer->bindFunc = gl_UniformbufferDestroy;
-		uniformbuffer->destroyFunc = gl_UniformbufferBind;
+		uniformbuffer->destroyFunc = gl_UniformbufferDestroy;
+		uniformbuffer->bindFunc = gl_UniformbufferBind;
 		uniformbuffer->unbindFunc = gl_UniformbufferUnbind;
 		uniformbuffer->setDataFunc = gl_UniformbufferSetData;
 

@@ -19,9 +19,26 @@ struct prime_Renderer2D
 {
 	prime_Device* device = nullptr;
 	prime_Context* context = nullptr;
+	prime_Uniformbuffer* uniformbuffer = nullptr;
 	prime_Viewport viewport;
 	SpriteData spriteData;
 };
+
+static void 
+setProjectionMatrix(prime_Renderer2D* ren)
+{
+	const prime_Viewport& viewport = prime_Renderer2DGetViewport(ren);
+	prime_Mat4 matrix = prime_Mat4Orthographic(
+		viewport.x,
+		(f32)viewport.width,
+		(f32)viewport.height,
+		viewport.y,
+		-1.0f,
+		1.0f);
+
+	prime_UniformbufferBind(ren->uniformbuffer);
+	prime_UniformbufferSetData(ren->uniformbuffer, &matrix, sizeof(prime_Mat4));
+}
 
 static void
 initSprites(prime_Renderer2D* ren)
@@ -30,11 +47,11 @@ initSprites(prime_Renderer2D* ren)
 	layout = prime_BufferLayoutCreate();
 	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat2));
 
-	float vertices[] = {
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.5f,  0.5f,
-		-0.5f,  0.5f
+	f32 vertices[] = {
+		 0.0f,   0.0f,
+		 50.0f,  0.0f,
+		 50.0f,  50.0f,
+		 0.0f,   50.0f
 	};
 
 	u32 indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -71,6 +88,9 @@ prime_Renderer2DCreate(prime_Device* device, prime_Window* window)
 	initSprites(ren);
 	prime_ContextMakeActive(ren->context);
 
+	ren->uniformbuffer = prime_UniformbufferCreate(device, sizeof(prime_Mat4), 0);
+	setProjectionMatrix(ren);
+
 	return ren;
 }
 
@@ -83,29 +103,31 @@ prime_Renderer2DDestroy(prime_Renderer2D* renderer2d)
 	prime_VertexbufferDestroy(renderer2d->spriteData.vertexbuffer);
 	prime_IndexbufferDestroy(renderer2d->spriteData.indexbuffer);
 	prime_ShaderDestroy(renderer2d->spriteData.shader);
+	prime_UniformbufferDestroy(renderer2d->uniformbuffer);
 	renderer2d->device = nullptr;
 	renderer2d->context = nullptr;
+	renderer2d->uniformbuffer = nullptr;
 	renderer2d->spriteData.indexbuffer = nullptr;
 	renderer2d->spriteData.vertexbuffer = nullptr;
 	renderer2d->spriteData.shader = nullptr;
 	prime_MemFree(renderer2d, sizeof(prime_Renderer2D));
 }
 
-PRIME_API void
+void
 prime_Renderer2DSetClearColor(prime_Renderer2D* renderer2d, const prime_Color& color)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	prime_ContextSetClearColor(renderer2d->context, color);
 }
 
-PRIME_API void
+void
 prime_Renderer2DSetVsync(prime_Renderer2D* renderer2d, b8 vsync)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	prime_ContextSetVsync(renderer2d->context, vsync);
 }
 
-PRIME_API void
+void
 prime_Renderer2DSetViewport(prime_Renderer2D* renderer2d, const prime_Viewport& viewport)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
@@ -113,34 +135,34 @@ prime_Renderer2DSetViewport(prime_Renderer2D* renderer2d, const prime_Viewport& 
 	prime_ContextSetViewport(renderer2d->context, &viewport);
 }
 
-PRIME_API void
+void
 prime_Renderer2DClear(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	prime_ContextClear(renderer2d->context);
 }
 
-PRIME_API void
+void
 prime_Renderer2DBegin(prime_Renderer2D* renderer2d)
 {
 
 }
 
-PRIME_API void
+void
 prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	prime_ContextDrawIndexed(renderer2d->context, prime_DrawModeTriangles, 6);
 }
 
-PRIME_API void
+void
 prime_Renderer2DPresent(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	prime_ContextSwapbuffers(renderer2d->context);
 }
 
-PRIME_API const prime_Viewport&
+const prime_Viewport&
 prime_Renderer2DGetViewport(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
