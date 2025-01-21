@@ -103,6 +103,7 @@ struct prime_Window;
 struct prime_Context;
 struct prime_Vertexbuffer;
 struct prime_Indexbuffer;
+struct prime_Uniformbuffer;
 struct prime_BufferLayout;
 struct prime_String;
 struct prime_WString;

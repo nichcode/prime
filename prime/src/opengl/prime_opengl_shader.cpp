@@ -102,6 +102,7 @@ gl_ShaderDestroy(void* shader)
 	gl_Shader* handle = (gl_Shader*)shader;
 	glDeleteProgram(handle->id);
 	handle->id = 0;
+	prime_MemFree(shader, sizeof(gl_Shader));
 }
 
 void

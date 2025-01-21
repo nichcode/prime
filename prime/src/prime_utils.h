@@ -55,3 +55,9 @@ prime_AppendShader(prime_Device* device, prime_Shader* shader);
 
 void
 prime_PopShader(prime_Device* device, prime_Shader* shader);
+
+void
+prime_AppendUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuffer);
+
+void
+prime_PopUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuffer);

@@ -51,3 +51,18 @@ prime_IndexbufferUnbind(prime_Indexbuffer* indexbuffer);
 
 PRIME_API u32
 prime_IndexbufferGetCount(prime_Indexbuffer* indexbuffer);
+
+PRIME_API prime_Uniformbuffer*
+prime_UniformbufferCreate(prime_Device* device, u32 size, u32 binding);
+
+PRIME_API void
+prime_UniformbufferDestroy(prime_Uniformbuffer* uniformbuffer);
+
+PRIME_API void
+prime_UniformbufferBind(prime_Uniformbuffer* uniformbuffer);
+
+PRIME_API void
+prime_UniformbufferUnbind(prime_Uniformbuffer* uniformbuffer);
+
+PRIME_API void
+prime_UniformbufferSetData(prime_Uniformbuffer* uniformbuffer, const void* data, u32 size);

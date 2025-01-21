@@ -3,31 +3,46 @@
 #include "prime/prime_buffers.h"
 
 void*
-gl_CreateVertexbuffer(const void* data, u32 size, prime_VertexbufferType type);
+gl_VertexbufferCreate(const void* data, u32 size, prime_VertexbufferType type);
 
 void
-gl_DestroyVertexbuffer(void* handle);
+gl_VertexbufferDestroy(void* handle);
 
 void
-gl_BindVertexbuffer(void* handle);
+gl_VertexbufferBind(void* handle);
 
 void
-gl_UnbindVertexbuffer(void* handle);
+gl_VertexbufferUnbind(void* handle);
 
 void
-gl_SetVertexbufferLayout(void* handle, const prime_BufferElement* element, u32 stride);
+gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 stride);
 
 void
-gl_SetVertexbufferData(void* handle, const void* data, u32 size);
+gl_VertexbufferSetData(void* handle, const void* data, u32 size);
 
 void*
-gl_CreateIndexbuffer(u32* indices, u32 count);
+gl_IndexbufferCreate(u32* indices, u32 count);
 
 void
-gl_DestroyIndexbuffer(void* handle);
+gl_IndexbufferDestroy(void* handle);
 
 void
-gl_BindIndexbuffer(void* handle);
+gl_IndexbufferBind(void* handle);
 
 void
-gl_UnbindIndexbuffer(void* handle);
+gl_IndexbufferUnbind(void* handle);
+
+void*
+gl_UniformbufferCreate(u32 size, u32 binding);
+
+void
+gl_UniformbufferDestroy(void* handle);
+
+void
+gl_UniformbufferBind(void* handle);
+
+void
+gl_UniformbufferUnbind(void* handle);
+
+void
+gl_UniformbufferSetData(void* handle, const void* data, u32 size);

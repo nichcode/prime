@@ -17,6 +17,7 @@ struct Data
 	std::map<u32, std::vector<prime_Vertexbuffer*>> vertexbuffers;
 	std::map<u32, std::vector<prime_Indexbuffer*>> indexbuffers;
 	std::map<u32, std::vector<prime_Shader*>> shaders;
+	std::map<u32, std::vector<prime_Uniformbuffer*>> uniformbuffers;
 };
 
 static Data s_Data;
@@ -65,10 +66,17 @@ prime_DeviceDestroy(prime_Device* device)
 		prime_ShaderDestroy(shader);
 	}
 
+	// uniformbuffers
+	auto& uniformbuffers = s_Data.uniformbuffers[device->id];
+	for (prime_Uniformbuffer* uniformbuffer : uniformbuffers) {
+		prime_UniformbufferDestroy(uniformbuffer);
+	}
+
 	s_Data.contexts[device->id].clear();
 	s_Data.vertexbuffers[device->id].clear();
 	s_Data.indexbuffers[device->id].clear();
 	s_Data.shaders[device->id].clear();
+	s_Data.uniformbuffers[device->id].clear();
 	
 	device->id = 0;
 	s_Data.index--;
@@ -151,5 +159,23 @@ prime_PopShader(prime_Device* device, prime_Shader* shader)
 	if (it != shaders.end())
 	{
 		shaders.erase(it);
+	}
+}
+
+void
+prime_AppendUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuffer)
+{
+	s_Data.uniformbuffers[device->id].push_back(uniformbuffer);
+}
+
+void
+prime_PopUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuffer)
+{
+	auto& uniformbuffers = s_Data.uniformbuffers[device->id];
+
+	auto it = std::find(uniformbuffers.begin(), uniformbuffers.end(), uniformbuffer);
+	if (it != uniformbuffers.end())
+	{
+		uniformbuffers.erase(it);
 	}
 }

@@ -5,6 +5,7 @@
 #include "prime/prime_buffers.h"
 #include "prime/prime_shader.h"
 #include "prime/prime_context.h"
+#include "prime_shader_sources.h"
 
 struct SpriteData
 {
@@ -30,12 +31,13 @@ initSprites(prime_Renderer2D* ren)
 	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat2));
 
 	float vertices[] = {
-		-0.5f, -0.5f, // left  
-		 0.5f, -0.5f, // right 
-		 0.0f,  0.5f // top   
+		-0.5f, -0.5f,
+		 0.5f, -0.5f,
+		 0.5f,  0.5f,
+		-0.5f,  0.5f
 	};
 
-	u32 indices[] = { 0, 1, 2 };
+	u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
 	ren->spriteData.vertexbuffer = prime_VertexbufferCreate(
 		ren->device,
@@ -47,13 +49,12 @@ initSprites(prime_Renderer2D* ren)
 	prime_BufferLayoutSet(ren->spriteData.vertexbuffer, layout);
 
 	ren->spriteData.indexbuffer = prime_IndexbufferCreate(
-		ren->device, indices, 3);
+		ren->device, indices, 6);
 
 	prime_VertexbufferSetData(ren->spriteData.vertexbuffer, vertices, sizeof(vertices));
 
 	ren->spriteData.shader = prime_ShaderCreate(ren->device,
-		"shaders/gl_renderer2d_sprite_vertex_shader.glsl",
-		"shaders/gl_renderer2d_sprite_pixel_shader.glsl");
+		s_SpriteVertexSource, s_SpritePixelSource, false);
 
 	prime_ShaderBind(ren->spriteData.shader);
 	prime_BufferLayoutDestroy(layout);
@@ -129,7 +130,7 @@ PRIME_API void
 prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
-	prime_ContextDrawIndexed(renderer2d->context, prime_DrawModeTriangles, 3);
+	prime_ContextDrawIndexed(renderer2d->context, prime_DrawModeTriangles, 6);
 }
 
 PRIME_API void

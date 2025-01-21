@@ -16,6 +16,11 @@ struct gl_Indexbuffer
 	GLuint id = 0;
 };
 
+struct gl_Uniformbuffer
+{
+	GLuint id = 0;
+};
+
 static GLenum
 dataTypeToGLType(prime_DataType type)
 {
@@ -42,7 +47,7 @@ dataTypeToGLType(prime_DataType type)
 }
 
 void*
-gl_CreateVertexbuffer(const void* data, u32 size, prime_VertexbufferType type)
+gl_VertexbufferCreate(const void* data, u32 size, prime_VertexbufferType type)
 {
 	gl_Vertexbuffer* handle = nullptr;
 	handle = (gl_Vertexbuffer*)prime_MemAlloc(sizeof(gl_Vertexbuffer));
@@ -66,7 +71,7 @@ gl_CreateVertexbuffer(const void* data, u32 size, prime_VertexbufferType type)
 }
 
 void 
-gl_DestroyVertexbuffer(void* handle)
+gl_VertexbufferDestroy(void* handle)
 {
 	gl_Vertexbuffer* buffer = (gl_Vertexbuffer*)handle;
 
@@ -79,7 +84,7 @@ gl_DestroyVertexbuffer(void* handle)
 }
 
 void
-gl_BindVertexbuffer(void* handle)
+gl_VertexbufferBind(void* handle)
 {
 	gl_Vertexbuffer* buffer = (gl_Vertexbuffer*)handle;
 
@@ -88,14 +93,14 @@ gl_BindVertexbuffer(void* handle)
 }
 
 void
-gl_UnbindVertexbuffer(void* handle)
+gl_VertexbufferUnbind(void* handle)
 {
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void 
-gl_SetVertexbufferLayout(void* handle, const prime_BufferElement* element, u32 stride)
+gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 stride)
 {
 	GLuint index = 0;
 	switch (element->type) {
@@ -152,13 +157,13 @@ gl_SetVertexbufferLayout(void* handle, const prime_BufferElement* element, u32 s
 }
 
 void 
-gl_SetVertexbufferData(void* handle, const void* data, u32 size)
+gl_VertexbufferSetData(void* handle, const void* data, u32 size)
 {
 	glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
 void* 
-gl_CreateIndexbuffer(u32* indices, u32 count)
+gl_IndexbufferCreate(u32* indices, u32 count)
 {
 	gl_Indexbuffer* handle = nullptr;
 	handle = (gl_Indexbuffer*)prime_MemAlloc(sizeof(gl_Indexbuffer));
@@ -171,24 +176,66 @@ gl_CreateIndexbuffer(u32* indices, u32 count)
 }
 
 void
-gl_DestroyIndexbuffer(void* handle)
+gl_IndexbufferDestroy(void* handle)
 {
 	gl_Vertexbuffer* buffer = (gl_Vertexbuffer*)handle;
 
 	glDeleteBuffers(1, &buffer->id);
 	buffer->id = 0;
-	prime_MemFree(buffer, sizeof(gl_Indexbuffer));
+	prime_MemFree(handle, sizeof(gl_Indexbuffer));
 }
 
 void 
-gl_BindIndexbuffer(void* handle)
+gl_IndexbufferBind(void* handle)
 {
 	gl_Vertexbuffer* buffer = (gl_Vertexbuffer*)handle;
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->id);
 }
 
 void 
-gl_UnbindIndexbuffer(void* handle)
+gl_IndexbufferUnbind(void* handle)
 {
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
+
+void*
+gl_UniformbufferCreate(u32 size, u32 binding)
+{
+	gl_Uniformbuffer* buffer = nullptr;
+	buffer = (gl_Uniformbuffer*)prime_MemAlloc(sizeof(gl_Uniformbuffer));
+
+	glGenBuffers(1, &buffer->id);
+	glBindBuffer(GL_UNIFORM_BUFFER, buffer->id);
+	glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, binding, buffer->id);
+
+	return buffer;
+}
+
+void
+gl_UniformbufferDestroy(void* handle)
+{
+	gl_Uniformbuffer* buffer = (gl_Uniformbuffer*)handle;
+	glDeleteBuffers(1, &buffer->id);
+	buffer->id = 0;
+	prime_MemFree(handle, sizeof(gl_Indexbuffer));
+}
+
+void
+gl_UniformbufferBind(void* handle)
+{
+	gl_Uniformbuffer* buffer = (gl_Uniformbuffer*)handle;
+	glBindBuffer(GL_UNIFORM_BUFFER, buffer->id);
+}
+
+void
+gl_UniformbufferUnbind(void* handle)
+{
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void
+gl_UniformbufferSetData(void* handle, const void* data, u32 size)
+{
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);
 }

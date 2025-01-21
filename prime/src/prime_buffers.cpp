@@ -44,6 +44,17 @@ struct prime_Indexbuffer
 	void(*unbindFunc)(void* handle);
 };
 
+struct prime_Uniformbuffer
+{
+	prime_Device* device = nullptr;
+	void* handle = nullptr;
+
+	void(*destroyFunc)(void* handle);
+	void(*bindFunc)(void* handle);
+	void(*unbindFunc)(void* handle);
+	void(*setDataFunc)(void* handle, const void* data, u32 size);
+};
+
 prime_BufferLayout*
 prime_BufferLayoutCreate()
 {
@@ -90,14 +101,14 @@ prime_VertexbufferCreate(prime_Device* device, const void* data, u32 size, prime
 #endif // PRIME_PLATFORM_WINDOWS
 
 	case prime_DeviceTypeGL: {
-		vertexbuffer->handle = gl_CreateVertexbuffer(data, size, type);
+		vertexbuffer->handle = gl_VertexbufferCreate(data, size, type);
 
 		// function ppinters
-		vertexbuffer->bindFunc = gl_BindVertexbuffer;
-		vertexbuffer->destroyFunc = gl_DestroyVertexbuffer;
-		vertexbuffer->setDataFunc = gl_SetVertexbufferData;
-		vertexbuffer->setLayoutFunc = gl_SetVertexbufferLayout;
-		vertexbuffer->unbindFunc = gl_UnbindVertexbuffer;
+		vertexbuffer->bindFunc = gl_VertexbufferBind;
+		vertexbuffer->destroyFunc = gl_VertexbufferUnbind;
+		vertexbuffer->setDataFunc = gl_VertexbufferSetData;
+		vertexbuffer->setLayoutFunc = gl_VertexbufferSetLayout;
+		vertexbuffer->unbindFunc = gl_VertexbufferUnbind;
 
 		break;
 	}
@@ -197,12 +208,12 @@ prime_IndexbufferCreate(prime_Device* device, u32* indices, u32 count)
 #endif // PRIME_PLATFORM_WINDOWS
 
 	case prime_DeviceTypeGL: {
-		indexbuffer->handle = gl_CreateIndexbuffer(indices, count);
+		indexbuffer->handle = gl_IndexbufferCreate(indices, count);
 
 		// function ppinters
-		indexbuffer->bindFunc = gl_BindIndexbuffer;
-		indexbuffer->destroyFunc = gl_DestroyIndexbuffer;
-		indexbuffer->unbindFunc = gl_UnbindIndexbuffer;
+		indexbuffer->bindFunc = gl_IndexbufferDestroy;
+		indexbuffer->destroyFunc = gl_IndexbufferBind;
+		indexbuffer->unbindFunc = gl_IndexbufferUnbind;
 
 		break;
 	}
@@ -245,4 +256,73 @@ prime_IndexbufferGetCount(prime_Indexbuffer* indexbuffer)
 {
 	PRIME_ASSERT_MSG(indexbuffer, "indexbuffer is null");
 	return indexbuffer->count;
+}
+
+prime_Uniformbuffer*
+prime_UniformbufferCreate(prime_Device* device, u32 size, u32 binding)
+{
+	PRIME_ASSERT_MSG(device, "Device is null");
+	prime_Uniformbuffer* uniformbuffer = (prime_Uniformbuffer*)prime_MemAlloc(sizeof(prime_Uniformbuffer));
+	uniformbuffer->device = device;
+
+	switch (prime_DeviceGetType(device))
+	{
+#ifdef PRIME_PLATFORM_WINDOWS
+	case prime_DeviceTypeDx11: {
+		PRIME_ASSERT_MSG(false, "Dx11 uniformbuffer not implemented yet");
+		break;
+	}
+#endif // PRIME_PLATFORM_WINDOWS
+
+	case prime_DeviceTypeGL: {
+		uniformbuffer->handle = gl_UniformbufferCreate(size, binding);
+
+		// function ppinters
+		uniformbuffer->bindFunc = gl_UniformbufferDestroy;
+		uniformbuffer->destroyFunc = gl_UniformbufferBind;
+		uniformbuffer->unbindFunc = gl_UniformbufferUnbind;
+		uniformbuffer->setDataFunc = gl_UniformbufferSetData;
+
+		break;
+	}
+
+	}
+	prime_AppendUniformbuffer(device, uniformbuffer);
+	return uniformbuffer;
+}
+
+void
+prime_UniformbufferDestroy(prime_Uniformbuffer* uniformbuffer)
+{
+	PRIME_ASSERT_MSG(uniformbuffer, "uniformbuffer is null");
+	uniformbuffer->destroyFunc(uniformbuffer->handle);
+
+	uniformbuffer->bindFunc = nullptr;
+	uniformbuffer->destroyFunc = nullptr;
+	uniformbuffer->unbindFunc = nullptr;
+	uniformbuffer->setDataFunc = nullptr;
+	prime_PopUniformbuffer(uniformbuffer->device, uniformbuffer);
+	uniformbuffer->device = nullptr;
+	prime_MemFree(uniformbuffer, sizeof(prime_Uniformbuffer));
+}
+
+void
+prime_UniformbufferBind(prime_Uniformbuffer* uniformbuffer)
+{
+	PRIME_ASSERT_MSG(uniformbuffer, "uniformbuffer is null");
+	uniformbuffer->bindFunc(uniformbuffer->handle);
+}
+
+void
+prime_UniformbufferUnbind(prime_Uniformbuffer* uniformbuffer)
+{
+	PRIME_ASSERT_MSG(uniformbuffer, "uniformbuffer is null");
+	uniformbuffer->unbindFunc(uniformbuffer->handle);
+}
+
+void
+prime_UniformbufferSetData(prime_Uniformbuffer* uniformbuffer, const void* data, u32 size)
+{
+	PRIME_ASSERT_MSG(uniformbuffer, "uniformbuffer is null");
+	uniformbuffer->setDataFunc(uniformbuffer->handle, data, size);
 }
