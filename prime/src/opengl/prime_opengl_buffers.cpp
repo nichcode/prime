@@ -100,9 +100,8 @@ gl_VertexbufferUnbind(void* handle)
 }
 
 void 
-gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 stride)
+gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 stride, u32 index)
 {
-	GLuint index = 0;
 	switch (element->type) {
 	case prime_DataTypeFloat:
 	case prime_DataTypeFloat2:
@@ -116,7 +115,6 @@ gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 s
 			GL_FALSE,
 			stride,
 			(const void*)element->offset);
-		index++;
 		break;
 	}
 	case prime_DataTypeInt:
@@ -131,7 +129,6 @@ gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 s
 			dataTypeToGLType(element->type),
 			stride,
 			(const void*)element->offset);
-		index++;
 		break;
 	}
 	case prime_DataTypeMat3:
@@ -148,7 +145,6 @@ gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 s
 				stride,
 				(const void*)(element->offset + sizeof(f32) * count * i));
 			glVertexAttribDivisor(index, 1);
-			index++;
 		}
 		break;
 	}

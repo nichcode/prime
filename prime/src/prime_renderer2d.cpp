@@ -10,6 +10,7 @@
 struct SpriteVertex
 {
 	prime_Vec2 position;
+	prime_Color color;
 };
 
 struct SpriteData
@@ -31,6 +32,7 @@ struct prime_Renderer2D
 	prime_Uniformbuffer* uniformbuffer = nullptr;
 	prime_Viewport viewport;
 	SpriteData spriteData;
+	prime_Color drawColor;
 };
 
 static void 
@@ -55,6 +57,7 @@ initSprites(prime_Renderer2D* ren)
 	prime_BufferLayout* layout = nullptr;
 	layout = prime_BufferLayoutCreate();
 	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat2));
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat4));
 
 	u32 max_indices = PRIME_MAX_RENDERER2D_SPRITES * 6;
 	u32 max_vertices = PRIME_MAX_RENDERER2D_SPRITES * 4;
@@ -115,6 +118,8 @@ prime_Renderer2DCreate(prime_Device* device, prime_Window* window)
 	ren->uniformbuffer = prime_UniformbufferCreate(device, sizeof(prime_Mat4), 0);
 	setProjectionMatrix(ren);
 
+	ren->drawColor = prime_ColorFromF32(0.0f, 0.0f, 0.0f, 1.0f);
+
 	return ren;
 }
 
@@ -144,6 +149,13 @@ prime_Renderer2DSetClearColor(prime_Renderer2D* renderer2d, const prime_Color& c
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	prime_ContextSetClearColor(renderer2d->context, color);
+}
+
+void 
+prime_Renderer2DSetDrawColor(prime_Renderer2D* renderer2d, const prime_Color& color)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	renderer2d->drawColor = color;
 }
 
 void
@@ -205,6 +217,29 @@ prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, prime_Rect2D rect)
 		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
 		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
 		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+
+		renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
+
+		renderer2d->spriteData.vertexbufferPtr++;
+	}
+	renderer2d->spriteData.indexCount += 6;
+}
+
+void 
+prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D rect, f32 rotation)
+{
+	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
+	prime_Mat4 rot = prime_Mat4RotationZ(prime_MathsDegreeToRadians(rotation));
+	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
+	prime_Mat4 transform = translation * rot * scale;
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
+		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
+		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+
+		renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
 
 		renderer2d->spriteData.vertexbufferPtr++;
 	}

@@ -12,6 +12,8 @@ renderer2DTestGL()
 	prime_Renderer2D* renderer = prime_Renderer2DCreate(device, window);
 	prime_Renderer2DSetClearColor(renderer, prime_ColorFromF32(.2f, .2f, .2f, 1.0f));
 
+	prime_Renderer2DSetDrawColor(renderer, prime_ColorFromF32(0.0f, 0.0f, 1.0f, 1.0f));
+
 	while (!prime_WindowShouldClose(window)) {
 		prime_WindowPollEvents();
 
@@ -19,6 +21,7 @@ renderer2DTestGL()
 		prime_Renderer2DBegin(renderer);
 
 		prime_Renderer2DDrawRect(renderer, prime_Rect2DCreate(50.0f, 0.0f, 50.0f, 50.0f));
+		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(200.0f, 100.0f, 50.0f, 50.0f), 45.0f);
 
 		prime_Renderer2DEnd(renderer);
 		prime_Renderer2DPresent(renderer);

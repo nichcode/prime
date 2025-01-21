@@ -11,15 +11,18 @@ static const char* s_SpriteVertexSource = {
     #version 330 core
 
     layout(location = 0) in vec2 a_Position;
+    layout(location = 1) in vec4 a_Color;
 
     layout(std140) uniform u_ProjectionBlock
     {
 	    mat4 u_ViewProjection;
     };
 
+    out vec4 v_Color;
+
     void main()
     {
-        
+        v_Color = a_Color;
         gl_Position = u_ViewProjection * vec4(a_Position, 0.0, 1.0);
     }
 
@@ -34,9 +37,11 @@ static const char* s_SpritePixelSource = {
 
     layout(location = 0) out vec4 color;
 
+    in vec4 v_Color;
+
     void main()
     {
-        color = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+        color = v_Color;
     }
 
     )"

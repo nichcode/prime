@@ -12,6 +12,9 @@ PRIME_API void
 prime_Renderer2DSetClearColor(prime_Renderer2D* renderer2d, const prime_Color& color);
 
 PRIME_API void
+prime_Renderer2DSetDrawColor(prime_Renderer2D* renderer2d, const prime_Color& color);
+
+PRIME_API void
 prime_Renderer2DSetVsync(prime_Renderer2D* renderer2d, b8 vsync);
 
 PRIME_API void
@@ -28,6 +31,9 @@ prime_Renderer2DEnd(prime_Renderer2D* renderer2d);
 
 PRIME_API void
 prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, prime_Rect2D rect);
+
+PRIME_API void
+prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D rect, f32 rotation);
 
 PRIME_API void
 prime_Renderer2DPresent(prime_Renderer2D* renderer2d);

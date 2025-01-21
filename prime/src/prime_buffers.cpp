@@ -29,7 +29,7 @@ struct prime_Vertexbuffer
 	void(*destroyFunc)(void* handle);
 	void(*bindFunc)(void* handle);
 	void(*unbindFunc)(void* handle);
-	void(*setLayoutFunc)(void* handle, const prime_BufferElement* element, u32 stride);
+	void(*setLayoutFunc)(void* handle, const prime_BufferElement* element, u32 stride, u32 index);
 	void(*setDataFunc)(void* handle, const void* data, u32 size);
 };
 
@@ -145,8 +145,10 @@ prime_BufferLayoutSet(prime_Vertexbuffer* vertexbuffer, prime_BufferLayout* layo
 		layout->stride += element.size;
 	}
 
+	u32 index = 0;
 	for (const auto& element : s_BufferElements[layout->id]) {
-		vertexbuffer->setLayoutFunc(vertexbuffer->handle, &element, layout->stride);
+		vertexbuffer->setLayoutFunc(vertexbuffer->handle, &element, layout->stride, index);
+		index++;
 	}
 }
 

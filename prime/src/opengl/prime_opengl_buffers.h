@@ -15,7 +15,7 @@ void
 gl_VertexbufferUnbind(void* handle);
 
 void
-gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 stride);
+gl_VertexbufferSetLayout(void* handle, const prime_BufferElement* element, u32 stride, u32 index);
 
 void
 gl_VertexbufferSetData(void* handle, const void* data, u32 size);
