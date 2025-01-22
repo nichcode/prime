@@ -335,6 +335,29 @@ prime_Renderer2DSetViewport(prime_Renderer2D* renderer2d, const prime_Viewport& 
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	renderer2d->viewport = viewport;
 	prime_ContextSetViewport(renderer2d->context, &viewport);
+	setProjectionMatrix(renderer2d);
+}
+
+void 
+prime_Renderer2DSetScale(prime_Renderer2D* renderer2d, prime_Vec2 scale)
+{
+	PRIME_ASSERT_MSG(scale.x, "Scale x invalid");
+	PRIME_ASSERT_MSG(scale.y, "Scale x invalid");
+
+	const prime_Viewport& viewport = renderer2d->viewport;
+	f32 width = (f32)viewport.width / scale.x;
+	f32 height = (f32)viewport.height / scale.y;
+
+	prime_Mat4 matrix = prime_Mat4Orthographic(
+		viewport.x,
+		width,
+		height,
+		viewport.y,
+		-1.0f,
+		1.0f);
+
+	prime_UniformbufferBind(renderer2d->uniformbuffer);
+	prime_UniformbufferSetData(renderer2d->uniformbuffer, &matrix, sizeof(prime_Mat4));
 }
 
 void

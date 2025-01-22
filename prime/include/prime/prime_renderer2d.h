@@ -28,6 +28,9 @@ PRIME_API void
 prime_Renderer2DSetViewport(prime_Renderer2D* renderer2d, const prime_Viewport& viewport);
 
 PRIME_API void
+prime_Renderer2DSetScale(prime_Renderer2D* renderer2d, prime_Vec2 scale);
+
+PRIME_API void
 prime_Renderer2DClear(prime_Renderer2D* renderer2d);
 
 PRIME_API void
