@@ -73,6 +73,23 @@ gl_ContextSetClearColor(void* handle, const prime_Color& color)
 }
 
 void
+gl_ContextSetAntiAliasing(void* context, b8 anti_aliasing)
+{
+	if (anti_aliasing) {
+		glEnable(GL_LINE_SMOOTH);
+	}
+	else {
+		glDisable(GL_LINE_SMOOTH);
+	}
+}
+
+void
+gl_ContextSetLinesWidth(void* context, f32 width)
+{
+	glLineWidth(width);
+}
+
+void
 gl_ContextClear(void* handle)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

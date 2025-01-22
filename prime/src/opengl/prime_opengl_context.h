@@ -15,6 +15,12 @@ void
 gl_ContextSetClearColor(void* handle, const prime_Color& color);
 
 void
+gl_ContextSetAntiAliasing(void* context, b8 anti_aliasing);
+
+void
+gl_ContextSetLinesWidth(void* context, f32 width);
+
+void
 gl_ContextClear(void* handle);
 
 void

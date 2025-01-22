@@ -14,7 +14,8 @@ struct prime_Context
 	prime_Device* device = nullptr;
 	prime_Window* window = nullptr;
 	void* handle = nullptr;
-	b8 vSync = false;
+	b8 vSync = false, antiAliasing = false;
+	f32 linesWidth = 2.0f;
 	prime_Viewport viewport;
 
 	void(*destroyFunc)(void* context_handle);
@@ -24,6 +25,8 @@ struct prime_Context
 	void(*makeActiveFunc)(prime_Window* window, void* context_handle);
 	void(*setVsyncFunc)(void* context_handle, b8 vsync);
 	void(*setViewportFunc)(void* context_handle, const prime_Viewport* viewport);
+	void(*setAntiAliasingFunc)(void* context_handle, b8 anti_aliasing);
+	void(*setLineWidthFunc)(void* context_handle, f32 width);
 	void(*drawIndexedFunc)(void* context_handle, prime_DrawMode draw_mode, u32 count);
 };
 
@@ -67,6 +70,8 @@ prime_ContextCreate(prime_Device* device, prime_Window* window)
 		context->swapbuffersFunc = gl_ContextSwapbuffer;
 		context->setViewportFunc = gl_ContextSetViewport;
 		context->drawIndexedFunc = gl_ContextDrawIndexed;
+		context->setAntiAliasingFunc = gl_ContextSetAntiAliasing;
+		context->setLineWidthFunc = gl_ContextSetLinesWidth;
 		break;
 	}
 
@@ -113,6 +118,22 @@ prime_ContextSetClearColor(prime_Context* context, const prime_Color& color)
 }
 
 void
+prime_ContextSetAntiAliasing(prime_Context* context, b8 anti_aliasing)
+{
+	PRIME_ASSERT_MSG(context, "context is null");
+	context->antiAliasing = anti_aliasing;
+	context->setAntiAliasingFunc(context->handle, anti_aliasing);
+}
+
+void
+prime_ContextSetLinesWidth(prime_Context* context, f32 width)
+{
+	PRIME_ASSERT_MSG(context, "context is null");
+	context->linesWidth = width;
+	context->setLineWidthFunc(context->handle, width);
+}
+
+void
 prime_ContextClear(prime_Context* context)
 {
 	PRIME_ASSERT_MSG(context, "Context is null");
@@ -154,5 +175,26 @@ prime_ContextDrawIndexed(prime_Context* context, prime_DrawMode draw_mode, u32 c
 {
 	PRIME_ASSERT_MSG(context, "context is null");
 	context->drawIndexedFunc(context->handle, draw_mode, count);
+}
+
+b8
+prime_ContextGetVSync(prime_Context* context)
+{
+	PRIME_ASSERT_MSG(context, "context is null");
+	return context->vSync;
+}
+
+b8
+prime_ContextGetAntiAliasing(prime_Context* context)
+{
+	PRIME_ASSERT_MSG(context, "context is null");
+	return context->antiAliasing;
+}
+
+f32
+prime_ContextGetLinesWidth(prime_Context* context)
+{
+	PRIME_ASSERT_MSG(context, "context is null");
+	return context->linesWidth;
 }
 

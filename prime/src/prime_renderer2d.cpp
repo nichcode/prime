@@ -18,6 +18,12 @@ struct SpriteVertex
 	f32 tex_index = 0.0f;
 };
 
+struct LineVertex
+{
+	prime_Vec2 position;
+	prime_Color color;
+};
+
 struct SpriteData
 {
 	prime_Vertexbuffer* vertexbuffer = nullptr;
@@ -36,6 +42,16 @@ struct SpriteData
 	u32 texIndex = 1;
 };
 
+struct LineData
+{
+	prime_Vertexbuffer* vertexbuffer = nullptr;
+	prime_Shader* shader = nullptr;
+	u32 vertexCount = 0;
+
+	LineVertex* vertexbufferBase = nullptr;
+	LineVertex* vertexbufferPtr = nullptr;
+};
+
 struct prime_Renderer2D
 {
 	prime_Device* device = nullptr;
@@ -43,6 +59,7 @@ struct prime_Renderer2D
 	prime_Uniformbuffer* uniformbuffer = nullptr;
 	prime_Viewport viewport;
 	SpriteData spriteData;
+	LineData lineData;
 	prime_Color drawColor;
 };
 
@@ -151,6 +168,35 @@ initSprites(prime_Renderer2D* ren)
 	prime_MemFree(indices, sizeof(u32) * max_indices);
 }
 
+static void
+initLines(prime_Renderer2D* ren)
+{
+	prime_BufferLayout* layout = nullptr;
+	layout = prime_BufferLayoutCreate();
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat2));
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat4));
+
+	u32 max_vertices = PRIME_MAX_RENDERER2D_SPRITES * 2;
+
+	ren->lineData.vertexbuffer = prime_VertexbufferCreate(
+		ren->device,
+		nullptr,
+		max_vertices * sizeof(LineVertex),
+		prime_VertexbufferTypeDynamic
+	);
+
+	prime_VertexbufferBind(ren->lineData.vertexbuffer);
+	prime_BufferLayoutSet(ren->lineData.vertexbuffer, layout);
+	ren->lineData.vertexbufferBase = (LineVertex*)prime_MemAlloc(sizeof(LineVertex) * max_vertices);
+
+	ren->lineData.shader = prime_ShaderCreate(ren->device,
+		s_LineVertexSource, s_LinePixelSource, false);
+
+	prime_ContextSetLinesWidth(ren->context, 4.0f);
+	prime_ContextSetAntiAliasing(ren->context, true);
+	prime_BufferLayoutDestroy(layout);
+}
+
 static f32 
 getTexture2DIndex(prime_Renderer2D* ren, prime_Texture2D* texture2d)
 {
@@ -179,6 +225,7 @@ prime_Renderer2DCreate(prime_Device* device, prime_Window* window)
 	ren->viewport.height = prime_WindowGetHeight(window);
 	ren->device = device;
 	initSprites(ren);
+	initLines(ren);
 	prime_ContextMakeActive(ren->context);
 
 	ren->uniformbuffer = prime_UniformbufferCreate(device, sizeof(prime_Mat4), 0);
@@ -193,14 +240,22 @@ void
 prime_Renderer2DDestroy(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
-	prime_MemFree(renderer2d->spriteData.vertexbufferBase,
-		sizeof(SpriteVertex) * PRIME_MAX_RENDERER2D_SPRITES * 4);
-
 	prime_ContextDestroy(renderer2d->context);
+	prime_UniformbufferDestroy(renderer2d->uniformbuffer);
+
+	// sprite
 	prime_VertexbufferDestroy(renderer2d->spriteData.vertexbuffer);
 	prime_IndexbufferDestroy(renderer2d->spriteData.indexbuffer);
 	prime_ShaderDestroy(renderer2d->spriteData.shader);
-	prime_UniformbufferDestroy(renderer2d->uniformbuffer);
+	prime_MemFree(renderer2d->spriteData.vertexbufferBase,
+		sizeof(SpriteVertex) * PRIME_MAX_RENDERER2D_SPRITES * 4);
+
+	// line
+	prime_VertexbufferDestroy(renderer2d->lineData.vertexbuffer);
+	prime_ShaderDestroy(renderer2d->lineData.shader);
+	prime_MemFree(renderer2d->lineData.vertexbufferBase,
+		sizeof(LineVertex) * PRIME_MAX_RENDERER2D_SPRITES * 2);
+	
 	renderer2d->device = nullptr;
 	renderer2d->context = nullptr;
 	renderer2d->uniformbuffer = nullptr;
@@ -222,6 +277,20 @@ prime_Renderer2DSetDrawColor(prime_Renderer2D* renderer2d, const prime_Color& co
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	renderer2d->drawColor = color;
+}
+
+void 
+prime_Renderer2DSetLinesWidth(prime_Renderer2D* renderer2d, f32 width)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	prime_ContextSetLinesWidth(renderer2d->context, width);
+}
+
+void 
+prime_Renderer2DSetAntiAliasing(prime_Renderer2D* renderer2d, b8 anti_aliasing)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	prime_ContextSetAntiAliasing(renderer2d->context, anti_aliasing);
 }
 
 void
@@ -249,18 +318,27 @@ prime_Renderer2DClear(prime_Renderer2D* renderer2d)
 void
 prime_Renderer2DBegin(prime_Renderer2D* renderer2d)
 {
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
+	// sprite
 	renderer2d->spriteData.texIndex = 1;
 	renderer2d->spriteData.indexCount = 0;
 	renderer2d->spriteData.vertexbufferPtr = renderer2d->spriteData.vertexbufferBase;
+
+	// line
+	renderer2d->lineData.vertexCount = 0;
+	renderer2d->lineData.vertexbufferPtr = renderer2d->lineData.vertexbufferBase;
 }
 
 void
 prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
 	if (renderer2d->spriteData.indexCount)
 	{
 		u32 data_size = (u32)((u8*)renderer2d->spriteData.vertexbufferPtr - (u8*)renderer2d->spriteData.vertexbufferBase);
+		prime_VertexbufferBind(renderer2d->spriteData.vertexbuffer);
 		prime_VertexbufferSetData(
 			renderer2d->spriteData.vertexbuffer,
 			renderer2d->spriteData.vertexbufferBase,
@@ -276,11 +354,28 @@ prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 			renderer2d->context, prime_DrawModeTriangles, 
 			renderer2d->spriteData.indexCount);
 	}
+
+	if (renderer2d->lineData.vertexCount)
+	{
+		u32 data_size = (u32)((u8*)renderer2d->lineData.vertexbufferPtr - (u8*)renderer2d->lineData.vertexbufferBase);
+		prime_VertexbufferBind(renderer2d->lineData.vertexbuffer);
+		prime_VertexbufferSetData(
+			renderer2d->lineData.vertexbuffer,
+			renderer2d->lineData.vertexbufferBase,
+			data_size);
+
+		prime_ShaderBind(renderer2d->lineData.shader);
+		prime_ContextDrawIndexed(
+			renderer2d->context, prime_DrawModeLines,
+			renderer2d->lineData.vertexCount);
+	}
 }
 
 void
 prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect)
 {
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
 	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
 	prime_Mat4 transform = translation * scale;
@@ -309,6 +404,8 @@ prime_Renderer2DDrawRectEx(
 	f32 rotation, 
 	prime_Anchor anchor)
 {
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
 	f32 origin_x = 0.0f;
 	f32 origin_y = 0.0f;
 
@@ -355,6 +452,8 @@ prime_Renderer2DDrawRectEx(
 void
 prime_Renderer2DDrawSprite(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, prime_Texture2D* texture2d)
 {
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
 	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
 	prime_Mat4 transform = translation * scale;
@@ -389,6 +488,8 @@ prime_Renderer2DDrawSpriteEx(
 	b8 flip_y,
 	const prime_Color& tint_color)
 {
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
 	f32 origin_x = 0.0f;
 	f32 origin_y = 0.0f;
 	if (rotation) {
@@ -444,6 +545,26 @@ prime_Renderer2DDrawSpriteEx(
 	renderer2d->spriteData.indexCount += 6;
 }
 
+void 
+prime_Renderer2DDrawLine(prime_Renderer2D* renderer2d, const prime_Vec2& point1, const prime_Vec2& point2)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+
+	// point 1
+	renderer2d->lineData.vertexbufferPtr->position.x = point1.x;
+	renderer2d->lineData.vertexbufferPtr->position.y = point1.y;
+	renderer2d->lineData.vertexbufferPtr->color = renderer2d->drawColor;
+	renderer2d->lineData.vertexbufferPtr++;
+
+	// point 2
+	renderer2d->lineData.vertexbufferPtr->position.x = point2.x;
+	renderer2d->lineData.vertexbufferPtr->position.y = point2.y;
+	renderer2d->lineData.vertexbufferPtr->color = renderer2d->drawColor;
+	renderer2d->lineData.vertexbufferPtr++;
+
+	renderer2d->lineData.vertexCount += 2;
+}
+
 void
 prime_Renderer2DPresent(prime_Renderer2D* renderer2d)
 {
@@ -456,4 +577,32 @@ prime_Renderer2DGetViewport(prime_Renderer2D* renderer2d)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 	return renderer2d->viewport;
+}
+
+const prime_Color&
+prime_Renderer2DGetDrawColor(prime_Renderer2D* renderer2d)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	return renderer2d->drawColor;
+}
+
+f32
+prime_Renderer2DGetLinesWidth(prime_Renderer2D* renderer2d)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	return prime_ContextGetLinesWidth(renderer2d->context);
+}
+
+b8
+prime_Renderer2DGetAntiAliasing(prime_Renderer2D* renderer2d)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	return prime_ContextGetAntiAliasing(renderer2d->context);
+}
+
+b8
+prime_Renderer2DGetVsync(prime_Renderer2D* renderer2d)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	return prime_ContextGetVSync(renderer2d->context);
 }
