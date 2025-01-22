@@ -28,12 +28,16 @@ renderer2DTestGL()
 
 		// sprites
 		prime_Renderer2DDrawRect(renderer, prime_Rect2DCreate(580.0f, 0.0f, 50.0f, 50.0f));
-		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(0.0f, 0.0f, 50.0f, 50.0f), rotation, prime_AnchorCenter);
+		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(10.0f, 20.0f, 50.0f, 50.0f), rotation, prime_AnchorCenter);
 		prime_Renderer2DDrawSprite(renderer, prime_Rect2DCreate(300.0f, 300.0f, 100.0f, 100.0f), texture);
 		prime_Renderer2DDrawSpriteEx(renderer, prime_Rect2DCreate(300.0f, 50.0f, 50.0f, 50.0f), texture, rotation, prime_AnchorTopLeft, true, true);
 
 		// lines
 		prime_Renderer2DDrawLine(renderer, prime_Vec2Create(100.0f, 50.0f), prime_Vec2Create(200.0f, 50.0f));
+
+		// rects
+		prime_Renderer2DDrawRect(renderer, prime_Rect2DCreate(10.0f, 100.0f, 50.0f, 50.0f), false);
+		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(10.0f, 200.0f, 50.0f, 50.0f), rotation, prime_AnchorCenter, false);
 
 		prime_Renderer2DEnd(renderer);
 		prime_Renderer2DPresent(renderer);

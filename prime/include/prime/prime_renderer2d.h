@@ -37,10 +37,10 @@ PRIME_API void
 prime_Renderer2DEnd(prime_Renderer2D* renderer2d);
 
 PRIME_API void
-prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect);
+prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, b8 filled = true);
 
 PRIME_API void
-prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, f32 rotation, prime_Anchor anchor);
+prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, f32 rotation, prime_Anchor anchor, b8 filled = true);
 
 PRIME_API void
 prime_Renderer2DDrawSprite(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, prime_Texture2D* texture2d);

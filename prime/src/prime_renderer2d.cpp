@@ -52,6 +52,16 @@ struct LineData
 	LineVertex* vertexbufferPtr = nullptr;
 };
 
+struct RectData
+{
+	prime_Vertexbuffer* vertexbuffer = nullptr;
+
+	LineVertex* vertexbufferBase = nullptr;
+	LineVertex* vertexbufferPtr = nullptr;
+
+	u32 vertexCount = 0;
+};
+
 struct prime_Renderer2D
 {
 	prime_Device* device = nullptr;
@@ -60,6 +70,7 @@ struct prime_Renderer2D
 	prime_Viewport viewport;
 	SpriteData spriteData;
 	LineData lineData;
+	RectData rectData;
 	prime_Color drawColor;
 };
 
@@ -169,7 +180,7 @@ initSprites(prime_Renderer2D* ren)
 }
 
 static void
-initLines(prime_Renderer2D* ren)
+initLinesAndRects(prime_Renderer2D* ren)
 {
 	prime_BufferLayout* layout = nullptr;
 	layout = prime_BufferLayoutCreate();
@@ -177,6 +188,7 @@ initLines(prime_Renderer2D* ren)
 	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat4));
 
 	u32 max_vertices = PRIME_MAX_RENDERER2D_SPRITES * 2;
+	u32 max_vertices_rect = PRIME_MAX_RENDERER2D_SPRITES * 8;
 
 	ren->lineData.vertexbuffer = prime_VertexbufferCreate(
 		ren->device,
@@ -188,6 +200,18 @@ initLines(prime_Renderer2D* ren)
 	prime_VertexbufferBind(ren->lineData.vertexbuffer);
 	prime_BufferLayoutSet(ren->lineData.vertexbuffer, layout);
 	ren->lineData.vertexbufferBase = (LineVertex*)prime_MemAlloc(sizeof(LineVertex) * max_vertices);
+
+	// rect
+	ren->rectData.vertexbuffer = prime_VertexbufferCreate(
+		ren->device,
+		nullptr,
+		max_vertices_rect * sizeof(LineVertex),
+		prime_VertexbufferTypeDynamic
+	);
+
+	prime_VertexbufferBind(ren->rectData.vertexbuffer);
+	prime_BufferLayoutSet(ren->rectData.vertexbuffer, layout);
+	ren->rectData.vertexbufferBase = (LineVertex*)prime_MemAlloc(sizeof(LineVertex) * max_vertices_rect);
 
 	ren->lineData.shader = prime_ShaderCreate(ren->device,
 		s_LineVertexSource, s_LinePixelSource, false);
@@ -225,7 +249,7 @@ prime_Renderer2DCreate(prime_Device* device, prime_Window* window)
 	ren->viewport.height = prime_WindowGetHeight(window);
 	ren->device = device;
 	initSprites(ren);
-	initLines(ren);
+	initLinesAndRects(ren);
 	prime_ContextMakeActive(ren->context);
 
 	ren->uniformbuffer = prime_UniformbufferCreate(device, sizeof(prime_Mat4), 0);
@@ -255,6 +279,11 @@ prime_Renderer2DDestroy(prime_Renderer2D* renderer2d)
 	prime_ShaderDestroy(renderer2d->lineData.shader);
 	prime_MemFree(renderer2d->lineData.vertexbufferBase,
 		sizeof(LineVertex) * PRIME_MAX_RENDERER2D_SPRITES * 2);
+
+	// line
+	prime_VertexbufferDestroy(renderer2d->rectData.vertexbuffer);
+	prime_MemFree(renderer2d->rectData.vertexbufferBase,
+		sizeof(LineVertex) * PRIME_MAX_RENDERER2D_SPRITES * 8);
 	
 	renderer2d->device = nullptr;
 	renderer2d->context = nullptr;
@@ -328,6 +357,10 @@ prime_Renderer2DBegin(prime_Renderer2D* renderer2d)
 	// line
 	renderer2d->lineData.vertexCount = 0;
 	renderer2d->lineData.vertexbufferPtr = renderer2d->lineData.vertexbufferBase;
+
+	// line
+	renderer2d->rectData.vertexCount = 0;
+	renderer2d->rectData.vertexbufferPtr = renderer2d->rectData.vertexbufferBase;
 }
 
 void
@@ -369,10 +402,34 @@ prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 			renderer2d->context, prime_DrawModeLines,
 			renderer2d->lineData.vertexCount);
 	}
+
+	if (renderer2d->rectData.vertexCount)
+	{
+		u32 data_size = (u32)((u8*)renderer2d->rectData.vertexbufferPtr - (u8*)renderer2d->rectData.vertexbufferBase);
+		prime_VertexbufferBind(renderer2d->rectData.vertexbuffer);
+		prime_VertexbufferSetData(
+			renderer2d->rectData.vertexbuffer,
+			renderer2d->rectData.vertexbufferBase,
+			data_size);
+
+		prime_ShaderBind(renderer2d->lineData.shader);
+
+		f32 line_width = prime_ContextGetLinesWidth(renderer2d->context);
+		b8 anti_alaising = prime_ContextGetAntiAliasing(renderer2d->context);
+		prime_ContextSetLinesWidth(renderer2d->context, 2.0f);
+		prime_ContextSetAntiAliasing(renderer2d->context, false);
+
+		prime_ContextDrawIndexed(
+			renderer2d->context, prime_DrawModeLines,
+			renderer2d->rectData.vertexCount);
+
+		prime_ContextSetLinesWidth(renderer2d->context, line_width);
+		prime_ContextSetAntiAliasing(renderer2d->context, anti_alaising);
+	}
 }
 
 void
-prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect)
+prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, b8 filled)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 
@@ -380,21 +437,44 @@ prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect)
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
 	prime_Mat4 transform = translation * scale;
 
-	for (size_t i = 0; i < 4; i++)
-	{
-		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
-		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
-		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+	if (filled) {
+		for (size_t i = 0; i < 4; i++)
+		{
+			prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
+			renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
+			renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
 
-		renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
+			renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
 
-		renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
+			renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
 
-		renderer2d->spriteData.vertexbufferPtr->tex_index = 0.0f;
+			renderer2d->spriteData.vertexbufferPtr->tex_index = 0.0f;
 
-		renderer2d->spriteData.vertexbufferPtr++;
+			renderer2d->spriteData.vertexbufferPtr++;
+		}
+		renderer2d->spriteData.indexCount += 6;
 	}
-	renderer2d->spriteData.indexCount += 6;
+	
+	else {
+		prime_Vec4 rect_vertices[4];
+		static u32 index[8] = { 0, 1, 1, 2, 2, 3, 3, 0 };
+
+		for (size_t i = 0; i < 4; i++) {
+			rect_vertices[i] = transform * renderer2d->spriteData.vertices[i];
+		}
+
+		for (size_t x = 0; x < 8; x++) {
+			// pos
+			renderer2d->rectData.vertexbufferPtr->position.x = rect_vertices[index[x]].x;
+			renderer2d->rectData.vertexbufferPtr->position.y = rect_vertices[index[x]].y;
+
+			// color
+			renderer2d->rectData.vertexbufferPtr->color = renderer2d->drawColor;
+
+			renderer2d->rectData.vertexbufferPtr++;
+		}
+		renderer2d->rectData.vertexCount += 8;
+	}
 }
 
 void 
@@ -402,7 +482,8 @@ prime_Renderer2DDrawRectEx(
 	prime_Renderer2D* renderer2d, 
 	const prime_Rect2D& rect, 
 	f32 rotation, 
-	prime_Anchor anchor)
+	prime_Anchor anchor, 
+	b8 filled)
 {
 	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
 
@@ -432,21 +513,44 @@ prime_Renderer2DDrawRectEx(
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
 	prime_Mat4 transform = translation * rot * translation2 * scale;
 
-	for (size_t i = 0; i < 4; i++)
-	{
-		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
-		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
-		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+	if (filled) {
+		for (size_t i = 0; i < 4; i++)
+		{
+			prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
+			renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
+			renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
 
-		renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
+			renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
 
-		renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
+			renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
 
-		renderer2d->spriteData.vertexbufferPtr->tex_index = 0.0f;
+			renderer2d->spriteData.vertexbufferPtr->tex_index = 0.0f;
 
-		renderer2d->spriteData.vertexbufferPtr++;
+			renderer2d->spriteData.vertexbufferPtr++;
+		}
+		renderer2d->spriteData.indexCount += 6;
 	}
-	renderer2d->spriteData.indexCount += 6;
+
+	else {
+		prime_Vec4 rect_vertices[4];
+		static u32 index[8] = { 0, 1, 1, 2, 2, 3, 3, 0 };
+
+		for (size_t i = 0; i < 4; i++) {
+			rect_vertices[i] = transform * renderer2d->spriteData.vertices[i];
+		}
+
+		for (size_t x = 0; x < 8; x++) {
+			// pos
+			renderer2d->rectData.vertexbufferPtr->position.x = rect_vertices[index[x]].x;
+			renderer2d->rectData.vertexbufferPtr->position.y = rect_vertices[index[x]].y;
+
+			// color
+			renderer2d->rectData.vertexbufferPtr->color = renderer2d->drawColor;
+
+			renderer2d->rectData.vertexbufferPtr++;
+		}
+		renderer2d->rectData.vertexCount += 8;
+	}
 }
 
 void
