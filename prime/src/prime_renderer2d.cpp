@@ -5,12 +5,17 @@
 #include "prime/prime_buffers.h"
 #include "prime/prime_shader.h"
 #include "prime/prime_context.h"
+#include "prime/prime_texture2d.h"
 #include "prime_shader_sources.h"
+
+#include <array>
 
 struct SpriteVertex
 {
 	prime_Vec2 position;
 	prime_Color color;
+	prime_Vec2 texCoords;
+	f32 tex_index = 0.0f;
 };
 
 struct SpriteData
@@ -20,9 +25,15 @@ struct SpriteData
 	prime_Shader* shader = nullptr;
 	u32 indexCount = 0;
 	prime_Vec4 vertices[4];
+	prime_Vec2 texCoords[4];
+	prime_Vec2 texCoordsFlipY[4];
+	prime_Vec2 texCoordsFlipX[4];
+	prime_Vec2 texCoordsFlipXY[4];
 
 	SpriteVertex* vertexbufferBase = nullptr;
 	SpriteVertex* vertexbufferPtr = nullptr;
+	std::array<prime_Texture2D*, PRIME_MAX_TEXTURE_SLOTS> texSlots{};
+	u32 texIndex = 1;
 };
 
 struct prime_Renderer2D
@@ -58,6 +69,8 @@ initSprites(prime_Renderer2D* ren)
 	layout = prime_BufferLayoutCreate();
 	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat2));
 	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat4));
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat2));
+	prime_BufferElementAdd(layout, prime_BufferElementCreate(prime_DataTypeFloat));
 
 	u32 max_indices = PRIME_MAX_RENDERER2D_SPRITES * 6;
 	u32 max_vertices = PRIME_MAX_RENDERER2D_SPRITES * 4;
@@ -98,10 +111,63 @@ initSprites(prime_Renderer2D* ren)
 	ren->spriteData.vertices[2] = prime_Vec4Create(1.0f, 1.0f, 0.0f, 1.0f);
 	ren->spriteData.vertices[3] = prime_Vec4Create(0.0f, 1.0f, 0.0f, 1.0f);
 
-	prime_ShaderBind(ren->spriteData.shader);
-	prime_BufferLayoutDestroy(layout);
+	ren->spriteData.texCoords[0] = prime_Vec2Create(0.0f, 0.0f);
+	ren->spriteData.texCoords[1] = prime_Vec2Create(1.0f, 0.0f);
+	ren->spriteData.texCoords[2] = prime_Vec2Create(1.0f, 1.0f);
+	ren->spriteData.texCoords[3] = prime_Vec2Create(0.0f, 1.0f);
 
+	ren->spriteData.texCoordsFlipX[0] = prime_Vec2Create(1.0f, 0.0f);
+	ren->spriteData.texCoordsFlipX[1] = prime_Vec2Create(0.0f, 0.0f);
+	ren->spriteData.texCoordsFlipX[2] = prime_Vec2Create(0.0f, 1.0f);
+	ren->spriteData.texCoordsFlipX[3] = prime_Vec2Create(1.0f, 1.0f);
+
+	ren->spriteData.texCoordsFlipY[0] = prime_Vec2Create(0.0f, 1.0f);
+	ren->spriteData.texCoordsFlipY[1] = prime_Vec2Create(1.0f, 1.0f);
+	ren->spriteData.texCoordsFlipY[2] = prime_Vec2Create(1.0f, 0.0f);
+	ren->spriteData.texCoordsFlipY[3] = prime_Vec2Create(0.0f, 0.0f);
+
+	ren->spriteData.texCoordsFlipXY[0] = prime_Vec2Create(1.0f, 1.0f);
+	ren->spriteData.texCoordsFlipXY[1] = prime_Vec2Create(0.0f, 1.0f);
+	ren->spriteData.texCoordsFlipXY[2] = prime_Vec2Create(0.0f, 0.0f);
+	ren->spriteData.texCoordsFlipXY[3] = prime_Vec2Create(1.0f, 0.0f);
+
+	prime_ShaderBind(ren->spriteData.shader);
+
+	i32 samplers[PRIME_MAX_TEXTURE_SLOTS]{};
+	for (u32 i = 0; i < PRIME_MAX_TEXTURE_SLOTS; i++) { samplers[i] = i; }
+	prime_ShaderSetIntArray(ren->spriteData.shader, "u_Textures", samplers, PRIME_MAX_TEXTURE_SLOTS);
+
+	prime_ShaderUnbind(ren->spriteData.shader);
+
+	ren->spriteData.texSlots[0] = prime_Texture2DCreate(
+		ren->device,
+		1,
+		1,
+		prime_Texture2DFormatRGBA8,
+		false
+	);
+
+	prime_BufferLayoutDestroy(layout);
 	prime_MemFree(indices, sizeof(u32) * max_indices);
+}
+
+static f32 
+getTexture2DIndex(prime_Renderer2D* ren, prime_Texture2D* texture2d)
+{
+	f32 tex_index = 0.0f;
+	for (u32 i = 1; i < ren->spriteData.texIndex; i++) {
+		if (prime_Texture2DGetHandle(ren->spriteData.texSlots[i]) == prime_Texture2DGetHandle(texture2d)) {
+			tex_index = (f32)i;
+			break;
+		}
+	}
+
+	if (tex_index == 0.0f) {
+		tex_index = (f32)ren->spriteData.texIndex;
+		ren->spriteData.texSlots[ren->spriteData.texIndex] = texture2d;
+		ren->spriteData.texIndex++;
+	}
+	return tex_index;
 }
 
 prime_Renderer2D*
@@ -183,6 +249,7 @@ prime_Renderer2DClear(prime_Renderer2D* renderer2d)
 void
 prime_Renderer2DBegin(prime_Renderer2D* renderer2d)
 {
+	renderer2d->spriteData.texIndex = 1;
 	renderer2d->spriteData.indexCount = 0;
 	renderer2d->spriteData.vertexbufferPtr = renderer2d->spriteData.vertexbufferBase;
 }
@@ -199,6 +266,12 @@ prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 			renderer2d->spriteData.vertexbufferBase,
 			data_size);
 
+		prime_ShaderBind(renderer2d->spriteData.shader);
+
+		for (u32 i = 0; i < renderer2d->spriteData.texIndex; i++) {
+			prime_Texture2DBind(renderer2d->spriteData.texSlots[i], i);
+		}
+
 		prime_ContextDrawIndexed(
 			renderer2d->context, prime_DrawModeTriangles, 
 			renderer2d->spriteData.indexCount);
@@ -206,7 +279,7 @@ prime_Renderer2DEnd(prime_Renderer2D* renderer2d)
 }
 
 void
-prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, prime_Rect2D rect)
+prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect)
 {
 	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
@@ -220,13 +293,17 @@ prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, prime_Rect2D rect)
 
 		renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
 
+		renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
+
+		renderer2d->spriteData.vertexbufferPtr->tex_index = 0.0f;
+
 		renderer2d->spriteData.vertexbufferPtr++;
 	}
 	renderer2d->spriteData.indexCount += 6;
 }
 
 void 
-prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D rect, f32 rotation)
+prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D& rect, f32 rotation)
 {
 	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
 	prime_Mat4 rot = prime_Mat4RotationZ(prime_MathsDegreeToRadians(rotation));
@@ -240,6 +317,81 @@ prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D rect, f32 
 		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
 
 		renderer2d->spriteData.vertexbufferPtr->color = renderer2d->drawColor;
+
+		renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
+
+		renderer2d->spriteData.vertexbufferPtr->tex_index = 0.0f;
+
+		renderer2d->spriteData.vertexbufferPtr++;
+	}
+	renderer2d->spriteData.indexCount += 6;
+}
+
+void
+prime_Renderer2DDrawSprite(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, prime_Texture2D* texture2d)
+{
+	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
+	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
+	prime_Mat4 transform = translation * scale;
+
+	f32 tex_index = getTexture2DIndex(renderer2d, texture2d);
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
+		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
+		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+
+		renderer2d->spriteData.vertexbufferPtr->color = prime_ColorFromF32(1.0f, 1.0f, 1.0f, 1.0f);
+
+		renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
+
+		renderer2d->spriteData.vertexbufferPtr->tex_index = tex_index;
+
+		renderer2d->spriteData.vertexbufferPtr++;
+	}
+	renderer2d->spriteData.indexCount += 6;
+}
+
+void
+prime_Renderer2DDrawSpriteEx(
+	prime_Renderer2D* renderer2d,
+	const prime_Rect2D& rect,
+	prime_Texture2D* texture2d,
+	f32 rotation,
+	b8 flip_x,
+	b8 flip_y,
+	const prime_Color& tint_color)
+{
+	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
+	prime_Mat4 rot = prime_Mat4RotationZ(prime_MathsDegreeToRadians(rotation));
+	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
+	prime_Mat4 transform = translation * rot * scale;
+
+	f32 tex_index = getTexture2DIndex(renderer2d, texture2d);
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
+		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
+		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+
+		renderer2d->spriteData.vertexbufferPtr->color = tint_color;
+
+		if (flip_x && flip_y) {
+			renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoordsFlipXY[i];
+		}
+		else if (flip_x && flip_y == false) {
+			renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoordsFlipX[i];
+		}
+		else if (flip_y && flip_x == false) {
+			renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoordsFlipY[i];
+		}
+		else if (flip_y == false && flip_x == false) {
+			renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoords[i];
+		}
+
+		renderer2d->spriteData.vertexbufferPtr->tex_index = tex_index;
 
 		renderer2d->spriteData.vertexbufferPtr++;
 	}

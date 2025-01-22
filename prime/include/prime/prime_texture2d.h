@@ -25,3 +25,6 @@ prime_Texture2DGetWidth(prime_Texture2D* texture2d);
 
 PRIME_API u32
 prime_Texture2DGetHeight(prime_Texture2D* texture2d);
+
+PRIME_API void*
+prime_Texture2DGetHandle(prime_Texture2D* texture2d);

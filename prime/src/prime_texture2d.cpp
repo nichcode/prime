@@ -156,3 +156,10 @@ prime_Texture2DGetHeight(prime_Texture2D* texture2d)
 	PRIME_ASSERT_MSG(texture2d, "Texture2d is null");
 	return texture2d->height;
 }
+
+void* 
+prime_Texture2DGetHandle(prime_Texture2D* texture2d)
+{
+	PRIME_ASSERT_MSG(texture2d, "Texture2d is null");
+	return texture2d->handle;
+}

@@ -122,7 +122,6 @@ gl_Texture2DLoad(const char* filepath, u32* width, u32* height)
 
 	int w = 0, h = 0, channels = 0;
 
-	stbi_set_flip_vertically_on_load(1);
 	stbi_uc* data = stbi_load(filepath, &w, &h, &channels, 0);
 
 	if (data) {
