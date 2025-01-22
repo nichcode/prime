@@ -32,6 +32,9 @@ prime_WideCharToMultiByte(
     u32 wide_string_len,
     char* string);
 
+u32
+prime_Texture2DGetGLHandle(void* gl_texture2d);
+
 void
 prime_AppendContext(prime_Device* device, prime_Context* context);
 
@@ -67,3 +70,9 @@ prime_AppendTexture2D(prime_Device* device, prime_Texture2D* texture2d);
 
 void
 prime_PopTexture2D(prime_Device* device, prime_Texture2D* texture2d);
+
+void
+prime_AppendRenderTarget2D(prime_Device* device, prime_RenderTarget2D* render_target2d);
+
+void
+prime_PopRenderTarget2D(prime_Device* device, prime_RenderTarget2D* render_target2d);

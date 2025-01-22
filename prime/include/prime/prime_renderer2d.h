@@ -63,6 +63,9 @@ PRIME_API void
 prime_Renderer2DDrawLine(prime_Renderer2D* renderer2d, const prime_Vec2& point1, const prime_Vec2& point2);
 
 PRIME_API void
+prime_Renderer2DDrawRenderTarget2D(prime_Renderer2D* renderer2d, prime_RenderTarget2D* rendertarget2d);
+
+PRIME_API void
 prime_Renderer2DPresent(prime_Renderer2D* renderer2d);
 
 PRIME_API const prime_Viewport& 

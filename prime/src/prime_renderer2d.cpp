@@ -6,6 +6,7 @@
 #include "prime/prime_shader.h"
 #include "prime/prime_context.h"
 #include "prime/prime_texture2d.h"
+#include "prime/prime_rendertarget2d.h"
 #include "prime_shader_sources.h"
 
 #include <array>
@@ -284,6 +285,9 @@ prime_Renderer2DDestroy(prime_Renderer2D* renderer2d)
 	prime_VertexbufferDestroy(renderer2d->rectData.vertexbuffer);
 	prime_MemFree(renderer2d->rectData.vertexbufferBase,
 		sizeof(LineVertex) * PRIME_MAX_RENDERER2D_SPRITES * 8);
+
+	// texture
+	prime_Texture2DDestroy(renderer2d->spriteData.texSlots[0]);
 	
 	renderer2d->device = nullptr;
 	renderer2d->context = nullptr;
@@ -690,6 +694,38 @@ prime_Renderer2DDrawLine(prime_Renderer2D* renderer2d, const prime_Vec2& point1,
 	renderer2d->lineData.vertexbufferPtr++;
 
 	renderer2d->lineData.vertexCount += 2;
+}
+
+void 
+prime_Renderer2DDrawRenderTarget2D(prime_Renderer2D* renderer2d, prime_RenderTarget2D* rendertarget2d)
+{
+	PRIME_ASSERT_MSG(renderer2d, "Renderer2D is null");
+	prime_Rect2D rect;
+	prime_Texture2D* texture = prime_RenderTarget2DGetTexture2D(rendertarget2d);
+	rect.width = (f32)prime_Texture2DGetWidth(texture);
+	rect.height = (f32)prime_Texture2DGetHeight(texture);
+
+	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
+	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
+	prime_Mat4 transform = translation * scale;
+
+	f32 tex_index = getTexture2DIndex(renderer2d, texture);
+
+	for (size_t i = 0; i < 4; i++)
+	{
+		prime_Vec4 position = transform * renderer2d->spriteData.vertices[i];
+		renderer2d->spriteData.vertexbufferPtr->position.x = position.x;
+		renderer2d->spriteData.vertexbufferPtr->position.y = position.y;
+
+		renderer2d->spriteData.vertexbufferPtr->color = prime_ColorFromF32(1.0f, 1.0f, 1.0f, 1.0f);
+
+		renderer2d->spriteData.vertexbufferPtr->texCoords = renderer2d->spriteData.texCoordsFlipY[i];
+
+		renderer2d->spriteData.vertexbufferPtr->tex_index = tex_index;
+
+		renderer2d->spriteData.vertexbufferPtr++;
+	}
+	renderer2d->spriteData.indexCount += 6;
 }
 
 void

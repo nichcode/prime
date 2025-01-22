@@ -3,7 +3,7 @@
 #include "prime/prime_defines.h"
 
 void*
-gl_Texture2DCreate(u32 width, u32 height, prime_Texture2DFormat format, b8 empty);
+gl_Texture2DCreate(u32 width, u32 height, prime_Texture2DFormat format,b8 empty);
 
 void*
 gl_Texture2DLoad(const char* filepath, u32* width, u32* height);

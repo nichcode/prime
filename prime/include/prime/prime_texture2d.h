@@ -3,7 +3,7 @@
 #include "prime_defines.h"
 
 PRIME_API prime_Texture2D*
-prime_Texture2DCreate(prime_Device* device, u32 width, u32 height, prime_Texture2DFormat format, b8 empty);
+prime_Texture2DCreate(prime_Device* device, u32 width, u32 height, prime_Texture2DFormat format, b8 empty = false);
 
 PRIME_API prime_Texture2D*
 prime_Texture2DLoad(prime_Device* device, const char* filepath);

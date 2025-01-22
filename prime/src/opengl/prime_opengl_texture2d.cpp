@@ -86,7 +86,8 @@ gl_Texture2DCreate(u32 width, u32 height, prime_Texture2DFormat format, b8 empty
 	u32 internal_format = internalFormatFromTexture2DFormat(format);
 
 	if (empty) {
-		glTexImage2D(GL_TEXTURE_2D,
+		glTexImage2D(
+			GL_TEXTURE_2D,
 			0,
 			internal_format,
 			width,
@@ -96,6 +97,7 @@ gl_Texture2DCreate(u32 width, u32 height, prime_Texture2DFormat format, b8 empty
 			GL_UNSIGNED_BYTE,
 			nullptr);
 	}
+
 	else {
 		glTexImage2D(
 			GL_TEXTURE_2D,
@@ -200,3 +202,10 @@ gl_Texture2DSetData(void* texture2d, const void* data, u32 width, u32 height)
 	gl_texture2D* gl_tex = (gl_texture2D*)texture2d;
 	glTexSubImage2D(gl_tex->id, 0, 0, 0, width, height, gl_tex->dataFormat, GL_UNSIGNED_BYTE, data);
 }
+
+u32
+prime_Texture2DGetGLHandle(void* gl_texture2d)
+{
+	gl_texture2D* gl_tex = (gl_texture2D*)gl_texture2d;
+	return gl_tex->id;
+} 

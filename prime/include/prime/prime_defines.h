@@ -39,6 +39,7 @@
 #define PRIME_INLINE extern "C" inline
 #define PRIME_MAX_RENDERER2D_SPRITES 1000
 #define PRIME_MAX_TEXTURE_SLOTS 16
+#define PRIME_MAX_RENDER_TARGET_SIZE 8192
 
 /** @brief debug breakpoint. */
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -112,6 +113,7 @@ struct prime_WString;
 struct prime_Shader;
 struct prime_Renderer2D;
 struct prime_Texture2D;
+struct prime_RenderTarget2D;
 
 enum prime_Button
 {

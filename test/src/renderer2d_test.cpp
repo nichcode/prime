@@ -1,6 +1,8 @@
 
 #include "prime/prime.h"
 
+static prime_RenderTarget2D* s_Target = nullptr;
+
 static void
 onWindowResize(prime_Window* window, u32 width, u32 height)
 {
@@ -9,6 +11,7 @@ onWindowResize(prime_Window* window, u32 width, u32 height)
 	viewport.width = width;
 	viewport.height = height;
 	prime_Renderer2DSetViewport(ren, viewport);
+	prime_RenderTarget2DResize(s_Target, width, height);
 
 	/*if (prime_WindowMaximized(window)) {
 		prime_Renderer2DSetScale(ren, { 2.0f, 2.0f });
@@ -38,6 +41,13 @@ renderer2DTestGL()
 
 	prime_WindowSetSizeCallback(onWindowResize);
 
+	// render target
+	s_Target = prime_RenderTarget2DCreate(
+		device,
+		640,
+		480
+	);
+
 	while (!prime_WindowShouldClose(window)) {
 		prime_WindowPollEvents();
 
@@ -45,6 +55,9 @@ renderer2DTestGL()
 
 		prime_Renderer2DClear(renderer);
 		prime_Renderer2DBegin(renderer);
+
+		prime_RenderTarget2DBind(s_Target);
+		prime_Renderer2DClear(renderer);
 
 		prime_Rect2D rect;
 		rect.x = prime_WindowGetWidth(window) - rect.width;
@@ -64,6 +77,13 @@ renderer2DTestGL()
 		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(10.0f, 200.0f, 50.0f, 50.0f), rotation, prime_AnchorCenter, false);
 
 		prime_Renderer2DEnd(renderer);
+
+		prime_RenderTarget2DUnbind(s_Target);
+
+		prime_Renderer2DBegin(renderer);
+		prime_Renderer2DDrawRenderTarget2D(renderer, s_Target);
+		prime_Renderer2DEnd(renderer);
+
 		prime_Renderer2DPresent(renderer);
 	}
 

@@ -47,7 +47,7 @@ texture2DTestGL()
 		device, 
 		1, 
 		1, 
-		prime_Texture2DFormatRGBA8, 
+		prime_Texture2DFormatRGBA8,
 		false);
 
 	prime_Texture2D* texture2d_2 = prime_Texture2DLoad(device, "textures/texture2d.png");

@@ -48,7 +48,9 @@ prime_Texture2DCreate(prime_Device* device, u32 width, u32 height, prime_Texture
 
 	texture->width = width;
 	texture->height = height;
-	prime_AppendTexture2D(device, texture);
+	if (!empty) {
+		prime_AppendTexture2D(device, texture);
+	}
 	return texture;
 }
 
@@ -91,6 +93,7 @@ prime_Texture2DDestroy(prime_Texture2D* texture2d)
 	PRIME_ASSERT_MSG(texture2d, "Texture2d is null");
 	texture2d->destroyFunc(texture2d->handle);
 
+	texture2d->destroyFunc = nullptr;
 	texture2d->bindFunc = nullptr;
 	texture2d->unbindFunc = nullptr;
 	texture2d->setDataFunc = nullptr;

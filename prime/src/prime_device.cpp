@@ -6,6 +6,7 @@
 #include "prime/prime_buffers.h"
 #include "prime/prime_shader.h"
 #include "prime/prime_texture2d.h"
+#include "prime/prime_rendertarget2d.h"
 #include "prime_utils.h"
 
 #include <map>
@@ -20,6 +21,7 @@ struct Data
 	std::map<u32, std::vector<prime_Shader*>> shaders;
 	std::map<u32, std::vector<prime_Uniformbuffer*>> uniformbuffers;
 	std::map<u32, std::vector<prime_Texture2D*>> texture2ds;
+	std::map<u32, std::vector<prime_RenderTarget2D*>> renderTarget2ds;
 };
 
 static Data s_Data;
@@ -74,11 +76,25 @@ prime_DeviceDestroy(prime_Device* device)
 		prime_UniformbufferDestroy(uniformbuffer);
 	}
 
+	// textures
+	auto& texture2ds = s_Data.texture2ds[device->id];
+	for (prime_Texture2D* texture2d : texture2ds) {
+		prime_Texture2DDestroy(texture2d);
+	}
+
+	// rendertargets
+	auto& render_target2ds = s_Data.renderTarget2ds[device->id];
+	for (prime_RenderTarget2D* render_target2d : render_target2ds) {
+		prime_RenderTarget2DDestroy(render_target2d);
+	}
+
 	s_Data.contexts[device->id].clear();
 	s_Data.vertexbuffers[device->id].clear();
 	s_Data.indexbuffers[device->id].clear();
 	s_Data.shaders[device->id].clear();
 	s_Data.uniformbuffers[device->id].clear();
+	s_Data.texture2ds[device->id].clear();
+	s_Data.renderTarget2ds[device->id].clear();
 	
 	device->id = 0;
 	s_Data.index--;
@@ -197,5 +213,23 @@ prime_PopTexture2D(prime_Device* device, prime_Texture2D* texture2d)
 	if (it != texture2ds.end())
 	{
 		texture2ds.erase(it);
+	}
+}
+
+void
+prime_AppendRenderTarget2D(prime_Device* device, prime_RenderTarget2D* render_target2d)
+{
+	s_Data.renderTarget2ds[device->id].push_back(render_target2d);
+}
+
+void
+prime_PopRenderTarget2D(prime_Device* device, prime_RenderTarget2D* render_target2d)
+{
+	auto& renderTarget2ds = s_Data.renderTarget2ds[device->id];
+
+	auto it = std::find(renderTarget2ds.begin(), renderTarget2ds.end(), render_target2d);
+	if (it != renderTarget2ds.end())
+	{
+		renderTarget2ds.erase(it);
 	}
 }
