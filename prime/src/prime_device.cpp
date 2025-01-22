@@ -5,6 +5,7 @@
 #include "prime/prime_context.h"
 #include "prime/prime_buffers.h"
 #include "prime/prime_shader.h"
+#include "prime/prime_texture2d.h"
 #include "prime_utils.h"
 
 #include <map>
@@ -18,6 +19,7 @@ struct Data
 	std::map<u32, std::vector<prime_Indexbuffer*>> indexbuffers;
 	std::map<u32, std::vector<prime_Shader*>> shaders;
 	std::map<u32, std::vector<prime_Uniformbuffer*>> uniformbuffers;
+	std::map<u32, std::vector<prime_Texture2D*>> texture2ds;
 };
 
 static Data s_Data;
@@ -177,5 +179,23 @@ prime_PopUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuffer)
 	if (it != uniformbuffers.end())
 	{
 		uniformbuffers.erase(it);
+	}
+}
+
+void
+prime_AppendTexture2D(prime_Device* device, prime_Texture2D* texture2d)
+{
+	s_Data.texture2ds[device->id].push_back(texture2d);
+}
+
+void
+prime_PopTexture2D(prime_Device* device, prime_Texture2D* texture2d)
+{
+	auto& texture2ds = s_Data.texture2ds[device->id];
+
+	auto it = std::find(texture2ds.begin(), texture2ds.end(), texture2d);
+	if (it != texture2ds.end())
+	{
+		texture2ds.erase(it);
 	}
 }

@@ -38,6 +38,7 @@
 #define PRIME_FILE __FILE__
 #define PRIME_INLINE extern "C" inline
 #define PRIME_MAX_RENDERER2D_SPRITES 1000
+#define PRIME_MAX_TEXTURE_SLOTS 16
 
 /** @brief debug breakpoint. */
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -110,6 +111,7 @@ struct prime_String;
 struct prime_WString;
 struct prime_Shader;
 struct prime_Renderer2D;
+struct prime_Texture2D;
 
 enum prime_Button
 {
@@ -279,6 +281,14 @@ enum prime_VertexbufferType
 {
 	prime_VertexbufferTypeStatic,
 	prime_VertexbufferTypeDynamic
+};
+
+enum prime_Texture2DFormat
+{
+	prime_Texture2DFormatR8,
+	prime_Texture2DFormatRGB8,
+	prime_Texture2DFormatRGBA8,
+	prime_Texture2DFormatRGBA32F
 };
 
 struct prime_BufferElement

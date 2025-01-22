@@ -61,3 +61,9 @@ prime_AppendUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuff
 
 void
 prime_PopUniformbuffer(prime_Device* device, prime_Uniformbuffer* uniformbuffer);
+
+void
+prime_AppendTexture2D(prime_Device* device, prime_Texture2D* texture2d);
+
+void
+prime_PopTexture2D(prime_Device* device, prime_Texture2D* texture2d);

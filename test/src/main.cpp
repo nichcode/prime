@@ -30,7 +30,8 @@ main()
 
 	//prime_TestManagerAddTest(shaderTestGL, "shaderTestGL");
 
-	prime_TestManagerAddTest(renderer2DTestGL, "renderer2DTestGL");
+	//prime_TestManagerAddTest(renderer2DTestGL, "renderer2DTestGL");
+	prime_TestManagerAddTest(texture2DTestGL, "texture2DTestGL");
 
 	prime_TestManagerRunTests();
 	prime_Shutdown();

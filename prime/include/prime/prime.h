@@ -13,6 +13,7 @@
 #include "prime_shader.h"
 #include "prime_string.h"
 #include "prime_test.h"
+#include "prime_texture2d.h"
 #include "prime_window.h"
 
 PRIME_API b8

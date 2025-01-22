@@ -43,3 +43,6 @@ shaderTestGL();
 
 b8
 renderer2DTestGL();
+
+b8
+texture2DTestGL();
