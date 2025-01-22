@@ -291,6 +291,12 @@ enum prime_Texture2DFormat
 	prime_Texture2DFormatRGBA32F
 };
 
+enum prime_Anchor
+{
+	prime_AnchorTopLeft,
+	prime_AnchorCenter
+};
+
 struct prime_BufferElement
 {
 	prime_DataType type = prime_DataTypeFloat3;

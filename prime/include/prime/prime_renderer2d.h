@@ -33,7 +33,7 @@ PRIME_API void
 prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect);
 
 PRIME_API void
-prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D& rect, f32 rotation);
+prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, f32 rotation, prime_Anchor anchor);
 
 PRIME_API void
 prime_Renderer2DDrawSprite(prime_Renderer2D* renderer2d, const prime_Rect2D& rect, prime_Texture2D* texture2d);
@@ -44,6 +44,7 @@ prime_Renderer2DDrawSpriteEx(
 	const prime_Rect2D& rect,
 	prime_Texture2D* texture2d,
 	f32 rotation,
+	prime_Anchor anchor,
 	b8 flip_x,
 	b8 flip_y,
 	const prime_Color& tint_color = prime_ColorFromF32(1.0f, 1.0f, 1.0f, 1.0f));

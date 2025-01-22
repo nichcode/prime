@@ -303,12 +303,37 @@ prime_Renderer2DDrawRect(prime_Renderer2D* renderer2d, const prime_Rect2D& rect)
 }
 
 void 
-prime_Renderer2DDrawRectEx(prime_Renderer2D* renderer2d, prime_Rect2D& rect, f32 rotation)
+prime_Renderer2DDrawRectEx(
+	prime_Renderer2D* renderer2d, 
+	const prime_Rect2D& rect, 
+	f32 rotation, 
+	prime_Anchor anchor)
 {
-	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
+	f32 origin_x = 0.0f;
+	f32 origin_y = 0.0f;
+
+	if (rotation) {
+		switch (anchor)
+		{
+		case prime_AnchorTopLeft: {
+			origin_x = 0.0f;
+			origin_y = 0.0f;
+			break;
+		}
+		case prime_AnchorCenter: {
+			origin_x = rect.width / 2.0f;
+			origin_y = rect.height / 2.0f;
+			break;
+		}
+	}
+
+	}
+
+	prime_Mat4 translation = prime_Mat4Translation({ rect.x + origin_x, rect.y + origin_y, 0.0f });
+	prime_Mat4 translation2 = prime_Mat4Translation({ -origin_x, -origin_y, 0.0f });
 	prime_Mat4 rot = prime_Mat4RotationZ(prime_MathsDegreeToRadians(rotation));
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
-	prime_Mat4 transform = translation * rot * scale;
+	prime_Mat4 transform = translation * rot * translation2 * scale;
 
 	for (size_t i = 0; i < 4; i++)
 	{
@@ -359,14 +384,35 @@ prime_Renderer2DDrawSpriteEx(
 	const prime_Rect2D& rect,
 	prime_Texture2D* texture2d,
 	f32 rotation,
+	prime_Anchor anchor,
 	b8 flip_x,
 	b8 flip_y,
 	const prime_Color& tint_color)
 {
-	prime_Mat4 translation = prime_Mat4Translation({ rect.x, rect.y, 0.0f });
+	f32 origin_x = 0.0f;
+	f32 origin_y = 0.0f;
+	if (rotation) {
+		switch (anchor)
+		{
+		case prime_AnchorTopLeft: {
+			origin_x = 0.0f;
+			origin_y = 0.0f;
+			break;
+		}
+		case prime_AnchorCenter: {
+			origin_x = rect.width / 2.0f;
+			origin_y = rect.height / 2.0f;
+			break;
+		}
+
+		}
+	}
+
+	prime_Mat4 translation = prime_Mat4Translation({ rect.x + origin_x, rect.y + origin_y, 0.0f });
+	prime_Mat4 translation2 = prime_Mat4Translation({ -origin_x, -origin_y, 0.0f });
 	prime_Mat4 rot = prime_Mat4RotationZ(prime_MathsDegreeToRadians(rotation));
 	prime_Mat4 scale = prime_Mat4Scale({ rect.width, rect.height, 1.0f });
-	prime_Mat4 transform = translation * rot * scale;
+	prime_Mat4 transform = translation * rot * translation2 * scale;
 
 	f32 tex_index = getTexture2DIndex(renderer2d, texture2d);
 

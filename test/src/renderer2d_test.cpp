@@ -21,15 +21,15 @@ renderer2DTestGL()
 	while (!prime_WindowShouldClose(window)) {
 		prime_WindowPollEvents();
 
-		rotation += .2f;
+		rotation += .08f;
 
 		prime_Renderer2DClear(renderer);
 		prime_Renderer2DBegin(renderer);
 
-		prime_Renderer2DDrawRect(renderer, prime_Rect2DCreate(50.0f, 0.0f, 50.0f, 50.0f));
-		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(200.0f, 200.0f, 50.0f, 50.0f), rotation);
-		prime_Renderer2DDrawSprite(renderer, prime_Rect2DCreate(300.0f, 100.0f, 100.0f, 100.0f), texture);
-		prime_Renderer2DDrawSpriteEx(renderer, prime_Rect2DCreate(400.0f, 300.0f, 100.0f, 100.0f), texture, rotation, true, true);
+		prime_Renderer2DDrawRect(renderer, prime_Rect2DCreate(580.0f, 0.0f, 50.0f, 50.0f));
+		prime_Renderer2DDrawRectEx(renderer, prime_Rect2DCreate(0.0f, 0.0f, 50.0f, 50.0f), rotation, prime_AnchorCenter);
+		prime_Renderer2DDrawSprite(renderer, prime_Rect2DCreate(300.0f, 300.0f, 100.0f, 100.0f), texture);
+		prime_Renderer2DDrawSpriteEx(renderer, prime_Rect2DCreate(300.0f, 50.0f, 50.0f, 50.0f), texture, rotation, prime_AnchorTopLeft, true, true);
 
 		prime_Renderer2DEnd(renderer);
 		prime_Renderer2DPresent(renderer);
