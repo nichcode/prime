@@ -41,7 +41,7 @@
 
 // Properly define static assertions.
 #if defined(__GNUC__) || defined(__GNUG__)
-#define PBREAK __builtin_trap
+#define PBREAK __builtin_trap()
 #else
 #define PBREAK __debugbreak()
 #endif

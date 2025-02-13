@@ -7,7 +7,7 @@
             "type": "cppdbg",
             "request": "launch",
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/out/bin",
+            "cwd": "${workspaceFolder}/test", // change to bin later
             "environment": [],
             "program": "${workspaceFolder}/out/bin/prime_test.exe",
             "MIMode": "gdb",

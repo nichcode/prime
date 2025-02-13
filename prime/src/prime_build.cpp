@@ -1,6 +1,7 @@
 
 #include "prime/prime_defines.h"
 
+#include "prime_filesystem.cpp"
 #include "prime_test.cpp"
 #include "prime_string.cpp"
 #include "prime_log.cpp"

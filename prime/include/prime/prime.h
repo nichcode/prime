@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include "prime_filesystem.h"
 #include "prime_log.h"
 #include "prime_memory.h"
 #include "prime_platform.h"
