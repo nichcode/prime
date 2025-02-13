@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include "prime_defines.h"
 
 PAPI void*

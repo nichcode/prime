@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include "prime/prime_defines.h"
 
 using prime_TestFunc = b8(*)();
