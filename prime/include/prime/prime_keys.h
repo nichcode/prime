@@ -121,7 +121,7 @@ enum primeKey
 };
 
 PAPI const char*
-prime_KeyGetName(u16 key);
+primeKeyGetName(u16 key);
 
 PAPI void
-prime_KeyMapNames();
+primeKeyMapNames();

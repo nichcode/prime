@@ -11,4 +11,5 @@
 
 #ifdef PPLATFORM_WINDOWS
 #include "prime_win32platform.cpp"
+#include "prime_win32window.cpp"
 #endif // PPLATFORM_WINDOWS

@@ -7,7 +7,7 @@
 static std::string s_ButtonNames[primeButtonMax + 1] = {};
 
 void
-prime_ButtonMapNames()
+primeButtonMapNames()
 {
 	s_ButtonNames[primeButtonLeft] = "Button Left";
 	s_ButtonNames[primeButtonRight] = "Button Right";
@@ -15,7 +15,7 @@ prime_ButtonMapNames()
 }
 
 const char*
-prime_ButtonGetName(u16 button)
+primeButtonGetName(u16 button)
 {
 	PASSERT_MSG(button >= 0, "Invalid button");
 	PASSERT_MSG(button < primeButtonMax, "Invalid button");

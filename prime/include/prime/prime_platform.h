@@ -4,7 +4,7 @@
 #include "prime_defines.h"
 
 PAPI u8
-prime_PlatformInit();
+primePlatformInit();
 
 PAPI void
-prime_PlatformShutdown();
+primePlatformShutdown();

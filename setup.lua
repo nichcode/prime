@@ -14,7 +14,8 @@ workspace "prime"
         "MultiProcessorCompile"
     }
 
-    characterset ("Unicode")
+    filter "toolset:msc"
+        characterset ("Unicode")
 
     filter {"system:windows", "configurations:*"}
         architecture "x64"
@@ -27,14 +28,15 @@ workspace "prime"
         runtime "Debug"
 
         defines {
-            "PCONFIG_DEBUG"
+            "PCONFIG_DEBUG",
+            "UNICODE",
+            "_UNICODE"
         }
 
     filter "configurations:Release"
         symbols "off"
         runtime "Release"
         optimize "full"
-        
 
     include "prime/prime.lua"
     include "test/test.lua"

@@ -6,10 +6,10 @@
 #include <fstream>
 
 char*
-prime_LoadFile(const char* filepath)
+primeLoadFile(const char* filepath)
 {
 	std::string result;
-	char* msg = prime_StringFormat("Could not read from file '%s'", filepath);
+	char* msg = primeStringFormat("Could not read from file '%s'", filepath);
 
 	std::ifstream file(filepath, std::ios::in | std::ios::binary); // ifstream closes itself due to RAII
 	if (file) {
@@ -30,6 +30,6 @@ prime_LoadFile(const char* filepath)
 		return nullptr;
 	}
 
-	prime_StringFree(msg);
-	return prime_StringDuplicate(result.c_str());
+	primeStringFree(msg);
+	return primeStringDuplicate(result.c_str());
 }

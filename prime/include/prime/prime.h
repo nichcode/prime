@@ -10,3 +10,5 @@
 #include "prime_platform.h"
 #include "prime_string.h"
 #include "prime_test.h"
+#include "prime_time.h"
+#include "prime_window.h"

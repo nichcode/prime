@@ -13,7 +13,7 @@ enum primeAction
 };
 
 PAPI void
-prime_ActionMapNames();
+primeActionMapNames();
 
 PAPI const char*
-prime_ActionGetName(u8 action);
+primeActionGetName(u8 action);

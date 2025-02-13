@@ -7,7 +7,7 @@
 static std::string s_ActionNames[primeActionMax + 1] = {};
 
 void
-prime_ActionMapNames()
+primeActionMapNames()
 {
     s_ActionNames[primeActionRelease] = "Release";
 	s_ActionNames[primeActionPress] = "Press";
@@ -15,7 +15,7 @@ prime_ActionMapNames()
 }
 
 const char*
-prime_ActionGetName(u8 action)
+primeActionGetName(u8 action)
 {
 	PASSERT_MSG(action >= 0, "Invalid action");
 	PASSERT_MSG(action < primeActionMax, "Invalid action");

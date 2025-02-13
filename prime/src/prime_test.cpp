@@ -6,13 +6,13 @@
 struct TestEntry
 {
     const char* name = nullptr;
-    prime_TestFunc func = nullptr;
+    primeTestFunc func = nullptr;
 };
 
 static std::vector<TestEntry> s_Tests;
 
 u8
-prime_AddTest(const char* name, prime_TestFunc func)
+primeAddTest(const char* name, primeTestFunc func)
 {
 	TestEntry test;
 	test.func = func;
@@ -22,7 +22,7 @@ prime_AddTest(const char* name, prime_TestFunc func)
 }
 
 void 
-prime_RunTests()
+primeRunTests()
 {
 	u32 passed = 0;
 	u32 failed = 0;

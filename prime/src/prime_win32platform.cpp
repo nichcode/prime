@@ -3,24 +3,49 @@
 #include "prime_utils.h"
 #include "prime/prime_memory.h"
 #include "prime/prime_string.h"
+#include "prime/prime_time.h"
 
 static u64 s_UsedMemory = 0;
 
 u8
-prime_PlatformInit()
+primePlatformInit()
 {
+	s_Instance = GetModuleHandle(nullptr);
+
+	WNDCLASSEX wc = {};
+	wc.cbClsExtra = 0;
+	wc.cbSize = sizeof(WNDCLASSEX);
+	wc.cbWndExtra = 0;
+	wc.hbrBackground = NULL;
+	wc.hCursor = LoadCursor(s_Instance, IDC_ARROW);
+	wc.hIcon = LoadIcon(s_Instance, IDI_APPLICATION);
+	wc.hIconSm = LoadIcon(s_Instance, IDI_APPLICATION);
+	wc.hInstance = s_Instance;
+	wc.lpfnWndProc = primeWin32Proc;
+	wc.lpszClassName = s_ClassName;
+	wc.lpszMenuName = NULL;
+	wc.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+
+	ATOM success = RegisterClassEx(&wc);
+	PASSERT_MSG(success, "Window Registration Failed");
+
+	QueryPerformanceFrequency((LARGE_INTEGER*)&s_ClockFrequency);
+	QueryPerformanceCounter((LARGE_INTEGER*)&s_StartTime);
+
     PINFO("Prime Win32Platform Init");
     return 1;
 }
 
 void
-prime_PlatformShutdown()
+primePlatformShutdown()
 {
+	UnregisterClass(s_ClassName, s_Instance);
+	s_UsedMemory = 0;
     PINFO("Prime Win32Platform Shutdown");
 }
 
 void*
-prime_MemoryAlloc(u64 size)
+primeMemoryAlloc(u64 size)
 {
     PASSERT_MSG(size, "size is invalid");
     s_UsedMemory += size;
@@ -28,7 +53,7 @@ prime_MemoryAlloc(u64 size)
 }
 
 void
-prime_MemoryFree(void* memory, u64 size)
+primeMemoryFree(void* memory, u64 size)
 {
     PASSERT_MSG(memory, "memory is null");
     s_UsedMemory -= size;
@@ -37,21 +62,21 @@ prime_MemoryFree(void* memory, u64 size)
 }
 
 void
-prime_MemorySet(void* memory, i32 value, u64 size)
+primeMemorySet(void* memory, i32 value, u64 size)
 {
     PASSERT_MSG(memory, "memory is null");
     memset(memory, value, size);
 }
 
 void
-prime_MemoryZero(void* memory, u64 size)
+primeMemoryZero(void* memory, u64 size)
 {
     PASSERT_MSG(memory, "memory is null");
     memset(memory, 0, size);
 }
 
 void
-prime_MemoryCopy(void* dest_memory, void* src_memory, u64 size)
+primeMemoryCopy(void* dest_memory, void* src_memory, u64 size)
 {
     PASSERT_MSG(dest_memory, "dest_memory is null");
     PASSERT_MSG(src_memory, "src_memory is null");
@@ -59,19 +84,19 @@ prime_MemoryCopy(void* dest_memory, void* src_memory, u64 size)
 }
 
 i32
-prime_MultibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)
+primeMultibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)
 {
     return MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, str_len);
 }
 
 i32
-prime_WcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str)
+primeWcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str)
 {
     return WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, wstr_len, 0, 0);
 }
 
 void
-prime_ConsoleWrite(primeLogLevel level, const char* out_msg)
+primeConsoleWrite(primeLogLevel level, const char* out_msg)
 {
 	b8 error = level > primeLogLevelWarn;
 	HANDLE console = NULL;
@@ -84,10 +109,24 @@ prime_ConsoleWrite(primeLogLevel level, const char* out_msg)
 		console = GetStdHandle(STD_OUTPUT_HANDLE);
 	}
 	SetConsoleTextAttribute(console, levels[level]);
-	wchar_t* wstr = prime_StringToWstring(out_msg);
+	wchar_t* wstr = primeStringToWstring(out_msg);
 	DWORD number_written = 0;
 
 	WriteConsoleW(console, wstr, (DWORD)wcslen(wstr), &number_written, 0);
-	prime_WstringFree(wstr);
+	primeWstringFree(wstr);
 	SetConsoleTextAttribute(console, 15);
+}
+
+f32
+primeTimeGet()
+{
+	u64 time;
+	QueryPerformanceCounter((LARGE_INTEGER*)&time);
+	return (f32)(time - s_StartTime) / s_ClockFrequency;
+}
+
+void
+primeTimeSleep(f64 milli_seconds)
+{
+	Sleep((DWORD)milli_seconds);
 }

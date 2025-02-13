@@ -13,52 +13,52 @@ enum primeLogLevel
 };
 
 PAPI void
-prime_Log(primeLogLevel level, const char* message, ...);
+primeLog(primeLogLevel level, const char* message, ...);
 
 PINLINE void
-prime_LogTrace(const char* message, ...)
+primeLogTrace(const char* message, ...)
 {
-    prime_Log(primeLogLevelTrace, message);
+    primeLog(primeLogLevelTrace, message);
 }
 
 PINLINE void
-prime_LogInfo(const char* message, ...)
+primeLogInfo(const char* message, ...)
 {
-    prime_Log(primeLogLevelInfo, message);
+    primeLog(primeLogLevelInfo, message);
 }
 
 PINLINE void
-prime_LogWarn(const char* message, ...)
+primeLogWarn(const char* message, ...)
 {
-    prime_Log(primeLogLevelWarn, message);
+    primeLog(primeLogLevelWarn, message);
 }
 
 PINLINE void
-prime_LogError(const char* message, ...)
+primeLogError(const char* message, ...)
 {
-    prime_Log(primeLogLevelError, message);
+    primeLog(primeLogLevelError, message);
 }
 
 PINLINE void
-prime_LogFatal(const char* message, ...)
+primeLogFatal(const char* message, ...)
 {
-    prime_Log(primeLogLevelFatal, message);
+    primeLog(primeLogLevelFatal, message);
 }
 
 PAPI void
-prime_Assert(bool expr, const char* file, u32 line);
+primeAssert(bool expr, const char* file, u32 line);
 
 PAPI void
-prime_AssertMsg(bool expr, const char* file, u32 line, const char* message);
+primeAssertMsg(bool expr, const char* file, u32 line, const char* message);
 
 #ifdef PCONFIG_DEBUG
-#define PTRACE(message, ...)           prime_LogTrace(message, __VA_ARGS__)
-#define PINFO(message, ...)            prime_Log(primeLogLevelInfo, message)
-#define PWARN(message, ...)            prime_LogWarn(message,  __VA_ARGS__)
-#define PERROR(message, ...)           prime_LogError(message, __VA_ARGS__)
-#define PFATAL(message, ...)           prime_LogFatal(message, __VA_ARGS__)
-#define PASSERT(expr)                  prime_Assert(expr, PFILE, PLINE)
-#define PASSERT_MSG(expr, message)     prime_AssertMsg(expr, PFILE, PLINE, message)
+#define PTRACE(message, ...)           primeLogTrace(message, __VA_ARGS__)
+#define PINFO(message, ...)            primeLog(primeLogLevelInfo, message)
+#define PWARN(message, ...)            primeLogWarn(message,  __VA_ARGS__)
+#define PERROR(message, ...)           primeLogError(message, __VA_ARGS__)
+#define PFATAL(message, ...)           primeLogFatal(message, __VA_ARGS__)
+#define PASSERT(expr)                  primeAssert(expr, PFILE, PLINE)
+#define PASSERT_MSG(expr, message)     primeAssertMsg(expr, PFILE, PLINE, message)
 #else
 #define PTRACE(message, ...)         
 #define PDEBUG(message, ...)               

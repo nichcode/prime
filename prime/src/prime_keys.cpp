@@ -7,7 +7,7 @@
 static std::string s_KeyNames[primeKeyMax + 1] = {};
 
 void
-prime_KeyMapNames()
+primeKeyMapNames()
 {
     s_KeyNames[primeKeyA] = "Key A";
 	s_KeyNames[primeKeyB] = "Key B";
@@ -123,7 +123,7 @@ prime_KeyMapNames()
 }
 
 const char*
-prime_KeyGetName(u16 key)
+primeKeyGetName(u16 key)
 {
 	PASSERT_MSG(key >= 0, "Invalid key");
 	PASSERT_MSG(key < primeKeyMax, "Invalid key");

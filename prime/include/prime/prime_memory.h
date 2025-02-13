@@ -4,16 +4,16 @@
 #include "prime_defines.h"
 
 PAPI void*
-prime_MemoryAlloc(u64 size);
+primeMemoryAlloc(u64 size);
 
 PAPI void
-prime_MemoryFree(void* memory, u64 size);
+primeMemoryFree(void* memory, u64 size);
 
 PAPI void
-prime_MemorySet(void* memory, i32 value, u64 size);
+primeMemorySet(void* memory, i32 value, u64 size);
 
 PAPI void
-prime_MemoryZero(void* memory, u64 size);
+primeMemoryZero(void* memory, u64 size);
 
 PAPI void
-prime_MemoryCopy(void* dest_memory, void* src_memory, u64 size);
+primeMemoryCopy(void* dest_memory, void* src_memory, u64 size);

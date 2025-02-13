@@ -12,21 +12,38 @@
 #include <windows.h>
 #include <windowsx.h>
 
+static HINSTANCE s_Instance;
+static WINDOWPLACEMENT s_WndPlacement;
+
+LRESULT CALLBACK
+primeWin32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
+
 #endif // PPLATFORM_WINDOWS
+
+static u64 s_ClockFrequency = 0;
+static u64 s_StartTime = 0;
+
+#ifdef UNICODE
+static const wchar_t* s_ClassName = L"PrimeWindowClass";
+static const wchar_t* s_PropName = L"PrimeWindowHandle";
+#else
+static const char* s_ClassName = "PrimeWindowClass";
+static const char* s_PropName = "PrimeWindowHandle";
+#endif // UNICODE
 
 static primeAllocator* s_Allocator = nullptr;
 
 i32
-prime_MultibyteToWchar(const char* str, u32 str_len, wchar_t* wstr);
+primeMultibyteToWchar(const char* str, u32 str_len, wchar_t* wstr);
 
 i32
-prime_WcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str);
+primeWcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str);
 
 char*
-prime_StringFormatSys(const char* fmt, ...);
+primeStringFormatSys(const char* fmt, ...);
 
 void
-prime_StringFreeSys(char* string);
+primeStringFreeSys(char* string);
 
 void
-prime_ConsoleWrite(primeLogLevel level, const char* out_msg);
+primeConsoleWrite(primeLogLevel level, const char* out_msg);

@@ -4,4 +4,4 @@
 #include "prime_defines.h"
 
 PAPI char*
-prime_LoadFile(const char* filepath);
+primeLoadFile(const char* filepath);

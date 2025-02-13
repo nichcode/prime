@@ -14,7 +14,7 @@ enum primeButton
 
 
 PAPI void
-prime_ButtonMapNames();
+primeButtonMapNames();
 
 PAPI const char*
-prime_ButtonGetName(u16 button);
+primeButtonGetName(u16 button);
