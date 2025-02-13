@@ -1,0 +1,23 @@
+{
+    "configurations": [
+        {
+            "name": "win32",
+            "includePath": [
+                "${workspaceFolder}/prime/include"
+            ],
+            "defines": [
+                "PBUILD_DLL",
+                "PEXPORT_DLL",
+                "PCONFIG_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "windowsSdkVersion": "10.0.18362.0",
+            "compilerPath": "C:/msys64/ucrt64\bin/g++.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
+}
