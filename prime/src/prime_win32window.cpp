@@ -11,6 +11,7 @@
 struct primeWindow
 {
 	HWND handle = 0;
+	primeContext* context = nullptr;
 	u32 width = 0;
 	u32 height = 0;
 	char* title = nullptr;
@@ -680,6 +681,19 @@ primeWindowGetWin32HInstance(primeWindow* window)
 	return s_Instance;
 }
 
+const b8
+primeWindowHasContext(primeWindow* window)
+{
+	PASSERT_MSG(window, "window is null");
+	return window->context;
+}
+
+void
+primeWindowSetContext(primeWindow* window, primeContext* context)
+{
+	window->context = context;
+}
+
 LRESULT CALLBACK
 primeWin32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 {
@@ -923,14 +937,6 @@ primeWin32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 
 	case WM_PAINT:
     {
-		PAINTSTRUCT ps;
-		HDC hdc = BeginPaint(hwnd, &ps);
-		HBRUSH brush = CreateSolidBrush(0);
-		FillRect(hdc, &ps.rcPaint, brush);
-		EndPaint(hwnd, &ps);
-		DeleteObject(brush);
-
-		return 0;
         break;
     }
 

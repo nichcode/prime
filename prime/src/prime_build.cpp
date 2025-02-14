@@ -8,6 +8,10 @@
 #include "prime_test.cpp"
 #include "prime_string.cpp"
 #include "prime_log.cpp"
+#include "prime_device.cpp"
+#include "prime_context.cpp"
+
+#include "prime_glcontext.cpp"
 
 #ifdef PPLATFORM_WINDOWS
 #include "prime_win32platform.cpp"

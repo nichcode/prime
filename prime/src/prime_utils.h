@@ -47,3 +47,12 @@ primeStringFreeSys(char* string);
 
 void
 primeConsoleWrite(primeLogLevel level, const char* out_msg);
+
+void
+primeWindowSetContext(primeWindow* window, primeContext* context);
+
+void
+primeDeviceAppendContext(primeDevice* device, primeContext* context);
+
+void
+primeDevicePopContext(primeDevice* device, primeContext* context);

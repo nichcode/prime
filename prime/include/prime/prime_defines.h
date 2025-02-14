@@ -124,3 +124,5 @@ static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 struct primeAllocator;
 struct primeWindow;
+struct primeDevice;
+struct primeContext;

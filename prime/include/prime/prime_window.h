@@ -111,6 +111,9 @@ primeWindowIsHidden(primeWindow* window);
 PAPI const b8
 primeWindowIsMaximized(primeWindow* window);
 
+PAPI const b8
+primeWindowHasContext(primeWindow* window);
+
 
 
 
