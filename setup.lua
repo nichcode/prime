@@ -17,6 +17,10 @@ workspace "prime"
     filter "toolset:msc"
         characterset ("Unicode")
 
+    libdirs {
+        "%{wks.location}/lib"
+    }
+
     filter {"system:windows", "configurations:*"}
         architecture "x64"
         systemversion "latest"
@@ -40,3 +44,7 @@ workspace "prime"
 
     include "prime/prime.lua"
     include "test/test.lua"
+
+    group "vendor"
+        include "vendor/glad/glad.lua"
+    group ""

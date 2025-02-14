@@ -3,7 +3,8 @@
         {
             "name": "win32",
             "includePath": [
-                "${workspaceFolder}/prime/include"
+                "${workspaceFolder}/prime/include",
+                "${workspaceFolder}/vendor/glad/include"
             ],
             "defines": [
                 "PBUILD_DLL",

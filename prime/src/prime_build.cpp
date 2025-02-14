@@ -12,4 +12,5 @@
 #ifdef PPLATFORM_WINDOWS
 #include "prime_win32platform.cpp"
 #include "prime_win32window.cpp"
+#include "prime_wglcontext.cpp"
 #endif // PPLATFORM_WINDOWS

@@ -20,5 +20,12 @@ project "prime"
 
     includedirs {   
         "include",
-        "src"
+        "src",
+        "%{wks.location}/vendor/glad/include"
+    }
+
+    links {
+        "Gdi32",
+        "glad",
+        "OpenGL32"
     }

@@ -923,12 +923,15 @@ primeWin32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 
 	case WM_PAINT:
     {
-        break;
-    }
+		PAINTSTRUCT ps;
+		HDC hdc = BeginPaint(hwnd, &ps);
+		HBRUSH brush = CreateSolidBrush(0);
+		FillRect(hdc, &ps.rcPaint, brush);
+		EndPaint(hwnd, &ps);
+		DeleteObject(brush);
 
-    case WM_ERASEBKGND:
-    {
-        return TRUE;
+		return 0;
+        break;
     }
 
 	}

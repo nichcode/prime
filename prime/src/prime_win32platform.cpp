@@ -4,6 +4,7 @@
 #include "prime/prime_memory.h"
 #include "prime/prime_string.h"
 #include "prime/prime_time.h"
+#include "prime_wglcontext.h"
 
 static u64 s_UsedMemory = 0;
 
@@ -32,6 +33,8 @@ primePlatformInit()
 	QueryPerformanceFrequency((LARGE_INTEGER*)&s_ClockFrequency);
 	QueryPerformanceCounter((LARGE_INTEGER*)&s_StartTime);
 
+    primeWGLContextCreateDummy();
+	
     PINFO("Prime Win32Platform Init");
     return 1;
 }
