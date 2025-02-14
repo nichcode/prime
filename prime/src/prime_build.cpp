@@ -10,8 +10,10 @@
 #include "prime_log.cpp"
 #include "prime_device.cpp"
 #include "prime_context.cpp"
+#include "prime_layout.cpp"
 
 #include "prime_glcontext.cpp"
+#include "prime_gllayout.cpp"
 
 #ifdef PPLATFORM_WINDOWS
 #include "prime_win32platform.cpp"

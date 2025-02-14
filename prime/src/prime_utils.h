@@ -56,3 +56,9 @@ primeDeviceAppendContext(primeDevice* device, primeContext* context);
 
 void
 primeDevicePopContext(primeDevice* device, primeContext* context);
+
+void
+primeDeviceAppendLayout(primeDevice* device, primeLayout* layout);
+
+void
+primeDevicePopLayout(primeDevice* device, primeLayout* layout);

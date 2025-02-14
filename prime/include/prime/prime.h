@@ -8,6 +8,7 @@
 #include "prime_device.h"
 #include "prime_filesystem.h"
 #include "prime_keys.h"
+#include "prime_layout.h"
 #include "prime_log.h"
 #include "prime_memory.h"
 #include "prime_platform.h"
