@@ -14,12 +14,12 @@ b8
 contextTestGL();
 
 b8
-buffersTestGL();
+layoutTestGL();
 
 #include "string_test.cpp"
 #include "window_test.cpp"
 #include "context_test.cpp"
-#include "buffers_test.cpp"
+#include "layout_test.cpp"
 
 #include <iostream>
 
@@ -33,7 +33,7 @@ main(int argc, char** argv)
         //primeAddTest("windowTest", windowTest);
         //primeAddTest("multiWindowTest", multiWindowTest);
         //primeAddTest("contextTestGL", contextTestGL);
-        primeAddTest("buffersTestGL", buffersTestGL);
+        primeAddTest("layoutTestGL", layoutTestGL);
 
         primeRunTests();
         primePlatformShutdown();

@@ -7,6 +7,8 @@
 struct glLayout
 {
     u32 vertexarray = 0;
+	u32 vertexbuffer = 0;
+	u32 indexbuffer = 0;
 };
 
 static inline GLenum
@@ -35,13 +37,32 @@ typeToGLType(primeType type)
 }
 
 void*
-primeGLLayoutCreate()
+primeGLLayoutCreate(primeVertexbufferDesc vbo, primeIndexbufferDesc ibo)
 {
     glLayout* layout = nullptr;
 	layout = (glLayout*)primeMemoryAlloc(sizeof(glLayout));
 	PASSERT_MSG(layout, "glLayout creation failed");
 
     glGenVertexArrays(1, &layout->vertexarray);
+	glBindVertexArray(layout->vertexarray);
+
+    glGenBuffers(1, &layout->vertexbuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, layout->vertexbuffer);
+	if (vbo.type == primeBufferTypeDynamic) {
+		glBufferData(GL_ARRAY_BUFFER, vbo.size, vbo.data, GL_DYNAMIC_DRAW);
+	}
+	else {
+		glBufferData(GL_ARRAY_BUFFER, vbo.size, vbo.data, GL_STATIC_DRAW);
+	}
+
+	glGenBuffers(1, &layout->indexbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, layout->indexbuffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, ibo.count * sizeof(u32), ibo.indices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
 	return layout;
 }
 
@@ -50,7 +71,11 @@ primeGLLayoutDestroy(void* layout)
 {
     glLayout* gl_layout = (glLayout*)layout;
     glDeleteVertexArrays(1, &gl_layout->vertexarray);
+	glDeleteBuffers(1, &gl_layout->vertexbuffer);
+	glDeleteBuffers(1, &gl_layout->indexbuffer);
     gl_layout->vertexarray = 0;
+    gl_layout->vertexbuffer = 0;
+    gl_layout->indexbuffer = 0;
     primeMemoryFree(layout, sizeof(glLayout));
 }
 
@@ -59,13 +84,23 @@ primeGLLayoutBind(void* layout)
 {
     glLayout* gl_layout = (glLayout*)layout;
     glBindVertexArray(gl_layout->vertexarray);
+	glBindBuffer(GL_ARRAY_BUFFER, gl_layout->vertexbuffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, gl_layout->indexbuffer);
 }
 
 void
 primeGLLayoutUnbind(void* layout)
 {
     glLayout* gl_layout = (glLayout*)layout;
-    glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+}
+
+void
+primeGLLayoutSetData(void* layout, const void* data, u32 size)
+{
+	glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
 }
 
 void

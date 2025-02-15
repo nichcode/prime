@@ -17,8 +17,27 @@ enum primeType
 	primeTypeBool
 };
 
+enum primeBufferType
+{
+	primeBufferTypeStatic,
+	primeBufferTypeDynamic
+};
+
+struct primeVertexbufferDesc
+{
+	void* data = nullptr;
+	u32 size = 0;
+	primeBufferType type = primeBufferTypeDynamic;
+};
+
+struct primeIndexbufferDesc
+{
+	u32* indices = nullptr;
+	u32 count = 0;
+};
+
 PAPI primeLayout*
-primeLayoutCreate(primeDevice* device);
+primeLayoutCreate(primeDevice* device, primeVertexbufferDesc vbo, primeIndexbufferDesc ibo);
 
 PAPI void
 primeLayoutDestroy(primeLayout* layout);
@@ -33,4 +52,10 @@ PAPI void
 primeLayoutUnbind(primeLayout* layout);
 
 PAPI void
-primeLayoutSubmit(primeLayout* layout, primeVertexbuffer* buffer);
+primeLayoutSetData(primeLayout* layout, const void* data, u32 size);
+
+PAPI u32
+primeLayoutGetCount(primeLayout* layout);
+
+PAPI void
+primeLayoutSubmit(primeLayout* layout);

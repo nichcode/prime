@@ -21,11 +21,13 @@ struct primeLayout
 	primeDevice* device = nullptr;
     u32 id = 0;
     void* handle = nullptr;
-	u32 stride = 0;
+	u32 stride = 0, count = 0;
+	primeBufferType vboType = primeBufferTypeDynamic;
 
     void(*destroyFunc)(void* handle) = nullptr;
 	void(*bindFunc)(void* handle) = nullptr;
 	void(*unbindFunc)(void* handle) = nullptr;
+	void(*setFunc)(void* handle, const void* data, u32 size) = nullptr;
 	void(*pushFunc)(void* handle, u32 index, u32 count, primeType type, u64 offset, u32 stride) = nullptr;
 };
 
@@ -127,7 +129,7 @@ primeTypeGetCount(primeType type)
 }
 
 primeLayout*
-primeLayoutCreate(primeDevice* device)
+primeLayoutCreate(primeDevice* device, primeVertexbufferDesc vbo, primeIndexbufferDesc ibo)
 {
     primeLayout* layout = nullptr;
 	layout = (primeLayout*)primeMemoryAlloc(sizeof(primeLayout));
@@ -135,6 +137,8 @@ primeLayoutCreate(primeDevice* device)
 	layout->device = device;
 	layout->id = s_LayoutData.index;   
 	s_LayoutData.index++;
+	layout->vboType = vbo.type;
+	layout->count = ibo.count;
 
     switch (primeDeviceGetType(device)) 
     {
@@ -146,12 +150,13 @@ primeLayoutCreate(primeDevice* device)
 #endif // PPLATFORM_WINDOWS
 
 	case primeDeviceTypeGL: {
-        layout->handle = primeGLLayoutCreate();
+        layout->handle = primeGLLayoutCreate(vbo, ibo);
 
         layout->destroyFunc = primeGLLayoutDestroy;
         layout->bindFunc = primeGLLayoutBind;
         layout->unbindFunc = primeGLLayoutUnbind;
         layout->pushFunc = primeGLLayoutPush; 
+		layout->setFunc = primeGLLayoutSetData;
     }
 
     }
@@ -173,7 +178,7 @@ primeLayoutDestroy(primeLayout* layout)
     layout->bindFunc = nullptr;
     layout->unbindFunc = nullptr;
     layout->pushFunc = nullptr;
-
+	layout->setFunc = nullptr;
 
 	primeMemoryFree(layout, sizeof(primeLayout));
 	s_LayoutData.index--;
@@ -204,10 +209,24 @@ primeLayoutUnbind(primeLayout* layout)
 }
 
 void
-primeLayoutSubmit(primeLayout* layout, primeVertexbuffer* buffer)
+primeLayoutSetData(primeLayout* layout, const void* data, u32 size)
+{
+	PASSERT_MSG(layout, "layout is null");
+	PASSERT_MSG(layout->vboType == primeBufferTypeDynamic, "Cannot set data to a static vbo");
+    layout->setFunc(layout->handle, data, size);
+}
+
+u32
+primeLayoutGetCount(primeLayout* layout)
+{
+	PASSERT_MSG(layout, "layout is null");
+	return layout->count;
+}
+
+void
+primeLayoutSubmit(primeLayout* layout)
 {
     PASSERT_MSG(layout, "layout is null");
-    PASSERT_MSG(buffer, "vertexbuffer is null");
 
 	layout->stride = 0;
 	for (auto& element : s_LayoutData.elements[layout->id])
