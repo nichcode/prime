@@ -127,3 +127,4 @@ struct primeWindow;
 struct primeDevice;
 struct primeContext;
 struct primeLayout;
+struct primeConstantbuffer;

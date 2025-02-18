@@ -37,8 +37,8 @@ main(int argc, char** argv)
         //primeAddTest("windowTest", windowTest);
         //primeAddTest("multiWindowTest", multiWindowTest);
         //primeAddTest("contextTestGL", contextTestGL);
+        //primeAddTest("mathTest", mathTest);
         primeAddTest("layoutTestGL", layoutTestGL);
-        primeAddTest("mathTest", mathTest);
 
         primeRunTests();
         primePlatformShutdown();

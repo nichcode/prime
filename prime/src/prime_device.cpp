@@ -3,6 +3,7 @@
 #include "prime/prime_memory.h"
 #include "prime/prime_context.h"
 #include "prime/prime_layout.h"
+#include "prime/prime_constantbuffer.h"
 #include "prime_utils.h"
 
 #include <map>
@@ -20,6 +21,7 @@ struct DeviceData
     u32 index = 1;
     std::map<u32, std::vector<primeContext*>> contexts;
     std::map<u32, std::vector<primeLayout*>> layouts;
+    std::map<u32, std::vector<primeConstantbuffer*>> constantbuffers;
 };
 
 static DeviceData s_DeviceData;
@@ -51,8 +53,15 @@ primeDeviceDestroy(primeDevice* device)
 		primeLayoutDestroy(layout);
 	}
 
+	// constantbuffers
+	auto& constantbuffers = s_DeviceData.constantbuffers[device->id];
+	for (primeConstantbuffer* buffer : constantbuffers) {
+		primeConstantbufferDestroy(buffer);
+	}
+
 	s_DeviceData.contexts[device->id].clear();
 	s_DeviceData.layouts[device->id].clear();
+	s_DeviceData.constantbuffers[device->id].clear();
 	
 	device->id = 0;
 	s_DeviceData.index--;
@@ -99,5 +108,23 @@ primeDevicePopLayout(primeDevice* device, primeLayout* layout)
 	if (it != layouts.end())
 	{
 		layouts.erase(it);
+	}
+}
+
+void
+primeDeviceAppendConstantbuffer(primeDevice* device, primeConstantbuffer* buffer)
+{
+	s_DeviceData.constantbuffers[device->id].push_back(buffer);
+}
+
+void
+primeDevicePopConstantbuffer(primeDevice* device, primeConstantbuffer* buffer)
+{
+	auto& constantbuffers = s_DeviceData.constantbuffers[device->id];
+
+	auto it = std::find(constantbuffers.begin(), constantbuffers.end(), buffer);
+	if (it != constantbuffers.end())
+	{
+		constantbuffers.erase(it);
 	}
 }

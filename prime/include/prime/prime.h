@@ -4,6 +4,7 @@
 #include "prime_actions.h"
 #include "prime_buttons.h"
 #include "prime_color.h"
+#include "prime_constantbuffer.h"
 #include "prime_context.h"
 #include "prime_device.h"
 #include "prime_filesystem.h"

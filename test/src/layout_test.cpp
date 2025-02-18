@@ -39,6 +39,13 @@ layoutTestGL()
     layout_desc.vbo = vbo_desc;
     layout_desc.shader = shader;
 
+    primeConstantbuffer* uniform_block = nullptr;
+    uniform_block = primeConstantbufferCreate(device, sizeof(primeMat4), 0);
+
+    primeConstantbufferBind(uniform_block);
+    primeMat4 matrix = primeMat4Identity();
+    primeConstantbufferSetData(uniform_block, &matrix, sizeof(primeMat4));
+
     primeLayout* layout = primeLayoutCreate(device, &layout_desc);
     primeLayoutBind(layout);
     primeLayoutAdd(layout, primeTypeFloat3);

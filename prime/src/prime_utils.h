@@ -62,3 +62,9 @@ primeDeviceAppendLayout(primeDevice* device, primeLayout* layout);
 
 void
 primeDevicePopLayout(primeDevice* device, primeLayout* layout);
+
+void
+primeDeviceAppendConstantbuffer(primeDevice* device, primeConstantbuffer* buffer);
+
+void
+primeDevicePopConstantbuffer(primeDevice* device, primeConstantbuffer* buffer);
