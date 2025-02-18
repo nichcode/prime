@@ -28,7 +28,18 @@ layoutTestGL()
     ibo_desc.count = 3;
     ibo_desc.indices = indices;
 
-    primeLayout* layout = primeLayoutCreate(device, vbo_desc, ibo_desc);
+    primeShaderDesc shader;
+    shader.load = true;
+    shader.type = primeShaderTypeGLSL;
+    shader.vertex = "shaders/vertex.glsl";
+    shader.pixel = "shaders/pixel.glsl";
+
+    primeLayoutDesc layout_desc;
+    layout_desc.ibo = ibo_desc;
+    layout_desc.vbo = vbo_desc;
+    layout_desc.shader = shader;
+
+    primeLayout* layout = primeLayoutCreate(device, &layout_desc);
     primeLayoutBind(layout);
     primeLayoutAdd(layout, primeTypeFloat3);
     primeLayoutSubmit(layout);

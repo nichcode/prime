@@ -11,7 +11,7 @@ stringTest()
 	char* bool_string = primeB8ToString(false);
 	char* format_string = primeStringFormat("%s - string, %.2f - float, %i - int", "name", 2.0f, 2);
 	char* insert_string = primeStringInsertAlloc(c_string, 6, "i string");
-	char* loaded_str = primeLoadFile("src/main.cpp");
+	char* loaded_str = primeFilesystemLoad("src/main.cpp");
 
 	primeLogInfo(c_string);
 	primeLogInfo(f32_string);

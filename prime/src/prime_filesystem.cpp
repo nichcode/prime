@@ -6,7 +6,7 @@
 #include <fstream>
 
 char*
-primeLoadFile(const char* filepath)
+primeFilesystemLoad(const char* filepath)
 {
 	std::string result;
 	char* msg = primeStringFormat("Could not read from file '%s'", filepath);

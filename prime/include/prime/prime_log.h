@@ -52,11 +52,11 @@ PAPI void
 primeAssertMsg(bool expr, const char* file, u32 line, const char* message);
 
 #ifdef PCONFIG_DEBUG
-#define PTRACE(message, ...)           primeLogTrace(message, __VA_ARGS__)
-#define PINFO(message, ...)            primeLog(primeLogLevelInfo, message)
-#define PWARN(message, ...)            primeLogWarn(message,  __VA_ARGS__)
-#define PERROR(message, ...)           primeLogError(message, __VA_ARGS__)
-#define PFATAL(message, ...)           primeLogFatal(message, __VA_ARGS__)
+#define PTRACE(message, ...)           primeLogTrace(message)
+#define PINFO(message, ...)            primeLogInfo(message)
+#define PWARN(message, ...)            primeLogWarn(message)
+#define PERROR(message, ...)           primeLogError(message)
+#define PFATAL(message, ...)           primeLogFatal(message)
 #define PASSERT(expr)                  primeAssert(expr, PFILE, PLINE)
 #define PASSERT_MSG(expr, message)     primeAssertMsg(expr, PFILE, PLINE, message)
 #else

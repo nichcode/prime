@@ -29,6 +29,13 @@ struct primeLayout
 	void(*unbindFunc)(void* handle) = nullptr;
 	void(*setFunc)(void* handle, const void* data, u32 size) = nullptr;
 	void(*pushFunc)(void* handle, u32 index, u32 count, primeType type, u64 offset, u32 stride) = nullptr;
+	void(*setIntFunc)(void* handle, const char* name, i32 data);
+	void(*setIntArrayFunc)(void* handle, const char* name, i32* data, u32 count);
+	void(*setFloatFunc)(void* handle, const char* name, f32 data);
+	void(*setFloat2Func)(void* handle, const char* name, primeVec2 data);
+	void(*setFloat3Func)(void* handle, const char* name, primeVec3 data);
+	void(*setFloat4Func)(void* handle, const char* name, primeVec4 data);
+	void(*setMat4Func)(void* handle, const char* name, primeMat4 data);
 };
 
 struct LayoutData
@@ -129,7 +136,7 @@ primeTypeGetCount(primeType type)
 }
 
 primeLayout*
-primeLayoutCreate(primeDevice* device, primeVertexbufferDesc vbo, primeIndexbufferDesc ibo)
+primeLayoutCreate(primeDevice* device, const primeLayoutDesc* desc)
 {
     primeLayout* layout = nullptr;
 	layout = (primeLayout*)primeMemoryAlloc(sizeof(primeLayout));
@@ -137,8 +144,13 @@ primeLayoutCreate(primeDevice* device, primeVertexbufferDesc vbo, primeIndexbuff
 	layout->device = device;
 	layout->id = s_LayoutData.index;   
 	s_LayoutData.index++;
-	layout->vboType = vbo.type;
-	layout->count = ibo.count;
+	layout->vboType = desc->vbo.type;
+	layout->count = desc->ibo.count;
+
+    b8 shader_empty = true;
+	if (desc->shader.vertex && desc->shader.pixel) {
+		shader_empty = false;
+	}
 
     switch (primeDeviceGetType(device)) 
     {
@@ -150,13 +162,20 @@ primeLayoutCreate(primeDevice* device, primeVertexbufferDesc vbo, primeIndexbuff
 #endif // PPLATFORM_WINDOWS
 
 	case primeDeviceTypeGL: {
-        layout->handle = primeGLLayoutCreate(vbo, ibo);
+        layout->handle = primeGLLayoutCreate(desc, shader_empty);
 
         layout->destroyFunc = primeGLLayoutDestroy;
         layout->bindFunc = primeGLLayoutBind;
         layout->unbindFunc = primeGLLayoutUnbind;
         layout->pushFunc = primeGLLayoutPush; 
 		layout->setFunc = primeGLLayoutSetData;
+		layout->setIntFunc = primeGLLayoutSetInt;
+		layout->setIntArrayFunc = primeGLLayoutSetIntArray;
+		layout->setFloatFunc = primeGLLayoutSetFloat;
+		layout->setFloat2Func = primeGLLayoutSetFloat2;
+		layout->setFloat3Func = primeGLLayoutSetFloat3;
+		layout->setFloat4Func = primeGLLayoutSetFloat4;
+		layout->setMat4Func = primeGLLayoutSetMat4;
     }
 
     }
@@ -247,4 +266,53 @@ primeLayoutSubmit(primeLayout* layout)
 		index++;
 	}
 
+}
+
+void
+primeLayoutSetInt(primeLayout* layout, const char* name, i32 data)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setIntFunc(layout->handle, name, data);
+}
+
+void
+primeLayoutSetIntArray(primeLayout* layout, const char* name, i32* data, u32 count)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setIntArrayFunc(layout->handle, name, data, count);
+}
+
+void
+primeLayoutSetFloat(primeLayout* layout, const char* name, f32 data)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setFloatFunc(layout->handle, name, data);
+}
+
+void
+primeLayoutSetFloat2(primeLayout* layout, const char* name, primeVec2 data)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setFloat2Func(layout->handle, name, data);
+}
+
+void
+primeLayoutSetFloat3(primeLayout* layout, const char* name, primeVec3 data)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setFloat3Func(layout->handle, name, data);
+}
+
+void
+primeLayoutSetFloat4(primeLayout* layout, const char* name, primeVec4 data)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setFloat4Func(layout->handle, name, data);
+}
+
+void
+primeLayoutSetMat4(primeLayout* layout, const char* name, primeMat4 data)
+{
+	PASSERT_MSG(layout, "layout is null");
+	layout->setMat4Func(layout->handle, name, data);
 }

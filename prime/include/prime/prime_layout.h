@@ -1,6 +1,7 @@
 #pragma once
 
 #include "prime_defines.h"
+#include "prime_maths.h"
 
 enum primeType
 {
@@ -23,6 +24,11 @@ enum primeBufferType
 	primeBufferTypeDynamic
 };
 
+enum primeShaderType
+{
+	primeShaderTypeGLSL
+};
+
 struct primeVertexbufferDesc
 {
 	void* data = nullptr;
@@ -36,8 +42,23 @@ struct primeIndexbufferDesc
 	u32 count = 0;
 };
 
+struct primeShaderDesc
+{
+	const char* vertex = nullptr;
+	const char* pixel = nullptr;
+	b8 load = true;
+	primeShaderType type = primeShaderTypeGLSL;
+};
+
+struct primeLayoutDesc
+{
+	primeVertexbufferDesc vbo;
+	primeIndexbufferDesc ibo;
+	primeShaderDesc shader;
+};
+
 PAPI primeLayout*
-primeLayoutCreate(primeDevice* device, primeVertexbufferDesc vbo, primeIndexbufferDesc ibo);
+primeLayoutCreate(primeDevice* device, const primeLayoutDesc* desc);
 
 PAPI void
 primeLayoutDestroy(primeLayout* layout);
@@ -59,3 +80,24 @@ primeLayoutGetCount(primeLayout* layout);
 
 PAPI void
 primeLayoutSubmit(primeLayout* layout);
+
+PAPI void
+primeLayoutSetInt(primeLayout* layout, const char* name, i32 data);
+
+PAPI void
+primeLayoutSetIntArray(primeLayout* layout, const char* name, i32* data, u32 count);
+
+PAPI void
+primeLayoutSetFloat(primeLayout* layout, const char* name, f32 data);
+
+PAPI void
+primeLayoutSetFloat2(primeLayout* layout, const char* name, primeVec2 data);
+
+PAPI void
+primeLayoutSetFloat3(primeLayout* layout, const char* name, primeVec3 data);
+
+PAPI void
+primeLayoutSetFloat4(primeLayout* layout, const char* name, primeVec4 data);
+
+PAPI void
+primeLayoutSetMat4(primeLayout* layout, const char* name, primeMat4 data);
