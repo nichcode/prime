@@ -11,6 +11,7 @@
 #include "prime_device.cpp"
 #include "prime_context.cpp"
 #include "prime_layout.cpp"
+#include "prime_math.cpp"
 
 #include "prime_glcontext.cpp"
 #include "prime_gllayout.cpp"

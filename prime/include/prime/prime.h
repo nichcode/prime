@@ -10,6 +10,7 @@
 #include "prime_keys.h"
 #include "prime_layout.h"
 #include "prime_log.h"
+#include "prime_math.h"
 #include "prime_memory.h"
 #include "prime_platform.h"
 #include "prime_string.h"

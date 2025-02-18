@@ -2,6 +2,7 @@
 #include "prime/prime_string.h"
 #include "prime/prime_memory.h"
 #include "prime_utils.h"
+#include "prime/prime_math.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -421,4 +422,46 @@ primeStringFreeSys(char* string)
 {
 	u64 length = strlen(string);
 	primeMemoryFree(string, length + 1);
+}
+
+// maths
+char*
+primeVec2ToString(const primeVec2& vec)
+{
+	return primeStringFormat("Vec2(%.2f, %.2f)", vec.x, vec.y);
+}
+
+char*
+primeVec3ToString(const primeVec3& vec)
+{
+	return primeStringFormat("Vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
+}
+
+char*
+primeVec4ToString(const primeVec4& vec)
+{
+	return primeStringFormat("Vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
+}
+
+char*
+primeMat4ToString(const primeMat4& matrix)
+{
+	const f32* d = matrix.data;
+	char* str1 = primeStringFormat("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
+	char* str2 = primeStringFormat("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
+	char* str3 = primeStringFormat("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
+	char* str4 = primeStringFormat("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
+
+	char* str = primeStringFormat("Mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
+		str1,
+		str2,
+		str3,
+		str4);
+
+	primeStringFree(str1);
+	primeStringFree(str2);
+	primeStringFree(str3);
+	primeStringFree(str4);
+	
+	return str;
 }

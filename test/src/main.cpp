@@ -16,10 +16,14 @@ contextTestGL();
 b8
 layoutTestGL();
 
+b8
+mathTest();
+
 #include "string_test.cpp"
 #include "window_test.cpp"
 #include "context_test.cpp"
 #include "layout_test.cpp"
+#include "math_test.cpp"
 
 #include <iostream>
 
@@ -34,6 +38,7 @@ main(int argc, char** argv)
         //primeAddTest("multiWindowTest", multiWindowTest);
         //primeAddTest("contextTestGL", contextTestGL);
         primeAddTest("layoutTestGL", layoutTestGL);
+        primeAddTest("mathTest", mathTest);
 
         primeRunTests();
         primePlatformShutdown();

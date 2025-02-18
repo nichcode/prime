@@ -1,7 +1,7 @@
 #pragma once
 
 #include "prime_defines.h"
-#include "prime_maths.h"
+#include "prime_math.h"
 
 enum primeType
 {
