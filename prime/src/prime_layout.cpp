@@ -14,6 +14,7 @@ struct Element
     primeType type = primeTypeFloat3;
 	u32 size = 0;
 	u64 offset = 0;
+	u32 divisor = 0;
 };
 
 struct primeLayout
@@ -28,7 +29,7 @@ struct primeLayout
 	void(*bindFunc)(void* handle) = nullptr;
 	void(*unbindFunc)(void* handle) = nullptr;
 	void(*setFunc)(void* handle, const void* data, u32 size) = nullptr;
-	void(*pushFunc)(void* handle, u32 index, u32 count, primeType type, u64 offset, u32 stride) = nullptr;
+	void(*pushFunc)(void* handle, u32 index, u32 count, primeType type, u64 offset, u32 stride, u32 divisor) = nullptr;
 	void(*setIntFunc)(void* handle, const char* name, i32 data);
 	void(*setIntArrayFunc)(void* handle, const char* name, i32* data, u32 count);
 	void(*setFloatFunc)(void* handle, const char* name, f32 data);
@@ -204,11 +205,12 @@ primeLayoutDestroy(primeLayout* layout)
 }
 
 void
-primeLayoutAdd(primeLayout* layout, primeType type)
+primeLayoutAdd(primeLayout* layout, primeType type, u32 divisor)
 {
     PASSERT_MSG(layout, "layout is null");
     Element element;
 	element.type = type;
+	element.divisor = divisor;
 	element.size = primeTypeGetSize(type);
 	s_LayoutData.elements[layout->id].push_back(element);
 }
@@ -261,7 +263,8 @@ primeLayoutSubmit(primeLayout* layout)
          primeTypeGetCount(element.type),
          element.type,
          element.offset,
-         layout->stride);
+         layout->stride,
+		 element.divisor);
 
 		index++;
 	}

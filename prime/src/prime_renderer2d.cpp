@@ -1,0 +1,313 @@
+
+#include "prime/prime_renderer2d.h"
+#include "prime/prime_layout.h"
+#include "prime/prime_constantbuffer.h"
+#include "prime_shaders.h"
+#include "prime/prime_window.h"
+#include "prime/prime_context.h"
+#include "prime/prime_log.h"
+
+#define PMAX_SPRITES 10000
+
+struct UniformBlock
+{
+	primeMat4 matrix = primeMat4Identity();
+	primeColor color = primeColorFromF32(.0f, .0f, .0f, 1.0f);
+};
+
+struct SpriteVertex
+{
+    primeVec2 position = primeVec2Create(0.0f, 0.0f);
+};
+
+struct SpriteData
+{
+    primeLayout* layout = nullptr;
+	u32 indexCount = 0;
+	primeVec4 vertices[4];
+	
+	SpriteVertex* base = nullptr;
+	SpriteVertex* ptr = nullptr;
+};
+
+struct primeRenderer2D
+{
+	primeDevice* device = nullptr;
+	primeContext* context = nullptr;
+	primeConstantbuffer* uniformBlock = nullptr;
+	UniformBlock uniformBlockData;
+	primeViewport view;
+	SpriteData spriteData;
+};
+
+static void 
+setProjectionMatrix(primeRenderer2D* ren)
+{
+	const primeViewport* view = primeRenderer2DGetView(ren);
+	ren->uniformBlockData.matrix = primeMat4Orthographic(
+		view->x,
+		(f32)view->width,
+		(f32)view->height,
+		view->y,
+		-1.0f,
+		1.0f);
+}
+
+static void
+initSprites(primeRenderer2D* ren)
+{
+	ren->spriteData.vertices[0] = primeVec4Create(0.0f, 0.0f, 0.0f, 1.0f);
+	ren->spriteData.vertices[1] = primeVec4Create(1.0f, 0.0f, 0.0f, 1.0f);
+	ren->spriteData.vertices[2] = primeVec4Create(1.0f, 1.0f, 0.0f, 1.0f);
+	ren->spriteData.vertices[3] = primeVec4Create(0.0f, 1.0f, 0.0f, 1.0f);
+
+	u32* indices = (u32*)primeMemoryAlloc(sizeof(u32) * PMAX_SPRITES * 6);
+	u32 offset = 0;
+	for (u32 i = 0; i < PMAX_SPRITES * 6; i += 6)
+	{
+		indices[i + 0] = offset + 0;
+		indices[i + 1] = offset + 1;
+		indices[i + 2] = offset + 2;
+
+		indices[i + 3] = offset + 2;
+		indices[i + 4] = offset + 3;
+		indices[i + 5] = offset + 0;
+
+		offset += 4;
+	}
+
+    primeVertexbufferDesc vbo;
+    vbo.size = sizeof(SpriteVertex) * PMAX_SPRITES * 4;
+    vbo.data = nullptr;
+    vbo.type = primeBufferTypeDynamic;
+
+    primeIndexbufferDesc ibo;
+    ibo.count = PMAX_SPRITES * 6;
+    ibo.indices = indices;
+
+	primeShaderDesc shader_desc;
+	shader_desc.load = false;
+	shader_desc.pixel = s_SpritePixelSource;
+	shader_desc.vertex = s_SpriteVertexSource;
+	shader_desc.type = primeShaderTypeGLSL;
+
+    primeLayoutDesc layout_desc;
+    layout_desc.ibo = ibo;
+    layout_desc.vbo = vbo;
+	layout_desc.shader = shader_desc;
+
+    ren->spriteData.layout = primeLayoutCreate(ren->device, &layout_desc);
+    primeLayoutBind(ren->spriteData.layout);
+    primeLayoutAdd(ren->spriteData.layout, primeTypeFloat2, PDIVISOR_DEFAULT);
+    primeLayoutSubmit(ren->spriteData.layout);
+
+    primeLayoutUnbind(ren->spriteData.layout);
+
+	ren->spriteData.base = (SpriteVertex*)primeMemoryAlloc(
+		sizeof(SpriteVertex) * PMAX_SPRITES * 4
+	);
+
+	primeMemoryFree(indices, sizeof(u32) * PMAX_SPRITES * 6);
+}
+
+primeRenderer2D*
+primeRenderer2DCreate(primeDevice* device, primeWindow* window)
+{
+	primeRenderer2D* ren = (primeRenderer2D*)primeMemoryAlloc(sizeof(primeRenderer2D));
+	ren->context = primeContextCreate(device, window);
+	ren->view.width = primeWindowGetWidth(window);
+	ren->view.height = primeWindowGetHeight(window);
+	ren->device = device;
+	initSprites(ren);
+	primeContextMakeActive(ren->context);
+
+	ren->uniformBlock = primeConstantbufferCreate(device, sizeof(UniformBlock), 0);
+	setProjectionMatrix(ren);
+	ren->uniformBlockData.color = primeColorFromF32(0.0f, 0.0f, 0.0f, 1.0f);
+
+	return ren;
+}
+
+void
+primeRenderer2DDestroy(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeMemoryFree(
+		renderer->spriteData.base,
+	    sizeof(SpriteVertex) * PMAX_SPRITES * 4);
+
+
+	renderer->device = nullptr;
+	renderer->context = nullptr;
+	renderer->uniformBlock = nullptr;
+    renderer->spriteData.layout = nullptr;
+	primeMemoryFree(renderer, sizeof(primeRenderer2D));
+}
+
+void
+primeRenderer2DSetClearColor(primeRenderer2D* renderer, primeColor* color)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeContextSetClearColor(renderer->context, color);
+}
+
+void 
+primeRenderer2DSetDrawColor(primeRenderer2D* renderer, primeColor* color)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	renderer->uniformBlockData.color = *color;
+}
+
+void 
+primeRenderer2DSetLinesWidth(primeRenderer2D* renderer, f32 width)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeContextSetLinesWidth(renderer->context, width);
+}
+
+void 
+primeRenderer2DSetAntiAliasing(primeRenderer2D* renderer, b8 anti_aliasing)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeContextSetAntiAliasing(renderer->context, anti_aliasing);
+}
+
+void
+primeRenderer2DSetVsync(primeRenderer2D* renderer, b8 vsync)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeContextSetVsync(renderer->context, vsync);
+}
+
+void
+primeRenderer2DSetView(primeRenderer2D* renderer, primeViewport* viewport)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	renderer->view = *viewport;
+	primeContextSetViewport(renderer->context, viewport);
+	setProjectionMatrix(renderer);
+}
+
+void 
+primeRenderer2DSetScale(primeRenderer2D* renderer, primeVec2 scale)
+{
+	PASSERT_MSG(scale.x, "Scale x invalid");
+	PASSERT_MSG(scale.y, "Scale x invalid");
+
+	const primeViewport& view = renderer->view;
+	f32 width = (f32)view.width / scale.x;
+	f32 height = (f32)view.height / scale.y;
+
+	primeMat4 matrix = primeMat4Orthographic(
+		view.x,
+		width,
+		height,
+		view.y,
+		-1.0f,
+		1.0f);
+
+	primeConstantbufferBind(renderer->uniformBlock);
+	primeConstantbufferSetData(renderer->uniformBlock, &matrix, sizeof(primeMat4));
+}
+
+void
+primeRenderer2DClear(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeContextClear(renderer->context);
+}
+
+void
+primeRenderer2DBegin(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	renderer->spriteData.ptr = renderer->spriteData.base;
+	renderer->spriteData.indexCount = 0;
+
+	primeConstantbufferBind(renderer->uniformBlock);
+	primeConstantbufferSetData(
+		renderer->uniformBlock, 
+		&renderer->uniformBlockData, 
+		sizeof(UniformBlock));
+}
+
+void
+primeRenderer2DEnd(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	if (renderer->spriteData.indexCount) {
+        primeLayoutBind(renderer->spriteData.layout);
+		u32 size = (u32)((u8*)renderer->spriteData.ptr - (u8*)renderer->spriteData.base);
+
+		primeLayoutSetData(
+			renderer->spriteData.layout, 
+			renderer->spriteData.base,
+			size);
+
+        primeContextDrawElements(
+			renderer->context, 
+			primeDrawModeTriangles,
+			renderer->spriteData.indexCount);
+	}
+}
+
+void
+primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+
+	primeMat4 translation = primeMat4Translation({ rect->x, rect->y, 0.0f });
+	primeMat4 scale = primeMat4Scale({ rect->width, rect->height, 1.0f });
+	primeMat4 transform = translation * scale;
+
+	for (u64 i = 0; i < 4; i++) {
+		primeVec4 position = transform * renderer->spriteData.vertices[i];
+		renderer->spriteData.ptr->position.x = position.x;
+		renderer->spriteData.ptr->position.y = position.y;
+
+		renderer->spriteData.ptr++;
+	}
+	renderer->spriteData.indexCount += 6;
+}
+
+void
+primeRenderer2DPresent(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	primeContextSwapbuffers(renderer->context);
+}
+
+const primeViewport*
+primeRenderer2DGetView(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	return &renderer->view;
+}
+
+const primeColor*
+primeRenderer2DGetDrawColor(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	return &renderer->uniformBlockData.color;
+}
+
+f32
+primeRenderer2DGetLinesWidth(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	return primeContextGetLinesWidth(renderer->context);
+}
+
+b8
+primeRenderer2DGetAntiAliasing(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	return primeContextGetAntiAliasing(renderer->context);
+}
+
+b8
+primeRenderer2DGetVsync(primeRenderer2D* renderer)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	return primeContextGetVSync(renderer->context);
+}

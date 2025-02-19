@@ -214,7 +214,7 @@ primeGLLayoutSetData(void* layout, const void* data, u32 size)
 }
 
 void
-primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset, u32 stride)
+primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset, u32 stride, u32 divisor)
 {
     switch (type) {
 	case primeTypeFloat:
@@ -229,6 +229,8 @@ primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset
 			GL_FALSE,
 			stride,
 			(const void*)offset);
+		
+		glVertexAttribDivisor(index, divisor);
 		break;
 	}
 	
@@ -244,6 +246,8 @@ primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset
 			typeToGLType(type),
 			stride,
 			(const void*)offset);
+		
+		glVertexAttribDivisor(index, divisor);
 		break;
 	}
 	
@@ -260,7 +264,7 @@ primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset
 				GL_FALSE,
 				stride,
 				(const void*)(offset + sizeof(f32) * count * i));
-			glVertexAttribDivisor(index, 1);
+			glVertexAttribDivisor(index, divisor);
 		}
 		break;
 	}

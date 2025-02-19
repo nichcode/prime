@@ -27,6 +27,7 @@ struct primeContext
 	void(*setLineWidthFunc)(void* context_handle, f32 width);
 	void(*drawArraysFunc)(void* context_handle, primeDrawMode draw_mode, u32 count);
 	void(*drawElementsFunc)(void* context_handle, primeDrawMode draw_mode, u32 count);
+	void(*drawArraysInstancedFunc)(void* context_handle, primeDrawMode draw_mode, u32 count, u32 instance_count);
 	void(*drawElementsInstancedFunc)(void* context_handle, primeDrawMode draw_mode, u32 count, u32 instance_count);
 };
 
@@ -63,6 +64,7 @@ primeContextCreate(primeDevice* device, primeWindow* window)
 		context->setViewportFunc = primeGLContextSetViewport;
 		context->drawArraysFunc = primeGLContextDrawArrays;
 		context->drawElementsFunc = primeGLContextDrawElements;
+		context->drawArraysInstancedFunc = primeGLContextDrawArraysInstanced;
 		context->drawElementsInstancedFunc = primeGLContextDrawElementsInstanced;
 		context->setAntiAliasingFunc = primeGLContextSetAntiAliasing;
 		context->setLineWidthFunc = primeGLContextSetLinesWidth;
@@ -169,6 +171,13 @@ primeContextDrawArrays(primeContext* context, primeDrawMode draw_mode, u32 count
 {
 	PASSERT_MSG(context, "context is null");
 	context->drawArraysFunc(context->handle, draw_mode, count);
+}
+
+void
+primeContextDrawArraysInstanced(primeContext* context, primeDrawMode draw_mode, u32 count, u32 instance_count)
+{
+	PASSERT_MSG(context, "context is null");
+	context->drawArraysInstancedFunc(context->handle, draw_mode, count, instance_count);
 }
 
 void

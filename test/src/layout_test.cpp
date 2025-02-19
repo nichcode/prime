@@ -48,7 +48,7 @@ layoutTestGL()
 
     primeLayout* layout = primeLayoutCreate(device, &layout_desc);
     primeLayoutBind(layout);
-    primeLayoutAdd(layout, primeTypeFloat3);
+    primeLayoutAdd(layout, primeTypeFloat3, PDIVISOR_DEFAULT);
     primeLayoutSubmit(layout);
 
     while (!primeWindowShouldClose(window)) {

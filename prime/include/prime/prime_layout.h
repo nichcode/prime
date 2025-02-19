@@ -64,7 +64,7 @@ PAPI void
 primeLayoutDestroy(primeLayout* layout);
 
 PAPI void
-primeLayoutAdd(primeLayout* layout, primeType type);
+primeLayoutAdd(primeLayout* layout, primeType type, u32 divisor);
 
 PAPI void
 primeLayoutBind(primeLayout* layout);

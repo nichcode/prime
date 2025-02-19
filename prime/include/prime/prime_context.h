@@ -56,6 +56,9 @@ PAPI void
 primeContextDrawArrays(primeContext* context, primeDrawMode draw_mode, u32 count);
 
 PAPI void
+primeContextDrawArraysInstanced(primeContext* context, primeDrawMode draw_mode, u32 count, u32 instance_count);
+
+PAPI void
 primeContextDrawElements(primeContext* context, primeDrawMode draw_mode, u32 count);
 
 PAPI void

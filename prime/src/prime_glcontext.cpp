@@ -143,6 +143,13 @@ primeGLContextDrawElements(void* handle, primeDrawMode draw_mode, u32 count)
 }
 
 void
+primeGLContextDrawArraysInstanced(void* handle, primeDrawMode draw_mode, u32 count, u32 instance_count)
+{
+	GLenum type = drawModeToOpenGL(draw_mode);
+    glDrawArraysInstanced(type, 0, count, instance_count);
+}
+
+void
 primeGLContextDrawElementsInstanced(void* handle, primeDrawMode draw_mode, u32 count, u32 instance_count)
 {
     GLenum type = drawModeToOpenGL(draw_mode);

@@ -13,6 +13,7 @@
 #include "prime_layout.cpp"
 #include "prime_math.cpp"
 #include "prime_constantbuffer.cpp"
+#include "prime_renderer2d.cpp"
 
 #include "prime_glcontext.cpp"
 #include "prime_gllayout.cpp"

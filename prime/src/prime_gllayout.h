@@ -18,7 +18,7 @@ void
 primeGLLayoutSetData(void* layout, const void* data, u32 size);
 
 void
-primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset, u32 stride);
+primeGLLayoutPush(void* layout, u32 index, u32 count, primeType type, u64 offset, u32 stride, u32 divisor);
 
 void
 primeGLLayoutSetInt(void* layout, const char* name, i32 data);
