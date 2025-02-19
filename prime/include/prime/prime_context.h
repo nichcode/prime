@@ -2,7 +2,7 @@
 
 #include "prime_defines.h"
 #include "prime_color.h"
-#include "prime_viewport.h"
+#include "prime_rect.h"
 
 enum primeDrawMode
 {
@@ -38,9 +38,9 @@ PAPI void
 primeContextSetLinesWidth(primeContext* context, f32 width);
 
 PAPI void
-primeContextSetViewport(primeContext* context, primeViewport* viewport);
+primeContextSetViewport(primeContext* context, primeRect* viewport);
 
-PAPI primeViewport
+PAPI primeRect
 primeContextGetViewport(primeContext* context);
 
 PAPI b8

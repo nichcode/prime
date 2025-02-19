@@ -14,7 +14,7 @@ struct primeContext
 	void* handle = nullptr;
 	b8 vSync = false, antiAliasing = false;
 	f32 linesWidth = 2.0f;
-	primeViewport viewport;
+	primeRect viewport;
 
 	void(*destroyFunc)(void* context_handle);
 	void(*swapbuffersFunc)(primeWindow* window, void* context_handle);
@@ -22,7 +22,7 @@ struct primeContext
 	void(*clearFunc)(void* context_handle);
 	void(*makeActiveFunc)(primeWindow* window, void* context_handle);
 	void(*setVsyncFunc)(void* context_handle, b8 vsync);
-	void(*setViewportFunc)(void* context_handle, primeViewport* viewport);
+	void(*setViewportFunc)(void* context_handle, primeRect* viewport);
 	void(*setAntiAliasingFunc)(void* context_handle, b8 anti_aliasing);
 	void(*setLineWidthFunc)(void* context_handle, f32 width);
 	void(*drawArraysFunc)(void* context_handle, primeDrawMode draw_mode, u32 count);
@@ -152,14 +152,14 @@ primeContextSetVsync(primeContext* context, b8 vsync)
 }
 
 void
-primeContextSetViewport(primeContext* context, primeViewport* viewport)
+primeContextSetViewport(primeContext* context, primeRect* viewport)
 {
 	PASSERT_MSG(context, "context is null");
 	context->viewport = *viewport;
 	context->setViewportFunc(context->handle, viewport);
 }
 
-primeViewport
+primeRect
 primeContextGetViewport(primeContext* context)
 {
 	PASSERT_MSG(context, "context is null");

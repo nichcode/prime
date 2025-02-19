@@ -123,7 +123,7 @@ primeGLContextSetVsync(void* handle, b8 vsync)
 }
 
 void
-primeGLContextSetViewport(void* handle, primeViewport* viewport)
+primeGLContextSetViewport(void* handle, primeRect* viewport)
 {
 	glViewport((i32)viewport->x, (i32)viewport->y, viewport->width, viewport->height);
 }

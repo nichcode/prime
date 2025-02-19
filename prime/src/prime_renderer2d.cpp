@@ -36,14 +36,14 @@ struct primeRenderer2D
 	primeContext* context = nullptr;
 	primeConstantbuffer* uniformBlock = nullptr;
 	UniformBlock uniformBlockData;
-	primeViewport view;
+	primeRect view;
 	SpriteData spriteData;
 };
 
 static void 
 setProjectionMatrix(primeRenderer2D* ren)
 {
-	const primeViewport* view = primeRenderer2DGetView(ren);
+	const primeRect* view = primeRenderer2DGetView(ren);
 	ren->uniformBlockData.matrix = primeMat4Orthographic(
 		view->x,
 		(f32)view->width,
@@ -180,7 +180,7 @@ primeRenderer2DSetVsync(primeRenderer2D* renderer, b8 vsync)
 }
 
 void
-primeRenderer2DSetView(primeRenderer2D* renderer, primeViewport* viewport)
+primeRenderer2DSetView(primeRenderer2D* renderer, primeRect* viewport)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 	renderer->view = *viewport;
@@ -194,7 +194,7 @@ primeRenderer2DSetScale(primeRenderer2D* renderer, primeVec2 scale)
 	PASSERT_MSG(scale.x, "Scale x invalid");
 	PASSERT_MSG(scale.y, "Scale x invalid");
 
-	const primeViewport& view = renderer->view;
+	const primeRect& view = renderer->view;
 	f32 width = (f32)view.width / scale.x;
 	f32 height = (f32)view.height / scale.y;
 
@@ -271,13 +271,56 @@ primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect)
 }
 
 void
+primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 rotation, primeAnchor anchor)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	if (rotation) {
+		f32 origin_x = 0.0f;
+	    f32 origin_y = 0.0f;
+
+		switch (anchor) {
+		    case primeAnchorTopLeft: {
+				origin_x = 0.0f;
+			    origin_y = 0.0f;
+		    }
+		    break;
+
+		    case primeAnchorCenter: {
+				origin_x = rect->width / 2.0f;
+			    origin_y = rect->height / 2.0f;
+			}
+			break;
+		}
+
+		primeMat4 offset = primeMat4Translation({ rect->x + origin_x, rect->y + origin_y, 0.0f });
+		primeMat4 translation = primeMat4Translation({ -origin_x, -origin_y, 0.0f });
+		primeMat4 rot = primeMat4RotationZ(primeMathDegreeToRadians(rotation));
+		primeMat4 scale = primeMat4Scale({ rect->width, rect->height, 1.0f });
+		primeMat4 transform = offset * rot * translation * scale;
+
+		for (u64 i = 0; i < 4; i++) {
+			primeVec4 position = transform * renderer->spriteData.vertices[i];
+			renderer->spriteData.ptr->position.x = position.x;
+			renderer->spriteData.ptr->position.y = position.y;
+
+			renderer->spriteData.ptr++;
+		}
+		renderer->spriteData.indexCount += 6;
+
+	}
+	else {
+		primeRenderer2DDrawRect(renderer, rect);
+	}
+}
+
+void
 primeRenderer2DPresent(primeRenderer2D* renderer)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 	primeContextSwapbuffers(renderer->context);
 }
 
-const primeViewport*
+const primeRect*
 primeRenderer2DGetView(primeRenderer2D* renderer)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");

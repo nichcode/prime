@@ -30,7 +30,7 @@ void
 primeGLContextSetVsync(void* handle, b8 vsync);
 
 void
-primeGLContextSetViewport(void* handle, primeViewport* viewport);
+primeGLContextSetViewport(void* handle, primeRect* viewport);
 
 void
 primeGLContextDrawArrays(void* handle, primeDrawMode draw_mode, u32 count);

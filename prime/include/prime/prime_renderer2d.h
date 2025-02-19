@@ -2,7 +2,12 @@
 
 #include "prime_context.h"
 #include "prime_math.h"
-#include "prime_rect.h"
+
+enum primeAnchor
+{
+    primeAnchorTopLeft,
+    primeAnchorCenter
+};
 
 PAPI primeRenderer2D*
 primeRenderer2DCreate(primeDevice* device, primeWindow* window);
@@ -26,7 +31,7 @@ PAPI void
 primeRenderer2DSetVsync(primeRenderer2D* renderer, b8 vsync);
 
 PAPI void
-primeRenderer2DSetView(primeRenderer2D* renderer, primeViewport* viewport);
+primeRenderer2DSetView(primeRenderer2D* renderer, primeRect* viewport);
 
 PAPI void
 primeRenderer2DSetScale(primeRenderer2D* renderer, primeVec2 scale);
@@ -44,9 +49,12 @@ PAPI void
 primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect);
 
 PAPI void
+primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 rotation, primeAnchor anchor);
+
+PAPI void
 primeRenderer2DPresent(primeRenderer2D* renderer);
 
-PAPI const primeViewport*
+PAPI const primeRect*
 primeRenderer2DGetView(primeRenderer2D* renderer);
 
 PAPI const primeColor*
