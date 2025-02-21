@@ -58,3 +58,17 @@ primeColorFromU32(u32 rgba)
 	color.a = 1.0f / 255.0f;
 	return color;
 }
+
+// *********************************************
+// ****************Colors***********************
+static primeColor s_Red = primeColorFromF32(1.0f, 0.0f, 0.0f, 1.0f);
+static primeColor s_Green = primeColorFromF32(0.0f, 1.0f, 0.0f, 1.0f);
+static primeColor s_Blue = primeColorFromF32(0.0f, 0.0f, 1.0f, 1.0f);
+static primeColor s_White = primeColorFromF32(1.0f, 1.0f, 1.0f, 1.0f);
+static primeColor s_Black = primeColorFromF32(0.0f, 0.0f, 0.0f, 1.0f);
+
+#define PCOLOR_RED &s_Red
+#define PCOLOR_GREEN &s_Green
+#define PCOLOR_BLUE &s_Blue
+#define PCOLOR_WHITE &s_White
+#define PCOLOR_BLACK &s_Black

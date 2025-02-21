@@ -20,9 +20,6 @@ PAPI void
 primeRenderer2DSetClearColor(primeRenderer2D* renderer, primeColor* color);
 
 PAPI void
-primeRenderer2DSetDrawColor(primeRenderer2D* renderer, primeColor* color);
-
-PAPI void
 primeRenderer2DSetLinesWidth(primeRenderer2D* renderer, f32 width);
 
 PAPI void
@@ -47,19 +44,19 @@ PAPI void
 primeRenderer2DEnd(primeRenderer2D* renderer);
 
 PAPI void
-primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect);
+primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect, primeColor* color);
 
 PAPI void
-primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 rotation, primeAnchor anchor);
+primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, primeColor* color, f32 rotation, primeAnchor anchor);
+
+PAPI void
+primeRenderer2DDrawSprite(primeRenderer2D* renderer, const primeRect* rect, primeTexture2D* texture);
 
 PAPI void
 primeRenderer2DPresent(primeRenderer2D* renderer);
 
 PAPI const primeRect*
 primeRenderer2DGetView(primeRenderer2D* renderer);
-
-PAPI const primeColor*
-primeRenderer2DGetDrawColor(primeRenderer2D* renderer);
 
 PAPI f32
 primeRenderer2DGetLinesWidth(primeRenderer2D* renderer);

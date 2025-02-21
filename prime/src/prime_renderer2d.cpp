@@ -11,17 +11,12 @@
 
 #define PMAX_SPRITES 10000
 
-struct UniformBlock
-{
-	primeMat4 matrix = primeMat4Identity();
-	primeColor color = primeColorFromF32(.0f, .0f, .0f, 1.0f);
-};
-
 struct SpriteVertex
 {
     primeVec2 position = primeVec2Create(0.0f, 0.0f);
+    primeColor color = primeColorFromF32(1.0f, 1.0f, 1.0f, 1.0f);
     primeVec2 texCoords = primeVec2Create(0.0f, 0.0f);
-	i32 texIndex = 0;
+	f32 texIndex = 0.0f;
 };
 
 struct SpriteData
@@ -46,7 +41,6 @@ struct primeRenderer2D
 	primeDevice* device = nullptr;
 	primeContext* context = nullptr;
 	primeConstantbuffer* uniformBlock = nullptr;
-	UniformBlock uniformBlockData;
 	primeRect view;
 	SpriteData spriteData;
 };
@@ -55,13 +49,16 @@ static void
 setProjectionMatrix(primeRenderer2D* ren)
 {
 	const primeRect* view = primeRenderer2DGetView(ren);
-	ren->uniformBlockData.matrix = primeMat4Orthographic(
+	primeMat4 matrix = primeMat4Orthographic(
 		view->x,
 		(f32)view->width,
 		(f32)view->height,
 		view->y,
 		-1.0f,
 		1.0f);
+
+	primeConstantbufferBind(ren->uniformBlock);
+	primeConstantbufferSetData(ren->uniformBlock, &matrix, sizeof(primeMat4));
 }
 
 static void
@@ -130,8 +127,9 @@ initSprites(primeRenderer2D* ren)
     ren->spriteData.layout = primeLayoutCreate(ren->device, &layout_desc);
     primeLayoutBind(ren->spriteData.layout);
     primeLayoutAdd(ren->spriteData.layout, primeTypeFloat2, PDIVISOR_DEFAULT);
+    primeLayoutAdd(ren->spriteData.layout, primeTypeFloat4, PDIVISOR_DEFAULT);
     primeLayoutAdd(ren->spriteData.layout, primeTypeFloat2, PDIVISOR_DEFAULT);
-    primeLayoutAdd(ren->spriteData.layout, primeTypeInt, PDIVISOR_DEFAULT);
+    primeLayoutAdd(ren->spriteData.layout, primeTypeFloat, PDIVISOR_DEFAULT);
     primeLayoutSubmit(ren->spriteData.layout);
 
 	i32 samplers[PMAX_TEXTURE_SLOTS]{};
@@ -180,10 +178,8 @@ primeRenderer2DCreate(primeDevice* device, primeWindow* window)
 	initSprites(ren);
 	primeContextMakeActive(ren->context);
 
-	ren->uniformBlock = primeConstantbufferCreate(device, sizeof(UniformBlock), 0);
+	ren->uniformBlock = primeConstantbufferCreate(device, sizeof(primeMat4), 0);
 	setProjectionMatrix(ren);
-	ren->uniformBlockData.color = primeColorFromF32(0.0f, 0.0f, 0.0f, 1.0f);
-
 	return ren;
 }
 
@@ -207,13 +203,6 @@ primeRenderer2DSetClearColor(primeRenderer2D* renderer, primeColor* color)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 	primeContextSetClearColor(renderer->context, color);
-}
-
-void 
-primeRenderer2DSetDrawColor(primeRenderer2D* renderer, primeColor* color)
-{
-	PASSERT_MSG(renderer, "Renderer2D is null");
-	renderer->uniformBlockData.color = *color;
 }
 
 void 
@@ -283,12 +272,6 @@ primeRenderer2DBegin(primeRenderer2D* renderer)
 	renderer->spriteData.indexCount = 0;
 
 	renderer->spriteData.texIndex = 1.0f;
-
-	primeConstantbufferBind(renderer->uniformBlock);
-	primeConstantbufferSetData(
-		renderer->uniformBlock, 
-		&renderer->uniformBlockData, 
-		sizeof(UniformBlock));
 }
 
 void
@@ -316,7 +299,7 @@ primeRenderer2DEnd(primeRenderer2D* renderer)
 }
 
 void
-primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect)
+primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect, primeColor* color)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 
@@ -329,6 +312,8 @@ primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect)
 		renderer->spriteData.ptr->position.x = position.x;
 		renderer->spriteData.ptr->position.y = position.y;
 
+		renderer->spriteData.ptr->color = *color;
+
 		renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
 		renderer->spriteData.ptr->texIndex = 0.0f;
 
@@ -338,7 +323,7 @@ primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect)
 }
 
 void
-primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 rotation, primeAnchor anchor)
+primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, primeColor* color, f32 rotation, primeAnchor anchor)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 	if (rotation) {
@@ -370,6 +355,8 @@ primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 
 			renderer->spriteData.ptr->position.x = position.x;
 			renderer->spriteData.ptr->position.y = position.y;
 
+			renderer->spriteData.ptr->color = *color;
+
 			renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
 		    renderer->spriteData.ptr->texIndex = 0.0f;
 
@@ -379,8 +366,40 @@ primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 
 
 	}
 	else {
-		primeRenderer2DDrawRect(renderer, rect);
+		primeRenderer2DDrawRect(renderer, rect, color);
 	}
+}
+
+void
+primeRenderer2DDrawSprite(primeRenderer2D* renderer, const primeRect* rect, primeTexture2D* texture)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	if (texture) {
+		primeMat4 translation = primeMat4Translation({ rect->x, rect->y, 0.0f });
+		primeMat4 scale = primeMat4Scale({ rect->width, rect->height, 1.0f });
+		primeMat4 transform = translation * scale;
+
+		f32 tex_index = getTexture2DIndex(renderer, texture);
+
+		for (u64 i = 0; i < 4; i++) {
+			primeVec4 position = transform * renderer->spriteData.vertices[i];
+			renderer->spriteData.ptr->position.x = position.x;
+			renderer->spriteData.ptr->position.y = position.y;
+
+			renderer->spriteData.ptr->color = s_White;
+
+			renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
+			renderer->spriteData.ptr->texIndex = tex_index;
+
+			renderer->spriteData.ptr++;
+		}
+		renderer->spriteData.indexCount += 6;
+
+	}
+	else {
+		primeRenderer2DDrawRect(renderer, rect, PCOLOR_WHITE);
+	}
+
 }
 
 void
@@ -395,13 +414,6 @@ primeRenderer2DGetView(primeRenderer2D* renderer)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 	return &renderer->view;
-}
-
-const primeColor*
-primeRenderer2DGetDrawColor(primeRenderer2D* renderer)
-{
-	PASSERT_MSG(renderer, "Renderer2D is null");
-	return &renderer->uniformBlockData.color;
 }
 
 f32
