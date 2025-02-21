@@ -14,10 +14,12 @@
 #include "prime_math.cpp"
 #include "prime_constantbuffer.cpp"
 #include "prime_renderer2d.cpp"
+#include "prime_texture.cpp"
 
 #include "prime_glcontext.cpp"
 #include "prime_gllayout.cpp"
 #include "prime_glconstantbuffer.cpp"
+#include "prime_gltexture.cpp"
 
 #ifdef PPLATFORM_WINDOWS
 #include "prime_win32platform.cpp"

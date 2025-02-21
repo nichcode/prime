@@ -68,3 +68,9 @@ primeDeviceAppendConstantbuffer(primeDevice* device, primeConstantbuffer* buffer
 
 void
 primeDevicePopConstantbuffer(primeDevice* device, primeConstantbuffer* buffer);
+
+void
+primeDeviceAppendTexture2D(primeDevice* device, primeTexture2D* texture);
+
+void
+primeDevicePopTexture2D(primeDevice* device, primeTexture2D* texture);

@@ -77,6 +77,7 @@
 #define PFILE __FILE__
 #define PINLINE extern "C" inline
 #define PDIVISOR_DEFAULT 0
+#define PMAX_TEXTURE_SLOTS 16
 
 using u8 = unsigned char;
 using u16 = unsigned short;
@@ -130,3 +131,4 @@ struct primeContext;
 struct primeLayout;
 struct primeConstantbuffer;
 struct primeRenderer2D;
+struct primeTexture2D;

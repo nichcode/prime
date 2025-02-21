@@ -2,6 +2,7 @@
 
 #include "prime_context.h"
 #include "prime_math.h"
+#include "prime/prime_texture.h"
 
 enum primeAnchor
 {

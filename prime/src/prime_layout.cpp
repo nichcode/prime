@@ -145,8 +145,8 @@ primeLayoutCreate(primeDevice* device, const primeLayoutDesc* desc)
 	layout->device = device;
 	layout->id = s_LayoutData.index;   
 	s_LayoutData.index++;
-	layout->vboType = desc->vbo.type;
 	layout->count = desc->ibo.count;
+	layout->vboType = desc->vbo.type;
 
     b8 shader_empty = true;
 	if (desc->shader.vertex && desc->shader.pixel) {

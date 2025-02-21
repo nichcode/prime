@@ -18,5 +18,6 @@
 #include "prime_renderer2d.h"
 #include "prime_string.h"
 #include "prime_test.h"
+#include "prime_texture.h"
 #include "prime_time.h"
 #include "prime_window.h"

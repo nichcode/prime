@@ -7,6 +7,8 @@
 #include "prime/prime_context.h"
 #include "prime/prime_log.h"
 
+#include <array>
+
 #define PMAX_SPRITES 10000
 
 struct UniformBlock
@@ -18,6 +20,8 @@ struct UniformBlock
 struct SpriteVertex
 {
     primeVec2 position = primeVec2Create(0.0f, 0.0f);
+    primeVec2 texCoords = primeVec2Create(0.0f, 0.0f);
+	i32 texIndex = 0;
 };
 
 struct SpriteData
@@ -25,6 +29,13 @@ struct SpriteData
     primeLayout* layout = nullptr;
 	u32 indexCount = 0;
 	primeVec4 vertices[4];
+
+	primeVec2 texCoords[4];
+	primeVec2 texCoordsFlipY[4];
+	primeVec2 texCoordsFlipX[4];
+	primeVec2 texCoordsFlipXY[4];
+	std::array<primeTexture2D*, PMAX_TEXTURE_SLOTS> texSlots{};
+	f32 texIndex = 1.0f;
 	
 	SpriteVertex* base = nullptr;
 	SpriteVertex* ptr = nullptr;
@@ -60,6 +71,26 @@ initSprites(primeRenderer2D* ren)
 	ren->spriteData.vertices[1] = primeVec4Create(1.0f, 0.0f, 0.0f, 1.0f);
 	ren->spriteData.vertices[2] = primeVec4Create(1.0f, 1.0f, 0.0f, 1.0f);
 	ren->spriteData.vertices[3] = primeVec4Create(0.0f, 1.0f, 0.0f, 1.0f);
+
+	ren->spriteData.texCoords[0] = primeVec2Create(0.0f, 0.0f);
+	ren->spriteData.texCoords[1] = primeVec2Create(1.0f, 0.0f);
+	ren->spriteData.texCoords[2] = primeVec2Create(1.0f, 1.0f);
+	ren->spriteData.texCoords[3] = primeVec2Create(0.0f, 1.0f);
+
+	ren->spriteData.texCoordsFlipX[0] = primeVec2Create(1.0f, 0.0f);
+	ren->spriteData.texCoordsFlipX[1] = primeVec2Create(0.0f, 0.0f);
+	ren->spriteData.texCoordsFlipX[2] = primeVec2Create(0.0f, 1.0f);
+	ren->spriteData.texCoordsFlipX[3] = primeVec2Create(1.0f, 1.0f);
+
+	ren->spriteData.texCoordsFlipY[0] = primeVec2Create(0.0f, 1.0f);
+	ren->spriteData.texCoordsFlipY[1] = primeVec2Create(1.0f, 1.0f);
+	ren->spriteData.texCoordsFlipY[2] = primeVec2Create(1.0f, 0.0f);
+	ren->spriteData.texCoordsFlipY[3] = primeVec2Create(0.0f, 0.0f);
+
+	ren->spriteData.texCoordsFlipXY[0] = primeVec2Create(1.0f, 1.0f);
+	ren->spriteData.texCoordsFlipXY[1] = primeVec2Create(0.0f, 1.0f);
+	ren->spriteData.texCoordsFlipXY[2] = primeVec2Create(0.0f, 0.0f);
+	ren->spriteData.texCoordsFlipXY[3] = primeVec2Create(1.0f, 0.0f);
 
 	u32* indices = (u32*)primeMemoryAlloc(sizeof(u32) * PMAX_SPRITES * 6);
 	u32 offset = 0;
@@ -99,7 +130,13 @@ initSprites(primeRenderer2D* ren)
     ren->spriteData.layout = primeLayoutCreate(ren->device, &layout_desc);
     primeLayoutBind(ren->spriteData.layout);
     primeLayoutAdd(ren->spriteData.layout, primeTypeFloat2, PDIVISOR_DEFAULT);
+    primeLayoutAdd(ren->spriteData.layout, primeTypeFloat2, PDIVISOR_DEFAULT);
+    primeLayoutAdd(ren->spriteData.layout, primeTypeInt, PDIVISOR_DEFAULT);
     primeLayoutSubmit(ren->spriteData.layout);
+
+	i32 samplers[PMAX_TEXTURE_SLOTS]{};
+	for (u32 i = 0; i < PMAX_TEXTURE_SLOTS; i++) { samplers[i] = i; }
+	primeLayoutSetIntArray(ren->spriteData.layout, "u_Textures", samplers, PMAX_TEXTURE_SLOTS);
 
     primeLayoutUnbind(ren->spriteData.layout);
 
@@ -107,7 +144,29 @@ initSprites(primeRenderer2D* ren)
 		sizeof(SpriteVertex) * PMAX_SPRITES * 4
 	);
 
+	primeTexture2DDesc tex_desc;
+	ren->spriteData.texSlots[0] = primeTexture2DCreate(ren->device, &tex_desc);
+
 	primeMemoryFree(indices, sizeof(u32) * PMAX_SPRITES * 6);
+}
+
+static f32 
+getTexture2DIndex(primeRenderer2D* ren, primeTexture2D* texture)
+{
+	f32 tex_index = 0.0f;
+	for (u32 i = 1; i < ren->spriteData.texIndex; i++) {
+		if (ren->spriteData.texSlots[i] == texture) {
+			tex_index = (f32)i;
+			break;
+		}
+	}
+
+	if (tex_index == 0.0f) {
+		tex_index = (f32)ren->spriteData.texIndex;
+		ren->spriteData.texSlots[ren->spriteData.texIndex] = texture;
+		ren->spriteData.texIndex++;
+	}
+	return tex_index;
 }
 
 primeRenderer2D*
@@ -135,7 +194,6 @@ primeRenderer2DDestroy(primeRenderer2D* renderer)
 	primeMemoryFree(
 		renderer->spriteData.base,
 	    sizeof(SpriteVertex) * PMAX_SPRITES * 4);
-
 
 	renderer->device = nullptr;
 	renderer->context = nullptr;
@@ -224,6 +282,8 @@ primeRenderer2DBegin(primeRenderer2D* renderer)
 	renderer->spriteData.ptr = renderer->spriteData.base;
 	renderer->spriteData.indexCount = 0;
 
+	renderer->spriteData.texIndex = 1.0f;
+
 	primeConstantbufferBind(renderer->uniformBlock);
 	primeConstantbufferSetData(
 		renderer->uniformBlock, 
@@ -243,6 +303,10 @@ primeRenderer2DEnd(primeRenderer2D* renderer)
 			renderer->spriteData.layout, 
 			renderer->spriteData.base,
 			size);
+
+		for (u32 i = 0; i < renderer->spriteData.texIndex; i++) {
+			primeTexture2DBind(renderer->spriteData.texSlots[i], i);
+		}
 
         primeContextDrawElements(
 			renderer->context, 
@@ -264,6 +328,9 @@ primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect)
 		primeVec4 position = transform * renderer->spriteData.vertices[i];
 		renderer->spriteData.ptr->position.x = position.x;
 		renderer->spriteData.ptr->position.y = position.y;
+
+		renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
+		renderer->spriteData.ptr->texIndex = 0.0f;
 
 		renderer->spriteData.ptr++;
 	}
@@ -302,6 +369,9 @@ primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, f32 
 			primeVec4 position = transform * renderer->spriteData.vertices[i];
 			renderer->spriteData.ptr->position.x = position.x;
 			renderer->spriteData.ptr->position.y = position.y;
+
+			renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
+		    renderer->spriteData.ptr->texIndex = 0.0f;
 
 			renderer->spriteData.ptr++;
 		}

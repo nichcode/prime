@@ -53,8 +53,8 @@ struct primeShaderDesc
 struct primeLayoutDesc
 {
 	primeVertexbufferDesc vbo;
-	primeIndexbufferDesc ibo;
 	primeShaderDesc shader;
+	primeIndexbufferDesc ibo;
 };
 
 PAPI primeLayout*

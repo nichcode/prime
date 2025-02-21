@@ -4,6 +4,7 @@
 #include "prime/prime_context.h"
 #include "prime/prime_layout.h"
 #include "prime/prime_constantbuffer.h"
+#include "prime/prime_texture.h"
 #include "prime_utils.h"
 
 #include <map>
@@ -22,6 +23,7 @@ struct DeviceData
     std::map<u32, std::vector<primeContext*>> contexts;
     std::map<u32, std::vector<primeLayout*>> layouts;
     std::map<u32, std::vector<primeConstantbuffer*>> constantbuffers;
+    std::map<u32, std::vector<primeTexture2D*>> texture2ds;
 };
 
 static DeviceData s_DeviceData;
@@ -59,9 +61,16 @@ primeDeviceDestroy(primeDevice* device)
 		primeConstantbufferDestroy(buffer);
 	}
 
+	// texture2ds
+	auto& texture2ds = s_DeviceData.texture2ds[device->id];
+	for (primeTexture2D* texture : texture2ds) {
+		primeTexture2DDestroy(texture);
+	}
+
 	s_DeviceData.contexts[device->id].clear();
 	s_DeviceData.layouts[device->id].clear();
 	s_DeviceData.constantbuffers[device->id].clear();
+	s_DeviceData.texture2ds[device->id].clear();
 	
 	device->id = 0;
 	s_DeviceData.index--;
@@ -126,5 +135,23 @@ primeDevicePopConstantbuffer(primeDevice* device, primeConstantbuffer* buffer)
 	if (it != constantbuffers.end())
 	{
 		constantbuffers.erase(it);
+	}
+}
+
+void
+primeDeviceAppendTexture2D(primeDevice* device, primeTexture2D* texture)
+{
+	s_DeviceData.texture2ds[device->id].push_back(texture);
+}
+
+void
+primeDevicePopTexture2D(primeDevice* device, primeTexture2D* texture)
+{
+	auto& texture2ds = s_DeviceData.texture2ds[device->id];
+
+	auto it = std::find(texture2ds.begin(), texture2ds.end(), texture);
+	if (it != texture2ds.end())
+	{
+		texture2ds.erase(it);
 	}
 }
