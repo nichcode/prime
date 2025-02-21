@@ -10,6 +10,14 @@ enum primeAnchor
     primeAnchorCenter
 };
 
+enum primeFlip
+{
+    primeFlipNone,
+    primeFlipX,
+    primeFlipY,
+    primeFlipXY
+};
+
 PAPI primeRenderer2D*
 primeRenderer2DCreate(primeDevice* device, primeWindow* window);
 
@@ -47,10 +55,16 @@ PAPI void
 primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect, primeColor* color);
 
 PAPI void
-primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, primeColor* color, f32 rotation, primeAnchor anchor);
+primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect,
+                          primeColor* color, f32 rotation, primeAnchor anchor);
 
 PAPI void
 primeRenderer2DDrawSprite(primeRenderer2D* renderer, const primeRect* rect, primeTexture2D* texture);
+
+PAPI void
+primeRenderer2DDrawSpriteEx(primeRenderer2D* renderer, const primeRect* rect, 
+                            primeTexture2D* texture, primeFlip flip,
+                            f32 rotation, primeAnchor anchor, primeColor* tint_color);
 
 PAPI void
 primeRenderer2DPresent(primeRenderer2D* renderer);

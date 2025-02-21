@@ -323,7 +323,8 @@ primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect* rect, primeC
 }
 
 void
-primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, primeColor* color, f32 rotation, primeAnchor anchor)
+primeRenderer2DDrawRectEx(primeRenderer2D* renderer, const primeRect* rect, 
+                          primeColor* color, f32 rotation, primeAnchor anchor)
 {
 	PASSERT_MSG(renderer, "Renderer2D is null");
 	if (rotation) {
@@ -400,6 +401,111 @@ primeRenderer2DDrawSprite(primeRenderer2D* renderer, const primeRect* rect, prim
 		primeRenderer2DDrawRect(renderer, rect, PCOLOR_WHITE);
 	}
 
+}
+
+PAPI void
+primeRenderer2DDrawSpriteEx(primeRenderer2D* renderer, const primeRect* rect, 
+                            primeTexture2D* texture, primeFlip flip,
+							f32 rotation, primeAnchor anchor, primeColor* tint_color)
+{
+	PASSERT_MSG(renderer, "Renderer2D is null");
+	if (rotation && texture) {
+		f32 origin_x = 0.0f;
+	    f32 origin_y = 0.0f;
+
+		switch (anchor) {
+		    case primeAnchorTopLeft: {
+				origin_x = 0.0f;
+			    origin_y = 0.0f;
+		    }
+		    break;
+
+		    case primeAnchorCenter: {
+				origin_x = rect->width / 2.0f;
+			    origin_y = rect->height / 2.0f;
+			}
+			break;
+		}
+
+		primeMat4 offset = primeMat4Translation({ rect->x + origin_x, rect->y + origin_y, 0.0f });
+		primeMat4 translation = primeMat4Translation({ -origin_x, -origin_y, 0.0f });
+		primeMat4 rot = primeMat4RotationZ(primeMathDegreeToRadians(rotation));
+		primeMat4 scale = primeMat4Scale({ rect->width, rect->height, 1.0f });
+		primeMat4 transform = offset * rot * translation * scale;
+
+		f32 tex_index = getTexture2DIndex(renderer, texture);
+
+		for (u64 i = 0; i < 4; i++) {
+			primeVec4 position = transform * renderer->spriteData.vertices[i];
+			renderer->spriteData.ptr->position.x = position.x;
+			renderer->spriteData.ptr->position.y = position.y;
+
+			renderer->spriteData.ptr->color = *tint_color;
+
+			if (flip == primeFlipNone) {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
+			}
+
+			else if (flip == primeFlipX) {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoordsFlipX[i];
+			}
+
+			else if (flip == primeFlipY) {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoordsFlipY[i];
+			}
+
+			else {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoordsFlipXY[i];
+			}
+
+		    renderer->spriteData.ptr->texIndex = tex_index;
+
+			renderer->spriteData.ptr++;
+		}
+		renderer->spriteData.indexCount += 6;
+
+	}
+
+	else if (texture) {
+		primeMat4 translation = primeMat4Translation({ rect->x, rect->y, 0.0f });
+		primeMat4 scale = primeMat4Scale({ rect->width, rect->height, 1.0f });
+		primeMat4 transform = translation * scale;
+
+		f32 tex_index = getTexture2DIndex(renderer, texture);
+
+		for (u64 i = 0; i < 4; i++) {
+			primeVec4 position = transform * renderer->spriteData.vertices[i];
+			renderer->spriteData.ptr->position.x = position.x;
+			renderer->spriteData.ptr->position.y = position.y;
+
+			renderer->spriteData.ptr->color = *tint_color;
+
+			if (flip == primeFlipNone) {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoords[i];
+			}
+
+			else if (flip == primeFlipX) {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoordsFlipX[i];
+			}
+
+			else if (flip == primeFlipY) {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoordsFlipY[i];
+			}
+
+			else {
+				renderer->spriteData.ptr->texCoords = renderer->spriteData.texCoordsFlipXY[i];
+			}
+
+			renderer->spriteData.ptr->texIndex = tex_index;
+
+			renderer->spriteData.ptr++;
+		}
+		renderer->spriteData.indexCount += 6;
+	}
+	
+	else {
+		primeRenderer2DDrawRectEx(renderer, rect, tint_color, rotation, anchor);
+	}
 }
 
 void

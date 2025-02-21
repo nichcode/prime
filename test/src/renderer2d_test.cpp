@@ -29,6 +29,7 @@ renderer2dTestGL()
         primeRect rect;
         primeRect rect2;
 		primeRect sprite;
+		primeRect sprite2;
 		rect2.x =  primeRectGetCenterX(view) - primeRectGetCenterX(&rect2);
 		rect2.y =  primeRectGetCenterY(view) - primeRectGetCenterY(&rect2);
 
@@ -40,6 +41,20 @@ renderer2dTestGL()
 		sprite.width = 200.0f;
 		sprite.height = 200.0f;
 		primeRenderer2DDrawSprite(renderer, &sprite, texture);
+
+		sprite2.x =  primeRectGetCenterX(view) - primeRectGetCenterX(&sprite2);
+		sprite2.y = 400.0f;
+		sprite2.width = 100.0f;
+		sprite2.height = 100.0f;
+		primeRenderer2DDrawSpriteEx(
+			renderer,
+			&sprite2,
+			texture,
+			primeFlipNone,
+			rotation,
+			primeAnchorCenter,
+			PCOLOR_WHITE
+		);
 
         primeRenderer2DEnd(renderer);
 		primeRenderer2DPresent(renderer);
