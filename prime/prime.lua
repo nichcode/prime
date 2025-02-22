@@ -8,7 +8,7 @@ project "prime"
 
     files {
         "prime.lua",
-        "src/prime_build.cpp"
+        "src/build.cpp"
     }
 
     includedirs {   
