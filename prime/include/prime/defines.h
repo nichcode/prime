@@ -1,6 +1,9 @@
 
 #pragma once
 
+//#include <string.h>
+#include <string>
+
 // platform detection
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__)
 #define PPLATFORM_WINDOWS 1
@@ -73,6 +76,9 @@ using f64 = double;
 
 using b32 = int;
 using b8 = bool;
+
+using str = std::string;
+using wstr = std::wstring;
 
 static_assert(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
 

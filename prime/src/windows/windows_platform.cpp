@@ -2,7 +2,6 @@
 #include "prime/platform.h"
 #include "prime/logger.h"
 
-#include <iostream>
 #include <memory.h>
 
 #ifdef PPLATFORM_WINDOWS
@@ -19,14 +18,14 @@ namespace prime {
     b8 
     Platform::init()
     {
-        std::cout << "Prime Windows Platform Init" << std::endl;
+        PINFO("Prime Windows Platform Init");
         return true;
     }
 
     void 
     Platform::shutdown()
     {
-        std::cout << "Prime Windows Platform Shutdown" << std::endl;
+        PINFO("Prime Windows Platform Shutdown");
     }
 
     void* 
@@ -66,6 +65,28 @@ namespace prime {
     {
         PASSERT_MSG(memory, "memory");
         memset(memory, 0, size);
+    }
+
+    void 
+    Logger::setLevel(LogLevel level, b8 reset)
+    {
+        HANDLE console = NULL;
+        static u8 levels[4] = { 8, 2, 6, 4 };
+        b8 error = level > LogLevel::Warn;
+
+        if (error) {
+            console = GetStdHandle(STD_ERROR_HANDLE);
+        }
+        else {
+            console = GetStdHandle(STD_OUTPUT_HANDLE);
+        }
+
+        if (reset) {
+            SetConsoleTextAttribute(console, 15);
+        }
+        else {
+            SetConsoleTextAttribute(console, levels[(u32)level]);
+        }
     }
 
 } // namespace prime
