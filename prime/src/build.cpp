@@ -1,6 +1,7 @@
 
 #include "prime/defines.h"
 
+#include "filesystem.cpp"
 #include "logger.cpp"
 #include "utils.cpp"
 

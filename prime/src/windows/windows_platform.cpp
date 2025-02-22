@@ -1,6 +1,7 @@
 
 #include "prime/platform.h"
 #include "prime/logger.h"
+#include "prime/utils.h"
 
 #include <memory.h>
 
@@ -18,6 +19,7 @@ namespace prime {
     b8 
     Platform::init()
     {
+        Utils::init();
         PINFO("Prime Windows Platform Init");
         return true;
     }

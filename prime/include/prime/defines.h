@@ -108,3 +108,141 @@ static_assert(sizeof(f32) == 4, "Expected f32 to be 4 bytes.");
 
 /** @brief Assert f64 to be 8 bytes. */
 static_assert(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
+
+namespace prime {
+
+    enum class Action
+    {
+        Release,
+        Press,
+        Repeat,
+        Max
+    };
+
+    enum class Button
+    {
+        Left,
+        Right,
+        Middle,
+        Max
+    };
+
+    enum class Key
+    {
+        A,
+        B,
+        C,
+        D,
+        E,
+        F,
+        G,
+        H,
+        I,
+        J,
+        K,
+        L,
+        M,
+        N,
+        O,
+        P,
+        Q,
+        R,
+        S,
+        T,
+        U,
+        V,
+        W,
+        X,
+        Y,
+        Z,
+
+        Escape,
+        Enter,
+        Tab,
+        Backspace,
+        Insert,
+        Delete,
+        Right,
+        Left,
+        Down,
+        Up,
+        PageUp,
+        PageDown,
+        Home,
+        End,
+        CapsLock,
+        ScrollLock,
+        NumLock,
+        PrintScreen,
+        Pause,
+        F1,
+        F2,
+        F3,
+        F4,
+        F5,
+        F6,
+        F7,
+        F8,
+        F9,
+        F10,
+        F11,
+        F12,
+
+        LeftShift,
+        LeftControl,
+        LeftAlt,
+        LeftSuper,
+        RightShift,
+        RightControl,
+        RightAlt,
+        RightSuper,
+        Menu,
+
+        LeftBracket, /* [ */
+        Backslash, /* \ */
+        RightBracket,  /* ] */
+        GraveAccent,  /* ` */
+        SemiColon, /* ; */
+        Equal, /* = */
+
+        Space,
+        Apostrophe, /* ' */
+        Comma, /* , */
+        Minus, /* - */
+        Period, /* . */
+        Slash, /* / */
+
+        Num0, /* 0 */
+        Num1, /* 1 */
+        Num2, /* 2 */
+        Num3, /* 3 */
+        Num4, /* 4 */
+        Num5, /* 5 */
+        Num6, /* 6 */
+        Num7, /* 7 */
+        Num8, /* 8 */
+        Num9, /* 9 */
+
+        P0,
+        P1,
+        P2,
+        P3,
+        P4,
+        P5,
+        P6,
+        P7,
+        P8,
+        P9,
+        PDecimal,
+        PDivide,
+        PMultiply,
+        PSubtract,
+        PAdd,
+        PEnter,
+        PEqual,
+
+        Max
+    };
+        
+} // namespace prime
+
