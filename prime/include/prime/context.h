@@ -4,6 +4,8 @@
 #include "window.h"
 #include "color.h"
 
+#include <vector>
+
 namespace prime {
 
     enum class BufferType
@@ -171,7 +173,10 @@ namespace prime {
         virtual ~Layout() {};
 
         virtual void
-        add(Type type, u32 divisor) = 0;
+        add(Type type, u32 divisor = PDIVISOR_DEFAULT) = 0;
+
+        virtual void
+        submit() = 0;
 
         virtual u32
         getStride() = 0;

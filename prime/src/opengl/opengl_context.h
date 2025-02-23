@@ -21,8 +21,6 @@ namespace prime {
         BufferType m_Type;
         BufferUsage m_Usage;
 
-        friend GLContext;
-
     public:
         GLBuffer(const BufferDesc& desc);
         virtual ~GLBuffer() override;
@@ -53,6 +51,9 @@ namespace prime {
 
         virtual void
         add(Type type, u32 divisor) override;
+
+        virtual void
+        submit() override;
 
         virtual u32
         getStride() { return m_Stride; }
@@ -115,7 +116,7 @@ namespace prime {
         setBuffer(Buffer* buffer) override;
 
         virtual void
-        drawElements(DrawMode mode, u32 count) = 0;
+        drawElements(DrawMode mode, u32 count) override;
     };
     
 } // namespace prime

@@ -10,9 +10,6 @@ namespace prime {
 
     i32
     wcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str);
-
-    void
-    setLayoutStride()
     
 } // namespace prime
 

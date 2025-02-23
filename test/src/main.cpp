@@ -10,8 +10,12 @@ multiWindowTest();
 b8
 contextTestGL();
 
+b8
+buffersTestGL();
+
 #include "window_test.cpp"
 #include "context_test.cpp"
+#include "buffers_test.cpp"
 
 int
 main()
@@ -21,7 +25,8 @@ main()
     Platform::init();
     //TestManager::add("windowTest", windowTest);
     //TestManager::add("multiWindowTest", multiWindowTest);
-    TestManager::add("contextTestGL", contextTestGL);
+    //TestManager::add("contextTestGL", contextTestGL);
+    TestManager::add("buffersTestGL", buffersTestGL);
 
     TestManager::run();
     Platform::shutdown();

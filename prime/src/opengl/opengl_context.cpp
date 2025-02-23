@@ -97,9 +97,7 @@ namespace prime {
         m_Type = desc.type;
         glGenBuffers(1, &m_ID);
         glBindBuffer(type, m_ID);
-
         glBufferData(type, desc.size, desc.data, usage);
-        glBindBuffer(type, 0);
     }
 
     GLBuffer::~GLBuffer()
@@ -119,6 +117,7 @@ namespace prime {
     GLLayout::GLLayout()
     {
         glGenVertexArrays(1, &m_ID);
+        glBindVertexArray(m_ID);
     }
 
     GLLayout::~GLLayout()
@@ -135,6 +134,72 @@ namespace prime {
         element.divisor = divisor;
         element.size = typeGetSize(type);
         m_Elements.push_back(element);
+    }
+
+    void
+    GLLayout::submit()
+    {
+        u32 m_Stride = 0;
+        for (auto& element : m_Elements) {
+            element.offset = m_Stride;
+            m_Stride += element.size;
+        }
+
+        u32 index = 0;
+        for (const auto& element : m_Elements) {
+            switch (element.type) {
+                case Type::Float:
+                case Type::Float2:
+                case Type::Float3:
+                case Type::Float4: {
+                    glEnableVertexAttribArray(index);
+                    glVertexAttribPointer(index,
+                        typeGetCount(element.type),
+                        typeToGLType(element.type),
+                        GL_FALSE,
+                        m_Stride,
+                        (const void*)element.offset);
+                    
+                    glVertexAttribDivisor(index, element.divisor);
+                    break;
+                }
+                
+                case Type::Int:
+                case Type::Int2:
+                case Type::Int3:
+                case Type::Int4:
+                case Type::Bool: {
+                    glEnableVertexAttribArray(index);
+                    glVertexAttribIPointer(index,
+                        typeGetCount(element.type),
+                        typeToGLType(element.type),
+                        m_Stride,
+                        (const void*)element.offset);
+                    
+                    glVertexAttribDivisor(index, element.divisor);
+                    break;
+                }
+                
+                case Type::Mat3:
+                case Type::Mat4: {
+                    u8 count = count;
+                    for (u8 i = 0; i < count; i++)
+                    {
+                        glEnableVertexAttribArray(index);
+                        glVertexAttribPointer(index,
+                            count,
+                            typeToGLType(element.type),
+                            GL_FALSE,
+                            m_Stride,
+                            (const void*)(element.offset + sizeof(f32) * count * i));
+                        glVertexAttribDivisor(index, element.divisor);
+                    }
+                    break;
+                }
+            
+            }
+            index++;
+        }
     }
 
 
@@ -229,73 +294,6 @@ namespace prime {
     GLContext::setLayout(Layout* layout, b8 submit)
     {
         glBindVertexArray(layout->getID());
-
-        u32 stride = 0;
-        for (auto& element : layout->get())
-        {
-            element.offset = stride;
-            stride += element.size;
-        }
-        layout->setStride(stride);
-
-        if (submit) {
-                u32 index = 0;
-                for (const auto& element : layout->get()) {
-                    switch (element.type) {
-                        case Type::Float:
-                        case Type::Float2:
-                        case Type::Float3:
-                        case Type::Float4: {
-                            glEnableVertexAttribArray(index);
-                            glVertexAttribPointer(index,
-                                typeGetCount(element.type),
-                                typeToGLType(element.type),
-                                GL_FALSE,
-                                layout->getStride(),
-                                (const void*)element.offset);
-                            
-                            glVertexAttribDivisor(index, element.divisor);
-                            break;
-                        }
-                        
-                        case Type::Int:
-                        case Type::Int2:
-                        case Type::Int3:
-                        case Type::Int4:
-                        case Type::Bool: {
-                            glEnableVertexAttribArray(index);
-                            glVertexAttribIPointer(index,
-                                typeGetCount(element.type),
-                                typeToGLType(element.type),
-                                layout->getStride(),
-                                (const void*)element.offset);
-                            
-                            glVertexAttribDivisor(index, element.divisor);
-                            break;
-                        }
-                        
-                        case Type::Mat3:
-                        case Type::Mat4: {
-                            u8 count = count;
-                            for (u8 i = 0; i < count; i++)
-                            {
-                                glEnableVertexAttribArray(index);
-                                glVertexAttribPointer(index,
-                                    count,
-                                    typeToGLType(element.type),
-                                    GL_FALSE,
-                                    layout->getStride(),
-                                    (const void*)(element.offset + sizeof(f32) * count * i));
-                                glVertexAttribDivisor(index, element.divisor);
-                            }
-                            break;
-                        }
-                    
-                    }
-                    index++;
-            }
-        }
-
     }
 
     void

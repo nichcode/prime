@@ -18,10 +18,6 @@ namespace prime {
         DeviceType m_Type;
         std::vector<Context*> m_Contexts;
 
-    private:
-        void append(Context* context);
-        void pop(Context* context);
-
     public:
         ~Device()
         {
