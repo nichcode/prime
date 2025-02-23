@@ -8,22 +8,6 @@
 namespace prime {
 
     void 
-    Device::append(Context* context)
-    {
-        m_Contexts.push_back(context);
-    }
-
-    void 
-    Device::pop(Context* context)
-    {
-        auto it = std::find(m_Contexts.begin(), m_Contexts.end(), context);
-        if (it != m_Contexts.end())
-        {
-            m_Contexts.erase(it);
-        }
-    }
-
-    void 
     Device::init(DeviceType type)
     {
         m_Type = type;
@@ -33,7 +17,6 @@ namespace prime {
     void 
     Device::destroy()
     {
-        m_Type = DeviceType::None;
         for (Context* context : m_Contexts) {
             destroyContext(context);
         }
@@ -48,7 +31,7 @@ namespace prime {
         {
             case DeviceType::OpenGL: {
                 Context* context = new GLContext(window);
-                append(context);
+                m_Contexts.push_back(context);
                 return context;
             }
             break;

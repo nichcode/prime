@@ -10,7 +10,24 @@
 #include <windows.h>
 #endif // PPLATFORM_WINDOWS
 
+#include <vector>
+
 namespace prime {
+
+    class GLBuffer : public Buffer
+    {
+    private:
+        u32 m_ID;
+        BufferType m_Type;
+        BufferUsage m_Usage;
+
+    public:
+        GLBuffer(const BufferDesc& desc);
+        virtual ~GLBuffer() override;
+
+        virtual void
+        setData(const void* data, u32 size) override;
+    };
 
     class GLContext : public Context
     {
@@ -21,9 +38,11 @@ namespace prime {
         HDC m_Hdc;
 #endif // PPLATFORM_WINDOWS
 
+        std::vector<Buffer*> m_Buffers;
+
     public:
         GLContext(const Window& window);
-        ~GLContext();
+        ~GLContext() override;
 
         virtual void
         swapbuffers() override;    
@@ -36,6 +55,12 @@ namespace prime {
 
         virtual void
         clear() override;
+
+        virtual Buffer*
+        createBuffer(const BufferDesc& desc) override;
+
+        virtual void
+        destroyBuffer(Buffer* buffer) override;
     };
     
 } // namespace prime

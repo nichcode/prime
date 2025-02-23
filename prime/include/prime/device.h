@@ -9,7 +9,6 @@ namespace prime {
 
     enum class DeviceType
     {
-        None,
         OpenGL
     };
 
