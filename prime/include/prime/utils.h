@@ -26,6 +26,12 @@ namespace prime {
 
         static const char* 
         getName(Key key);
+
+        static str 
+        toString(const wstr& wstring);
+
+        static wstr 
+        toWstring(const str& string);
     };
     
 } // namespace prime

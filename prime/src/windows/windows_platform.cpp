@@ -6,11 +6,7 @@
 #include <memory.h>
 
 #ifdef PPLATFORM_WINDOWS
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif // WIN32_LEAN_AND_MEAN
-#include <windows.h>
+#include "windows_api.h"
 
 static u64 s_UsedMemory = 0;
 
@@ -19,6 +15,25 @@ namespace prime {
     b8 
     Platform::init()
     {
+        s_Instance = GetModuleHandleW(nullptr);
+
+        WNDCLASSEXW wc = {};
+        wc.cbClsExtra = 0;
+        wc.cbSize = sizeof(WNDCLASSEXW);
+        wc.cbWndExtra = 0;
+        wc.hbrBackground = NULL;
+        wc.hCursor = LoadCursor(s_Instance, IDC_ARROW);
+        wc.hIcon = LoadIcon(s_Instance, IDI_APPLICATION);
+        wc.hIconSm = LoadIcon(s_Instance, IDI_APPLICATION);
+        wc.hInstance = s_Instance;
+        wc.lpfnWndProc = primeWin32Proc;
+        wc.lpszClassName = s_ClassName;
+        wc.lpszMenuName = NULL;
+        wc.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+
+        ATOM success = RegisterClassExW(&wc);
+        PASSERT_MSG(success, "Window Registration Failed");
+    
         Utils::init();
         PINFO("Prime Windows Platform Init");
         return true;
@@ -27,47 +42,10 @@ namespace prime {
     void 
     Platform::shutdown()
     {
+        UnregisterClassW(s_ClassName, s_Instance);
         PINFO("Prime Windows Platform Shutdown");
     }
-
-    void* 
-    Platform::_alloc(u64 size)
-    {
-        PASSERT_MSG(size, "size is invalid");
-        s_UsedMemory += size;
-        return (void*)HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, size);
-    }
-
-    void 
-    Platform::_free(void*memory, u64 size)
-    {
-        PASSERT_MSG(size, "size is invalid");
-        s_UsedMemory -= size;
-        HeapFree(GetProcessHeap(), 0, memory);
-        memory = nullptr;
-    }
-
-    void 
-    Platform::copy(void* dest_memory, void* src_memory, u64 size)
-    {
-        PASSERT_MSG(dest_memory, "dest_memory");
-        PASSERT_MSG(src_memory, "src_memory");
-        memcpy(dest_memory, src_memory, size);
-    }
-
-    void 
-    Platform::set(void* memory, i32 value, u64 size)
-    {
-        PASSERT_MSG(memory, "memory");
-        memset(memory, value, size);
-    }
-
-    void 
-    Platform::zero(void* memory, u64 size)
-    {
-        PASSERT_MSG(memory, "memory");
-        memset(memory, 0, size);
-    }
+    
 
     void 
     Logger::setLevel(LogLevel level, b8 reset)
@@ -89,6 +67,18 @@ namespace prime {
         else {
             SetConsoleTextAttribute(console, levels[(u32)level]);
         }
+    }
+
+    i32
+    multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)
+    {
+        return MultiByteToWideChar(CP_UTF8, 0, str, -1, wstr, str_len);
+    }
+
+    i32
+    wcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str)
+    {
+        return WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, wstr_len, 0, 0);
     }
 
 } // namespace prime

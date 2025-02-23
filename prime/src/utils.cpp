@@ -2,6 +2,7 @@
 #include "prime/utils.h"
 #include "prime/logger.h"
 #include "prime/platform.h"
+#include "api.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -12,14 +13,6 @@ namespace prime {
     static std::string s_ActionNames[(u32)Action::Max + 1] = {};
     static std::string s_ButtonNames[(u32)Button::Max + 1] = {};
     static std::string s_KeyNames[(u32)Key::Max + 1] = {};
-
-    void 
-    stringFree(char* string)
-    {
-        PASSERT_MSG(string, "string is null");
-        u64 length = strlen(string);
-        Platform::free(string, length + 1);
-    }
 
     char* 
     Utils::format(const char* fmt, va_list args_list)
@@ -37,8 +30,7 @@ namespace prime {
 
         i32 length = vsnprintf(0, 0, fmt, list_copy);
         va_end(list_copy);
-
-        char* result = Platform::alloc<char>(length + 1);
+        char* result = new char[length + 1];
         PASSERT_MSG(result, "buffer allocation failed");
         vsnprintf(result, length + 1, fmt, args_list);
         result[length] = 0;
@@ -56,7 +48,7 @@ namespace prime {
         va_end(arg_ptr);
 
         str string(result);
-        stringFree(result);
+        delete[] result;
         return string;
     }
 
@@ -212,6 +204,41 @@ namespace prime {
         PASSERT_MSG(k >= 0, "Invalid key");
         PASSERT_MSG(k < (u32)Key::Max, "Invalid key");
         return s_KeyNames[k].c_str();
+    }
+
+    str 
+    Utils::toString(const wstr& wstring)
+    {
+        PASSERT_MSG(wstring.c_str(), "wstring is null");
+        int len = wcharToMultibyte(wstring.c_str(), 0, nullptr);
+        if (len == 0) {
+            return nullptr;
+        }
+
+        char* buffer = new char[len + 1];
+        PASSERT_MSG(buffer, "buffer allocation failed");
+        wcharToMultibyte(wstring.c_str(), len, buffer);
+
+        str string(buffer);
+        delete[] buffer;
+        return string;
+    }
+
+    wstr 
+    Utils::toWstring(const str& string)
+    {
+        PASSERT_MSG(string.c_str(), "string is null");
+        int len = multibyteToWchar(string.c_str(), 0, nullptr);
+        if (len == 0) {
+            return nullptr;
+        }
+        wchar_t* buffer = new wchar_t[sizeof(wchar_t) * len];
+        PASSERT_MSG(buffer, "buffer allocation failed");
+        multibyteToWchar(string.c_str(), len, buffer);
+
+        wstr wide_string(buffer);
+        delete[] buffer;
+        return wide_string;
     }
     
 } // namespace prime
