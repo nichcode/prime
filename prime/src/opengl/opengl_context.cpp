@@ -45,6 +45,48 @@ namespace prime {
             }
             break;
         }
+        return 0;
+    }
+
+    static inline GLenum
+    typeToGLType(Type type)
+    {
+        switch (type)
+        {
+        case Type::Int:
+        case Type::Int2:
+        case Type::Int3:
+        case Type::Int4:
+            return GL_INT;
+
+        case Type::Float:
+        case Type::Float2:
+        case Type::Float3:
+        case Type::Float4:
+        case Type::Mat3:
+        case Type::Mat4:
+            return GL_FLOAT;
+
+        case Type::Bool:
+            return GL_BOOL;
+        }
+        return 0;
+    }
+
+    inline static 
+    GLenum drawModeToOpenGL(DrawMode mode)
+    {
+        switch (mode)
+        {
+        case DrawMode::Triangles:
+            return GL_TRIANGLES;
+            break;
+
+        case DrawMode::Lines:
+            return GL_LINES;
+            break;
+        }
+        return 0;
     }
 
     GLBuffer::GLBuffer(const BufferDesc& desc)
@@ -71,6 +113,28 @@ namespace prime {
     {
         i32 type = getBufferType(m_Type);
         glBufferSubData(type, 0, size, data);
+    }
+
+    
+    GLLayout::GLLayout()
+    {
+        glGenVertexArrays(1, &m_ID);
+    }
+
+    GLLayout::~GLLayout()
+    {
+        glDeleteVertexArrays(1, &m_ID);
+        m_Elements.clear();
+    }
+
+    void 
+    GLLayout::add(Type type, u32 divisor)
+    {
+        Element element;
+        element.type = type;
+        element.divisor = divisor;
+        element.size = typeGetSize(type);
+        m_Elements.push_back(element);
     }
 
 
@@ -138,6 +202,114 @@ namespace prime {
         }
 
         delete buffer;
+    }
+
+    Layout*
+    GLContext::createLayout()
+    {
+        Layout* layout = new GLLayout();
+        m_Layouts.push_back(layout);
+        return layout;
+    }
+
+    void
+    GLContext::destroyLayout(Layout* layout)
+    {
+        PASSERT_MSG(layout, "layout is null");
+        auto it = std::find(m_Layouts.begin(), m_Layouts.end(), layout);
+        if (it != m_Layouts.end())
+        {
+            m_Layouts.erase(it);
+        }
+
+        delete layout;
+    }
+
+    void
+    GLContext::setLayout(Layout* layout, b8 submit)
+    {
+        glBindVertexArray(layout->getID());
+
+        u32 stride = 0;
+        for (auto& element : layout->get())
+        {
+            element.offset = stride;
+            stride += element.size;
+        }
+        layout->setStride(stride);
+
+        if (submit) {
+                u32 index = 0;
+                for (const auto& element : layout->get()) {
+                    switch (element.type) {
+                        case Type::Float:
+                        case Type::Float2:
+                        case Type::Float3:
+                        case Type::Float4: {
+                            glEnableVertexAttribArray(index);
+                            glVertexAttribPointer(index,
+                                typeGetCount(element.type),
+                                typeToGLType(element.type),
+                                GL_FALSE,
+                                layout->getStride(),
+                                (const void*)element.offset);
+                            
+                            glVertexAttribDivisor(index, element.divisor);
+                            break;
+                        }
+                        
+                        case Type::Int:
+                        case Type::Int2:
+                        case Type::Int3:
+                        case Type::Int4:
+                        case Type::Bool: {
+                            glEnableVertexAttribArray(index);
+                            glVertexAttribIPointer(index,
+                                typeGetCount(element.type),
+                                typeToGLType(element.type),
+                                layout->getStride(),
+                                (const void*)element.offset);
+                            
+                            glVertexAttribDivisor(index, element.divisor);
+                            break;
+                        }
+                        
+                        case Type::Mat3:
+                        case Type::Mat4: {
+                            u8 count = count;
+                            for (u8 i = 0; i < count; i++)
+                            {
+                                glEnableVertexAttribArray(index);
+                                glVertexAttribPointer(index,
+                                    count,
+                                    typeToGLType(element.type),
+                                    GL_FALSE,
+                                    layout->getStride(),
+                                    (const void*)(element.offset + sizeof(f32) * count * i));
+                                glVertexAttribDivisor(index, element.divisor);
+                            }
+                            break;
+                        }
+                    
+                    }
+                    index++;
+            }
+        }
+
+    }
+
+    void
+    GLContext::setBuffer(Buffer* buffer)
+    {
+        i32 type = getBufferType(buffer->getType());
+        glBindBuffer(type, buffer->getID());
+    }
+
+    void
+    GLContext::drawElements(DrawMode mode, u32 count)
+    {
+        GLenum type = drawModeToOpenGL(mode);
+        glDrawElements(type, count, GL_UNSIGNED_INT, nullptr);
     }
     
 } // namespace prime
