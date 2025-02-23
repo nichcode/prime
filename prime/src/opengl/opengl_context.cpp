@@ -218,6 +218,18 @@ namespace prime {
 #ifdef PPLATFORM_WINDOWS
         wglContextDestroy(m_Context);
 #endif // PPLATFORM_WINDOWS
+
+    for (Buffer* buffer : m_Buffers) {
+        destroyBuffer(buffer);
+    }
+
+    for (Layout* layout : m_Layouts) {
+        destroyLayout(layout);
+    }
+
+    m_Buffers.clear();
+    m_Layouts.clear();
+
     }
 
     void 
