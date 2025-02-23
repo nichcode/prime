@@ -95,6 +95,9 @@ namespace prime {
         WindowHandle*
         getHandle();
 
+        WindowHandle*
+        getHandle() const;
+
         static void 
         pollEvents();
 

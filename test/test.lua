@@ -21,6 +21,15 @@ project "prime_test"
         "%{wks.location}/prime/include",
     }
 
-    links {
-        "prime"
-    }
+    filter "toolset:gcc"
+        links {
+            "prime",
+            "glad",
+            "Gdi32",
+            "OpenGL32"
+        }
+
+    filter "toolset:msc"
+        links {
+            "prime"
+        }

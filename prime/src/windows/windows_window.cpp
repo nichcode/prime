@@ -6,7 +6,7 @@
 
 #ifdef PPLATFORM_WINDOWS
 
-#include "windows_api.h"
+#include "windows_API.h"
 
 namespace prime {
 
@@ -539,6 +539,12 @@ namespace prime {
         return m_Handle;
     }
 
+    WindowHandle*
+    Window::getHandle() const
+    {
+        return m_Handle;
+    }
+
     void
     Window::setCloseCallback(WindowCloseFunc func)
     {
@@ -598,6 +604,11 @@ namespace prime {
         s_Callbacks.windowFocused = nullptr;
         s_Callbacks.windowMoved = nullptr;
         s_Callbacks.windowResize = nullptr;
+    }
+
+    HWND getWin32WindowHandle(const Window& window)
+    {
+        return window.getHandle()->hwnd;
     }
     
 } // namespace prime

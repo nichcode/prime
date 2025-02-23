@@ -42,6 +42,10 @@ end
         "MultiProcessorCompile"
     }
 
+    libdirs {
+        "%{wks.location}/lib"
+    }
+
     filter "toolset:msc"
         characterset ("Unicode")
 
@@ -69,3 +73,7 @@ end
     if (_OPTIONS["build_test"]) then
         include "test/test.lua"
     end
+
+    group "vendor"
+        include "vendor/glad/glad.lua"
+    group ""

@@ -2,7 +2,7 @@
 #include "prime/utils.h"
 #include "prime/logger.h"
 #include "prime/platform.h"
-#include "api.h"
+#include "API.h"
 
 #include <stdio.h>
 #include <stdarg.h>

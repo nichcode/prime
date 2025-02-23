@@ -2,11 +2,12 @@
 #include "prime/platform.h"
 #include "prime/logger.h"
 #include "prime/utils.h"
+#include "wgl_context.h"
 
 #include <memory.h>
 
 #ifdef PPLATFORM_WINDOWS
-#include "windows_api.h"
+#include "windows_API.h"
 
 static u64 s_UsedMemory = 0;
 
@@ -35,6 +36,8 @@ namespace prime {
         PASSERT_MSG(success, "Window Registration Failed");
     
         Utils::init();
+        wglContextCreateDummy();
+
         PINFO("Prime Windows Platform Init");
         return true;
     }
