@@ -196,11 +196,166 @@ namespace prime {
         f32 y;
         f32 z;
 
+        vec3()
+        {
+            this->x = 0.0f;
+            this->y = 0.0f;
+            this->z = 0.0f;
+        }
+
         vec3(f32 x, f32 y, f32 z)
         {
             this->x = x;
             this->y = y;
             this->z = z;
+        }
+
+        PINLINE void 
+        add(const vec3& v)
+        {
+            this->x += v.x;
+            this->y += v.y;
+            this->z += v.z;
+        }
+
+        PINLINE void 
+        sub(const vec3& v) 
+        {
+            this->x -= v.x;
+            this->y -= v.y;
+            this->z -= v.z;
+        }
+
+        PINLINE void 
+        div(const vec3& v)
+        {
+            this->x /= v.x;
+            this->y /= v.y;
+            this->z /= v.z;
+        }
+
+        PINLINE void 
+        mul(const vec3& v)
+        {
+            this->x *= v.x;
+            this->y *= v.y;
+            this->z *= v.z;
+        }
+
+        PINLINE void 
+        mulScaler(const f32 scaler)
+        {
+            this->x *= scaler;
+            this->y *= scaler;
+            this->z *= scaler;
+        }
+
+        PINLINE void 
+        divScaler(const f32 scaler)
+        {
+            this->x /= scaler;
+            this->y /= scaler;
+            this->z /= scaler;
+        }
+
+        PINLINE void
+        normalize()
+        {
+            const f32 length = math::sqrt(x * x + y * y + z * z);
+            x /= length;
+            y /= length;
+            z /= length;
+        }
+
+        PINLINE static vec3
+        add(const vec3& lhs, const vec3& rhs)
+        {
+            return vec3(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+        }
+
+        PINLINE static vec3
+        sub(const vec3& lhs, const vec3& rhs)
+        {
+            return vec3(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+        }
+
+        PINLINE static vec3
+        div(const vec3& lhs, const vec3& rhs)
+        {
+            return vec3(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
+        }
+
+        PINLINE static vec3
+        mul(const vec3& lhs, const vec3& rhs)
+        {
+            return vec3(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
+        }
+
+        PINLINE static vec3
+        mulScaler(const vec3& vec, f32 scaler)
+        {
+            return vec3(vec.x * scaler, vec.y * scaler, vec.z * scaler);
+        }
+
+        PINLINE static vec3
+        divScaler(const vec3& vec, f32 scaler)
+        {
+            return vec3(vec.x / scaler, vec.y / scaler, vec.z / scaler);
+        }
+
+        PINLINE static f32
+        lengthSquared(const vec3& vec)
+        {
+            return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
+        }
+
+        PINLINE static f32
+        length(const vec3& vec)
+        {
+            return math::sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
+        }
+
+        PINLINE static vec3
+        normalized(const vec3& vec)
+        {
+            vec3 v = vec;
+            const f32 length = vec3::length(vec);
+            v.x /= length;
+            v.y /= length;
+            v.z /= length;
+            return v;
+        }
+
+        PINLINE static f32
+        distanceSquared(const vec3& lhs, const vec3& rhs)
+        {
+            vec3 vec(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+            return lengthSquared(vec);
+        }
+
+        PINLINE static f32
+        distance(const vec3& lhs, const vec3& rhs)
+        {
+            vec3 vec(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+            return length(vec);
+        }
+
+        PINLINE static b8
+        equal(const vec3& lhs, const vec3& rhs)
+        {
+            return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+        }
+
+        PINLINE static b8
+        notEqual(const vec3& lhs, const vec3& rhs)
+        {
+            return lhs.x != rhs.x && lhs.y != rhs.y && lhs.z != rhs.z;
+        }
+
+        PINLINE static str
+        toString(const vec3& vec)
+        {
+            return Utils::format("vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
         }
     };
 
@@ -313,5 +468,85 @@ PINLINE b8 operator != (const prime::vec2& lhs, const prime::vec2& rhs)
 {
     return prime::vec2::notEqual(lhs, rhs);
 }
+
+
+// vec3
+
+PINLINE prime::vec3 operator + (const prime::vec3& lhs, const prime::vec3& rhs)
+{
+    return prime::vec3::add(lhs, rhs);
+}
+
+PINLINE prime::vec3 operator - (const prime::vec3& lhs, const prime::vec3& rhs)
+{
+    return prime::vec3::sub(lhs, rhs);
+}
+
+PINLINE prime::vec3 operator / (const prime::vec3& lhs, const prime::vec3& rhs)
+{
+    return prime::vec3::div(lhs, rhs);
+}
+
+PINLINE prime::vec3 operator / (const prime::vec3& lhs, const f32 scaler)
+{
+    return prime::vec3::divScaler(lhs, scaler);
+}
+
+PINLINE prime::vec3 operator * (const prime::vec3& lhs, const prime::vec3& rhs)
+{
+    return prime::vec3::mul(lhs, rhs);
+}
+
+PINLINE prime::vec3 operator * (const prime::vec3& lhs, const f32 scaler)
+{
+    return prime::vec3::mulScaler(lhs, scaler);
+}
+
+PINLINE prime::vec3& operator += (prime::vec3& lhs, const prime::vec3& rhs)
+{
+    lhs.add(rhs);
+    return lhs;
+}
+
+PINLINE prime::vec3& operator -= (prime::vec3& lhs, const prime::vec3& rhs)
+{
+    lhs.sub(rhs);
+    return lhs;
+}
+
+PINLINE prime::vec3& operator /= (prime::vec3& lhs, const prime::vec3& rhs)
+{
+    lhs.div(rhs);
+    return lhs;
+}
+
+PINLINE prime::vec3& operator /= (prime::vec3& lhs, f32 scaler)
+{
+    lhs.divScaler(scaler);
+    return lhs;
+}
+
+PINLINE prime::vec3& operator *= (prime::vec3& lhs, const prime::vec3& rhs)
+{
+    lhs.mul(rhs);
+    return lhs;
+}
+
+PINLINE prime::vec3& operator *= (prime::vec3& lhs, f32 scaler)
+{
+    lhs.mulScaler(scaler);
+    return lhs;
+}
+
+PINLINE b8 operator == (const prime::vec3& lhs, const prime::vec3& rhs)
+{
+    return prime::vec3::equal(lhs, rhs);
+}
+
+PINLINE b8 operator != (const prime::vec3& lhs, const prime::vec3& rhs)
+{
+    return prime::vec3::notEqual(lhs, rhs);
+}
+
 
 #endif // __cplusplus
