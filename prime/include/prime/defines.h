@@ -60,6 +60,7 @@
 #define PDIVISOR_DEFAULT 0
 #define PMAX_TEXTURE_SLOTS 16
 #define PMAX_TEXTURE_SIZE 8192
+#define PPI 3.14159265358979323846f
 
 using u8 = unsigned char;
 using u16 = unsigned short;
