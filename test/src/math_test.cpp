@@ -46,5 +46,31 @@ mathTest()
 	str vec4_string = prime::vec4::toString(vec4_result);
     prime::Logger::info(vec4_string.c_str());
 
+    // mat4
+	prime::mat4 ortho = prime::mat4::orthographic(0.0f, 640.0f, 480.0f, 0.0f, 1.0f, -1.0f);
+
+	prime::mat4 perps = prime::mat4::perspective(45.0f, 640.0f / 480.0f, 30.0f, 1000.0f);
+	prime::mat4 translation = prime::mat4::translate({2.0f, 11.0f, -2.0f});
+	prime::mat4 rotation = prime::mat4::rotateZ(45.0f);
+	prime::mat4 scale = prime::mat4::scale({ 2.0f, 2.0f, 2.0f });
+	prime::mat4 trs = translation * rotation * scale;
+	prime::mat4 inverse = prime::mat4::inverse(trs);
+
+	str string_ortho = prime::mat4::toString(ortho);
+	str string_perps = prime::mat4::toString(perps);
+	str string_translation = prime::mat4::toString(translation);
+	str string_rotation = prime::mat4::toString(rotation);
+	str string_scale = prime::mat4::toString(scale);
+	str string_trs = prime::mat4::toString(trs);
+	str string_inverse = prime::mat4::toString(inverse);
+
+	prime::Logger::info(string_ortho.c_str());
+	prime::Logger::info(string_perps.c_str());
+	prime::Logger::info(string_translation.c_str());
+	prime::Logger::info(string_rotation.c_str());
+	prime::Logger::info(string_scale.c_str());
+	prime::Logger::info(string_trs.c_str());
+	prime::Logger::info(string_inverse.c_str());
+
     return PTRUE;
 }
