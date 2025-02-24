@@ -11,6 +11,7 @@
 #include "native.h"
 #include "platform.h"
 #include "rect.h"
+#include "shader.h"
 #include "test.h"
 #include "utils.h"
 #include "window.h"

@@ -3,13 +3,15 @@
 
 #include "defines.h"
 
+#include <stdarg.h>
+
 namespace prime {
 
     class Utils
     {
     private:
         static char*
-        format(const char* fmt, va_list args_list);
+        formatArgs(const char* fmt, va_list args_list);
 
     public:
         static void

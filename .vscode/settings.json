@@ -5,6 +5,7 @@
         "string": "cpp",
         "string_view": "cpp",
         "system_error": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "atomic": "cpp"
     }
 }

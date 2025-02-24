@@ -5,7 +5,6 @@
 #include "API.h"
 
 #include <stdio.h>
-#include <stdarg.h>
 #include <string.h>
 
 namespace prime {
@@ -15,7 +14,7 @@ namespace prime {
     static std::string s_KeyNames[(u32)Key::Max + 1] = {};
 
     char* 
-    Utils::format(const char* fmt, va_list args_list)
+    Utils::formatArgs(const char* fmt, va_list args_list)
     {
         PASSERT_MSG(fmt, "fmt is null");
         va_list list_copy;
@@ -43,7 +42,7 @@ namespace prime {
         PASSERT_MSG(fmt, "fmt is null");
         va_list arg_ptr;
         va_start(arg_ptr, fmt);
-        char* result = format(fmt, arg_ptr);
+        char* result = formatArgs(fmt, arg_ptr);
         PASSERT_MSG(result, "buffer allocation failed");
         va_end(arg_ptr);
 

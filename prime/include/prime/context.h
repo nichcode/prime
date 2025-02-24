@@ -5,6 +5,7 @@
 #include "color.h"
 #include "buffer.h"
 #include "layout.h"
+#include "shader.h"
 #include "rect.h"
 
 namespace prime {
@@ -50,11 +51,20 @@ namespace prime {
         virtual void
         destroyLayout(Layout* layout) = 0;
 
+        virtual Shader*
+        createShader(const ShaderDesc& desc) = 0;
+
+        virtual void
+        destroyShader(Shader* shader) = 0;
+
         virtual void
         setLayout(Layout* layout, b8 submit) = 0;
 
         virtual void
         setBuffer(Buffer* buffer) = 0;
+
+        virtual void
+        setShader(Shader* shader) = 0;
 
         virtual void
         drawElements(DrawMode mode, u32 count) = 0;

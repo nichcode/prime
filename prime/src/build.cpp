@@ -16,3 +16,4 @@
 #include "opengl/opengl_context.cpp"
 #include "opengl/opengl_buffer.cpp"
 #include "opengl/opengl_layout.cpp"
+#include "opengl/opengl_shader.cpp"

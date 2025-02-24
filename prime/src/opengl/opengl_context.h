@@ -26,6 +26,7 @@ namespace prime {
         Rect m_Viewport;
         std::vector<Buffer*> m_Buffers;
         std::vector<Layout*> m_Layouts;
+        std::vector<Shader*> m_Shaders;
 
     public:
         GLContext(const Window& window);
@@ -61,11 +62,20 @@ namespace prime {
         virtual void
         destroyLayout(Layout* layout) override;
 
+        virtual Shader*
+        createShader(const ShaderDesc& desc) override;
+
+        virtual void
+        destroyShader(Shader* shader) override;
+
         virtual void
         setLayout(Layout* layout, b8 submit) override;
 
         virtual void
         setBuffer(Buffer* buffer) override;
+
+        virtual void
+        setShader(Shader* shader) override;
 
         virtual void
         drawElements(DrawMode mode, u32 count) override;

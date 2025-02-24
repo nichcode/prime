@@ -9,6 +9,7 @@
 #include "opengl_API.h"
 #include "opengl_buffer.h"
 #include "opengl_layout.h"
+#include "opengl_shader.h"
 
 #ifdef PPLATFORM_WINDOWS
 #include "windows/wgl_context.h"
@@ -141,6 +142,25 @@ namespace prime {
 
         delete layout;
     }
+    
+    Shader* GLContext::createShader(const ShaderDesc& desc)
+    {
+        Shader* shader = new GLShader(desc);
+        m_Shaders.push_back(shader);
+        return shader;
+    }
+    
+    void GLContext::destroyShader(Shader* shader)
+    {
+        PASSERT_MSG(shader, "shader is null");
+        auto it = std::find(m_Shaders.begin(), m_Shaders.end(), shader);
+        if (it != m_Shaders.end())
+        {
+            m_Shaders.erase(it);
+        }
+
+        delete shader;
+    }
 
     void
     GLContext::setLayout(Layout* layout, b8 submit)
@@ -153,6 +173,11 @@ namespace prime {
     {
         i32 type = getBufferType(buffer->getType());
         glBindBuffer(type, buffer->getID());
+    }
+    
+    void GLContext::setShader(Shader* shader)
+    {
+        glUseProgram(shader->getID());
     }
 
     void

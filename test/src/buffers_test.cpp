@@ -33,14 +33,22 @@ buffersTestGL()
     ibo_desc.type = prime::BufferType::Index;
     ibo_desc.usage = prime::BufferUsage::StaticDraw;
 
+    prime::ShaderDesc shader_desc;
+    shader_desc.load = true;
+    shader_desc.vertex = "shaders/vertex.glsl";
+    shader_desc.pixel = "shaders/pixel.glsl";
+    shader_desc.type = prime::ShaderSourceType::GLSL;
+
     prime::Layout* layout = context->createLayout();
     layout->add(prime::Type::Float3);
     prime::Buffer* vbo = context->createBuffer(vbo_desc);
     prime::Buffer* ibo = context->createBuffer(ibo_desc);
+    prime::Shader* shader = context->createShader(shader_desc);
 
     context->setLayout(layout, true);
     context->setBuffer(vbo);
     context->setBuffer(ibo);
+    context->setShader(shader);
 
     layout->submit();
 
