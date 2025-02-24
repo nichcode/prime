@@ -14,61 +14,6 @@
 
 namespace prime {
 
-    class GLBuffer : public Buffer
-    {
-    private:
-        u32 m_ID;
-        BufferType m_Type;
-        BufferUsage m_Usage;
-
-    public:
-        GLBuffer(const BufferDesc& desc);
-        virtual ~GLBuffer() override;
-
-        virtual void
-        setData(const void* data, u32 size) override;
-
-        virtual BufferType
-        getType() override { return m_Type; }
-
-        virtual BufferUsage
-        getUsage() override { return m_Usage; }
-
-    private:
-        virtual u32 getID() override { return m_ID; }
-        virtual void* getHandle() override {return &m_ID;}
-    };
-
-    class GLLayout : public Layout
-    {
-    private:
-        u32 m_ID, m_Stride;
-        std::vector<Element> m_Elements;
-
-    public:
-        GLLayout();
-        virtual ~GLLayout() override;
-
-        virtual void
-        add(Type type, u32 divisor) override;
-
-        virtual void
-        submit() override;
-
-        virtual u32
-        getStride() { return m_Stride; }
-
-        virtual std::vector<Element>&
-        get() override { return m_Elements; }
-
-    private:
-        virtual void
-        setStride(u32 stride) override { m_Stride = stride; }
-
-        virtual u32 getID() override { return m_ID; }
-        virtual void* getHandle() override { return &m_ID; }
-    };
-
     class GLContext : public Context
     {
     private:
@@ -78,6 +23,7 @@ namespace prime {
         HDC m_Hdc;
 #endif // PPLATFORM_WINDOWS
 
+        Rect m_Viewport;
         std::vector<Buffer*> m_Buffers;
         std::vector<Layout*> m_Layouts;
 
@@ -96,6 +42,12 @@ namespace prime {
 
         virtual void
         clear() override;
+
+        virtual void
+        setViewport(const Rect& viewport) override;
+
+        virtual const Rect&
+        getViewport() const override { return m_Viewport; }
 
         virtual Buffer*
         createBuffer(const BufferDesc& desc) override;

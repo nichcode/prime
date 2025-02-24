@@ -6,74 +6,17 @@
 
 #include <algorithm>
 
+#include "opengl_API.h"
+#include "opengl_buffer.h"
+#include "opengl_layout.h"
+
 #ifdef PPLATFORM_WINDOWS
 #include "windows/wgl_context.h"
 #endif // PPLATFORM_WINDOWS
 
 namespace prime {
 
-    static i32 
-    getBufferType(BufferType type)
-    {
-        switch (type)
-        {
-            case BufferType::Vertex: {
-                return GL_ARRAY_BUFFER;
-            }
-            break;
-
-            case BufferType::Index: {
-                return GL_ELEMENT_ARRAY_BUFFER;
-            }
-            break;
-        }
-        return 0;
-    }
-
-    static i32 
-    getBufferUsage(BufferUsage usage)
-    {
-        switch (usage)
-        {
-            case BufferUsage::DynamicDraw: {
-                return GL_DYNAMIC_DRAW;
-            }
-            break;
-
-            case BufferUsage::StaticDraw: {
-                return GL_STATIC_DRAW;
-            }
-            break;
-        }
-        return 0;
-    }
-
-    static inline GLenum
-    typeToGLType(Type type)
-    {
-        switch (type)
-        {
-        case Type::Int:
-        case Type::Int2:
-        case Type::Int3:
-        case Type::Int4:
-            return GL_INT;
-
-        case Type::Float:
-        case Type::Float2:
-        case Type::Float3:
-        case Type::Float4:
-        case Type::Mat3:
-        case Type::Mat4:
-            return GL_FLOAT;
-
-        case Type::Bool:
-            return GL_BOOL;
-        }
-        return 0;
-    }
-
-    inline static 
+    PINLINE static 
     GLenum drawModeToOpenGL(DrawMode mode)
     {
         switch (mode)
@@ -89,120 +32,6 @@ namespace prime {
         return 0;
     }
 
-    GLBuffer::GLBuffer(const BufferDesc& desc)
-    {
-        i32 type = getBufferType(desc.type);
-        i32 usage = getBufferUsage(desc.usage);
-        m_Usage = desc.usage;
-        m_Type = desc.type;
-        glGenBuffers(1, &m_ID);
-        glBindBuffer(type, m_ID);
-        glBufferData(type, desc.size, desc.data, usage);
-    }
-
-    GLBuffer::~GLBuffer()
-    {
-        glDeleteBuffers(1, &m_ID);
-        m_ID = 0;
-    }
-
-    void
-    GLBuffer::setData(const void* data, u32 size)
-    {
-        i32 type = getBufferType(m_Type);
-        glBufferSubData(type, 0, size, data);
-    }
-
-    
-    GLLayout::GLLayout()
-    {
-        glGenVertexArrays(1, &m_ID);
-        glBindVertexArray(m_ID);
-    }
-
-    GLLayout::~GLLayout()
-    {
-        glDeleteVertexArrays(1, &m_ID);
-        m_Elements.clear();
-    }
-
-    void 
-    GLLayout::add(Type type, u32 divisor)
-    {
-        Element element;
-        element.type = type;
-        element.divisor = divisor;
-        element.size = typeGetSize(type);
-        m_Elements.push_back(element);
-    }
-
-    void
-    GLLayout::submit()
-    {
-        u32 m_Stride = 0;
-        for (auto& element : m_Elements) {
-            element.offset = m_Stride;
-            m_Stride += element.size;
-        }
-
-        u32 index = 0;
-        for (const auto& element : m_Elements) {
-            switch (element.type) {
-                case Type::Float:
-                case Type::Float2:
-                case Type::Float3:
-                case Type::Float4: {
-                    glEnableVertexAttribArray(index);
-                    glVertexAttribPointer(index,
-                        typeGetCount(element.type),
-                        typeToGLType(element.type),
-                        GL_FALSE,
-                        m_Stride,
-                        (const void*)element.offset);
-                    
-                    glVertexAttribDivisor(index, element.divisor);
-                    break;
-                }
-                
-                case Type::Int:
-                case Type::Int2:
-                case Type::Int3:
-                case Type::Int4:
-                case Type::Bool: {
-                    glEnableVertexAttribArray(index);
-                    glVertexAttribIPointer(index,
-                        typeGetCount(element.type),
-                        typeToGLType(element.type),
-                        m_Stride,
-                        (const void*)element.offset);
-                    
-                    glVertexAttribDivisor(index, element.divisor);
-                    break;
-                }
-                
-                case Type::Mat3:
-                case Type::Mat4: {
-                    u8 count = count;
-                    for (u8 i = 0; i < count; i++)
-                    {
-                        glEnableVertexAttribArray(index);
-                        glVertexAttribPointer(index,
-                            count,
-                            typeToGLType(element.type),
-                            GL_FALSE,
-                            m_Stride,
-                            (const void*)(element.offset + sizeof(f32) * count * i));
-                        glVertexAttribDivisor(index, element.divisor);
-                    }
-                    break;
-                }
-            
-            }
-            index++;
-        }
-    }
-
-
     GLContext::GLContext(const Window& window)
     {
 #ifdef PPLATFORM_WINDOWS
@@ -211,6 +40,7 @@ namespace prime {
         m_Hdc = GetDC(m_Window);
 #endif // PPLATFORM_WINDOWS
         m_Buffers.clear();
+        m_Layouts.clear();
     }
 
     GLContext::~GLContext()
@@ -229,7 +59,6 @@ namespace prime {
 
     m_Buffers.clear();
     m_Layouts.clear();
-
     }
 
     void 
@@ -258,6 +87,17 @@ namespace prime {
     GLContext::clear()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    }
+    
+    void GLContext::setViewport(const Rect& viewport)
+    {
+        glViewport(
+            viewport.x,
+            viewport.y,
+            viewport.width,
+            viewport.height);
+        
+        m_Viewport = viewport;
     }
 
     Buffer*
