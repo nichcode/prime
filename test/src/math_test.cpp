@@ -32,5 +32,19 @@ mathTest()
 	str vec3_string = prime::vec3::toString(vec3_result);
     prime::Logger::info(vec3_string.c_str());
 
+    // vec4
+	prime::vec4 vec4_x(10.0f, 20.0f, 20.0f, 20.0f);
+	prime::vec4 vec4_y(20.0f, 10.0f, 10.0f, 10.0f);
+	prime::vec4 vec4_result = vec4_x + vec4_y;
+
+	vec4_result += { 10.0f, 10.0f, 10.0f, 10.0f };
+	vec4_result -= { 10.0f, 10.0f, 10.0f, 10.0f };
+	vec4_result /= { 2.0f, 2.0f, 2.0f, 2.0f };
+	vec4_result *= { 2.0f, 2.0f, 2.0f, 2.0f };
+	vec4_result *= 2.0f;
+
+	str vec4_string = prime::vec4::toString(vec4_result);
+    prime::Logger::info(vec4_string.c_str());
+
     return PTRUE;
 }
