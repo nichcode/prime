@@ -24,7 +24,9 @@ namespace prime {
 #endif // PPLATFORM_WINDOWS
 
         Rect m_Viewport;
-        std::vector<Buffer*> m_Buffers;
+        std::vector<VertexArray*> m_VertexArrays;
+        std::vector<VertexBuffer*> m_VertexBuffers;
+        std::vector<IndexBuffer*> m_IndexBuffers;
         std::vector<Layout*> m_Layouts;
         std::vector<Shader*> m_Shaders;
 
@@ -50,17 +52,26 @@ namespace prime {
         virtual const Rect&
         getViewport() const override { return m_Viewport; }
 
-        virtual Buffer*
-        createBuffer(const BufferDesc& desc) override;
+        virtual VertexArray*
+        createVertexArray() override;
 
         virtual void
-        destroyBuffer(Buffer* buffer) override;
+        destroyVertexArray(VertexArray* vertex_array) override;
 
-        virtual Layout*
-        createLayout() override;
+        virtual VertexBuffer*
+        createDynamicVertexBuffer(u32 size) override;
+
+        virtual VertexBuffer*
+        createStaticVertexBuffer(f32* vertices, u32 size) override;
+
+        virtual IndexBuffer*
+        createIndexBuffer(u32* indices, u32 count) override;
 
         virtual void
-        destroyLayout(Layout* layout) override;
+        destroyVertexBuffer(VertexBuffer* vertex_buffer) override;
+
+        virtual void
+        destroyIndexBuffer(IndexBuffer* index_buffer) override;
 
         virtual Shader*
         createShader(const ShaderDesc& desc) override;
@@ -69,10 +80,13 @@ namespace prime {
         destroyShader(Shader* shader) override;
 
         virtual void
-        setLayout(Layout* layout, b8 submit) override;
+        setVertexArray(VertexArray* vertex_array) override;
 
         virtual void
-        setBuffer(Buffer* buffer) override;
+        setVertexBuffer(VertexBuffer* vertex_buffer) override;
+
+        virtual void
+        setIndexBuffer(IndexBuffer* index_buffer) override;
 
         virtual void
         setShader(Shader* shader) override;

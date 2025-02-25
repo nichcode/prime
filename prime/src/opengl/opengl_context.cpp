@@ -6,9 +6,8 @@
 
 #include <algorithm>
 
-#include "opengl_API.h"
-#include "opengl_buffer.h"
-#include "opengl_layout.h"
+#include "opengl_buffers.h"
+#include "opengl_vertex_array.h"
 #include "opengl_shader.h"
 
 #ifdef PPLATFORM_WINDOWS
@@ -40,8 +39,10 @@ namespace prime {
         m_Context = wglContextCreate(m_Window);
         m_Hdc = GetDC(m_Window);
 #endif // PPLATFORM_WINDOWS
-        m_Buffers.clear();
-        m_Layouts.clear();
+        m_VertexArrays.clear();
+        m_VertexBuffers.clear();
+        m_IndexBuffers.clear();
+        m_Shaders.clear();
     }
 
     GLContext::~GLContext()
@@ -50,16 +51,30 @@ namespace prime {
         wglContextDestroy(m_Context);
 #endif // PPLATFORM_WINDOWS
 
-    for (Buffer* buffer : m_Buffers) {
-        destroyBuffer(buffer);
-    }
+        // vertex array
+        for (VertexArray* vertex_array : m_VertexArrays) {
+            destroyVertexArray(vertex_array);
+        }
 
-    for (Layout* layout : m_Layouts) {
-        destroyLayout(layout);
-    }
+        // vertex buffer
+        for (VertexBuffer* vertex_buffer : m_VertexBuffers) {
+            destroyVertexBuffer(vertex_buffer);
+        }
 
-    m_Buffers.clear();
-    m_Layouts.clear();
+        // index buffer
+        for (IndexBuffer* vertex_buffer : m_IndexBuffers) {
+            destroyIndexBuffer(vertex_buffer);
+        }
+
+        // shader
+        for (Shader* shader : m_Shaders) {
+            destroyShader(shader);
+        }
+
+        m_VertexArrays.clear();
+        m_VertexBuffers.clear();
+        m_IndexBuffers.clear();
+        m_Shaders.clear();
     }
 
     void 
@@ -90,7 +105,8 @@ namespace prime {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     
-    void GLContext::setViewport(const Rect& viewport)
+    void 
+    GLContext::setViewport(const Rect& viewport)
     {
         glViewport(
             viewport.x,
@@ -100,57 +116,89 @@ namespace prime {
         
         m_Viewport = viewport;
     }
-
-    Buffer*
-    GLContext::createBuffer(const BufferDesc& desc)
+    
+    VertexArray* 
+    GLContext::createVertexArray()
     {
-        Buffer* buffer = new GLBuffer(desc);
-        m_Buffers.push_back(buffer);
-        return buffer;
-    }
-
-    void
-    GLContext::destroyBuffer(Buffer* buffer)
-    {
-        PASSERT_MSG(buffer, "buffer is null");
-        auto it = std::find(m_Buffers.begin(), m_Buffers.end(), buffer);
-        if (it != m_Buffers.end())
-        {
-            m_Buffers.erase(it);
-        }
-
-        delete buffer;
-    }
-
-    Layout*
-    GLContext::createLayout()
-    {
-        Layout* layout = new GLLayout();
-        m_Layouts.push_back(layout);
-        return layout;
-    }
-
-    void
-    GLContext::destroyLayout(Layout* layout)
-    {
-        PASSERT_MSG(layout, "layout is null");
-        auto it = std::find(m_Layouts.begin(), m_Layouts.end(), layout);
-        if (it != m_Layouts.end())
-        {
-            m_Layouts.erase(it);
-        }
-
-        delete layout;
+        VertexArray* vertex_array = new GLVertexArray();
+        m_VertexArrays.push_back(vertex_array);
+        return vertex_array;
     }
     
-    Shader* GLContext::createShader(const ShaderDesc& desc)
+    void 
+    GLContext::destroyVertexArray(VertexArray* vertex_array)
+    {
+        PASSERT_MSG(vertex_array, "vertex_array is null");
+        auto it = std::find(m_VertexArrays.begin(), m_VertexArrays.end(), vertex_array);
+        if (it != m_VertexArrays.end())
+        {
+            m_VertexArrays.erase(it);
+        }
+
+        delete vertex_array;
+    }
+    
+    VertexBuffer* 
+    GLContext::createDynamicVertexBuffer(u32 size)
+    {
+        VertexBuffer* vertex_buffer = new GLVertexBuffer(size);
+        m_VertexBuffers.push_back(vertex_buffer);
+        return vertex_buffer;
+    }
+    
+    VertexBuffer* 
+    GLContext::createStaticVertexBuffer(f32* vertices, u32 size)
+    {
+        VertexBuffer* vertex_buffer = new GLVertexBuffer(vertices, size);
+        m_VertexBuffers.push_back(vertex_buffer);
+        return vertex_buffer;
+    }
+    
+    void 
+    GLContext::destroyVertexBuffer(VertexBuffer* vertex_buffer)
+    {
+        PASSERT_MSG(vertex_buffer, "vertex_buffer is null");
+        auto it = std::find(m_VertexBuffers.begin(), m_VertexBuffers.end(), vertex_buffer);
+        if (it != m_VertexBuffers.end())
+        {
+            m_VertexBuffers.erase(it);
+        }
+
+        delete vertex_buffer;
+    }
+
+    IndexBuffer* 
+    GLContext::createIndexBuffer(u32* indices, u32 count)
+    {
+        IndexBuffer* index_buffer = new GLIndexBuffer(indices, count);
+        m_IndexBuffers.push_back(index_buffer);
+        return index_buffer;
+    }
+    
+    void 
+    GLContext::destroyIndexBuffer(IndexBuffer* index_buffer)
+    {
+        PASSERT_MSG(index_buffer, "index_buffer is null");
+        auto it = std::find(m_IndexBuffers.begin(), m_IndexBuffers.end(), index_buffer);
+        if (it != m_IndexBuffers.end())
+        {
+            m_IndexBuffers.erase(it);
+        }
+
+        delete index_buffer;
+        
+    }
+
+    Shader* 
+    GLContext::createShader(const ShaderDesc& desc)
     {
         Shader* shader = new GLShader(desc);
         m_Shaders.push_back(shader);
         return shader;
     }
     
-    void GLContext::destroyShader(Shader* shader)
+    void 
+    GLContext::destroyShader(Shader* shader)
     {
         PASSERT_MSG(shader, "shader is null");
         auto it = std::find(m_Shaders.begin(), m_Shaders.end(), shader);
@@ -161,22 +209,31 @@ namespace prime {
 
         delete shader;
     }
-
-    void
-    GLContext::setLayout(Layout* layout, b8 submit)
+    
+    void 
+    GLContext::setVertexArray(VertexArray* vertex_array)
     {
-        glBindVertexArray(layout->getID());
-    }
-
-    void
-    GLContext::setBuffer(Buffer* buffer)
-    {
-        i32 type = getBufferType(buffer->getType());
-        glBindBuffer(type, buffer->getID());
+        glBindVertexArray(vertex_array->getID());
     }
     
-    void GLContext::setShader(Shader* shader)
+    void 
+    GLContext::setVertexBuffer(VertexBuffer* vertex_buffer)
     {
+        PASSERT_MSG(vertex_buffer, "vertex_buffer is null");
+        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->getID());
+    }
+    
+    void 
+    GLContext::setIndexBuffer(IndexBuffer* index_buffer)
+    {
+        PASSERT_MSG(index_buffer, "index_buffer is null");
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->getID());
+    }
+    
+    void 
+    GLContext::setShader(Shader* shader)
+    {
+        PASSERT_MSG(shader, "shader is null");
         glUseProgram(shader->getID());
     }
 

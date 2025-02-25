@@ -22,17 +22,8 @@ namespace prime {
         Bool
     };
 
-    struct Element
-    {
-        Type type = Type::Float3;
-        u32 size = 0;
-        u64 offset = 0;
-        u32 divisor = 0;
-        b8 normalized = false;
-    };
-
     PINLINE u32
-    typeGetSize(Type type)
+    getTypeSize(Type type)
     {
         switch (type)
         {
@@ -80,7 +71,7 @@ namespace prime {
     }
 
     PINLINE u32
-    typeGetCount(Type type)
+    getTypeCount(Type type)
     {
         switch (type)
         {
@@ -120,25 +111,55 @@ namespace prime {
         return 0;
     }
 
+    struct Element
+    {
+        Type type = Type::Float3;
+        b8 normalize = false;
+        u64 offset = 0;
+        u32 size = 0;
+        u32 divisor = PDIVISOR_DEFAULT;
+    };
+
     class Layout
     {
+    private:
+        std::vector<Element> m_Elements;
+        u32 m_Stride = 0;
+
     public:
-        virtual ~Layout() {};
+        void
+        addElement(Type type, u32 divisor = PDIVISOR_DEFAULT, b8 normalize = false)
+        {
+            Element element;
+            element.divisor = divisor;
+            element.normalize = normalize;
+            element.type = type;
+            element.size = getTypeSize(type);
+            m_Elements.push_back(element);
+        }
 
-        virtual void
-        add(Type type, u32 divisor = PDIVISOR_DEFAULT, b8 normalize = false) = 0;
+        void
+        process()
+        {
+            u64 offset = 0;
+			m_Stride = 0;
+			for (auto& element : m_Elements)
+			{
+				element.offset = offset;
+				offset += element.size;
+				m_Stride += element.size;
+			}
+        }
 
-        virtual void
-        submit() = 0;
+        u32
+        getStride() const { return m_Stride; }
 
-        virtual u32
-        getStride() const = 0;
+        std::vector<Element>::iterator begin() { return m_Elements.begin(); }
+		std::vector<Element>::iterator end() { return m_Elements.end(); }
+		std::vector<Element>::const_iterator begin() const { return m_Elements.begin(); }
+		std::vector<Element>::const_iterator end() const { return m_Elements.end(); }
 
-        virtual const std::vector<Element>&
-        get() const = 0;
-
-        virtual u32 getID() const = 0;
-        virtual void* getHandle() const = 0;
+        const std::vector<Element>& getElements() const { return m_Elements; }
     };
-    
+     
 } // namespace prime

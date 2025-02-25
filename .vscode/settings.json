@@ -6,6 +6,9 @@
         "string_view": "cpp",
         "system_error": "cpp",
         "vector": "cpp",
-        "atomic": "cpp"
+        "atomic": "cpp",
+        "algorithm": "cpp",
+        "array": "cpp",
+        "buffer": "cpp"
     }
 }

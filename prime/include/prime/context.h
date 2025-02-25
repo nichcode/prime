@@ -3,8 +3,7 @@
 
 #include "window.h"
 #include "color.h"
-#include "buffer.h"
-#include "layout.h"
+#include "vertex_array.h"
 #include "shader.h"
 #include "rect.h"
 
@@ -39,17 +38,26 @@ namespace prime {
         virtual const Rect&
         getViewport() const = 0;
 
-        virtual Buffer*
-        createBuffer(const BufferDesc& desc) = 0;
+        virtual VertexArray*
+        createVertexArray() = 0;
 
         virtual void
-        destroyBuffer(Buffer* buffer) = 0;
+        destroyVertexArray(VertexArray* vertex_array) = 0;
 
-        virtual Layout*
-        createLayout() = 0;
+        virtual VertexBuffer*
+        createDynamicVertexBuffer(u32 size) = 0;
+
+        virtual VertexBuffer*
+        createStaticVertexBuffer(f32* vertices, u32 size) = 0;
 
         virtual void
-        destroyLayout(Layout* layout) = 0;
+        destroyVertexBuffer(VertexBuffer* vertex_buffer) = 0;
+
+        virtual IndexBuffer*
+        createIndexBuffer(u32* indices, u32 count)  = 0;
+
+        virtual void
+        destroyIndexBuffer(IndexBuffer* index_buffer) = 0;
 
         virtual Shader*
         createShader(const ShaderDesc& desc) = 0;
@@ -58,10 +66,13 @@ namespace prime {
         destroyShader(Shader* shader) = 0;
 
         virtual void
-        setLayout(Layout* layout, b8 submit) = 0;
+        setVertexArray(VertexArray* vertex_array) = 0;
 
         virtual void
-        setBuffer(Buffer* buffer) = 0;
+        setVertexBuffer(VertexBuffer* vertex_buffer) = 0;
+
+        virtual void
+        setIndexBuffer(IndexBuffer* index_buffer) = 0;
 
         virtual void
         setShader(Shader* shader) = 0;

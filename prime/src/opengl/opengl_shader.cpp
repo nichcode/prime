@@ -94,6 +94,7 @@ namespace prime {
         }
 
         m_ID = createProgram(m_Vertex, m_Pixel);
+        glUseProgram(m_ID);
         m_Unused = &m_ID;
         glDeleteShader(m_Vertex);
         glDeleteShader(m_Pixel);

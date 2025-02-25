@@ -15,6 +15,6 @@
 #endif // PPLATFORM_WINDOWS
 
 #include "opengl/opengl_context.cpp"
-#include "opengl/opengl_buffer.cpp"
-#include "opengl/opengl_layout.cpp"
+#include "opengl/opengl_vertex_array.cpp"
+#include "opengl/opengl_buffers.cpp"
 #include "opengl/opengl_shader.cpp"
