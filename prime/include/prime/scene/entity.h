@@ -5,7 +5,7 @@
 
 namespace prime::scene {
 
-    class SceneHandle;
+    struct SceneHandle;
 
     class Entity
     {

@@ -1,7 +1,6 @@
 
 project "prime"
     language "C++"
-    kind "SharedLib"
 
     targetdir(target_dir)
     objdir(obj_dir)
@@ -21,10 +20,29 @@ project "prime"
     }
 
     if (_ACTION == "gmake2") then
+        
+        kind "SharedLib"
+
         links {
             "glad",
             "box2d",
             "%{wks.location}/libs/Gdi32",
             "%{wks.location}/libs/Opengl32"
+        }
+    end
+
+    if (_ACTION == "vs2022") then
+
+        kind "StaticLib"
+
+        links {
+            "glad",
+            "box2d",
+            "%{wks.location}/libs/Gdi32.Lib",
+            "%{wks.location}/libs/Opengl32.Lib"
+        }
+
+        prebuildcommands {
+            "cmd.exe /c %{wks.location}/scripts/vs/pre_generate_vs.bat"
         }
     end
