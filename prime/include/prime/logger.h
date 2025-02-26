@@ -48,10 +48,10 @@ namespace prime {
         }
 
         static void 
-        assert(bool expr, const char* file, u32 line);
+        assertion(bool expr, const char* file, u32 line);
 
         static void 
-        assert(bool expr, const char* file, u32 line, const char* message);
+        assertion(bool expr, const char* file, u32 line, const char* message);
     };
 
 } // namespace prime
@@ -61,8 +61,8 @@ namespace prime {
 #define PINFO(message, ...)            prime::Logger::info(message)
 #define PWARN(message, ...)            prime::Logger::warn(message)
 #define PERROR(message, ...)           prime::Logger::error(message)
-#define PASSERT(expr)                  prime::Logger::assert(expr, PFILE, PLINE)
-#define PASSERT_MSG(expr, message)     prime::Logger::assert(expr, PFILE, PLINE, message)
+#define PASSERT(expr)                  prime::Logger::assertion(expr, PFILE, PLINE)
+#define PASSERT_MSG(expr, message)     prime::Logger::assertion(expr, PFILE, PLINE, message)
 #else
 #define PTRACE(message, ...)         
 #define PDEBUG(message, ...)               

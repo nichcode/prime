@@ -29,6 +29,7 @@ namespace prime {
         std::vector<IndexBuffer*> m_IndexBuffers;
         std::vector<Layout*> m_Layouts;
         std::vector<Shader*> m_Shaders;
+        std::vector<Texture2D*> m_Texture2Ds;
 
     public:
         GLContext(const Window& window);
@@ -79,17 +80,29 @@ namespace prime {
         virtual void
         destroyShader(Shader* shader) override;
 
-        virtual void
-        setVertexArray(VertexArray* vertex_array) override;
+        virtual Texture2D*
+        createTexture2D(u32 width, u32 height) override;
+
+        virtual Texture2D*
+        createTexture2D(const str& filepath) override;
 
         virtual void
-        setVertexBuffer(VertexBuffer* vertex_buffer) override;
+        destroyTexture2D(Texture2D* texture) override;
 
         virtual void
-        setIndexBuffer(IndexBuffer* index_buffer) override;
+        setVertexArray(const VertexArray* vertex_array) override;
 
         virtual void
-        setShader(Shader* shader) override;
+        setVertexBuffer(const VertexBuffer* vertex_buffer) override;
+
+        virtual void
+        setIndexBuffer(const IndexBuffer* index_buffer) override;
+
+        virtual void
+        setShader(const Shader* shader) override;
+
+        virtual void
+        setTexture2D(const Texture2D* texture, u32 slot) override;
 
         virtual void
         drawElements(DrawMode mode, u32 count) override;

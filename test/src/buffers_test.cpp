@@ -17,27 +17,28 @@ buffersTestGL()
 
 #ifdef USE_MULTIPLE_VBO
     f32 vertices[] = {
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // left  
-		 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f, // right 
-		 0.0f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f // top   
+		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
 	};
 
-    u32 indices[] = { 0, 1, 2 };
+    u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
     prime::VertexArray* vertex_array;
     prime::VertexBuffer* vertex_buffer;
     prime::IndexBuffer* index_buffer;
-    prime::Shader* shader = nullptr;
 
     prime::Layout layout;
     layout.addElement(prime::Type::Float3);
     layout.addElement(prime::Type::Float4);
+    layout.addElement(prime::Type::Float2);
     layout.process();
 
     vertex_array = context->createVertexArray();
     vertex_buffer = context->createStaticVertexBuffer(vertices, sizeof(vertices));
     vertex_buffer->setLayout(layout);
-    index_buffer = context->createIndexBuffer(indices, 3);
+    index_buffer = context->createIndexBuffer(indices, 6);
 
     vertex_array->submit(vertex_buffer);
 
@@ -45,22 +46,31 @@ buffersTestGL()
     f32 pos_vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		 0.5f,  0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f
 	};
 
     f32 color_vertices[] = {
-		1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f,
-		1.0f, 0.0f, 0.0f, 1.0f
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f, 1.0f
 	};
 
-    u32 indices[] = { 0, 1, 2 };
+    f32 tex_vertices[] = {
+		0.0f, 1.0f,
+		1.0f, 1.0f,
+		1.0f, 0.0f,
+		0.0f, 0.0f
+	};
+
+    u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
     prime::VertexArray* vertex_array;
     prime::VertexBuffer* pos_vertex_buffer;
     prime::VertexBuffer* color_vertex_buffer;
+    prime::VertexBuffer* tex_vertex_buffer;
     prime::IndexBuffer* index_buffer;
-    prime::Shader* shader = nullptr;
 
     prime::Layout pos_layout;
     pos_layout.addElement(prime::Type::Float3);
@@ -70,6 +80,10 @@ buffersTestGL()
     color_layout.addElement(prime::Type::Float4);
     color_layout.process();
 
+    prime::Layout tex_layout;
+    tex_layout.addElement(prime::Type::Float2);
+    tex_layout.process();
+
     vertex_array = context->createVertexArray();
 
     pos_vertex_buffer = context->createStaticVertexBuffer(pos_vertices, sizeof(pos_vertices));
@@ -78,13 +92,19 @@ buffersTestGL()
     color_vertex_buffer = context->createStaticVertexBuffer(color_vertices, sizeof(color_vertices));
     color_vertex_buffer->setLayout(color_layout);
 
-    index_buffer = context->createIndexBuffer(indices, 3);
+    tex_vertex_buffer = context->createStaticVertexBuffer(tex_vertices, sizeof(tex_vertices));
+    tex_vertex_buffer->setLayout(tex_layout);
+
+    index_buffer = context->createIndexBuffer(indices, 6);
 
     context->setVertexBuffer(pos_vertex_buffer);
     vertex_array->submit(pos_vertex_buffer);
 
     context->setVertexBuffer(color_vertex_buffer);
     vertex_array->submit(color_vertex_buffer);
+
+    context->setVertexBuffer(tex_vertex_buffer);
+    vertex_array->submit(tex_vertex_buffer);
 
 #endif
 
@@ -94,7 +114,13 @@ buffersTestGL()
     shader_desc.pixel = "shaders/pixel.glsl";
     shader_desc.type = prime::ShaderSourceType::GLSL;
 
-    shader = context->createShader(shader_desc);;
+    prime::Shader* shader = nullptr;
+    prime::Texture2D* texture = nullptr;
+
+    shader = context->createShader(shader_desc);
+    texture = context->createTexture2D("textures/texture2d.png");
+
+    context->setTexture2D(texture);
 
     while (!window.shouldClose()) {
         window.pollEvents();

@@ -6,6 +6,7 @@
 #include "vertex_array.h"
 #include "shader.h"
 #include "rect.h"
+#include "textures.h"
 
 namespace prime {
 
@@ -65,17 +66,29 @@ namespace prime {
         virtual void
         destroyShader(Shader* shader) = 0;
 
-        virtual void
-        setVertexArray(VertexArray* vertex_array) = 0;
+        virtual Texture2D*
+        createTexture2D(u32 width, u32 height) = 0;
+
+        virtual Texture2D*
+        createTexture2D(const str& filepath) = 0;
 
         virtual void
-        setVertexBuffer(VertexBuffer* vertex_buffer) = 0;
+        destroyTexture2D(Texture2D* texture) = 0;
 
         virtual void
-        setIndexBuffer(IndexBuffer* index_buffer) = 0;
+        setVertexArray(const VertexArray* vertex_array) = 0;
 
         virtual void
-        setShader(Shader* shader) = 0;
+        setVertexBuffer(const VertexBuffer* vertex_buffer) = 0;
+
+        virtual void
+        setIndexBuffer(const IndexBuffer* index_buffer) = 0;
+
+        virtual void
+        setShader(const Shader* shader) = 0;
+
+        virtual void
+        setTexture2D(const Texture2D* texture, u32 slot = 0) = 0;
 
         virtual void
         drawElements(DrawMode mode, u32 count) = 0;

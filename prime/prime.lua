@@ -14,7 +14,8 @@ project "prime"
     includedirs {   
         "include",
         "src",
-        "%{wks.location}/vendor/glad/include"
+        "%{wks.location}/vendor/glad/include",
+        "%{wks.location}/vendor/stb",
     }
 
     links {

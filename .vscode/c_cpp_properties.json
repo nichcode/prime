@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/prime/include",
                 "${workspaceFolder}/prime/src",
-                "${workspaceFolder}/vendor/glad/include"
+                "${workspaceFolder}/vendor/glad/include",
+                "${workspaceFolder}/vendor/stb"
             ],
             "defines": [
                 "PCONFIG_DEBUG",

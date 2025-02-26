@@ -9,6 +9,7 @@
 #include "opengl_buffers.h"
 #include "opengl_vertex_array.h"
 #include "opengl_shader.h"
+#include "opengl_textures.h"
 
 #ifdef PPLATFORM_WINDOWS
 #include "windows/wgl_context.h"
@@ -210,31 +211,69 @@ namespace prime {
         delete shader;
     }
     
+    Texture2D* 
+    GLContext::createTexture2D(u32 width, u32 height)
+    {
+        Texture2D* texture = new GLTexture2D(width, height);
+        m_Texture2Ds.push_back(texture);
+        return texture;
+    }
+    
+    Texture2D* 
+    GLContext::createTexture2D(const str& filepath)
+    {
+        Texture2D* texture = new GLTexture2D(filepath);
+        m_Texture2Ds.push_back(texture);
+        return texture;
+    }
+    
     void 
-    GLContext::setVertexArray(VertexArray* vertex_array)
+    GLContext::destroyTexture2D(Texture2D* texture)
+    {
+        PASSERT_MSG(texture, "texture is null");
+        auto it = std::find(m_Texture2Ds.begin(), m_Texture2Ds.end(), texture);
+        if (it != m_Texture2Ds.end())
+        {
+            m_Texture2Ds.erase(it);
+        }
+
+        delete texture;
+    }
+    
+    void 
+    GLContext::setVertexArray(const VertexArray* vertex_array)
     {
         glBindVertexArray(vertex_array->getID());
     }
     
     void 
-    GLContext::setVertexBuffer(VertexBuffer* vertex_buffer)
+    GLContext::setVertexBuffer(const VertexBuffer* vertex_buffer)
     {
         PASSERT_MSG(vertex_buffer, "vertex_buffer is null");
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->getID());
     }
     
     void 
-    GLContext::setIndexBuffer(IndexBuffer* index_buffer)
+    GLContext::setIndexBuffer(const IndexBuffer* index_buffer)
     {
         PASSERT_MSG(index_buffer, "index_buffer is null");
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->getID());
     }
     
     void 
-    GLContext::setShader(Shader* shader)
+    GLContext::setShader(const Shader* shader)
     {
         PASSERT_MSG(shader, "shader is null");
         glUseProgram(shader->getID());
+    }
+    
+    void 
+    GLContext::setTexture2D(const Texture2D* texture, u32 slot)
+    {
+        PASSERT_MSG(texture, "texture is null");
+        PASSERT_MSG(slot < PMAX_TEXTURE_SLOTS, "texture slot out of bounds");
+        glActiveTexture(GL_TEXTURE0 + slot);
+        glBindTexture(GL_TEXTURE_2D, texture->getID());
     }
 
     void

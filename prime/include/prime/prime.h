@@ -13,5 +13,6 @@
 #include "rect.h"
 #include "shader.h"
 #include "test.h"
+#include "textures.h"
 #include "utils.h"
 #include "window.h"

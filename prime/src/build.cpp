@@ -18,3 +18,4 @@
 #include "opengl/opengl_vertex_array.cpp"
 #include "opengl/opengl_buffers.cpp"
 #include "opengl/opengl_shader.cpp"
+#include "opengl/opengl_textures.cpp"

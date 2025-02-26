@@ -18,7 +18,7 @@ namespace prime {
     }
 
     void 
-    Logger::assert(bool expr, const char* file, u32 line)
+    Logger::assertion(bool expr, const char* file, u32 line)
     {
         if (expr) {}
         else {
@@ -29,7 +29,7 @@ namespace prime {
     }
 
     void 
-    Logger::assert(bool expr, const char* file, u32 line, const char* message)
+    Logger::assertion(bool expr, const char* file, u32 line, const char* message)
     {
         if (expr) {}
         else {
