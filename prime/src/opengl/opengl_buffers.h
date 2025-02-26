@@ -8,9 +8,8 @@ namespace prime {
     class GLVertexBuffer : public VertexBuffer
     {
     private:
-        u32 m_ID;
         b8 m_Dynamic;
-        void* m_Handle;
+        VertexBufferHandle* m_Handle;
         Layout m_Layout;
 
     public:
@@ -25,11 +24,8 @@ namespace prime {
         virtual void 
         setLayout(const Layout& layout) override { m_Layout = layout; }
 
-        virtual void* 
+        virtual VertexBufferHandle*
         getHandle() const override {return m_Handle; }
-
-        virtual u32
-        getID() const override {return m_ID; }
 
 		virtual const 
         Layout& getLayout() const override { return m_Layout; }
@@ -38,18 +34,15 @@ namespace prime {
     class GLIndexBuffer : public IndexBuffer
     {
     private:
-        u32 m_ID, m_Count;
-        void* m_Handle;
+        u32 m_Count;
+        IndexBufferHandle* m_Handle;
 
     public:
         GLIndexBuffer(u32* indices, u32 count);
         virtual ~GLIndexBuffer() override;
 
-        virtual void* 
+        virtual IndexBufferHandle*
         getHandle() const override {return m_Handle; }
-
-        virtual u32
-        getID() const override {return m_ID; }
 
         virtual u32 
         getCount() const override {return m_Count; }

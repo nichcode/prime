@@ -8,17 +8,18 @@ namespace prime {
     class GLVertexArray : public VertexArray
     {
     private:
-        u32 m_ID, m_Index;
+        u32 m_Index;
+        VertexArrayHandle* m_Handle;
 
     public:
         GLVertexArray();
         virtual ~GLVertexArray() override;
 
         virtual void
-        submit(const VertexBuffer* vertex_buffer) override;
+        submit(const Ref<VertexBuffer>& vertex_buffer) override;
 
-        virtual u32
-        getID() const override {return m_ID; }
+        virtual VertexArrayHandle*
+        getHandle() const override { return m_Handle; }
     };
  
 } // namespace prime

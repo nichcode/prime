@@ -9,6 +9,7 @@
         "atomic": "cpp",
         "algorithm": "cpp",
         "array": "cpp",
-        "buffer": "cpp"
+        "buffer": "cpp",
+        "new": "cpp"
     }
 }

@@ -2,8 +2,11 @@
 #pragma once
 
 #include "buffers.h"
+#include "utils.h"
 
 namespace prime {
+
+    class VertexArrayHandle;
 
     class VertexArray
     {
@@ -11,10 +14,10 @@ namespace prime {
         virtual ~VertexArray() {}
 
         virtual void
-        submit(const VertexBuffer* vertex_buffer) = 0;
+        submit(const Ref<VertexBuffer>& vertex_buffer) = 0;
 
-        virtual u32 
-        getID() const = 0;
+        virtual VertexArrayHandle* 
+        getHandle() const = 0;
     };
     
     

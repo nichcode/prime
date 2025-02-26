@@ -3,8 +3,6 @@
 
 #include "context.h"
 
-#include <vector>
-
 namespace prime {
 
     enum class DeviceType
@@ -16,25 +14,13 @@ namespace prime {
     {
     private:
         DeviceType m_Type;
-        std::vector<Context*> m_Contexts;
 
     public:
-        ~Device()
-        {
-            destroy();
-        }
-
         void 
         init(DeviceType type);
 
-        void 
-        destroy();
-
-        Context* 
+        Ref<Context> 
         createContext(const Window& window);
-
-        void 
-        destroyContext(Context* context);
     };
     
 } // namespace prime

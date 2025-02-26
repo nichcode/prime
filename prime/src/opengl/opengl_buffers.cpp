@@ -1,29 +1,31 @@
 
 #include "opengl_buffers.h"
-#include "glad/glad.h"
+#include "opengl_API.h"
 
 namespace prime {
 
     GLVertexBuffer::GLVertexBuffer(f32* vertices, u32 size)
     {
-        glGenBuffers(1, &m_ID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+        m_Handle = new VertexBufferHandle();
+        
+        glGenBuffers(1, &m_Handle->id);
+        glBindBuffer(GL_ARRAY_BUFFER, m_Handle->id);
         glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-        m_Handle = &m_ID;
     }
     
     GLVertexBuffer::GLVertexBuffer(u32 size)
     {
-        glGenBuffers(1, &m_ID);
-        glBindBuffer(GL_ARRAY_BUFFER, m_ID);
+        m_Handle = new VertexBufferHandle();
+        glGenBuffers(1, &m_Handle->id);
+        glBindBuffer(GL_ARRAY_BUFFER, m_Handle->id);
         glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-        m_Handle = &m_ID;
     }
 
     GLVertexBuffer::~GLVertexBuffer()
     {
-        glDeleteBuffers(1, &m_ID);
-        m_ID = 0;
+        glDeleteBuffers(1, &m_Handle->id);
+        m_Handle->id = 0;
+        delete m_Handle;
         m_Handle = nullptr;
     }
 
@@ -38,17 +40,18 @@ namespace prime {
     
     GLIndexBuffer::GLIndexBuffer(u32* indices, u32 count)
     {
-        glGenBuffers(1, &m_ID);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_ID);
+        m_Handle = new IndexBufferHandle();
+        glGenBuffers(1, &m_Handle->id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_Handle->id);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
-        m_Handle = &m_ID;
         m_Count = count;
     }
 
     GLIndexBuffer::~GLIndexBuffer()
     {
-        glDeleteBuffers(1, &m_ID);
-        m_ID = 0;
+        glDeleteBuffers(1, &m_Handle->id);
+        m_Handle->id = 0;
+        delete m_Handle;
         m_Handle = nullptr;
         m_Count = 0;
     }

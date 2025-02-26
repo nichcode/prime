@@ -5,18 +5,22 @@
 
 namespace prime {
 
-    class GLTexture2D : public Texture2D
+    class GLTexture : public Texture
     {
     private:
-        u32 m_ID, m_Width, m_Height;
+        u32 m_Width, m_Height, m_Depth;
         str m_Path;
-        void* m_Unused;
+        TextureUsage m_Usage;
+        TextureHandle* m_Handle;
 
     public:
-        GLTexture2D(u32 width, u32 height);
-        GLTexture2D(const str& filepath);
+        GLTexture(u32 width, u32 height, const TextureUsage usage);
+        GLTexture(const str& filepath);
 
-        virtual ~GLTexture2D() override;
+        virtual ~GLTexture() override;
+
+        virtual void
+        resize(u32 width, u32 height) override;
 
         virtual u32 
         getWidth() const override { return m_Width; }
@@ -24,14 +28,17 @@ namespace prime {
         virtual u32 
         getHeight() const override { return m_Height; }
 
-        virtual u32 
-        getID() const override { return m_ID; }
+        virtual TextureUsage 
+        getUsage() const override { return m_Usage; }
 
         virtual str 
         getPath() const override { return m_Path; }
 
-        virtual void* 
-        getHandle() const override { return m_Unused; }
+        virtual TextureHandle* 
+        getHandle() const override { return m_Handle; }
+
+    private:
+        void create(b8 reset);
     };
     
 } // namespace prime

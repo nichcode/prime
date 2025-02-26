@@ -1,7 +1,7 @@
 
 #include "opengl_vertex_array.h"
 #include "prime/logger.h"
-#include "glad/glad.h"
+#include "opengl_API.h"
 
 namespace prime {
 
@@ -33,19 +33,24 @@ namespace prime {
     GLVertexArray::GLVertexArray()
     {
         m_Index = 0;
-        glGenVertexArrays(1, &m_ID);
-        glBindVertexArray(m_ID);
+        m_Handle = new VertexArrayHandle;
+        glGenVertexArrays(1, &m_Handle->id);
+        glBindVertexArray(m_Handle->id);
     }
     
     GLVertexArray::~GLVertexArray()
     {
-        glDeleteVertexArrays(1, &m_ID);
-        m_ID = 0;
+        glDeleteVertexArrays(1, &m_Handle->id);
+        m_Handle->id = 0;
+        delete m_Handle;
+        m_Handle = nullptr;
     }
     
     void
-    GLVertexArray::submit(const VertexBuffer* vertex_buffer)
+    GLVertexArray::submit(const Ref<VertexBuffer>& vertex_buffer)
     {
+        PASSERT_MSG(vertex_buffer.get(), "vertex_buffer is null");
+
         if (vertex_buffer->getLayout().getElements().size()) {
             const auto& layout = vertex_buffer->getLayout();
             for (const auto& element : layout) {

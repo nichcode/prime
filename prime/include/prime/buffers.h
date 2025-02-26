@@ -5,6 +5,9 @@
 
 namespace prime {
 
+    struct VertexBufferHandle;
+    struct IndexBufferHandle;
+
     class VertexBuffer
     {
     public:
@@ -16,11 +19,8 @@ namespace prime {
         virtual void 
         setLayout(const Layout& layout) = 0;
 
-        virtual void* 
+        virtual VertexBufferHandle*
         getHandle() const = 0;
-
-        virtual u32 
-        getID() const = 0;
 
 		virtual const 
         Layout& getLayout() const = 0;
@@ -31,14 +31,11 @@ namespace prime {
     public:
         virtual ~IndexBuffer() {};
 
-        virtual void* 
-        getHandle() const = 0;
-
-        virtual u32 
-        getID() const = 0;
-
         virtual u32 
         getCount() const = 0;
+
+        virtual IndexBufferHandle*
+        getHandle() const = 0;
     };
     
 } // namespace prime

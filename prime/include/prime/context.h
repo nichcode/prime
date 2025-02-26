@@ -7,6 +7,7 @@
 #include "shader.h"
 #include "rect.h"
 #include "textures.h"
+#include "utils.h"
 
 namespace prime {
 
@@ -39,56 +40,44 @@ namespace prime {
         virtual const Rect&
         getViewport() const = 0;
 
-        virtual VertexArray*
+        virtual Ref<VertexArray>
         createVertexArray() = 0;
 
-        virtual void
-        destroyVertexArray(VertexArray* vertex_array) = 0;
-
-        virtual VertexBuffer*
+        virtual Ref<VertexBuffer>
         createDynamicVertexBuffer(u32 size) = 0;
 
-        virtual VertexBuffer*
+        virtual Ref<VertexBuffer>
         createStaticVertexBuffer(f32* vertices, u32 size) = 0;
 
-        virtual void
-        destroyVertexBuffer(VertexBuffer* vertex_buffer) = 0;
-
-        virtual IndexBuffer*
+        virtual Ref<IndexBuffer>
         createIndexBuffer(u32* indices, u32 count)  = 0;
 
-        virtual void
-        destroyIndexBuffer(IndexBuffer* index_buffer) = 0;
-
-        virtual Shader*
+        virtual Ref<Shader>
         createShader(const ShaderDesc& desc) = 0;
 
-        virtual void
-        destroyShader(Shader* shader) = 0;
+        virtual Ref<Texture>
+        createTexture(u32 width, u32 height, TextureUsage usage) = 0;
 
-        virtual Texture2D*
-        createTexture2D(u32 width, u32 height) = 0;
-
-        virtual Texture2D*
-        createTexture2D(const str& filepath) = 0;
+        virtual Ref<Texture>
+        createTexture(const str& filepath) = 0;
 
         virtual void
-        destroyTexture2D(Texture2D* texture) = 0;
+        setVertexArray(const Ref<VertexArray>& vertex_array) = 0;
 
         virtual void
-        setVertexArray(const VertexArray* vertex_array) = 0;
+        setVertexBuffer(const Ref<VertexBuffer>& vertex_buffer) = 0;
 
         virtual void
-        setVertexBuffer(const VertexBuffer* vertex_buffer) = 0;
+        setIndexBuffer(const Ref<IndexBuffer>& index_buffer) = 0;
 
         virtual void
-        setIndexBuffer(const IndexBuffer* index_buffer) = 0;
+        setShader(const Ref<Shader>& shader) = 0;
 
         virtual void
-        setShader(const Shader* shader) = 0;
+        setTexture(const Ref<Texture>& texture, u32 slot = 0) = 0;
 
         virtual void
-        setTexture2D(const Texture2D* texture, u32 slot = 0) = 0;
+        setRenderTarget(const Ref<Texture>& texture) = 0;
 
         virtual void
         drawElements(DrawMode mode, u32 count) = 0;

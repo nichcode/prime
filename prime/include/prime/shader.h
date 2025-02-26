@@ -5,6 +5,8 @@
 
 namespace prime {
 
+    struct ShaderHandle;
+
     enum class ShaderSourceType
     {
         GLSL
@@ -44,8 +46,8 @@ namespace prime {
         virtual void
         setMat4(const char* name, mat4 data) = 0;
 
-        virtual u32 getID() const = 0;
-        virtual void* getHandle() const = 0;
+        virtual ShaderHandle* 
+        getHandle() const = 0;
     };
     
 } // namespace prime

@@ -10,8 +10,6 @@
 #include <windows.h>
 #endif // PPLATFORM_WINDOWS
 
-#include <vector>
-
 namespace prime {
 
     class GLContext : public Context
@@ -24,12 +22,6 @@ namespace prime {
 #endif // PPLATFORM_WINDOWS
 
         Rect m_Viewport;
-        std::vector<VertexArray*> m_VertexArrays;
-        std::vector<VertexBuffer*> m_VertexBuffers;
-        std::vector<IndexBuffer*> m_IndexBuffers;
-        std::vector<Layout*> m_Layouts;
-        std::vector<Shader*> m_Shaders;
-        std::vector<Texture2D*> m_Texture2Ds;
 
     public:
         GLContext(const Window& window);
@@ -53,56 +45,44 @@ namespace prime {
         virtual const Rect&
         getViewport() const override { return m_Viewport; }
 
-        virtual VertexArray*
+        virtual Ref<VertexArray>
         createVertexArray() override;
 
-        virtual void
-        destroyVertexArray(VertexArray* vertex_array) override;
-
-        virtual VertexBuffer*
+        virtual Ref<VertexBuffer>
         createDynamicVertexBuffer(u32 size) override;
 
-        virtual VertexBuffer*
+        virtual Ref<VertexBuffer>
         createStaticVertexBuffer(f32* vertices, u32 size) override;
 
-        virtual IndexBuffer*
+        virtual Ref<IndexBuffer>
         createIndexBuffer(u32* indices, u32 count) override;
 
-        virtual void
-        destroyVertexBuffer(VertexBuffer* vertex_buffer) override;
-
-        virtual void
-        destroyIndexBuffer(IndexBuffer* index_buffer) override;
-
-        virtual Shader*
+        virtual Ref<Shader>
         createShader(const ShaderDesc& desc) override;
 
-        virtual void
-        destroyShader(Shader* shader) override;
+        virtual Ref<Texture>
+        createTexture(u32 width, u32 height, TextureUsage usage) override;
 
-        virtual Texture2D*
-        createTexture2D(u32 width, u32 height) override;
-
-        virtual Texture2D*
-        createTexture2D(const str& filepath) override;
+        virtual Ref<Texture>
+        createTexture(const str& filepath) override;
 
         virtual void
-        destroyTexture2D(Texture2D* texture) override;
+        setVertexArray(const Ref<VertexArray>& vertex_array) override;
 
         virtual void
-        setVertexArray(const VertexArray* vertex_array) override;
+        setVertexBuffer(const Ref<VertexBuffer>& vertex_buffer) override;
 
         virtual void
-        setVertexBuffer(const VertexBuffer* vertex_buffer) override;
+        setIndexBuffer(const Ref<IndexBuffer>& index_buffer) override;
 
         virtual void
-        setIndexBuffer(const IndexBuffer* index_buffer) override;
+        setShader(const Ref<Shader>& shader) override;
 
         virtual void
-        setShader(const Shader* shader) override;
+        setTexture(const Ref<Texture>& texture, u32 slot) override;
 
         virtual void
-        setTexture2D(const Texture2D* texture, u32 slot) override;
+        setRenderTarget(const Ref<Texture>& texture) override;
 
         virtual void
         drawElements(DrawMode mode, u32 count) override;

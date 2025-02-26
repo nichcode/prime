@@ -3,7 +3,7 @@
 #include "prime/filesystem.h"
 #include "prime/logger.h"
 #include "prime/utils.h"
-#include "glad/glad.h"
+#include "opengl_API.h"
 
 #include <vector>
 
@@ -93,59 +93,61 @@ namespace prime {
             // TODO: shader transpiler
         }
 
-        m_ID = createProgram(m_Vertex, m_Pixel);
-        glUseProgram(m_ID);
-        m_Unused = &m_ID;
+        m_Handle = new ShaderHandle();
+
+        m_Handle->id = createProgram(m_Vertex, m_Pixel);
+        glUseProgram(m_Handle->id);
         glDeleteShader(m_Vertex);
         glDeleteShader(m_Pixel);
     }
     
     GLShader::~GLShader()
     {
-        glDeleteProgram(m_ID);
-        m_ID = 0;
-        m_Unused = nullptr;
+        glDeleteProgram(m_Handle->id);
+        m_Handle->id = 0;
+        delete m_Handle;
+        m_Handle = nullptr;
     }
     
     void GLShader::setInt(const char* name, i32 data)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniform1i(location, data);
     }
     
     void GLShader::setIntArray(const char* name, i32* data, u32 count)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniform1iv(location, count, data);
     }
     
     void GLShader::setFloat(const char* name, f32 data)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniform1f(location, data);
     }
     
     void GLShader::setFloat2(const char* name, vec2 data)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniform2f(location, data.x, data.y);
     }
 
     void GLShader::setFloat3(const char* name, vec3 data)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniform3f(location, data.x, data.y, data.z);
     }
 
     void GLShader::setFloat4(const char* name, vec4 data)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniform4f(location, data.x, data.y, data.z, data.w);
     }
     
     void GLShader::setMat4(const char* name, mat4 data)
     {
-        GLint location = glGetUniformLocation(m_ID, name);
+        GLint location = glGetUniformLocation(m_Handle->id, name);
         glUniformMatrix4fv(location, 1, GL_FALSE, data.data);
     }
 

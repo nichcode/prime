@@ -8,8 +8,8 @@ namespace prime {
     class GLShader : public Shader
     {
     private:
-        u32 m_ID, m_Vertex, m_Pixel;
-        void* m_Unused;
+        u32 m_Vertex, m_Pixel;
+        ShaderHandle* m_Handle;
 
     public:
         GLShader(const ShaderDesc& desc);
@@ -36,8 +36,8 @@ namespace prime {
         virtual void
         setMat4(const char* name, mat4 data) override;
 
-        virtual u32 getID() const override { return m_ID; }
-        virtual void* getHandle() const override { return m_Unused; }
+        virtual ShaderHandle* 
+        getHandle() const override { return m_Handle; }
     };
     
 } // namespace prime

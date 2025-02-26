@@ -1,19 +1,20 @@
 
 #include "prime/prime.h"
 
-//#define USE_MULTIPLE_VBO
+#define USE_MULTIPLE_VBO
 
 b8
 buffersTestGL()
 {
-    prime::Window window;
-    window.init("WindowTest", 640, 480);
+    using namespace prime;
 
-    prime::Device device;
-    device.init(prime::DeviceType::OpenGL);
+    Window window;
+    window.init("BuffersTestGL", 640, 480);
 
-    prime::Context* context = device.createContext(window);
-    context->setClearColor({ .2f, .2f, .2f, 1.0f });
+    Device device;
+    device.init(DeviceType::OpenGL);
+
+    Ref<Context> context = device.createContext(window);
 
 #ifdef USE_MULTIPLE_VBO
     f32 vertices[] = {
@@ -25,14 +26,14 @@ buffersTestGL()
 
     u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
-    prime::VertexArray* vertex_array;
-    prime::VertexBuffer* vertex_buffer;
-    prime::IndexBuffer* index_buffer;
+    Ref<VertexArray> vertex_array;
+    Ref<VertexBuffer> vertex_buffer;
+    Ref<IndexBuffer> index_buffer;
 
-    prime::Layout layout;
-    layout.addElement(prime::Type::Float3);
-    layout.addElement(prime::Type::Float4);
-    layout.addElement(prime::Type::Float2);
+    Layout layout;
+    layout.addElement(Type::Float3);
+    layout.addElement(Type::Float4);
+    layout.addElement(Type::Float2);
     layout.process();
 
     vertex_array = context->createVertexArray();
@@ -66,22 +67,22 @@ buffersTestGL()
 
     u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
-    prime::VertexArray* vertex_array;
-    prime::VertexBuffer* pos_vertex_buffer;
-    prime::VertexBuffer* color_vertex_buffer;
-    prime::VertexBuffer* tex_vertex_buffer;
-    prime::IndexBuffer* index_buffer;
+    Ref<VertexArray> vertex_array;
+    Ref<VertexBuffer> pos_vertex_buffer;
+    Ref<VertexBuffer> color_vertex_buffer;
+    Ref<VertexBuffer> tex_vertex_buffer;
+    Ref<IndexBuffer> index_buffer;
 
-    prime::Layout pos_layout;
-    pos_layout.addElement(prime::Type::Float3);
+    Layout pos_layout;
+    pos_layout.addElement(Type::Float3);
     pos_layout.process();
 
-    prime::Layout color_layout;
-    color_layout.addElement(prime::Type::Float4);
+    Layout color_layout;
+    color_layout.addElement(Type::Float4);
     color_layout.process();
 
-    prime::Layout tex_layout;
-    tex_layout.addElement(prime::Type::Float2);
+    Layout tex_layout;
+    tex_layout.addElement(Type::Float2);
     tex_layout.process();
 
     vertex_array = context->createVertexArray();
@@ -108,25 +109,39 @@ buffersTestGL()
 
 #endif
 
-    prime::ShaderDesc shader_desc;
+    ShaderDesc shader_desc;
     shader_desc.load = true;
     shader_desc.vertex = "shaders/vertex.glsl";
     shader_desc.pixel = "shaders/pixel.glsl";
-    shader_desc.type = prime::ShaderSourceType::GLSL;
+    shader_desc.type = ShaderSourceType::GLSL;
 
-    prime::Shader* shader = nullptr;
-    prime::Texture2D* texture = nullptr;
+    Ref<Shader> shader;
+    Ref<Texture> texture;
 
     shader = context->createShader(shader_desc);
-    texture = context->createTexture2D("textures/texture2d.png");
+    texture = context->createTexture("textures/texture2d.png");
 
-    context->setTexture2D(texture);
+    Ref<Texture> target;
+    target = context->createTexture(1280, 720, TextureUsage::RenderTarget);
 
     while (!window.shouldClose()) {
         window.pollEvents();
 
+        context->setTexture(texture);
+        context->setRenderTarget(target);
+        context->setClearColor({ 1.0f, 0.0f, 0.0f, 1.0f });
         context->clear();
-        context->drawElements(prime::DrawMode::Triangles, index_buffer->getCount());
+
+        context->drawElements(DrawMode::Triangles, index_buffer->getCount());
+        context->setRenderTarget(nullptr);
+
+        // draw render target
+        context->setClearColor({ .2f, .2f, .2f, 1.0f });
+        context->clear();
+        context->setTexture(target);
+
+        context->drawElements(DrawMode::Triangles, index_buffer->getCount());
+
         context->swapbuffers();
     }
 

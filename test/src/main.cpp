@@ -27,11 +27,11 @@ main()
     using namespace prime;
 
     Platform::init();
+    //TestManager::add("mathTest", mathTest);
     //TestManager::add("windowTest", windowTest);
     //TestManager::add("multiWindowTest", multiWindowTest);
     //TestManager::add("contextTestGL", contextTestGL);
     TestManager::add("buffersTestGL", buffersTestGL);
-    //TestManager::add("mathTest", mathTest);
 
     TestManager::run();
     Platform::shutdown();

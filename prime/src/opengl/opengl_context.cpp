@@ -2,9 +2,7 @@
 #include "opengl_context.h"
 #include "prime/native.h"
 #include "prime/logger.h"
-#include "glad/glad.h"
-
-#include <algorithm>
+#include "opengl_API.h"
 
 #include "opengl_buffers.h"
 #include "opengl_vertex_array.h"
@@ -40,10 +38,11 @@ namespace prime {
         m_Context = wglContextCreate(m_Window);
         m_Hdc = GetDC(m_Window);
 #endif // PPLATFORM_WINDOWS
-        m_VertexArrays.clear();
-        m_VertexBuffers.clear();
-        m_IndexBuffers.clear();
-        m_Shaders.clear();
+
+        m_Viewport.x = 0;
+        m_Viewport.y = 0;
+        m_Viewport.width = window.getWidth();
+        m_Viewport.height= window.getHeight();
     }
 
     GLContext::~GLContext()
@@ -51,31 +50,6 @@ namespace prime {
 #ifdef PPLATFORM_WINDOWS
         wglContextDestroy(m_Context);
 #endif // PPLATFORM_WINDOWS
-
-        // vertex array
-        for (VertexArray* vertex_array : m_VertexArrays) {
-            destroyVertexArray(vertex_array);
-        }
-
-        // vertex buffer
-        for (VertexBuffer* vertex_buffer : m_VertexBuffers) {
-            destroyVertexBuffer(vertex_buffer);
-        }
-
-        // index buffer
-        for (IndexBuffer* vertex_buffer : m_IndexBuffers) {
-            destroyIndexBuffer(vertex_buffer);
-        }
-
-        // shader
-        for (Shader* shader : m_Shaders) {
-            destroyShader(shader);
-        }
-
-        m_VertexArrays.clear();
-        m_VertexBuffers.clear();
-        m_IndexBuffers.clear();
-        m_Shaders.clear();
     }
 
     void 
@@ -118,162 +92,126 @@ namespace prime {
         m_Viewport = viewport;
     }
     
-    VertexArray* 
+    Ref<VertexArray>
     GLContext::createVertexArray()
     {
-        VertexArray* vertex_array = new GLVertexArray();
-        m_VertexArrays.push_back(vertex_array);
-        return vertex_array;
+        return createRef<GLVertexArray>();
     }
     
-    void 
-    GLContext::destroyVertexArray(VertexArray* vertex_array)
-    {
-        PASSERT_MSG(vertex_array, "vertex_array is null");
-        auto it = std::find(m_VertexArrays.begin(), m_VertexArrays.end(), vertex_array);
-        if (it != m_VertexArrays.end())
-        {
-            m_VertexArrays.erase(it);
-        }
-
-        delete vertex_array;
-    }
-    
-    VertexBuffer* 
+    Ref<VertexBuffer> 
     GLContext::createDynamicVertexBuffer(u32 size)
     {
-        VertexBuffer* vertex_buffer = new GLVertexBuffer(size);
-        m_VertexBuffers.push_back(vertex_buffer);
-        return vertex_buffer;
+        return createRef<GLVertexBuffer>(size);
     }
     
-    VertexBuffer* 
+    Ref<VertexBuffer> 
     GLContext::createStaticVertexBuffer(f32* vertices, u32 size)
     {
-        VertexBuffer* vertex_buffer = new GLVertexBuffer(vertices, size);
-        m_VertexBuffers.push_back(vertex_buffer);
-        return vertex_buffer;
-    }
-    
-    void 
-    GLContext::destroyVertexBuffer(VertexBuffer* vertex_buffer)
-    {
-        PASSERT_MSG(vertex_buffer, "vertex_buffer is null");
-        auto it = std::find(m_VertexBuffers.begin(), m_VertexBuffers.end(), vertex_buffer);
-        if (it != m_VertexBuffers.end())
-        {
-            m_VertexBuffers.erase(it);
-        }
-
-        delete vertex_buffer;
+        return createRef<GLVertexBuffer>(vertices, size);
     }
 
-    IndexBuffer* 
+    Ref<IndexBuffer>
     GLContext::createIndexBuffer(u32* indices, u32 count)
     {
-        IndexBuffer* index_buffer = new GLIndexBuffer(indices, count);
-        m_IndexBuffers.push_back(index_buffer);
-        return index_buffer;
-    }
-    
-    void 
-    GLContext::destroyIndexBuffer(IndexBuffer* index_buffer)
-    {
-        PASSERT_MSG(index_buffer, "index_buffer is null");
-        auto it = std::find(m_IndexBuffers.begin(), m_IndexBuffers.end(), index_buffer);
-        if (it != m_IndexBuffers.end())
-        {
-            m_IndexBuffers.erase(it);
-        }
-
-        delete index_buffer;
-        
+        return createRef<GLIndexBuffer>(indices, count);
     }
 
-    Shader* 
+    Ref<Shader> 
     GLContext::createShader(const ShaderDesc& desc)
     {
-        Shader* shader = new GLShader(desc);
-        m_Shaders.push_back(shader);
-        return shader;
+        return createRef<GLShader>(desc);
+    }
+   
+    Ref<Texture> 
+    GLContext::createTexture(u32 width, u32 height, TextureUsage usage)
+    {
+        return createRef<GLTexture>(width, height, usage);
+    }
+    
+    Ref<Texture>
+    GLContext::createTexture(const str& filepath)
+    {
+        return createRef<GLTexture>(filepath);
     }
     
     void 
-    GLContext::destroyShader(Shader* shader)
+    GLContext::setVertexArray(const Ref<VertexArray>& vertex_array)
     {
-        PASSERT_MSG(shader, "shader is null");
-        auto it = std::find(m_Shaders.begin(), m_Shaders.end(), shader);
-        if (it != m_Shaders.end())
-        {
-            m_Shaders.erase(it);
+        if (vertex_array.get()) {
+            glBindVertexArray(vertex_array->getHandle()->id);
         }
-
-        delete shader;
-    }
-    
-    Texture2D* 
-    GLContext::createTexture2D(u32 width, u32 height)
-    {
-        Texture2D* texture = new GLTexture2D(width, height);
-        m_Texture2Ds.push_back(texture);
-        return texture;
-    }
-    
-    Texture2D* 
-    GLContext::createTexture2D(const str& filepath)
-    {
-        Texture2D* texture = new GLTexture2D(filepath);
-        m_Texture2Ds.push_back(texture);
-        return texture;
-    }
-    
-    void 
-    GLContext::destroyTexture2D(Texture2D* texture)
-    {
-        PASSERT_MSG(texture, "texture is null");
-        auto it = std::find(m_Texture2Ds.begin(), m_Texture2Ds.end(), texture);
-        if (it != m_Texture2Ds.end())
-        {
-            m_Texture2Ds.erase(it);
+        else {
+            glBindVertexArray(0);
         }
-
-        delete texture;
     }
     
     void 
-    GLContext::setVertexArray(const VertexArray* vertex_array)
+    GLContext::setVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
     {
-        glBindVertexArray(vertex_array->getID());
+        if (vertex_buffer.get()) {
+            glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->getHandle()->id);
+        }
+        else {
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
     }
     
     void 
-    GLContext::setVertexBuffer(const VertexBuffer* vertex_buffer)
+    GLContext::setIndexBuffer(const Ref<IndexBuffer>& index_buffer)
     {
-        PASSERT_MSG(vertex_buffer, "vertex_buffer is null");
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->getID());
+        if (index_buffer.get()) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->getHandle()->id);
+        }
+        else {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
     }
     
     void 
-    GLContext::setIndexBuffer(const IndexBuffer* index_buffer)
+    GLContext::setShader(const Ref<Shader>& shader)
     {
-        PASSERT_MSG(index_buffer, "index_buffer is null");
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->getID());
+        if (shader.get()) {
+            glUseProgram(shader->getHandle()->id);
+        }
+        else {
+            glUseProgram(0);
+        }
     }
     
     void 
-    GLContext::setShader(const Shader* shader)
+    GLContext::setTexture(const Ref<Texture>& texture, u32 slot)
     {
-        PASSERT_MSG(shader, "shader is null");
-        glUseProgram(shader->getID());
+        if (texture.get()) {
+            if (slot >= PMAX_TEXTURE_SLOTS) {
+                glActiveTexture(GL_TEXTURE15);
+                PWARN("texture slot out of bounds. Setting texture to first slot");
+            }
+            glActiveTexture(GL_TEXTURE0 + slot);
+            glBindTexture(GL_TEXTURE_2D, texture->getHandle()->id);
+        }
+        else {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
     }
     
     void 
-    GLContext::setTexture2D(const Texture2D* texture, u32 slot)
+    GLContext::setRenderTarget(const Ref<Texture>& texture)
     {
-        PASSERT_MSG(texture, "texture is null");
-        PASSERT_MSG(slot < PMAX_TEXTURE_SLOTS, "texture slot out of bounds");
-        glActiveTexture(GL_TEXTURE0 + slot);
-        glBindTexture(GL_TEXTURE_2D, texture->getID());
+        if (texture.get()) {
+            if (texture->getUsage() == TextureUsage::RenderTarget) {
+                u32 width = texture->getWidth();
+                u32 height = texture->getHeight();
+                glBindFramebuffer(GL_FRAMEBUFFER, texture->getHandle()->buffer);
+                glViewport(0, 0, width, height);
+            }
+            else {
+                PINFO("Texture is not a render target");
+            }
+        }
+        else {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(m_Viewport.x, m_Viewport.y, m_Viewport.width, m_Viewport.height);
+        }
     }
 
     void
