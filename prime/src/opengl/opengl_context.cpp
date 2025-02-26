@@ -4,11 +4,6 @@
 #include "prime/logger.h"
 #include "opengl_API.h"
 
-#include "opengl_buffers.h"
-#include "opengl_vertex_array.h"
-#include "opengl_shader.h"
-#include "opengl_textures.h"
-
 #ifdef PPLATFORM_WINDOWS
 #include "windows/wgl_context.h"
 #endif // PPLATFORM_WINDOWS
@@ -53,7 +48,7 @@ namespace prime {
     }
 
     void 
-    GLContext::swapbuffers()
+    GLContext::present()
     {
 #ifdef PPLATFORM_WINDOWS
         SwapBuffers(m_Hdc);
@@ -90,48 +85,6 @@ namespace prime {
             viewport.height);
         
         m_Viewport = viewport;
-    }
-    
-    Ref<VertexArray>
-    GLContext::createVertexArray()
-    {
-        return createRef<GLVertexArray>();
-    }
-    
-    Ref<VertexBuffer> 
-    GLContext::createDynamicVertexBuffer(u32 size)
-    {
-        return createRef<GLVertexBuffer>(size);
-    }
-    
-    Ref<VertexBuffer> 
-    GLContext::createStaticVertexBuffer(f32* vertices, u32 size)
-    {
-        return createRef<GLVertexBuffer>(vertices, size);
-    }
-
-    Ref<IndexBuffer>
-    GLContext::createIndexBuffer(u32* indices, u32 count)
-    {
-        return createRef<GLIndexBuffer>(indices, count);
-    }
-
-    Ref<Shader> 
-    GLContext::createShader(const ShaderDesc& desc)
-    {
-        return createRef<GLShader>(desc);
-    }
-   
-    Ref<Texture> 
-    GLContext::createTexture(u32 width, u32 height, TextureUsage usage)
-    {
-        return createRef<GLTexture>(width, height, usage);
-    }
-    
-    Ref<Texture>
-    GLContext::createTexture(const str& filepath)
-    {
-        return createRef<GLTexture>(filepath);
     }
     
     void 

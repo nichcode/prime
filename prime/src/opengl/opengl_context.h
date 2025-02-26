@@ -28,7 +28,7 @@ namespace prime {
         ~GLContext() override;
 
         virtual void
-        swapbuffers() override;    
+        present() override;    
         
         virtual void
         makeActive() override;
@@ -44,27 +44,6 @@ namespace prime {
 
         virtual const Rect&
         getViewport() const override { return m_Viewport; }
-
-        virtual Ref<VertexArray>
-        createVertexArray() override;
-
-        virtual Ref<VertexBuffer>
-        createDynamicVertexBuffer(u32 size) override;
-
-        virtual Ref<VertexBuffer>
-        createStaticVertexBuffer(f32* vertices, u32 size) override;
-
-        virtual Ref<IndexBuffer>
-        createIndexBuffer(u32* indices, u32 count) override;
-
-        virtual Ref<Shader>
-        createShader(const ShaderDesc& desc) override;
-
-        virtual Ref<Texture>
-        createTexture(u32 width, u32 height, TextureUsage usage) override;
-
-        virtual Ref<Texture>
-        createTexture(const str& filepath) override;
 
         virtual void
         setVertexArray(const Ref<VertexArray>& vertex_array) override;

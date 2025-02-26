@@ -1,7 +1,7 @@
 
 #include "prime/prime.h"
 
-static void
+void
 onWindowClose(const prime::Window* window)
 {
     auto title = window->getTitle();
@@ -9,7 +9,7 @@ onWindowClose(const prime::Window* window)
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowResize(const prime::Window* window, u32 width, u32 height)
 {
     auto title = window->getTitle();
@@ -17,7 +17,7 @@ onWindowResize(const prime::Window* window, u32 width, u32 height)
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowKey(const prime::Window* window, prime::Key key, i32 scancode, prime::Action action)
 {
     auto title = window->getTitle();
@@ -29,7 +29,7 @@ onWindowKey(const prime::Window* window, prime::Key key, i32 scancode, prime::Ac
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowButton(const prime::Window* window, prime::Button button, prime::Action action)
 {
     auto title = window->getTitle();
@@ -42,7 +42,7 @@ onWindowButton(const prime::Window* window, prime::Button button, prime::Action 
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowMouseMoved(const prime::Window* window, i32 x, i32 y)
 {
     auto title = window->getTitle();
@@ -50,7 +50,7 @@ onWindowMouseMoved(const prime::Window* window, i32 x, i32 y)
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowMouseScrolled(const prime::Window* window, f32 x_offset, f32 y_offset)
 {
     auto title = window->getTitle();
@@ -58,7 +58,7 @@ onWindowMouseScrolled(const prime::Window* window, f32 x_offset, f32 y_offset)
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowMoved(const prime::Window* window, i32 x, i32 y)
 {
     auto title = window->getTitle();
@@ -66,7 +66,7 @@ onWindowMoved(const prime::Window* window, i32 x, i32 y)
 	prime::Logger::info(msg.c_str());
 }
 
-static void
+void
 onWindowFocused(const prime::Window* window, b8 focused)
 {
 	if (focused) {

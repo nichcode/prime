@@ -18,7 +18,7 @@ contextTestGL()
 
         context->clear();
 
-        context->swapbuffers();
+        context->present();
     }
 
     return PTRUE;

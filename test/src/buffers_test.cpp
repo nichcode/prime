@@ -1,7 +1,15 @@
 
 #include "prime/prime.h"
 
-#define USE_MULTIPLE_VBO
+prime::Ref<prime::Context> g_Context;
+
+void
+onWindowResizeBuffers(const prime::Window* window, u32 width, u32 height)
+{
+    g_Context->setViewport({ 0.0f, 0.0f, (f32)width, (f32)height });
+}
+
+//#define USE_MULTIPLE_VBO
 
 b8
 buffersTestGL()
@@ -14,7 +22,7 @@ buffersTestGL()
     Device device;
     device.init(DeviceType::OpenGL);
 
-    Ref<Context> context = device.createContext(window);
+    g_Context = device.createContext(window);
 
 #ifdef USE_MULTIPLE_VBO
     f32 vertices[] = {
@@ -36,10 +44,10 @@ buffersTestGL()
     layout.addElement(Type::Float2);
     layout.process();
 
-    vertex_array = context->createVertexArray();
-    vertex_buffer = context->createStaticVertexBuffer(vertices, sizeof(vertices));
+    vertex_array = device.createVertexArray();
+    vertex_buffer = device.createStaticVertexBuffer(vertices, sizeof(vertices));
     vertex_buffer->setLayout(layout);
-    index_buffer = context->createIndexBuffer(indices, 6);
+    index_buffer = device.createIndexBuffer(indices, 6);
 
     vertex_array->submit(vertex_buffer);
 
@@ -85,26 +93,26 @@ buffersTestGL()
     tex_layout.addElement(Type::Float2);
     tex_layout.process();
 
-    vertex_array = context->createVertexArray();
+    vertex_array = device.createVertexArray();
 
-    pos_vertex_buffer = context->createStaticVertexBuffer(pos_vertices, sizeof(pos_vertices));
+    pos_vertex_buffer = device.createStaticVertexBuffer(pos_vertices, sizeof(pos_vertices));
     pos_vertex_buffer->setLayout(pos_layout);
 
-    color_vertex_buffer = context->createStaticVertexBuffer(color_vertices, sizeof(color_vertices));
+    color_vertex_buffer = device.createStaticVertexBuffer(color_vertices, sizeof(color_vertices));
     color_vertex_buffer->setLayout(color_layout);
 
-    tex_vertex_buffer = context->createStaticVertexBuffer(tex_vertices, sizeof(tex_vertices));
+    tex_vertex_buffer = device.createStaticVertexBuffer(tex_vertices, sizeof(tex_vertices));
     tex_vertex_buffer->setLayout(tex_layout);
 
-    index_buffer = context->createIndexBuffer(indices, 6);
+    index_buffer = device.createIndexBuffer(indices, 6);
 
-    context->setVertexBuffer(pos_vertex_buffer);
+    g_Context->setVertexBuffer(pos_vertex_buffer);
     vertex_array->submit(pos_vertex_buffer);
 
-    context->setVertexBuffer(color_vertex_buffer);
+    g_Context->setVertexBuffer(color_vertex_buffer);
     vertex_array->submit(color_vertex_buffer);
 
-    context->setVertexBuffer(tex_vertex_buffer);
+    g_Context->setVertexBuffer(tex_vertex_buffer);
     vertex_array->submit(tex_vertex_buffer);
 
 #endif
@@ -118,31 +126,33 @@ buffersTestGL()
     Ref<Shader> shader;
     Ref<Texture> texture;
 
-    shader = context->createShader(shader_desc);
-    texture = context->createTexture("textures/texture2d.png");
+    shader = device.createShader(shader_desc);
+    texture = device.createTexture("textures/texture2d.png");
 
     Ref<Texture> target;
-    target = context->createTexture(1280, 720, TextureUsage::RenderTarget);
+    target = device.createTexture(1280, 720, TextureUsage::RenderTarget);
+
+    Window::setResizeCallback(onWindowResizeBuffers);
 
     while (!window.shouldClose()) {
         window.pollEvents();
 
-        context->setTexture(texture);
-        context->setRenderTarget(target);
-        context->setClearColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-        context->clear();
+        g_Context->setTexture(texture);
+        g_Context->setRenderTarget(target);
+        g_Context->setClearColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+        g_Context->clear();
 
-        context->drawElements(DrawMode::Triangles, index_buffer->getCount());
-        context->setRenderTarget(nullptr);
+        g_Context->drawElements(DrawMode::Triangles, index_buffer->getCount());
+        g_Context->setRenderTarget(nullptr);
 
         // draw render target
-        context->setClearColor({ .2f, .2f, .2f, 1.0f });
-        context->clear();
-        context->setTexture(target);
+        g_Context->setClearColor({ .2f, .2f, .2f, 1.0f });
+        g_Context->clear();
+        g_Context->setTexture(target);
 
-        context->drawElements(DrawMode::Triangles, index_buffer->getCount());
+        g_Context->drawElements(DrawMode::Triangles, index_buffer->getCount());
 
-        context->swapbuffers();
+        g_Context->present();
     }
 
     return PTRUE;

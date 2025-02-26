@@ -23,7 +23,7 @@ namespace prime {
         virtual ~Context() {};
 
         virtual void
-        swapbuffers() = 0;    
+        present() = 0;    
         
         virtual void
         makeActive() = 0;
@@ -39,27 +39,6 @@ namespace prime {
 
         virtual const Rect&
         getViewport() const = 0;
-
-        virtual Ref<VertexArray>
-        createVertexArray() = 0;
-
-        virtual Ref<VertexBuffer>
-        createDynamicVertexBuffer(u32 size) = 0;
-
-        virtual Ref<VertexBuffer>
-        createStaticVertexBuffer(f32* vertices, u32 size) = 0;
-
-        virtual Ref<IndexBuffer>
-        createIndexBuffer(u32* indices, u32 count)  = 0;
-
-        virtual Ref<Shader>
-        createShader(const ShaderDesc& desc) = 0;
-
-        virtual Ref<Texture>
-        createTexture(u32 width, u32 height, TextureUsage usage) = 0;
-
-        virtual Ref<Texture>
-        createTexture(const str& filepath) = 0;
 
         virtual void
         setVertexArray(const Ref<VertexArray>& vertex_array) = 0;
