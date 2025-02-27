@@ -10,6 +10,7 @@
 #include "native.h"
 #include "platform.h"
 #include "rect.h"
+#include "renderer2d.h"
 #include "shader.h"
 #include "test.h"
 #include "textures.h"

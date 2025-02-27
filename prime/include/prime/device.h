@@ -87,6 +87,9 @@ namespace prime {
 
         virtual void
         drawElements(DrawMode mode, u32 count) = 0;
+
+        virtual void
+        drawElementsInstanced(DrawMode mode, u32 count, u32 instance_count) = 0;
     };
     
 } // namespace prime

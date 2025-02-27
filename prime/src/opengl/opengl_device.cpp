@@ -57,6 +57,10 @@ struct GLDeviceHandle
         m_Viewport.y = 0;
         m_Viewport.width = window.getWidth();
         m_Viewport.height= window.getHeight();
+
+        glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_DEPTH_TEST);
     }
 
     GLDevice::~GLDevice()
@@ -236,6 +240,12 @@ struct GLDeviceHandle
     {
         GLenum type = drawModeToOpenGL(mode);
         glDrawElements(type, count, GL_UNSIGNED_INT, nullptr);
+    }
+    
+    void GLDevice::drawElementsInstanced(DrawMode mode, u32 count, u32 instance_count)
+    {
+        GLenum type = drawModeToOpenGL(mode);
+        glDrawElementsInstanced(type, count, GL_UNSIGNED_INT, nullptr, instance_count);
     }
     
 } // namespace prime

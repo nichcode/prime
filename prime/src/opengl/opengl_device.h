@@ -76,6 +76,9 @@ namespace prime {
 
         virtual void
         drawElements(DrawMode mode, u32 count) override;
+
+        virtual void
+        drawElementsInstanced(DrawMode mode, u32 count, u32 instance_count) override;
     };
     
 } // namespace prime

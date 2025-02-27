@@ -10,6 +10,7 @@
         "algorithm": "cpp",
         "array": "cpp",
         "buffer": "cpp",
-        "new": "cpp"
+        "new": "cpp",
+        "optional": "cpp"
     }
 }

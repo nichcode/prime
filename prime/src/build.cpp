@@ -6,6 +6,7 @@
 #include "test.cpp"
 #include "utils.cpp"
 #include "math.cpp"
+#include "renderer2d.cpp"
 
 #ifdef PPLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"
