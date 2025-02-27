@@ -7,18 +7,16 @@ contextTestGL()
     prime::Window window;
     window.init("ContestTestGL", 640, 480);
 
-    prime::Device device;
-    device.init(prime::DeviceType::OpenGL);
-
-    prime::Ref<prime::Context> context = device.createContext(window);
-    context->setClearColor({ .2f, .2f, .2f, 1.0f });
+    prime::Ref<prime::Device> device;
+    device = prime::Platform::createDevice(prime::DeviceType::OpenGL, window);
+    device->setClearColor({ .2f, .2f, .2f, 1.0f });
 
     while (!window.shouldClose()) {
         window.pollEvents();
 
-        context->clear();
+        device->clear();
 
-        context->present();
+        device->present();
     }
 
     return PTRUE;

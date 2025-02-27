@@ -1,12 +1,12 @@
 
 #include "prime/prime.h"
 
-prime::Ref<prime::Context> g_Context;
+prime::Ref<prime::Device> g_Device;
 
 void
 onWindowResizeBuffers(const prime::Window* window, u32 width, u32 height)
 {
-    g_Context->setViewport({ 0.0f, 0.0f, (f32)width, (f32)height });
+    g_Device->setViewport({ 0.0f, 0.0f, (f32)width, (f32)height });
 }
 
 //#define USE_MULTIPLE_VBO
@@ -19,17 +19,15 @@ buffersTestGL()
     Window window;
     window.init("BuffersTestGL", 640, 480);
 
-    Device device;
-    device.init(DeviceType::OpenGL);
-
-    g_Context = device.createContext(window);
+    g_Device = Platform::createDevice(DeviceType::OpenGL, window);
 
 #ifdef USE_MULTIPLE_VBO
+
     f32 vertices[] = {
-		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f,
-		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-		-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f
+		-0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f
 	};
 
     u32 indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -42,16 +40,18 @@ buffersTestGL()
     layout.addElement(Type::Float3);
     layout.addElement(Type::Float4);
     layout.addElement(Type::Float2);
+    layout.addElement(Type::Float2);
     layout.process();
 
-    vertex_array = device.createVertexArray();
-    vertex_buffer = device.createStaticVertexBuffer(vertices, sizeof(vertices));
+    vertex_array = g_Device->createVertexArray();
+    vertex_buffer = g_Device->createStaticVertexBuffer(vertices, sizeof(vertices));
     vertex_buffer->setLayout(layout);
-    index_buffer = device.createIndexBuffer(indices, 6);
+    index_buffer = g_Device->createIndexBuffer(indices, 6);
 
     vertex_array->submit(vertex_buffer);
 
 #else
+
     f32 pos_vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
@@ -73,12 +73,20 @@ buffersTestGL()
 		0.0f, 0.0f
 	};
 
+    f32 tex_vertices_flip[] = {
+		0.0f, 0.0f,
+		1.0f, 0.0f,
+		1.0f, 1.0f,
+		0.0f, 1.0f
+	};
+
     u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
     Ref<VertexArray> vertex_array;
     Ref<VertexBuffer> pos_vertex_buffer;
     Ref<VertexBuffer> color_vertex_buffer;
     Ref<VertexBuffer> tex_vertex_buffer;
+    Ref<VertexBuffer> tex_flip_vertex_buffer;
     Ref<IndexBuffer> index_buffer;
 
     Layout pos_layout;
@@ -93,27 +101,33 @@ buffersTestGL()
     tex_layout.addElement(Type::Float2);
     tex_layout.process();
 
-    vertex_array = device.createVertexArray();
+    vertex_array = g_Device->createVertexArray();
 
-    pos_vertex_buffer = device.createStaticVertexBuffer(pos_vertices, sizeof(pos_vertices));
+    pos_vertex_buffer = g_Device->createStaticVertexBuffer(pos_vertices, sizeof(pos_vertices));
     pos_vertex_buffer->setLayout(pos_layout);
 
-    color_vertex_buffer = device.createStaticVertexBuffer(color_vertices, sizeof(color_vertices));
+    color_vertex_buffer = g_Device->createStaticVertexBuffer(color_vertices, sizeof(color_vertices));
     color_vertex_buffer->setLayout(color_layout);
 
-    tex_vertex_buffer = device.createStaticVertexBuffer(tex_vertices, sizeof(tex_vertices));
+    tex_vertex_buffer = g_Device->createStaticVertexBuffer(tex_vertices, sizeof(tex_vertices));
     tex_vertex_buffer->setLayout(tex_layout);
 
-    index_buffer = device.createIndexBuffer(indices, 6);
+    tex_flip_vertex_buffer = g_Device->createStaticVertexBuffer(tex_vertices_flip, sizeof(tex_vertices_flip));
+    tex_flip_vertex_buffer->setLayout(tex_layout);
 
-    g_Context->setVertexBuffer(pos_vertex_buffer);
+    index_buffer = g_Device->createIndexBuffer(indices, 6);
+
+    g_Device->setVertexBuffer(pos_vertex_buffer);
     vertex_array->submit(pos_vertex_buffer);
 
-    g_Context->setVertexBuffer(color_vertex_buffer);
+    g_Device->setVertexBuffer(color_vertex_buffer);
     vertex_array->submit(color_vertex_buffer);
 
-    g_Context->setVertexBuffer(tex_vertex_buffer);
+    g_Device->setVertexBuffer(tex_vertex_buffer);
     vertex_array->submit(tex_vertex_buffer);
+
+    g_Device->setVertexBuffer(tex_flip_vertex_buffer);
+    vertex_array->submit(tex_flip_vertex_buffer);
 
 #endif
 
@@ -126,33 +140,35 @@ buffersTestGL()
     Ref<Shader> shader;
     Ref<Texture> texture;
 
-    shader = device.createShader(shader_desc);
-    texture = device.createTexture("textures/texture2d.png");
+    shader = g_Device->createShader(shader_desc);
+    texture = g_Device->createTexture("textures/texture2d.png");
 
     Ref<Texture> target;
-    target = device.createTexture(1280, 720, TextureUsage::RenderTarget);
+    target = g_Device->createTexture(1280, 720, TextureUsage::RenderTarget);
 
     Window::setResizeCallback(onWindowResizeBuffers);
 
     while (!window.shouldClose()) {
         window.pollEvents();
 
-        g_Context->setTexture(texture);
-        g_Context->setRenderTarget(target);
-        g_Context->setClearColor({ 1.0f, 0.0f, 0.0f, 1.0f });
-        g_Context->clear();
+        g_Device->setTexture(texture);
+        shader->setInt("u_TexCoordsIndex", 0);
+        g_Device->setRenderTarget(target);
+        g_Device->setClearColor({ 1.0f, 0.0f, 0.0f, 1.0f });
+        g_Device->clear();
 
-        g_Context->drawElements(DrawMode::Triangles, index_buffer->getCount());
-        g_Context->setRenderTarget(nullptr);
+        g_Device->drawElements(DrawMode::Triangles, index_buffer->getCount());
+        g_Device->setRenderTarget(nullptr);
 
         // draw render target
-        g_Context->setClearColor({ .2f, .2f, .2f, 1.0f });
-        g_Context->clear();
-        g_Context->setTexture(target);
+        shader->setInt("u_TexCoordsIndex", 1);
+        g_Device->setClearColor({ .2f, .2f, .2f, 1.0f });
+        g_Device->clear();
+        g_Device->setTexture(target);
 
-        g_Context->drawElements(DrawMode::Triangles, index_buffer->getCount());
+        g_Device->drawElements(DrawMode::Triangles, index_buffer->getCount());
 
-        g_Context->present();
+        g_Device->present();
     }
 
     return PTRUE;

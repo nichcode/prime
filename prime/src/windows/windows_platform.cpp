@@ -4,6 +4,8 @@
 #include "prime/utils.h"
 #include "wgl_context.h"
 
+#include "opengl/opengl_device.h"
+
 #include <memory.h>
 
 #ifdef PPLATFORM_WINDOWS
@@ -47,6 +49,18 @@ namespace prime {
     {
         UnregisterClassW(s_ClassName, s_Instance);
         PINFO("Prime Windows Platform Shutdown");
+    }
+
+    Ref<Device> Platform::createDevice(DeviceType type, const Window& window)
+    {
+        switch (type)
+        {
+            case DeviceType::OpenGL: {
+                return createRef<GLDevice>(window);
+            }
+            break;
+        }
+        return nullptr;
     }
     
 

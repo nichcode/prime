@@ -2,6 +2,7 @@
 #pragma once
 
 #include "defines.h"
+#include "device.h"
 
 namespace prime {
     
@@ -13,6 +14,9 @@ namespace prime {
 
         static void 
         shutdown();
+
+        static Ref<Device> 
+        createDevice(DeviceType type, const Window& window);
     };
 
 } // namespace prime

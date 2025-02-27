@@ -1,31 +1,42 @@
 
 #pragma once
 
-#include "prime/context.h"
-
-#ifdef PPLATFORM_WINDOWS
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN
-#endif // WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#endif // PPLATFORM_WINDOWS
+#include "prime/device.h"
 
 namespace prime {
 
-    class GLContext : public Context
+    struct GLDeviceHandle;
+
+    class GLDevice : public Device
     {
     private:
-#ifdef PPLATFORM_WINDOWS
-        HWND m_Window;
-        HGLRC m_Context;
-        HDC m_Hdc;
-#endif // PPLATFORM_WINDOWS
-
+        GLDeviceHandle* m_Handle;
         Rect m_Viewport;
 
     public:
-        GLContext(const Window& window);
-        ~GLContext() override;
+        GLDevice(const Window& window);
+        virtual ~GLDevice() override;
+
+        virtual Ref<VertexArray>
+        createVertexArray() override;
+
+        virtual Ref<VertexBuffer>
+        createDynamicVertexBuffer(u32 size) override;
+
+        virtual Ref<VertexBuffer>
+        createStaticVertexBuffer(f32* vertices, u32 size) override;
+
+        virtual Ref<IndexBuffer>
+        createIndexBuffer(u32* indices, u32 count) override;
+
+        virtual Ref<Shader>
+        createShader(const ShaderDesc& desc) override;
+
+        virtual Ref<Texture>
+        createTexture(u32 width, u32 height, TextureUsage usage) override;
+
+        virtual Ref<Texture>
+        createTexture(const str& filepath) override;
 
         virtual void
         present() override;    
@@ -58,7 +69,7 @@ namespace prime {
         setShader(const Ref<Shader>& shader) override;
 
         virtual void
-        setTexture(const Ref<Texture>& texture, u32 slot) override;
+        setTexture(const Ref<Texture>& texture, u32 slot  = 0) override;
 
         virtual void
         setRenderTarget(const Ref<Texture>& texture) override;

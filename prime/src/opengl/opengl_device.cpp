@@ -1,14 +1,31 @@
 
-#include "opengl_context.h"
+#include "opengl_device.h"
 #include "prime/native.h"
 #include "prime/logger.h"
 #include "opengl_API.h"
+#include "api.h"
 
 #ifdef PPLATFORM_WINDOWS
 #include "windows/wgl_context.h"
 #endif // PPLATFORM_WINDOWS
 
+#include "opengl/opengl_buffers.h"
+#include "opengl/opengl_vertex_array.h"
+#include "opengl/opengl_shader.h"
+#include "opengl/opengl_textures.h"
+
 namespace prime {
+
+#ifdef PPLATFORM_WINDOWS
+
+struct GLDeviceHandle
+{
+    HWND window;
+    HGLRC context;
+    HDC hdc;
+};
+
+#endif // PPLATFORM_WINDOWS
 
     PINLINE static 
     GLenum drawModeToOpenGL(DrawMode mode)
@@ -26,12 +43,14 @@ namespace prime {
         return 0;
     }
 
-    GLContext::GLContext(const Window& window)
+    GLDevice::GLDevice(const Window& window)
     {
+        m_Handle = new GLDeviceHandle();
+
 #ifdef PPLATFORM_WINDOWS
-        m_Window = getWin32WindowHandle(window);
-        m_Context = wglContextCreate(m_Window);
-        m_Hdc = GetDC(m_Window);
+        m_Handle->window = getWin32WindowHandle(window);
+        m_Handle->context = wglContextCreate(m_Handle->window);
+        m_Handle->hdc = GetDC(m_Handle->window);
 #endif // PPLATFORM_WINDOWS
 
         m_Viewport.x = 0;
@@ -40,43 +59,88 @@ namespace prime {
         m_Viewport.height= window.getHeight();
     }
 
-    GLContext::~GLContext()
+    GLDevice::~GLDevice()
     {
 #ifdef PPLATFORM_WINDOWS
-        wglContextDestroy(m_Context);
+        wglContextDestroy(m_Handle->context);
+#endif // PPLATFORM_WINDOWS
+
+        delete m_Handle;
+        m_Handle = nullptr;
+    }
+
+    Ref<VertexArray> 
+    GLDevice::createVertexArray()
+    {
+        return createRef<GLVertexArray>();
+    }
+
+    Ref<VertexBuffer> 
+    GLDevice::createDynamicVertexBuffer(u32 size)
+    {
+        return createRef<GLVertexBuffer>(size); 
+    }
+
+    Ref<VertexBuffer> 
+    GLDevice::createStaticVertexBuffer(f32* vertices, u32 size)
+    {
+        return createRef<GLVertexBuffer>(vertices, size);
+    }
+
+    Ref<IndexBuffer> 
+    GLDevice::createIndexBuffer(u32* indices, u32 count)
+    {
+        return createRef<GLIndexBuffer>(indices, count); 
+    }
+
+    Ref<Shader> 
+    GLDevice::createShader(const ShaderDesc& desc)
+    {
+        return createRef<GLShader>(desc);
+    }
+    
+    Ref<Texture> 
+    GLDevice::createTexture(u32 width, u32 height, TextureUsage usage)
+    {
+        return createRef<GLTexture>(width, height, usage);
+    }
+    
+    Ref<Texture> 
+    GLDevice::createTexture(const str& filepath)
+    {
+        return createRef<GLTexture>(filepath);
+    }  
+
+    void 
+    GLDevice::present()
+    {
+#ifdef PPLATFORM_WINDOWS
+        SwapBuffers(m_Handle->hdc);
 #endif // PPLATFORM_WINDOWS
     }
 
     void 
-    GLContext::present()
+    GLDevice::makeActive()
     {
 #ifdef PPLATFORM_WINDOWS
-        SwapBuffers(m_Hdc);
+        wglContextMakeCurrent(m_Handle->window, m_Handle->context);
 #endif // PPLATFORM_WINDOWS
     }
 
     void 
-    GLContext::makeActive()
-    {
-#ifdef PPLATFORM_WINDOWS
-        wglContextMakeCurrent(m_Window, m_Context);
-#endif // PPLATFORM_WINDOWS
-    }
-
-    void 
-    GLContext::setClearColor(const Color& color)
+    GLDevice::setClearColor(const Color& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);
     }
 
     void 
-    GLContext::clear()
+    GLDevice::clear()
     {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
     
     void 
-    GLContext::setViewport(const Rect& viewport)
+    GLDevice::setViewport(const Rect& viewport)
     {
         glViewport(
             viewport.x,
@@ -88,7 +152,7 @@ namespace prime {
     }
     
     void 
-    GLContext::setVertexArray(const Ref<VertexArray>& vertex_array)
+    GLDevice::setVertexArray(const Ref<VertexArray>& vertex_array)
     {
         if (vertex_array.get()) {
             glBindVertexArray(vertex_array->getHandle()->id);
@@ -99,7 +163,7 @@ namespace prime {
     }
     
     void 
-    GLContext::setVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
+    GLDevice::setVertexBuffer(const Ref<VertexBuffer>& vertex_buffer)
     {
         if (vertex_buffer.get()) {
             glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->getHandle()->id);
@@ -110,7 +174,7 @@ namespace prime {
     }
     
     void 
-    GLContext::setIndexBuffer(const Ref<IndexBuffer>& index_buffer)
+    GLDevice::setIndexBuffer(const Ref<IndexBuffer>& index_buffer)
     {
         if (index_buffer.get()) {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->getHandle()->id);
@@ -121,7 +185,7 @@ namespace prime {
     }
     
     void 
-    GLContext::setShader(const Ref<Shader>& shader)
+    GLDevice::setShader(const Ref<Shader>& shader)
     {
         if (shader.get()) {
             glUseProgram(shader->getHandle()->id);
@@ -132,7 +196,7 @@ namespace prime {
     }
     
     void 
-    GLContext::setTexture(const Ref<Texture>& texture, u32 slot)
+    GLDevice::setTexture(const Ref<Texture>& texture, u32 slot)
     {
         if (texture.get()) {
             if (slot >= PMAX_TEXTURE_SLOTS) {
@@ -148,7 +212,7 @@ namespace prime {
     }
     
     void 
-    GLContext::setRenderTarget(const Ref<Texture>& texture)
+    GLDevice::setRenderTarget(const Ref<Texture>& texture)
     {
         if (texture.get()) {
             if (texture->getUsage() == TextureUsage::RenderTarget) {
@@ -168,7 +232,7 @@ namespace prime {
     }
 
     void
-    GLContext::drawElements(DrawMode mode, u32 count)
+    GLDevice::drawElements(DrawMode mode, u32 count)
     {
         GLenum type = drawModeToOpenGL(mode);
         glDrawElements(type, count, GL_UNSIGNED_INT, nullptr);

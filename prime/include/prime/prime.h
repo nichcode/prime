@@ -3,7 +3,6 @@
 
 #include "buffers.h"
 #include "color.h"
-#include "context.h"
 #include "device.h"
 #include "filesystem.h"
 #include "layout.h"
