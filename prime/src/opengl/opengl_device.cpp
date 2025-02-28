@@ -96,6 +96,12 @@ struct GLDeviceHandle
     {
         return createRef<GLIndexBuffer>(indices, count); 
     }
+    
+    Ref<UniformBuffer> 
+    GLDevice::createUniformBuffer(u32 size, u32 binding)
+    {
+        return createRef<GLUniformBuffer>(size, binding); 
+    }
 
     Ref<Shader> 
     GLDevice::createShader(const ShaderDesc& desc)
@@ -185,6 +191,16 @@ struct GLDeviceHandle
         }
         else {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
+    }
+    
+    void GLDevice::setUniformBuffer(const Ref<UniformBuffer>& uniform_buffer)
+    {
+        if (uniform_buffer.get()) {
+            glBindBuffer(GL_UNIFORM_BUFFER, uniform_buffer->getHandle()->id);
+        }
+        else {
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }
     }
     

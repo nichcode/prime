@@ -40,6 +40,9 @@ namespace prime {
         virtual Ref<IndexBuffer>
         createIndexBuffer(u32* indices, u32 count) = 0;
 
+        virtual Ref<UniformBuffer>
+        createUniformBuffer(u32 size, u32 binding) = 0;
+
         virtual Ref<Shader>
         createShader(const ShaderDesc& desc) = 0;
 
@@ -75,6 +78,9 @@ namespace prime {
 
         virtual void
         setIndexBuffer(const Ref<IndexBuffer>& index_buffer) = 0;
+
+        virtual void
+        setUniformBuffer(const Ref<UniformBuffer>& uniform_buffer) = 0;
 
         virtual void
         setShader(const Ref<Shader>& shader) = 0;

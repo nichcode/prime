@@ -21,6 +21,11 @@ namespace prime {
         u32 id = 0;
     };
 
+    struct UniformBufferHandle
+    {
+        u32 id = 0;
+    };
+
     struct ShaderHandle
     {
         u32 id = 0;

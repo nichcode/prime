@@ -47,5 +47,21 @@ namespace prime {
         virtual u32 
         getCount() const override {return m_Count; }
     };
+
+    class GLUniformBuffer : public UniformBuffer
+    {
+    private:
+        UniformBufferHandle* m_Handle;
+
+    public:
+        GLUniformBuffer(u32 size, u32 binding);
+        virtual ~GLUniformBuffer() override;
+
+        virtual void
+        setData(const void* data, u32 size) override;
+
+        virtual UniformBufferHandle*
+        getHandle() const override { return m_Handle; }
+    };
     
 } // namespace prime

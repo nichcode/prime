@@ -1,6 +1,8 @@
 
 #include "prime/prime.h"
 
+#define USE_NDC
+
 b8
 renderer2dTest()
 {
@@ -9,27 +11,41 @@ renderer2dTest()
     Window window;
     window.init("BuffersTestGL", 640, 480);
 
-    prime::Ref<prime::Device> device;
-    device = Platform::createDevice(DeviceType::OpenGL, window);
+    Ref<Device> device = Platform::createDevice(DeviceType::OpenGL, window);
 
-    device->setClearColor({ .2f, .2f, .2f, 1.0f });
+    Ref<Texture> texture = device->createTexture("textures/texture2d.png");
 
-    Renderer2D::init(device);
+    Renderer2D renderer;
+#ifdef USE_NDC
+    renderer.init(device, true);
+#else 
+    renderer.init(device);
+#endif // USE_NDC
+
+    device->setClearColor({ 0.2f, 0.2f, 0.2f, 1.0f });
 
     while (!window.shouldClose()) {
         window.pollEvents();
 
         device->clear();
+        renderer.begin();
 
-        Renderer2D::begin();
+        renderer.setLayer(prime::Layer::One);
 
-        Renderer2D::drawRect({  0.6f, 0.0f, 0.4f, 0.4f }, { 1.0f, 0.0f, 0.0f, 1.0f }, 1.0f);
-        Renderer2D::drawRect({  0.5f, 0.0f, 0.4f, 0.4f }, 0.0f);
+#ifdef USE_NDC
+        renderer.drawRect({  -0.4f, 0.0f, 0.4f, 0.4f }, { 1.0f, 0.0f, 0.0f, 1.0f });
+        renderer.drawSprite({ 0.4f, 0.0f, 1.0f, 1.0f }, texture);
 
-        Renderer2D::end();
+#else
+        renderer.drawRect({  0.0f, 0.0f, 50.0f, 50.0f }, { 1.0f, 0.0f, 0.0f, 1.0f });
+        renderer.drawSprite({ 200.0f, 100.0f, 100.0f, 100.0f }, texture);
+
+#endif // USE_NDC
+
+        renderer.end();
         device->present();
     }
 
-    Renderer2D::destroy();
+    renderer.destroy();
     return PTRUE;
 }

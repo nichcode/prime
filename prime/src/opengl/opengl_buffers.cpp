@@ -55,5 +55,29 @@ namespace prime {
         m_Handle = nullptr;
         m_Count = 0;
     }
+    
+    
+    GLUniformBuffer::GLUniformBuffer(u32 size, u32 binding)
+    {
+        m_Handle = new UniformBufferHandle();
+        glGenBuffers(1, &m_Handle->id);
+        glBindBuffer(GL_UNIFORM_BUFFER, m_Handle->id);
+        glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding, m_Handle->id);
+    }
+    
+    GLUniformBuffer::~GLUniformBuffer()
+    {
+        glDeleteBuffers(1, &m_Handle->id);
+        m_Handle->id = 0;
+        delete m_Handle;
+        m_Handle = nullptr;
+    }
+    
+    void 
+    GLUniformBuffer::setData(const void* data, u32 size)
+    {
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);
+    }
 
 } // namespace prime

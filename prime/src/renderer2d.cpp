@@ -3,55 +3,221 @@
 #include "prime/math.h"
 #include "prime/logger.h"
 #include "shader_sources.h"
+#include "prime/platform.h"
 
 #define MAX_SPRITES 10000
 #define MAX_VERTICES MAX_SPRITES * 4
 #define MAX_INDICES MAX_SPRITES * 6
 
-#include <array>
-
 namespace prime {
 
-    struct Sprite
+    PINLINE f32 
+    getLayer(Layer& layer)
     {
-        vec3 pos;
-        Color color;
-    };
+        switch (layer)
+        {
+            case Layer::One: {
+                return 0.0f;
+                break;
+            }
 
-    struct SpriteData
-    {
-        Ref<VertexArray> vAO;
-        Ref<VertexBuffer> vBO;
-        Ref<IndexBuffer> iBO;
-        Ref<Shader> shader;
+            case Layer::Two: {
+                return -0.1f;
+                break;
+            }
 
-        vec4 vertices[4];
+            case Layer::Three: {
+                return -0.2f;
+                break;
+            }
 
-        std::array<Ref<Texture>, PMAX_TEXTURE_SLOTS> texSlots{};
-        u32 texIndex = 1, count;
+            case Layer::Four: {
+                return -0.3f;
+                break;
+            }
 
-        Sprite* ptr;
-        Sprite* base;
-    };
+            case Layer::Five: {
+                return -0.4f;
+                break;
+            }
 
-    struct Renderer2DData
-    {
-        Ref<Device> device;
-        SpriteData sprite;
-    };
+            case Layer::Six: {
+                return -0.5f;
+                break;
+            }
 
-    static Renderer2DData s_Ren2DData;
+            case Layer::Seven: {
+                return -0.6f;
+                break;
+            }
 
-    static void
-    initSprites(Ref<Device>& device)
+            case Layer::Eight: {
+                return -0.7f;
+                break;
+            }
+
+            case Layer::Nine: {
+                return -0.8f;
+                break;
+            }
+
+            case Layer::Ten: {
+                return -0.9f;
+                break;
+            }
+        }
+        return 0.0f;
+    }
+
+    void 
+    Renderer2D::init(Ref<Device>& device, b8 ndc)
     {
         PASSERT_MSG(device.get(), "device is null");
+        m_Device = device;
+        m_NDC = ndc;
+        initSprite();
 
-        s_Ren2DData.sprite.vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-        s_Ren2DData.sprite.vertices[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-        s_Ren2DData.sprite.vertices[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-        s_Ren2DData.sprite.vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+        m_UniformBuffer = m_Device->createUniformBuffer(sizeof(mat4), 0);
+        m_Init = true;
+        m_Layer = Layer::One;
+    }
 
+    void 
+    Renderer2D::destroy()
+    {
+        if (m_Init) {
+            delete[] m_SpriteBase;
+            m_Init = false;
+        }
+    }
+
+    void
+    Renderer2D::setLayer(Layer layer)
+    {
+        m_Layer = layer;
+    }
+
+    void 
+    Renderer2D::begin()
+    {
+        m_SpritePtr = m_SpriteBase;
+        m_SpriteCount = 0;
+        m_TexIndex = 1;
+
+        mat4 matrix = mat4::identity();
+        if (m_NDC == false) {
+            const Rect view = m_Device->getViewport();
+            matrix = mat4::orthographic(view.x, view.width, view.height, view.y, -1.0f, 1.0f);
+        }
+        setProjectionMatrix(matrix);
+    }
+
+    void 
+    Renderer2D::end()
+    {
+        if (m_SpriteCount) {
+            u32 size = (u32)((u8*)m_SpritePtr - (u8*)m_SpriteBase);
+            m_Device->setVertexBuffer(m_SpriteVBO);
+            m_SpriteVBO->setData(m_SpriteBase, size);
+
+            for (u32 i = 0; i < m_TexIndex; i++) {
+                m_Device->setTexture(m_TexSlots[i], i);
+            }
+
+            m_Device->setShader(m_SpriteShader);
+            m_Device->drawElements(DrawMode::Triangles, m_SpriteCount);
+        }   
+    }
+
+    void 
+    Renderer2D::drawRect(const Rect& rect)
+    {
+        drawRect(rect, { 1.0f, 1.0f, 1.0f, 1.0f });
+    }
+
+    void
+    Renderer2D::drawRect(const Rect& rect, const Color& color)
+    {
+        checkSpriteMax();
+
+        mat4 translation = mat4::translate({ rect.x, rect.y, 0.0f });
+        mat4 scale = mat4::scale({ rect.width, rect.height, 1.0f });
+        mat4 transform = translation * scale;
+
+        for (size_t i = 0; i < 4; i++)
+		{
+            vec4 pos = transform * m_Vertices[i];
+			m_SpritePtr->pos.x = pos.x;
+			m_SpritePtr->pos.y = pos.y;
+
+            m_SpritePtr->pos.z = getLayer(m_Layer);
+            m_SpritePtr->color = color;
+
+            m_SpritePtr->texCoords = m_TexCoords[i];
+            m_SpritePtr->texIndex = 0.0f;
+
+			m_SpritePtr++;
+		}
+        m_SpriteCount += 6;
+    }
+
+    void 
+    Renderer2D::drawSprite(const Rect& rect, const Ref<Texture>& texture)
+    {
+        checkSpriteMax();
+
+        mat4 translation = mat4::translate({ rect.x, rect.y, 0.0f });
+        mat4 scale = mat4::scale({ rect.width, rect.height, 1.0f });
+        mat4 transform = translation * scale;
+
+        f32 tex_index = 0.0f;
+        if (texture.get()) {
+            tex_index = getTextureIndex(texture);
+        }
+
+        for (size_t i = 0; i < 4; i++)
+		{
+            vec4 pos = transform * m_Vertices[i];
+			m_SpritePtr->pos.x = pos.x;
+			m_SpritePtr->pos.y = pos.y;
+
+            m_SpritePtr->pos.z = getLayer(m_Layer);
+            m_SpritePtr->color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+            m_SpritePtr->texCoords = m_TexCoords[i];
+            m_SpritePtr->texIndex = tex_index;
+
+			m_SpritePtr++;
+		}
+        m_SpriteCount += 6;
+    }
+
+    void 
+    Renderer2D::initSprite()
+    {
+        if (m_NDC) {
+            m_Vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+            m_Vertices[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+            m_Vertices[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+            m_Vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+
+            m_TexCoords[0] = { 0.0f, 1.0f };
+            m_TexCoords[1] = { 1.0f, 1.0f };
+            m_TexCoords[2] = { 1.0f, 0.0f };
+            m_TexCoords[3] = { 0.0f, 0.0f };
+        }
+        else {
+            m_Vertices[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
+            m_Vertices[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
+            m_Vertices[2] = { 1.0f, 1.0f, 0.0f, 1.0f };
+            m_Vertices[3] = { 0.0f, 1.0f, 0.0f, 1.0f };
+
+            m_TexCoords[0] = { 0.0f, 0.0f };
+            m_TexCoords[1] = { 1.0f, 0.0f };
+            m_TexCoords[2] = { 1.0f, 1.0f };
+            m_TexCoords[3] = { 0.0f, 1.0f };
+        }
+        
         u32* indices = new u32[MAX_INDICES];
         u32 offset = 0;
         for (u32 i = 0; i < MAX_INDICES; i += 6)
@@ -70,18 +236,20 @@ namespace prime {
         Layout layout;
         layout.addElement(Type::Float3);
         layout.addElement(Type::Float4);
+        layout.addElement(Type::Float2);
+        layout.addElement(Type::Float);
         layout.process();
 
-        s_Ren2DData.sprite.vAO = device->createVertexArray();
+        m_SpriteVAO = m_Device->createVertexArray();
 
-        s_Ren2DData.sprite.vBO = device->createDynamicVertexBuffer(MAX_VERTICES * sizeof(Sprite));
-        s_Ren2DData.sprite.vBO->setLayout(layout);
-        s_Ren2DData.sprite.base = new Sprite[MAX_VERTICES];
+        m_SpriteVBO = m_Device->createDynamicVertexBuffer(MAX_VERTICES * sizeof(SpriteVertex));
+        m_SpriteVBO->setLayout(layout);
+        m_SpriteBase = new SpriteVertex[MAX_VERTICES];
 
-        s_Ren2DData.sprite.iBO = device->createIndexBuffer(indices, MAX_INDICES);
+        m_SpriteIBO = m_Device->createIndexBuffer(indices, MAX_INDICES);
 
-        device->setVertexBuffer(s_Ren2DData.sprite.vBO);
-        s_Ren2DData.sprite.vAO->submit(s_Ren2DData.sprite.vBO);
+        m_Device->setVertexBuffer(m_SpriteVBO);
+        m_SpriteVAO->submit(m_SpriteVBO);
 
         ShaderDesc shader_desc;
         shader_desc.load = false;
@@ -89,72 +257,53 @@ namespace prime {
         shader_desc.pixel = s_SpritePixelSource;
         shader_desc.type = ShaderSourceType::GLSL;
 
-        s_Ren2DData.sprite.shader = device->createShader(shader_desc);
-        s_Ren2DData.sprite.texSlots[0] = device->createTexture(1, 1, TextureUsage::None);
-        
-        delete[] indices;
+        m_SpriteShader = m_Device->createShader(shader_desc);
+        m_TexSlots[0] = m_Device->createTexture(1, 1, TextureUsage::None);
+
+        m_Device->setShader(m_SpriteShader);
+        i32 samplers[PMAX_TEXTURE_SLOTS]{};
+        for (u32 i = 0; i < PMAX_TEXTURE_SLOTS; i++) { samplers[i] = i; }
+        m_SpriteShader->setIntArray("u_Textures", samplers, PMAX_TEXTURE_SLOTS);
+            
+            delete[] indices;
+        }
+
+    void 
+    Renderer2D::setProjectionMatrix(const mat4& projection)
+    {
+        m_Device->setUniformBuffer(m_UniformBuffer);
+        m_UniformBuffer->setData(&projection, sizeof(mat4));
+    }
+
+    f32 
+    Renderer2D::getTextureIndex(const Ref<Texture>& texture)
+    {
+        f32 tex_index = 0.0f;
+        for (u32 i = 1; i < m_TexIndex; i++) {
+            if (m_TexSlots[i]->getHandle() == texture->getHandle()) {
+                tex_index = (f32)i;
+                break;
+            }
+        }
+
+        if (tex_index == 0.0f) {
+            tex_index = (f32)m_TexIndex;
+            m_TexSlots[m_TexIndex] = texture;
+            m_TexIndex++;
+        }
+
+        return tex_index;
     }
 
     void 
-    Renderer2D::init(Ref<Device>& device)
+    Renderer2D::checkSpriteMax()
     {
-        s_Ren2DData.device = device;
-        initSprites(device);
+        if (m_SpriteCount >= MAX_INDICES) {
+            end();
+            m_SpritePtr = m_SpriteBase;
+            m_SpriteCount = 0;
+        }
     }
-
-    void 
-    Renderer2D::destroy()
-    {
-        delete[] s_Ren2DData.sprite.base;
-    }
-
-    void 
-    Renderer2D::begin()
-    {
-        s_Ren2DData.sprite.ptr = s_Ren2DData.sprite.base;
-        s_Ren2DData.sprite.count = 0;
-        s_Ren2DData.sprite.texIndex = 1;
-    }
-
-    void 
-    Renderer2D::end()
-    {
-        if (s_Ren2DData.sprite.count) {
-            u32 size = (u32)((u8*)s_Ren2DData.sprite.ptr - (u8*)s_Ren2DData.sprite.base);
-            s_Ren2DData.device->setVertexBuffer(s_Ren2DData.sprite.vBO);
-            s_Ren2DData.sprite.vBO->setData(s_Ren2DData.sprite.base, size);
-
-            s_Ren2DData.device->setShader(s_Ren2DData.sprite.shader);
-            s_Ren2DData.device->drawElements(DrawMode::Triangles, s_Ren2DData.sprite.count);
-        }   
-    }
-
-    void 
-    Renderer2D::drawRect(const Rect& rect, f32 layer)
-    {
-        drawRect(rect, { 1.0f, 1.0f, 1.0f, 1.0f }, layer);
-    }
-
-    void
-    Renderer2D::drawRect(const Rect& rect, const Color& color, f32 layer)
-    {
-        mat4 translation = mat4::translate({ rect.x, rect.y, 0.0f });
-        mat4 scale = mat4::scale({ rect.width, rect.height, 1.0f });
-        mat4 transform = translation * scale;
-
-        for (size_t i = 0; i < 4; i++)
-		{
-            vec4 pos = transform * s_Ren2DData.sprite.vertices[i];
-			s_Ren2DData.sprite.ptr->pos.x = pos.x;
-			s_Ren2DData.sprite.ptr->pos.y = pos.y;
-
-            s_Ren2DData.sprite.ptr->pos.z = -layer / 10.0f;
-
-            s_Ren2DData.sprite.ptr->color = color;
-
-			s_Ren2DData.sprite.ptr++;
-		}
-        s_Ren2DData.sprite.count += 6;
-    }
+    
     
 } // namespace prime
