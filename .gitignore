@@ -1,0 +1,13 @@
+# Binaries
+**out
+
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+**.csproj
+
+# MakeFiles
+Makefile
