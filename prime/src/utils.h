@@ -11,5 +11,9 @@ namespace prime::utils {
 
     void consoleWrite(LogLevel level, const char* msg);
 
+    void mapActionNames();
+    void mapButtonNames();
+    void mapKeyNames();
+
 } // namespace prime::utils
     
