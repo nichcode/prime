@@ -1,3 +1,11 @@
 
-#include "platform.cpp"
+#include "prime/platform_detection.h"
+
+#include "fmt.cpp"
+#include "logger.cpp"
 #include "test_manager.cpp"
+
+#ifdef PRIME_PLATFORM_WINDOWS
+#include "win32/win32_platform.cpp"
+#include "win32/win32_utils.cpp"
+#endif // PRIME_PLATFORM_WINDOWS

@@ -36,7 +36,7 @@ workspace "prime"
         runtime "Debug"
 
         defines {
-            "PCONFIG_DEBUG"
+            "PRIME_CONFIG_DEBUG"
         }
 
     filter "configurations:Release"

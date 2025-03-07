@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "defines.h"
+#include "prime/defines.h"
 
-namespace prime {
+namespace prime::core {
 
     using TestFunc = b8(*)();
 
@@ -14,4 +14,4 @@ namespace prime {
         static void run();
     };
         
-} // namespace prime
+} // namespace prime::core

@@ -1,9 +1,9 @@
 
 #pragma once
 
-#include "defines.h"
+#include "prime/defines.h"
 
-namespace prime {
+namespace prime::core {
 
     class Platform
     {
@@ -12,4 +12,4 @@ namespace prime {
         static void shutdown();
     };
     
-} // namespace prime
+} // namespace prime::core

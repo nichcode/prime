@@ -3,7 +3,8 @@
 
 int main()
 {
-    using namespace prime;
+    using namespace prime::core;
+    
     Platform::init();
 
     Platform::shutdown();

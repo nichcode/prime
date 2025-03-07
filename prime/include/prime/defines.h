@@ -2,6 +2,7 @@
 #pragma once
 
 #include "platform_detection.h"
+#include <string>
 
 #define PRIME_RELEASE 0
 #define PRIME_PRESS 1
@@ -46,6 +47,9 @@ using f64 = double;
 
 using b32 = int;
 using b8 = bool;
+
+using str = std::string;
+using wstr = std::wstring;
 
 PRIME_STATIC_ASSERT(sizeof(u8) == 1, "Expected u8 to be 1 byte.");
 PRIME_STATIC_ASSERT(sizeof(u16) == 2, "Expected u16 to be 2 bytes.");
@@ -214,8 +218,7 @@ namespace prime {
         LogLevelTrace,
         LogLevelInfo,
         LogLevelWarn,
-        LogLevelError,
-        LogLevelFatal
+        LogLevelError
     };
 
     enum DataType

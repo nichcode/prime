@@ -1,8 +1,8 @@
 
-#include "prime/test_manager.h"
+#include "prime/core/test_manager.h"
 #include <vector>
 
-namespace prime {
+namespace prime::core {
 
     struct Entry
     {

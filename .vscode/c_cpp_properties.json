@@ -3,10 +3,11 @@
         {
             "name": "win32",
             "includePath": [
-                "${workspaceFolder}/prime/include"
+                "${workspaceFolder}/prime/include",
+                "${workspaceFolder}/prime/src"
             ],
             "defines": [
-                "PCONFIG_DEBUG",
+                "PRIME_CONFIG_DEBUG",
                 "UNICODE",
                 "_UNICODE"
             ],
