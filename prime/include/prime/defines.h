@@ -64,12 +64,9 @@ PRIME_STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 namespace prime {
 
-    enum DeviceType
+    enum GraphicsAPI
     {
-    #ifdef PRIME_PLATFORM_WINDOWS
-        DeviceTypeDx11,
-    #endif // PRIME_PLATFORM_WINDOWS
-        DeviceTypeGL
+        GraphicsAPIGL
     };
 
     enum Button

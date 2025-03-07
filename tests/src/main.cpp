@@ -7,6 +7,7 @@ b8 vec4Test();
 b8 mat4Test();
 b8 windowTest();
 b8 multiWindowTest();
+b8 contextTestGL();
 
 int main()
 {
@@ -19,7 +20,8 @@ int main()
     //TestManager::addTest(vec4Test, "vec4Test");
     //TestManager::addTest(mat4Test, "mat4Test");
     //TestManager::addTest(windowTest, "windowTest");
-    TestManager::addTest(multiWindowTest, "multiWindowTest");
+    //TestManager::addTest(multiWindowTest, "multiWindowTest");
+    TestManager::addTest(contextTestGL, "contextTestGL");
 
     TestManager::run();
     Platform::shutdown();

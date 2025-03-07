@@ -3,6 +3,7 @@
 #include "prime/core/logger.h"
 #include "utils.h"
 #include "win32_API.h"
+#include "wgl_context.h"
 
 namespace prime::core {
 
@@ -30,6 +31,8 @@ namespace prime::core {
         utils::mapActionNames();
         utils::mapButtonNames();
         utils::mapKeyNames();
+
+        internal::wglContextCreateDummy();
         PRIME_INFO("Win32Platform Init!");
         return 1;
     }

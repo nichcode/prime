@@ -92,7 +92,6 @@ b8 windowTest()
     return PRIME_TRUE;
 }
 
-
 b8 multiWindowTest()
 {
     prime::core::Window window;
