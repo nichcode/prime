@@ -6,6 +6,7 @@
 #include "test_manager.cpp"
 #include "maths.cpp"
 #include "vec2.cpp"
+#include "vec3.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"

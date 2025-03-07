@@ -7,3 +7,4 @@
 #include "core/test_manager.h"
 
 #include "maths/vec2.h"
+#include "maths/vec3.h"
