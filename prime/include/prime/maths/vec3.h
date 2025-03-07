@@ -14,6 +14,7 @@ namespace prime::maths {
         vec3();
         vec3(f32 x, f32 y, f32 z);
         vec3(const vec2& vec);
+        vec3(const vec2& vec, f32 z);
         vec3(f32 data);
 
         void add(const vec3& v);

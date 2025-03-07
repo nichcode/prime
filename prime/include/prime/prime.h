@@ -8,3 +8,4 @@
 
 #include "maths/vec2.h"
 #include "maths/vec3.h"
+#include "maths/vec4.h"

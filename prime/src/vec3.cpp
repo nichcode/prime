@@ -25,6 +25,13 @@ namespace prime::maths {
         this->y = vec.y;
         this->z = 0.0f;
     }
+
+    vec3::vec3(const vec2& vec, f32 z)
+    {
+        this->x = vec.x;
+        this->y = vec.y;
+        this->z = z;
+    }
     
     vec3::vec3(f32 data)
     {
