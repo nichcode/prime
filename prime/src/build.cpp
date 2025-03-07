@@ -4,6 +4,8 @@
 #include "fmt.cpp"
 #include "logger.cpp"
 #include "test_manager.cpp"
+#include "maths.cpp"
+#include "vec2.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"

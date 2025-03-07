@@ -5,3 +5,5 @@
 #include "core/logger.h"
 #include "core/platform.h"
 #include "core/test_manager.h"
+
+#include "maths/vec2.h"
