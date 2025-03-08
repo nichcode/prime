@@ -3,6 +3,7 @@
 #include "prime/core/logger.h"
 #include "glad/glad.h"
 #include "prime/internal.h"
+#include <algorithm>
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "win32/wgl_context.h"
@@ -20,6 +21,23 @@ namespace prime::renderer {
     };
 
 #endif // PRIME_PLATFORM_WINDOWS
+
+    struct VertexArrayHandle
+    {
+        u32 id = 0;
+    };
+
+    struct VertexBufferHandle
+    {
+        u32 id = 0;
+        b8 dynamic = false;
+    };
+
+    struct IndexBufferHandle
+    {
+        u32 id = 0;
+        u32 count = 0;
+    };
 
     GLContext::GLContext(GraphicsAPI API, const core::Window& window)
     {
@@ -39,8 +57,131 @@ namespace prime::renderer {
 #ifdef PRIME_PLATFORM_WINDOWS
         internal::wglContextDestroy(m_Handle->context);
 #endif // PRIME_PLATFORM_WINDOWS
+
+        // vertex buffers
+        for (VertexArray array : m_Arrays) {
+            glDeleteBuffers(1, &array.handle->id);
+            array.handle->id = 0;
+            delete array.handle;
+            array.handle = nullptr;
+        }
+
+        // index buffers
+        for (VertexBuffer buffer : m_VBuffers) {
+            glDeleteBuffers(1, &buffer.handle->id);
+            buffer.handle->id = 0;
+            delete buffer.handle;
+            buffer.handle = nullptr;
+        }
+
+        // index buffers
+        for (IndexBuffer buffer : m_IBuffers) {
+            glDeleteBuffers(1, &buffer.handle->id);
+            buffer.handle->id = 0;
+            buffer.handle->count = 0;
+            delete buffer.handle;
+            buffer.handle = nullptr;
+        }
+
+        m_Arrays.clear();
+        m_VBuffers.clear();
+        m_IBuffers.clear();
+
         delete m_Handle;
         m_Handle = nullptr;
+    }
+    
+    VertexArray GLContext::createVertexArray()
+    {
+        VertexArray array;
+        array.handle = new VertexArrayHandle();
+        glGenVertexArrays(1, &array.handle->id);
+        glBindVertexArray(array.handle->id);
+
+        m_Arrays.push_back(array);
+        return array;
+    }
+    
+    void GLContext::deleteVertexArray(VertexArray& array)
+    {
+        auto it = std::find(m_Arrays.begin(), m_Arrays.end(), array);
+        if (it != m_Arrays.end())
+        {
+            m_Arrays.erase(it);
+        }
+
+        glDeleteVertexArrays(1, &array.handle->id);
+        array.handle->id = 0;
+        delete array.handle;
+        array.handle = nullptr;
+    }
+    
+    VertexBuffer GLContext::createVertexBuffer(f32* vertices, u32 size)
+    {
+        VertexBuffer buffer;
+        buffer.handle = new VertexBufferHandle();
+        glGenBuffers(1, &buffer.handle->id);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer.handle->id);
+        glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
+
+        buffer.handle->dynamic = false;
+        m_VBuffers.push_back(buffer);
+        return buffer;
+    }
+    
+    VertexBuffer GLContext::createDynamicVertexBuffer(u32 size)
+    {
+        VertexBuffer buffer;
+        buffer.handle = new VertexBufferHandle();
+        glGenBuffers(1, &buffer.handle->id);
+        glBindBuffer(GL_ARRAY_BUFFER, buffer.handle->id);
+        glBufferData(GL_ARRAY_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+
+        buffer.handle->dynamic = true;
+        m_VBuffers.push_back(buffer);
+        return buffer;
+    }
+    
+    void GLContext::deleteVertexBuffer(VertexBuffer& buffer)
+    {
+        auto it = std::find(m_VBuffers.begin(), m_VBuffers.end(), buffer);
+        if (it != m_VBuffers.end())
+        {
+            m_VBuffers.erase(it);
+        }
+
+        glDeleteBuffers(1, &buffer.handle->id);
+        buffer.handle->id = 0;
+        delete buffer.handle;
+        buffer.handle = nullptr;
+    }
+    
+    IndexBuffer GLContext::createIndexBuffer(u32* indices, u32 count)
+    {
+        IndexBuffer buffer;
+        buffer.handle = new IndexBufferHandle();
+        buffer.handle->count = count;
+
+        glGenBuffers(1, &buffer.handle->id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.handle->id);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), nullptr, GL_STATIC_DRAW);
+
+        m_IBuffers.push_back(buffer);
+        return buffer;
+    }
+    
+    void GLContext::deleteIndexBuffer(IndexBuffer& buffer)
+    {
+        auto it = std::find(m_IBuffers.begin(), m_IBuffers.end(), buffer);
+        if (it != m_IBuffers.end())
+        {
+            m_IBuffers.erase(it);
+        }
+        glDeleteBuffers(1, &buffer.handle->id);
+        buffer.handle->id = 0;
+        buffer.handle->count = 0;
+        delete buffer.handle;
+        buffer.handle = nullptr;
     }
     
     void GLContext::setVsync(b8 vsync)
@@ -53,6 +194,21 @@ namespace prime::renderer {
     void GLContext::setClearColor(const Color& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);
+    }
+    
+    void GLContext::setVertexArray(const VertexArray& array)
+    {
+        glBindVertexArray(array.handle->id);
+    }
+    
+    void GLContext::setVertexBuffer(const VertexBuffer& buffer)
+    {
+        glBindBuffer(GL_ARRAY_BUFFER, buffer.handle->id);
+    }
+    
+    void GLContext::setIndexBuffer(const IndexBuffer& buffer)
+    {
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.handle->id);
     }
     
     void GLContext::clear()

@@ -17,7 +17,22 @@
 #define PRIME_INLINE inline
 #define PRIME_MAX_TEXTURE_SLOTS 16
 #define PRIME_MAX_RENDER_TARGET_SIZE 8192
+#define PRIME_MAX_VERTEX_ARRAYS 16
+#define PRIME_MAX_VERTEX_BUFFERS 32
+#define PRIME_MAX_INDEX_BUFFERS 16
 
+#define PRIME_HANDLE(name) struct name
+
+#define PRIME_HANDLE_DEF(name, _handle) struct name        \
+    {                                                      \
+        _handle* handle = nullptr;                         \
+                                                           \
+        b8 operator==(name rhs)                            \
+        {                                                  \
+            return handle == rhs.handle;                   \
+        }                                                  \
+    };
+    
 /** @brief debug breakpoint. */
 #ifdef PRIME_PLATFORM_WINDOWS
 #define PRIME_BREAK __debugbreak();
