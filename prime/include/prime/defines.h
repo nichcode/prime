@@ -225,6 +225,12 @@ namespace prime {
         DrawModeLines
     };
 
+    enum DrawType
+    {
+        DrawTypeArrays,
+        DrawTypeElements
+    };
+
     enum LogLevel
     {
         LogLevelTrace,
@@ -261,7 +267,7 @@ namespace prime {
     };
 
     PRIME_INLINE u32
-    GetDataTypeSize(DataType type)
+    getDataTypeSize(DataType type)
     {
         switch (type)
         {
@@ -290,7 +296,7 @@ namespace prime {
     }
 
     PRIME_INLINE u32
-    GetDataTypeCount(DataType type)
+    getDataTypeCount(DataType type)
     {
         switch (type)
         {

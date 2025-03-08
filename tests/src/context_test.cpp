@@ -15,21 +15,30 @@ b8 contextTestGL()
     context->setClearColor({ .2f, .2f, .2f, 1.0f });
 
     f32 vertices[] = {
-		-0.5f, -0.5f, 0.0f, 
-		 0.5f, -0.5f, 0.0f, 
-		 0.0f,  0.5f, 0.0f  
+		-0.5f, -0.5f, 
+		 0.5f, -0.5f, 
+		 0.5f,  0.5f, 
+        -0.5f,  0.5f
 	};
 
-    u32 indices[] = { 0, 1, 2 };
+    u32 indices[] = { 0, 1, 2, 2, 3, 0 };
+
+    Layout layout;
+    layout.addElement(DataTypeFloat2);
+    layout.process();
 
     VertexArray vao = context->createVertexArray();
     VertexBuffer vbo = context->createVertexBuffer(vertices, sizeof(vertices));
-    IndexBuffer ibo = context->createIndexBuffer(indices, 3);
+    context->setLayout(layout);
+    IndexBuffer ibo = context->createIndexBuffer(indices, 6);
 
     while (!window.shouldClose()) {
         window.pollEvents();
 
         context->clear();
+
+        u32 count = context->getIndexBufferCount(ibo);
+        context->submit(DrawTypeElements, DrawModeTriangles, count);
 
         context->present();
     }

@@ -14,6 +14,8 @@ namespace prime::renderer {
         b8 m_Vsync;
         GraphicsAPI m_API;
         GLContextHandle* m_Handle;
+        Viewport m_Viewport;
+        u32 m_Index;
         std::vector<VertexArray> m_Arrays;
         std::vector<VertexBuffer> m_VBuffers;
         std::vector<IndexBuffer> m_IBuffers;
@@ -34,16 +36,23 @@ namespace prime::renderer {
 
         virtual void setVsync(b8 vsync = true) override; 
         virtual void setClearColor(const Color& color) override;
+        virtual void setViewport(const Viewport& viewport) override;
+        virtual void setVertexBufferData(const VertexBuffer& buffer, const void* data, u32 size) override;
 
         virtual void setVertexArray(const VertexArray& array) override;
         virtual void setVertexBuffer(const VertexBuffer& buffer) override;
         virtual void setIndexBuffer(const IndexBuffer& buffer) override;
+        virtual void setLayout(const Layout& layout) override;
 
         virtual GraphicsAPI getAPI() const override { return m_API; }
+        virtual const Viewport& getViewport() const override { return m_Viewport; }
+        virtual u32 getIndexBufferCount(const IndexBuffer& buffer) const override;
 
         virtual void clear() override;
         virtual void makeActive() override;  
         virtual void present() override;
+
+        virtual void submit(DrawType type, DrawMode mode, u32 count) override; 
     };
     
 } // namespace prime::renderer

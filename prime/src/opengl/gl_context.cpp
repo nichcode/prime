@@ -1,7 +1,7 @@
 
 #include "gl_context.h"
 #include "prime/core/logger.h"
-#include "glad/glad.h"
+#include "opengl_API.h"
 #include "prime/internal.h"
 #include <algorithm>
 
@@ -45,6 +45,9 @@ namespace prime::renderer {
 
         m_Handle = new GLContextHandle();
         m_API = API;
+        m_Viewport.width = window.getWidth();
+        m_Viewport.height = window.getHeight();
+        m_Index = 0;
 #ifdef PRIME_PLATFORM_WINDOWS
         m_Handle->window = internal::getWin32WindowHandle(window);
         m_Handle->context = internal::wglContextCreate(m_Handle->window);
@@ -164,7 +167,7 @@ namespace prime::renderer {
 
         glGenBuffers(1, &buffer.handle->id);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.handle->id);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), nullptr, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
 
         m_IBuffers.push_back(buffer);
         return buffer;
@@ -196,6 +199,22 @@ namespace prime::renderer {
         glClearColor(color.r, color.g, color.b, color.a);
     }
     
+    void GLContext::setViewport(const Viewport& viewport)
+    {
+        m_Viewport = viewport;
+        glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
+    }
+    
+    void GLContext::setVertexBufferData(const VertexBuffer& buffer, const void* data, u32 size)
+    {
+        if (buffer.handle->dynamic) {
+            glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
+        }
+        else {
+            PRIME_WARN("buffer is static");
+        }
+    }
+    
     void GLContext::setVertexArray(const VertexArray& array)
     {
         glBindVertexArray(array.handle->id);
@@ -209,6 +228,59 @@ namespace prime::renderer {
     void GLContext::setIndexBuffer(const IndexBuffer& buffer)
     {
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer.handle->id);
+    }
+
+    void GLContext::setLayout(const Layout& layout)
+    {
+        for (const auto& element : layout) {
+            u32 count = getDataTypeCount(element.type);
+            u32 type = typeToGLType(element.type);
+            u32 stride = layout.getStride();
+
+            switch (element.type) {
+                case DataTypeFloat:
+                case DataTypeFloat2:
+                case DataTypeFloat3:
+                case DataTypeFloat4: {
+                    glVertexAttribPointer(
+                        m_Index,
+                        count,
+                        type,
+                        element.normalize,
+                        stride,
+                        (const void*)element.offset);
+
+                    glEnableVertexAttribArray(m_Index);
+                    glVertexAttribDivisor(m_Index, element.divisor);
+                    break;
+                }
+
+                case DataTypeInt:
+                case DataTypeInt2:
+                case DataTypeInt3:
+                case DataTypeInt4:
+                case DataTypeBool: {
+                    glVertexAttribIPointer(
+                        m_Index,
+                        count,
+                        type,
+                        stride,
+                        (const void*)element.offset);
+
+                    glEnableVertexAttribArray(m_Index);
+                    glVertexAttribDivisor(m_Index, element.divisor);
+                    break;
+                }
+
+            } // switch
+
+            m_Index++;
+        }
+    }
+    
+    u32 GLContext::getIndexBufferCount(const IndexBuffer& buffer) const 
+    {
+        return buffer.handle->count;
     }
     
     void GLContext::clear()
@@ -228,6 +300,17 @@ namespace prime::renderer {
 #ifdef PRIME_PLATFORM_WINDOWS
         SwapBuffers(m_Handle->hdc);
 #endif // PRIME_PLATFORM_WINDOWS
+    }
+    
+    void GLContext::submit(DrawType type, DrawMode mode, u32 count)
+    {
+        GLenum gl_type = drawModeToGL(mode);
+        if (type == DrawTypeArrays) {
+            glDrawArrays(gl_type, 0, count);
+        }
+        else if (type == DrawTypeElements) {
+            glDrawElements(gl_type, count, GL_UNSIGNED_INT, nullptr);
+        }      
     }
     
 } // namespace prime::renderer
