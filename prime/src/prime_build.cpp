@@ -3,6 +3,7 @@
 
 #include "fmt.cpp"
 #include "logger.cpp"
+#include "maths.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"
