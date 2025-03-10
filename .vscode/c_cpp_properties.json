@@ -4,7 +4,8 @@
             "name": "win32",
             "includePath": [
                 "${workspaceFolder}/prime/include",
-                "${workspaceFolder}/prime/src"
+                "${workspaceFolder}/prime/src",
+                "${workspaceFolder}/vendor/glad/include"
             ],
             "defines": [
                 "PRIME_CONFIG_DEBUG",

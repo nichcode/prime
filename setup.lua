@@ -56,3 +56,4 @@ end
     end
 
     include "prime/prime.lua"
+    include "vendor/glad/glad.lua"

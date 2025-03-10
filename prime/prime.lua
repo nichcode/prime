@@ -13,5 +13,14 @@ project "prime"
 
     includedirs {   
         "include",
-        "src"
+        "src",
+        "%{wks.location}/vendor/glad/include"
     }
+
+    if (_ACTION == "gmake2") then
+        links {
+            "glad",
+            "%{wks.location}/libs/Gdi32",
+            "%{wks.location}/libs/Opengl32"
+        }
+    end

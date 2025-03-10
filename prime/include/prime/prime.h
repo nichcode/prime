@@ -8,3 +8,6 @@
 #include "core/window.h"
 
 #include "maths/mat4.h"
+
+#include "renderer/color.h"
+#include "renderer/renderer_API.h"

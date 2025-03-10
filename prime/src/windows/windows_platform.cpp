@@ -3,10 +3,7 @@
 #include "prime/core/platform.h"
 #include "prime/core/logger.h"
 #include "prime_utils.h"
-
-#include "windows_window.h"
-
-static void* s_UserData = nullptr;
+#include "wgl_context.h"
 
 namespace prime::core {
 
@@ -35,6 +32,8 @@ namespace prime::core {
         utils::mapButtonNames();
         utils::mapKeyNames();
 
+        internal::wglContextCreateDummy();
+
         PRIME_INFO("Win32Platform Init!");
         return 1;
     }
@@ -44,20 +43,5 @@ namespace prime::core {
         UnregisterClassW(s_ClassName, s_Instance);
         PRIME_INFO("Win32Platform Shutdown!");
     }  
-
-    void Platform::setUserData(void* pointer)
-    {
-        s_UserData = pointer;
-    }
-
-    void* Platform::getUserData()
-    {
-        return s_UserData;
-    }
-
-    Scope<Window> Platform::createWindow(const str& title, u32 width, u32 height)
-    {
-        return createScope<WindowsWindow>(title, width, height);
-    }
 
 } // namespace prime::core

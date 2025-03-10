@@ -2,9 +2,20 @@
 #include "windows_window.h"
 #include "prime/core/fmt.h"
 #include "prime/internal.h"
-#include "windows/windows_API.h"
 
 namespace prime::core {
+
+    struct WindowsWindowCallbacks
+    {
+        WindowCloseFunc close = nullptr;
+        WindowKeyFunc key = nullptr;
+        WindowButtonFunc button = nullptr;
+        WindowMouseMovedFunc mouseMoved = nullptr;
+        WindowMouseScrolledFunc mouseScrolled = nullptr;
+        WindowMovedFunc windowMoved = nullptr;
+        WindowResizeFunc windowResize = nullptr;
+        WindowFocusedFunc windowFocused = nullptr;
+    };
 
     static WindowsWindowCallbacks s_Callbacks;
 

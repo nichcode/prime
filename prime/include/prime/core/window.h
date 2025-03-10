@@ -46,8 +46,10 @@ namespace prime::core {
         virtual b8 getButtonState(u32 button) const = 0;
         
         virtual b8 isHidden() const  = 0;
-        virtual b8 shouldClose() const = 0;
         virtual b8 isMaximized() const = 0;
+        virtual b8 isFocused() const = 0;
+
+        virtual b8 shouldClose() const = 0;
         virtual const WindowHandle* getHandle() const = 0;
 
         static void 

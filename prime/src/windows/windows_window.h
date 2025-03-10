@@ -3,6 +3,7 @@
 
 #include "prime/core/window.h"
 #include "prime/core/logger.h"
+#include "windows_API.h"
 
 namespace prime::core {
 
@@ -43,19 +44,7 @@ namespace prime::core {
             memset(mousePos, 0, sizeof(u32) * 2);
         }
     };
-
-    struct WindowsWindowCallbacks
-    {
-        WindowCloseFunc close = nullptr;
-        WindowKeyFunc key = nullptr;
-        WindowButtonFunc button = nullptr;
-        WindowMouseMovedFunc mouseMoved = nullptr;
-        WindowMouseScrolledFunc mouseScrolled = nullptr;
-        WindowMovedFunc windowMoved = nullptr;
-        WindowResizeFunc windowResize = nullptr;
-        WindowFocusedFunc windowFocused = nullptr;
-    };
-
+    
     class WindowsWindow : public Window
     {
     private:
@@ -93,6 +82,8 @@ namespace prime::core {
 
         virtual b8 isHidden() const  override { return m_Data.hidden; }
         virtual b8 shouldClose() const override { return m_Data.shouldClose; }
+        virtual b8 isFocused() const { return m_Data.focused; }
+
         virtual const WindowHandle* getHandle() const override { return &m_Data.window; }
 
         virtual void getMinSize(u32 *width, u32 *height) override
