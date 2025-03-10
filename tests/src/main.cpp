@@ -2,6 +2,8 @@
 #include "prime/prime.h"
 
 b8 mathsTest();
+b8 windowTest();
+b8 multiWindowTest();
 
 int main()
 {
@@ -9,7 +11,9 @@ int main()
 
     core::Platform::init();
 
-    core::TestManager::addTest(mathsTest, "mathsTest");
+    //core::TestManager::addTest(mathsTest, "mathsTest");
+    //core::TestManager::addTest(windowTest, "windowTest");
+    core::TestManager::addTest(multiWindowTest, "multiWindowTest");
 
     core::TestManager::run();
     core::Platform::shutdown();

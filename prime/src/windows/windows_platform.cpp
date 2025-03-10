@@ -4,6 +4,10 @@
 #include "prime/core/logger.h"
 #include "prime_utils.h"
 
+#include "windows_window.h"
+
+static void* s_UserData = nullptr;
+
 namespace prime::core {
 
     i32 Platform::init()
@@ -39,12 +43,21 @@ namespace prime::core {
     {
         UnregisterClassW(s_ClassName, s_Instance);
         PRIME_INFO("Win32Platform Shutdown!");
-    }   
+    }  
+
+    void Platform::setUserData(void* pointer)
+    {
+        s_UserData = pointer;
+    }
+
+    void* Platform::getUserData()
+    {
+        return s_UserData;
+    }
+
+    Scope<Window> Platform::createWindow(const str& title, u32 width, u32 height)
+    {
+        return createScope<WindowsWindow>(title, width, height);
+    }
 
 } // namespace prime::core
-
-LRESULT CALLBACK
-win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
-{
-    return DefWindowProcW(hwnd, msg, w_param, l_param);
-}

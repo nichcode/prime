@@ -84,14 +84,14 @@ namespace prime::core {
         return string;
     }
 
-    const char* getActionName(u8 action)
+    const char* getActionName(u32 action)
     {
         PRIME_ASSERT_MSG(action >= 0, "Invalid action");
         PRIME_ASSERT_MSG(action < ActionMax, "Invalid action");
         return s_ActionNames[action].c_str();
     }
 
-    const char* getButtonName(u16 button)
+    const char* getButtonName(u32 button)
     {
         PRIME_ASSERT_MSG(button >= 0, "Invalid button");
         PRIME_ASSERT_MSG(button < ButtonMax, "Invalid button");

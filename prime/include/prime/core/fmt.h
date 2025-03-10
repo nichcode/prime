@@ -13,8 +13,8 @@ namespace prime::core {
 
     str format(const char* fmt, ...);
 
-    const char* getActionName(u8 action);
-    const char* getButtonName(u16 button);
+    const char* getActionName(u32 action);
+    const char* getButtonName(u32 button);
     const char* getKeyName(u32 key);
     
 } // namespace prime::core

@@ -13,4 +13,5 @@
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"
 #include "windows/windows_utils.cpp"
+#include "windows/windows_window.cpp"
 #endif // PRIME_PLATFORM_WINDOWS
