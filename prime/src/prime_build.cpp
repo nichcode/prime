@@ -8,6 +8,7 @@
 #include "vec3.cpp"
 #include "vec4.cpp"
 #include "mat4.cpp"
+#include "test_manager.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"
