@@ -12,5 +12,9 @@ namespace prime::core {
     wstr toWideString(const str& string);
 
     str format(const char* fmt, ...);
+
+    const char* getActionName(u8 action);
+    const char* getButtonName(u16 button);
+    const char* getKeyName(u32 key);
     
 } // namespace prime::core

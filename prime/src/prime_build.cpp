@@ -2,6 +2,7 @@
 #include "prime/platform_detection.h"
 
 #include "fmt.cpp"
+#include "logger.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"

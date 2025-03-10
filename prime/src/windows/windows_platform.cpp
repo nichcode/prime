@@ -2,6 +2,7 @@
 #include "windows_API.h"
 #include "prime/core/platform.h"
 #include "prime/core/logger.h"
+#include "prime_utils.h"
 
 namespace prime::core {
 
@@ -25,6 +26,11 @@ namespace prime::core {
 
         ATOM success = RegisterClassExW(&wc);
         PRIME_ASSERT_MSG(success, "Window Registration Failed");
+
+        utils::mapActionNames();
+        utils::mapButtonNames();
+        utils::mapKeyNames();
+
         PRIME_INFO("Win32Platform Init!");
         return 1;
     }
