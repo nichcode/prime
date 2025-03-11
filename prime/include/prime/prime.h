@@ -12,3 +12,4 @@
 #include "renderer/camera2d.h"
 #include "renderer/color.h"
 #include "renderer/renderer_API.h"
+#include "renderer/renderer2d.h"

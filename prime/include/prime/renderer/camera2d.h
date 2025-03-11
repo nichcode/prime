@@ -26,9 +26,9 @@ namespace prime::renderer {
         const maths::vec2& getPosition() { return m_Position; }
         const f32 getRotation() { return m_Rotation; }
 
-        const maths::mat4 getViewMatrix() { return m_ViewProjectionMatrix; }
-        const maths::mat4 getViewProjectionMatrix() { return m_ViewProjectionMatrix; }
-        const maths::mat4 getProjectionMatrix() { return m_ViewProjectionMatrix; }
+        const maths::mat4 getViewMatrix() const { return m_ViewProjectionMatrix; }
+        const maths::mat4 getViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
+        const maths::mat4 getProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
     private:
         void calculateMatrix();

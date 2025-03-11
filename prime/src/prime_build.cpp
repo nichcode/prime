@@ -11,6 +11,8 @@
 #include "test_manager.cpp"
 #include "platform.cpp"
 #include "filesystem.cpp"
+#include "camera2d.cpp"
+#include "renderer2d.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"
