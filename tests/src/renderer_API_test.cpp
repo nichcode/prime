@@ -11,6 +11,7 @@ b8 rendererAPITestGL()
     rendererAPI->setClearColor({ .2f, .2f, .2f, 1.0f });
 
     VertexArray* vertex_array = rendererAPI->createVertexArray();
+    VertexBuffer* vertex_buffer = rendererAPI->createDynamicVertexBuffer(12);
 
     while (!window->shouldClose()) {
         Window::pollEvents();
