@@ -9,6 +9,7 @@ namespace prime::renderer {
 
     PRIME_HANDLE(VertexArray);
     PRIME_HANDLE(VertexBuffer);
+    PRIME_HANDLE(IndexBuffer);
 
     class RendererAPI
     {
@@ -22,6 +23,9 @@ namespace prime::renderer {
         virtual VertexBuffer* createDynamicVertexBuffer(u32 size) = 0; 
         virtual void deleteVertexBuffer(VertexBuffer* vertex_buffer) = 0;
 
+        virtual IndexBuffer* createIndexBuffer(u32* indices, u32 count) = 0;
+        virtual void deleteIndexBuffer(IndexBuffer* index_buffer) = 0;
+
         virtual void makeActive() = 0;
         virtual void clear() = 0;
         virtual void present() = 0;
@@ -31,6 +35,7 @@ namespace prime::renderer {
 
         virtual void setVertexArray(const VertexArray* vertex_array) = 0;
         virtual void setVertexBuffer(const VertexBuffer* vertex_buffer) = 0;
+        virtual void setIndexBuffer(const IndexBuffer* index_buffer) = 0;
 
         virtual GraphicsAPI getAPI() const = 0;
     };

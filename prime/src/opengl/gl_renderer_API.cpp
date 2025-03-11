@@ -20,6 +20,12 @@ namespace prime::renderer {
         b8 dynamic = false;
     };
 
+    struct IndexBuffer
+    {
+        u32 id = 0;
+        u32 count = 0;
+    };
+
     GLRendererAPI::GLRendererAPI(const core::Scope<core::Window>& window)
     {
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -46,8 +52,18 @@ namespace prime::renderer {
             vertex_buffer = nullptr;
         }
 
+        // index buffers
+        for (IndexBuffer* index_buffer : m_IndexBuffers) {
+            glDeleteBuffers(1, &index_buffer->id);
+            index_buffer->id = 0;
+            index_buffer->count = 0;
+            delete index_buffer;
+            index_buffer = nullptr;
+        }
+
         m_VertexArrays.clear();
         m_VertexBuffers.clear();
+        m_IndexBuffers.clear();
     }
     
     VertexArray* GLRendererAPI::createVertexArray()
@@ -62,7 +78,7 @@ namespace prime::renderer {
     
     void GLRendererAPI::deleteVertexArray(VertexArray* vertex_array)
     {
-        PRIME_ASSERT_MSG(vertex_array, "vertex array is null");
+        PRIME_ASSERT_MSG(vertex_array, "vertex_array is null");
 
         auto it = std::find(m_VertexArrays.begin(), m_VertexArrays.end(), vertex_array);
         if (it != m_VertexArrays.end())
@@ -102,7 +118,7 @@ namespace prime::renderer {
     
     void GLRendererAPI::deleteVertexBuffer(VertexBuffer* vertex_buffer)
     {
-        PRIME_ASSERT_MSG(vertex_buffer, "vertex buffer is null");
+        PRIME_ASSERT_MSG(vertex_buffer, "vertex_buffer is null");
 
         auto it = std::find(m_VertexBuffers.begin(), m_VertexBuffers.end(), vertex_buffer);
         if (it != m_VertexBuffers.end())
@@ -114,6 +130,36 @@ namespace prime::renderer {
         vertex_buffer->id = 0;
         delete vertex_buffer;
         vertex_buffer = nullptr;
+    }
+    
+    IndexBuffer* GLRendererAPI::createIndexBuffer(u32* indices, u32 count)
+    {
+        IndexBuffer* index_buffer = new IndexBuffer();
+        index_buffer->count = count;
+
+        glGenBuffers(1, &index_buffer->id);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->id);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(u32), indices, GL_STATIC_DRAW);
+
+        m_IndexBuffers.push_back(index_buffer);
+        return index_buffer;
+    }
+    
+    void GLRendererAPI::deleteIndexBuffer(IndexBuffer* index_buffer)
+    {
+        PRIME_ASSERT_MSG(index_buffer, "index_buffer is null");
+
+        auto it = std::find(m_IndexBuffers.begin(), m_IndexBuffers.end(), index_buffer);
+        if (it != m_IndexBuffers.end())
+        {
+            m_IndexBuffers.erase(it);
+        }
+
+        glDeleteBuffers(1, &index_buffer->id);
+        index_buffer->id = 0;
+        index_buffer->count = 0;
+        delete index_buffer;
+        index_buffer = nullptr;
     }
     
     void GLRendererAPI::makeActive()
@@ -138,7 +184,7 @@ namespace prime::renderer {
     
     void GLRendererAPI::setVertexBufferData(const VertexBuffer* vertex_buffer, const void* data, u32 size)
     {
-        PRIME_ASSERT_MSG(vertex_buffer, "vertex buffer is null");
+        PRIME_ASSERT_MSG(vertex_buffer, "vertex_buffer is null");
 
         if (vertex_buffer->dynamic) {
             glBufferSubData(GL_ARRAY_BUFFER, 0, size, data);
@@ -150,14 +196,20 @@ namespace prime::renderer {
     
     void GLRendererAPI::setVertexArray(const VertexArray* vertex_array)
     {
-        PRIME_ASSERT_MSG(vertex_array, "vertex array is null");
+        PRIME_ASSERT_MSG(vertex_array, "vertex_array is null");
         glBindVertexArray(vertex_array->id);
     }
     
     void GLRendererAPI::setVertexBuffer(const VertexBuffer* vertex_buffer)
     {
-        PRIME_ASSERT_MSG(vertex_buffer, "vertex buffer is null");
+        PRIME_ASSERT_MSG(vertex_buffer, "vertex_buffer is null");
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->id);
+    }
+    
+    void GLRendererAPI::setIndexBuffer(const IndexBuffer* index_buffer)
+    {
+        PRIME_ASSERT_MSG(index_buffer, "index_buffer is null");
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->id);
     }
     
 } // namespace prime::renderer

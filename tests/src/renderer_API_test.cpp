@@ -10,8 +10,18 @@ b8 rendererAPITestGL()
     Scope<RendererAPI> rendererAPI = Platform::createAPI(prime::GraphicsAPIGL, window);
     rendererAPI->setClearColor({ .2f, .2f, .2f, 1.0f });
 
+    f32 vertices[] = {
+		-0.5f, -0.5f, 
+		 0.5f, -0.5f, 
+		 0.5f,  0.5f, 
+        -0.5f,  0.5f
+	};
+
+    u32 indices[] = { 0, 1, 2, 2, 3, 0 };
+
     VertexArray* vertex_array = rendererAPI->createVertexArray();
-    VertexBuffer* vertex_buffer = rendererAPI->createDynamicVertexBuffer(12);
+    VertexBuffer* vertex_buffer = rendererAPI->createStaticVertexBuffer(vertices, sizeof(vertices));
+    IndexBuffer* index_buffer = rendererAPI->createIndexBuffer(indices, 6);
 
     while (!window->shouldClose()) {
         Window::pollEvents();
