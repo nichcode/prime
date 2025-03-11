@@ -17,17 +17,7 @@
 #define PRIME_MAX_TEXTURE_SLOTS 16
 #define PRIME_MAX_RENDER_TARGET_SIZE 8192
 
-#define PRIME_HANDLE(name) struct name
-
-#define PRIME_HANDLE_DEF(name, _handle) struct name        \
-    {                                                      \
-        _handle* handle = nullptr;                         \
-                                                           \
-        b8 operator==(name rhs)                            \
-        {                                                  \
-            return handle == rhs.handle;                   \
-        }                                                  \
-    };
+#define PRIME_HANDLE(name) struct name;
     
 /** @brief debug breakpoint. */
 #ifdef PRIME_PLATFORM_WINDOWS

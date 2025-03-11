@@ -10,6 +10,8 @@ b8 rendererAPITestGL()
     Scope<RendererAPI> rendererAPI = Platform::createAPI(prime::GraphicsAPIGL, window);
     rendererAPI->setClearColor({ .2f, .2f, .2f, 1.0f });
 
+    VertexArray* vertex_array = rendererAPI->createVertexArray();
+
     while (!window->shouldClose()) {
         Window::pollEvents();
 
