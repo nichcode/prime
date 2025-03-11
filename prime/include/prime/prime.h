@@ -9,5 +9,6 @@
 
 #include "maths/mat4.h"
 
+#include "renderer/camera2d.h"
 #include "renderer/color.h"
 #include "renderer/renderer_API.h"
