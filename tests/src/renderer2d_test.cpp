@@ -12,6 +12,7 @@ b8 renderer2dTest()
 
     Renderer2D renderer;
     renderer.init(rendererAPI.get());
+    renderer.setDrawColor(PRIME_COLOR_GREEN);
 
     Camera2D camera;
     camera.setProjection(640, 480);
@@ -21,7 +22,8 @@ b8 renderer2dTest()
 
         rendererAPI->clear();
 
-        renderer.draw({});
+        renderer.draw({ 0.0f, 0.0f });
+        renderer.draw({ 200.0f, 200.0f }, { 100.0f, 100.0f });
         renderer.flush(camera);
 
         rendererAPI->present();

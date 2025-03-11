@@ -7,6 +7,13 @@ namespace prime::renderer {
     class Renderer2D
     {
     private:
+        struct Sprite
+        {
+            maths::vec2 position;
+            Color color;
+        };
+
+    private:
         RendererAPI* m_API;
         VertexArray* m_SpriteVAO;
         VertexBuffer* m_SpriteVBO;
@@ -15,8 +22,14 @@ namespace prime::renderer {
         Layout* m_SpriteLayout;
         UniformBuffer* m_UBO;
 
-        u32 m_SpriteCount;
+        maths::vec4 m_Vertices[4];
+        Sprite* m_SpritePtr;
+        Sprite* m_SpriteBase;
+
+        u32 m_SpriteIndexCount;
         maths::mat4 m_Projection;
+
+        Color m_DrawColor;
 
     public:
         Renderer2D();
@@ -25,9 +38,15 @@ namespace prime::renderer {
         void init(RendererAPI* rendererAPI);
         void destroy();
 
-        void draw(const maths::vec2& position);
+        void setDrawColor(const Color& color) { m_DrawColor = color; }
+
+        void draw(const maths::vec2& pos);
+        void draw(const maths::vec2& pos, const maths::vec2& size);
 
         void flush(const Camera2D& camera);
+
+    private:
+        void reset();
     };
     
 } // namespace prime::renderer
