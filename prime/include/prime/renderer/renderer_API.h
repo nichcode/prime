@@ -13,6 +13,7 @@ namespace prime::renderer {
     PRIME_HANDLE(IndexBuffer);
     PRIME_HANDLE(Layout);
     PRIME_HANDLE(Shader);
+    PRIME_HANDLE(Texture);
 
     struct Viewport
     {
@@ -44,6 +45,10 @@ namespace prime::renderer {
         virtual Shader* createShader(const str& vertex, const str& pixel, b8 load = true, SourceType type = SourceTypeGLSL) = 0;
         virtual void deleteShader(Shader* shader) = 0;
 
+        virtual Texture* loadTexture(const str& filepath) = 0;
+        virtual Texture* createTexture(u32 width, u32 height, b8 target = false, TextureFormat format = TextureFormatRGBA8) = 0;
+        virtual void deleteTexture(Texture* texture) = 0;
+
         virtual void makeActive() = 0;
         virtual void clear() = 0;
         virtual void present() = 0;
@@ -60,6 +65,9 @@ namespace prime::renderer {
         virtual void setIndexBuffer(const IndexBuffer* index_buffer) = 0;
         virtual void setLayout(Layout* layout) = 0;
         virtual void setShader(Shader* shader) = 0;
+        virtual void setTexture(Texture* texture, u32 slot = 0) = 0;
+        
+        virtual void setRenderTarget(Texture* texture) = 0;
 
         virtual void upload(const Shader* shader, const char* name, i32 data) = 0;
         virtual void upload(const Shader* shader, const char* name, i32* data, u32 count) = 0;

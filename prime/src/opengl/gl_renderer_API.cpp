@@ -48,6 +48,14 @@ namespace prime::renderer {
         u32 pixel = 0;
     };
 
+    struct Texture
+    {
+        u32 id = 0, frameBuffer = 0, depth = 0;
+        u32 width = 0;
+        u32 height = 0;
+        b8 target = false;
+    };
+
     GLRendererAPI::GLRendererAPI(const core::Scope<core::Window>& window)
     {
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -103,11 +111,29 @@ namespace prime::renderer {
             shader = nullptr;
         }
 
+        // textures
+        for (Texture* texture : m_Textures) {
+            glDeleteTextures(1, &texture->id);
+            texture->id = 0;
+            texture->width = 0;
+            texture->height = 0;
+            if (texture->target) {
+                glDeleteFramebuffers(1, &texture->frameBuffer);
+                texture->frameBuffer = 0;
+
+                glDeleteRenderbuffers(1, &texture->depth);
+                texture->depth = 0;
+            }
+            delete texture;
+            texture = nullptr;   
+        }
+
         m_VertexArrays.clear();
         m_VertexBuffers.clear();
         m_IndexBuffers.clear();
         m_Layouts.clear();
         m_Shaders.clear();
+        m_Textures.clear();
     }
     
     VertexArray* GLRendererAPI::createVertexArray()
@@ -296,6 +322,50 @@ namespace prime::renderer {
         shader = nullptr;
     }
     
+    Texture* GLRendererAPI::loadTexture(const str& filepath)
+    {
+        Texture* texture = new Texture();
+        generateTexture(texture->id, filepath, &texture->width, &texture->height);
+        m_Textures.push_back(texture);
+        return texture;
+    }
+    
+    Texture* GLRendererAPI::createTexture(u32 width, u32 height, b8 target, TextureFormat format)
+    {
+        Texture* texture = new Texture();
+        generateTexture(texture->id, width, height, target, texture->frameBuffer, texture->depth, format);
+        texture->width = width;
+        texture->height = height;
+        texture->target = target;
+        m_Textures.push_back(texture);
+        return texture;
+    }
+    
+    void GLRendererAPI::deleteTexture(Texture* texture)
+    {
+        PRIME_ASSERT_MSG(texture, "texture is null");
+
+        auto it = std::find(m_Textures.begin(), m_Textures.end(), texture);
+        if (it != m_Textures.end())
+        {
+            m_Textures.erase(it);
+        }
+
+        glDeleteTextures(1, &texture->id);
+        texture->id = 0;
+        texture->width = 0;
+        texture->height = 0;
+        if (texture->target) {
+            glDeleteFramebuffers(1, &texture->frameBuffer);
+            texture->frameBuffer = 0;
+
+            glDeleteRenderbuffers(1, &texture->depth);
+            texture->depth = 0;
+        }
+        delete texture;
+        texture = nullptr; 
+    }
+    
     void GLRendererAPI::makeActive()
     {
         m_Context->makeActive();
@@ -352,20 +422,32 @@ namespace prime::renderer {
     
     void GLRendererAPI::setVertexArray(const VertexArray* vertex_array)
     {
-        PRIME_ASSERT_MSG(vertex_array, "vertex_array is null");
-        glBindVertexArray(vertex_array->id);
+        if (vertex_array) {
+            glBindVertexArray(vertex_array->id);
+        }
+        else {
+            glBindVertexArray(0);
+        }
     }
     
     void GLRendererAPI::setVertexBuffer(const VertexBuffer* vertex_buffer)
     {
-        PRIME_ASSERT_MSG(vertex_buffer, "vertex_buffer is null");
-        glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->id);
+        if (vertex_buffer) {
+            glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer->id);
+        }
+        else {
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
     }
     
     void GLRendererAPI::setIndexBuffer(const IndexBuffer* index_buffer)
     {
-        PRIME_ASSERT_MSG(index_buffer, "index_buffer is null");
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->id);
+        if (index_buffer) {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->id);
+        }
+        else {
+            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        }
     }
     
     void GLRendererAPI::setLayout(Layout* layout)
@@ -426,8 +508,46 @@ namespace prime::renderer {
     
     void GLRendererAPI::setShader(Shader* shader)
     {
-        PRIME_ASSERT_MSG(shader, "shader is null");
-        glUseProgram(shader->program);
+        if (shader) {
+            glUseProgram(shader->program);
+        }
+        else {
+            glUseProgram(0);
+        } 
+    }
+    
+    void GLRendererAPI::setTexture(Texture* texture, u32 slot)
+    {
+        if (texture) {
+            if (slot >= PRIME_MAX_TEXTURE_SLOTS) {
+                glActiveTexture(GL_TEXTURE0);
+                PRIME_WARN("texture slot out of bounds. Setting texture to first slot");
+            }
+            glActiveTexture(GL_TEXTURE0 + slot);
+            glBindTexture(GL_TEXTURE_2D, texture->id);
+        }
+        else {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+    
+    void GLRendererAPI::setRenderTarget(Texture* texture)
+    {
+        if (texture) {
+            if (texture->target) {
+                u32 width = texture->width;
+                u32 height = texture->height;
+                glBindFramebuffer(GL_FRAMEBUFFER, texture->frameBuffer);
+                glViewport(0, 0, width, height);
+            }
+            else {
+                PRIME_INFO("Texture is not a render target");
+            }
+        }
+        else {
+            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+            glViewport(m_Viewport.x, m_Viewport.y, m_Viewport.width, m_Viewport.height);
+        }
     }
     
     void GLRendererAPI::upload(const Shader* shader, const char* name, i32 data)

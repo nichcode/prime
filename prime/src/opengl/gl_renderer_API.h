@@ -18,6 +18,7 @@ namespace prime::renderer {
         std::vector<IndexBuffer*> m_IndexBuffers;
         std::vector<Layout*> m_Layouts;
         std::vector<Shader*> m_Shaders;
+        std::vector<Texture*> m_Textures;
 
         u32 m_Index;
         Viewport m_Viewport;
@@ -43,6 +44,10 @@ namespace prime::renderer {
         virtual Shader* createShader(const str& vertex, const str& pixel, b8 load, SourceType type) override;
         virtual void deleteShader(Shader* shader) override;
 
+        virtual Texture* loadTexture(const str& filepath) override;
+        virtual Texture* createTexture(u32 width, u32 height, b8 target, TextureFormat format) override;
+        virtual void deleteTexture(Texture* texture) override;
+
         virtual void makeActive() override;
         virtual void clear() override;
         virtual void present() override;
@@ -59,6 +64,9 @@ namespace prime::renderer {
         virtual void setIndexBuffer(const IndexBuffer* index_buffer) override;
         virtual void setLayout(Layout* layout) override;
         virtual void setShader(Shader* shader) override;
+        virtual void setTexture(Texture* texture, u32 slot) override;
+
+        virtual void setRenderTarget(Texture* texture) override;
 
         virtual void upload(const Shader* shader, const char* name, i32 data) override;
         virtual void upload(const Shader* shader, const char* name, i32* data, u32 count) override;
