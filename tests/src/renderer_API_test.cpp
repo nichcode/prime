@@ -31,6 +31,10 @@ b8 rendererAPITestGL()
         Window::pollEvents();
 
         rendererAPI->clear();
+
+        u32 count = rendererAPI->getIndexBufferCount(index_buffer);
+        rendererAPI->submit(prime::DrawTypeElements, prime::DrawModeTriangles, count);
+
         rendererAPI->present();
     }
 

@@ -12,6 +12,14 @@ namespace prime::renderer {
     PRIME_HANDLE(IndexBuffer);
     PRIME_HANDLE(Layout);
 
+    struct Viewport
+    {
+        i32 x = 0;
+        i32 y = 0;
+        u32 width = 0;
+        u32 height = 0;
+    };
+
     class RendererAPI
     {
     public:
@@ -35,8 +43,12 @@ namespace prime::renderer {
         virtual void clear() = 0;
         virtual void present() = 0;
 
+        virtual void submit(DrawType type, DrawMode mode, u32 count) = 0;
+
         virtual void setClearColor(const Color& color) = 0;
         virtual void setVertexBufferData(const VertexBuffer* vertex_buffer, const void* data, u32 size) = 0;
+        virtual void setVsync(b8 vsync = true) = 0;
+        virtual void setViewport(const Viewport& viewport) = 0;
 
         virtual void setVertexArray(const VertexArray* vertex_array) = 0;
         virtual void setVertexBuffer(const VertexBuffer* vertex_buffer) = 0;
@@ -44,6 +56,8 @@ namespace prime::renderer {
         virtual void setLayout(Layout* layout) = 0;
 
         virtual GraphicsAPI getAPI() const = 0;
+        virtual const Viewport& getViewport() const = 0;
+        virtual u32 getIndexBufferCount(const IndexBuffer* index_buffer) const = 0;
     };
     
 } // namespace prime::renderer

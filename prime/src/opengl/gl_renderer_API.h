@@ -11,7 +11,6 @@ namespace prime::renderer {
     class GLRendererAPI : public RendererAPI
     {
     private:
-        GraphicsAPI m_API;
         core::Scope<ContextAPI> m_Context;
 
         std::vector<VertexArray*> m_VertexArrays;
@@ -20,6 +19,7 @@ namespace prime::renderer {
         std::vector<Layout*> m_Layouts;
 
         u32 m_Index;
+        Viewport m_Viewport;
 
     public:
         GLRendererAPI(const core::Scope<core::Window>& window);
@@ -43,15 +43,21 @@ namespace prime::renderer {
         virtual void clear() override;
         virtual void present() override;
 
+        virtual void submit(DrawType type, DrawMode mode, u32 count) override;
+
         virtual void setClearColor(const Color& color) override;
         virtual void setVertexBufferData(const VertexBuffer* vertex_buffer, const void* data, u32 size) override;
+        virtual void setVsync(b8 vsync = true) override;
+        virtual void setViewport(const Viewport& viewport) override;
 
         virtual void setVertexArray(const VertexArray* vertex_array) override;
         virtual void setVertexBuffer(const VertexBuffer* vertex_buffer) override;
         virtual void setIndexBuffer(const IndexBuffer* index_buffer) override;
         virtual void setLayout(Layout* layout) override;
 
-        virtual GraphicsAPI getAPI() const override { return m_API; }
+        virtual GraphicsAPI getAPI() const override { return GraphicsAPIGL; }
+        virtual const Viewport& getViewport() const override { return m_Viewport; }
+        virtual u32 getIndexBufferCount(const IndexBuffer* index_buffer) const override;
     };
     
 } // namespace prime::renderer

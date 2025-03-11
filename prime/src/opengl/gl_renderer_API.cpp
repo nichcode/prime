@@ -49,6 +49,8 @@ namespace prime::renderer {
 #endif // PRIME_PLATFORM_WINDOWS
         
         m_Index = 0;
+        m_Viewport.width = window->getWidth();
+        m_Viewport.height = window->getHeight();
     }
     
     GLRendererAPI::~GLRendererAPI()
@@ -239,6 +241,17 @@ namespace prime::renderer {
         m_Context->present();
     }
     
+    void GLRendererAPI::submit(DrawType type, DrawMode mode, u32 count)
+    {
+        GLenum gl_type = drawModeToGL(mode);
+        if (type == DrawTypeArrays) {
+            glDrawArrays(gl_type, 0, count);
+        }
+        else if (type == DrawTypeElements) {
+            glDrawElements(gl_type, count, GL_UNSIGNED_INT, nullptr);
+        }      
+    }
+    
     void GLRendererAPI::setClearColor(const Color& color)
     {
         glClearColor(color.r, color.g, color.b, color.a);
@@ -254,6 +267,17 @@ namespace prime::renderer {
         else {
             PRIME_WARN("vertex_buffer is static");
         }
+    }
+    
+    void GLRendererAPI::setVsync(b8 vsync)
+    {
+        m_Context->setVsync(vsync);
+    }
+    
+    void GLRendererAPI::setViewport(const Viewport& viewport)
+    {
+        m_Viewport = viewport;
+        glViewport(viewport.x, viewport.y, viewport.width, viewport.height);
     }
     
     void GLRendererAPI::setVertexArray(const VertexArray* vertex_array)
@@ -328,6 +352,12 @@ namespace prime::renderer {
 
             m_Index++;
         }
+    }
+    
+    u32 GLRendererAPI::getIndexBufferCount(const IndexBuffer* index_buffer) const 
+    {
+        PRIME_ASSERT_MSG(index_buffer, "index_buffer is null");
+        return index_buffer->count;
     }
     
 } // namespace prime::renderer
