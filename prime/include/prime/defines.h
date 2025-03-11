@@ -217,6 +217,12 @@ namespace prime {
         DrawTypeElements
     };
 
+    enum SourceType
+    {
+        SourceTypeGLSL,
+        SourceTypeHLSL
+    };
+
     enum LogLevel
     {
         LogLevelTrace,
@@ -236,12 +242,6 @@ namespace prime {
         DataTypeFloat3,
         DataTypeFloat4,
         DataTypeBool
-    };
-
-    enum VertexbufferType
-    {
-        VertexbufferTypeStatic,
-        VertexbufferTypeDynamic
     };
 
     enum TextureFormat

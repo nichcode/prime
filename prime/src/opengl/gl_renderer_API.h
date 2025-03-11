@@ -17,6 +17,7 @@ namespace prime::renderer {
         std::vector<VertexBuffer*> m_VertexBuffers;
         std::vector<IndexBuffer*> m_IndexBuffers;
         std::vector<Layout*> m_Layouts;
+        std::vector<Shader*> m_Shaders;
 
         u32 m_Index;
         Viewport m_Viewport;
@@ -39,6 +40,9 @@ namespace prime::renderer {
         virtual void deleteLayout(Layout* layout) override;
         virtual void AddElement(Layout* layout, DataType type, u32 divisor, b8 normalize) override;
 
+        virtual Shader* createShader(const str& vertex, const str& pixel, b8 load, SourceType type) override;
+        virtual void deleteShader(Shader* shader) override;
+
         virtual void makeActive() override;
         virtual void clear() override;
         virtual void present() override;
@@ -54,6 +58,15 @@ namespace prime::renderer {
         virtual void setVertexBuffer(const VertexBuffer* vertex_buffer) override;
         virtual void setIndexBuffer(const IndexBuffer* index_buffer) override;
         virtual void setLayout(Layout* layout) override;
+        virtual void setShader(Shader* shader) override;
+
+        virtual void upload(const Shader* shader, const char* name, i32 data) override;
+        virtual void upload(const Shader* shader, const char* name, i32* data, u32 count) override;
+        virtual void upload(const Shader* shader, const char* name, f32 data) override;
+        virtual void upload(const Shader* shader, const char* name, maths::vec2 data) override;
+        virtual void upload(const Shader* shader, const char* name, maths::vec3 data) override;
+        virtual void upload(const Shader* shader, const char* name, maths::vec4 data) override;
+        virtual void upload(const Shader* shader, const char* name, maths::mat4 data) override;
 
         virtual GraphicsAPI getAPI() const override { return GraphicsAPIGL; }
         virtual const Viewport& getViewport() const override { return m_Viewport; }

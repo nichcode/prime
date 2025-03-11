@@ -1,8 +1,8 @@
 
 #include "gl_renderer_API.h"
 #include "prime/internal.h"
-#include "prime/core/logger.h"
 #include "opengl_API.h"
+#include "prime/core/filesystem.h"
 #include <algorithm>
 
 #include "windows/windows_gl_context.h"
@@ -39,6 +39,13 @@ namespace prime::renderer {
     {
         std::vector<Element> elements;
         u32 stride = 0;
+    };
+
+    struct Shader
+    {
+        u32 program = 0;
+        u32 vertex = 0;
+        u32 pixel = 0;
     };
 
     GLRendererAPI::GLRendererAPI(const core::Scope<core::Window>& window)
@@ -88,10 +95,19 @@ namespace prime::renderer {
             layout = nullptr;
         }
 
+        // shaders
+        for (Shader* shader : m_Shaders) {
+            glDeleteProgram(shader->program);
+            shader->program = 0;
+            delete shader;
+            shader = nullptr;
+        }
+
         m_VertexArrays.clear();
         m_VertexBuffers.clear();
         m_IndexBuffers.clear();
         m_Layouts.clear();
+        m_Shaders.clear();
     }
     
     VertexArray* GLRendererAPI::createVertexArray()
@@ -226,6 +242,60 @@ namespace prime::renderer {
         layout->elements.push_back(element);
     }
     
+    Shader* GLRendererAPI::createShader(const str& vertex, const str& pixel, b8 load, SourceType type)
+    {
+        Shader* shader = new Shader();
+
+        if (type == SourceTypeGLSL) {
+            if (load) {
+                str vertex_src = "";
+                str pixel_src = "";
+                if (!vertex.empty()) {
+                    vertex_src = core::Filesystem::load(vertex);
+                    shader->vertex = generateShader(GL_VERTEX_SHADER, vertex_src.c_str());
+                }
+
+                if (!pixel.empty()) {
+                    pixel_src = core::Filesystem::load(pixel);
+                    shader->pixel = generateShader(GL_FRAGMENT_SHADER, pixel_src.c_str());
+                }      
+            }
+            else {
+                shader->vertex = generateShader(GL_VERTEX_SHADER, vertex.c_str());
+                shader->pixel = generateShader(GL_FRAGMENT_SHADER, pixel.c_str());
+            }
+
+            shader->program = generateProgram(shader->vertex, shader->pixel);
+            glUseProgram(shader->program);
+            glDeleteShader(shader->vertex);
+            glDeleteShader(shader->pixel);
+
+            m_Shaders.push_back(shader);
+            return shader;
+        }
+        else {
+            // TODO: shader transpiler
+            PRIME_WARN("Shader Transpiler not implememted yet");
+            return nullptr;
+        }
+    }
+    
+    void GLRendererAPI::deleteShader(Shader* shader)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+
+        auto it = std::find(m_Shaders.begin(), m_Shaders.end(), shader);
+        if (it != m_Shaders.end())
+        {
+            m_Shaders.erase(it);
+        }
+
+        glDeleteProgram(shader->program);
+        shader->program = 0;
+        delete shader;
+        shader = nullptr;
+    }
+    
     void GLRendererAPI::makeActive()
     {
         m_Context->makeActive();
@@ -352,6 +422,62 @@ namespace prime::renderer {
 
             m_Index++;
         }
+    }
+    
+    void GLRendererAPI::setShader(Shader* shader)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        glUseProgram(shader->program);
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, i32 data)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniform1i(location, data);
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, i32* data, u32 count)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniform1iv(location, count, data);
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, f32 data)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniform1f(location, data);
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, maths::vec2 data)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniform2f(location, data.x, data.y);
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, maths::vec3 data)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniform3f(location, data.x, data.y, data.z);
+        
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, maths::vec4 data)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniform4f(location, data.x, data.y, data.z, data.w);
+    }
+    
+    void GLRendererAPI::upload(const Shader* shader, const char* name, maths::mat4 data)
+    {
+        PRIME_ASSERT_MSG(shader, "shader is null");
+        GLint location = glGetUniformLocation(shader->program, name);
+        glUniformMatrix4fv(location, 1, GL_FALSE, data.data);
     }
     
     u32 GLRendererAPI::getIndexBufferCount(const IndexBuffer* index_buffer) const 
