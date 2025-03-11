@@ -14,6 +14,7 @@ namespace prime::renderer {
     PRIME_HANDLE(Layout);
     PRIME_HANDLE(Shader);
     PRIME_HANDLE(Texture);
+    PRIME_HANDLE(UniformBuffer);
 
     struct Viewport
     {
@@ -49,6 +50,9 @@ namespace prime::renderer {
         virtual Texture* createTexture(u32 width, u32 height, b8 target = false, TextureFormat format = TextureFormatRGBA8) = 0;
         virtual void deleteTexture(Texture* texture) = 0;
 
+        virtual UniformBuffer* createUniformBuffer(u32 size, u32 binding) = 0;
+        virtual void deleteUniformBuffer(UniformBuffer* uniform_buffer) = 0;
+
         virtual void makeActive() = 0;
         virtual void clear() = 0;
         virtual void present() = 0;
@@ -57,6 +61,7 @@ namespace prime::renderer {
 
         virtual void setClearColor(const Color& color) = 0;
         virtual void setVertexBufferData(const VertexBuffer* vertex_buffer, const void* data, u32 size) = 0;
+        virtual void setUniformBufferData(const UniformBuffer* uniform_buffer, const void* data, u32 size) = 0;
         virtual void setVsync(b8 vsync = true) = 0;
         virtual void setViewport(const Viewport& viewport) = 0;
 
@@ -68,6 +73,7 @@ namespace prime::renderer {
         virtual void setTexture(Texture* texture, u32 slot = 0) = 0;
         
         virtual void setRenderTarget(Texture* texture) = 0;
+        virtual void setUniformBuffer(const UniformBuffer* uniform_buffer) = 0;
 
         virtual void upload(const Shader* shader, const char* name, i32 data) = 0;
         virtual void upload(const Shader* shader, const char* name, i32* data, u32 count) = 0;

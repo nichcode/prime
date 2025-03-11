@@ -56,6 +56,11 @@ namespace prime::renderer {
         b8 target = false;
     };
 
+    struct UniformBuffer
+    {
+        u32 id = 0;
+    };
+
     GLRendererAPI::GLRendererAPI(const core::Scope<core::Window>& window)
     {
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -128,12 +133,21 @@ namespace prime::renderer {
             texture = nullptr;   
         }
 
+        // uniform buffers
+        for (UniformBuffer* uniform_buffer : m_UniformBuffers) {
+            glDeleteBuffers(1, &uniform_buffer->id);
+            uniform_buffer->id = 0;
+            delete uniform_buffer;
+            uniform_buffer = nullptr;
+        }
+
         m_VertexArrays.clear();
-        m_VertexBuffers.clear();
+        m_UniformBuffers.clear();
         m_IndexBuffers.clear();
         m_Layouts.clear();
         m_Shaders.clear();
         m_Textures.clear();
+        m_UniformBuffers.clear();
     }
     
     VertexArray* GLRendererAPI::createVertexArray()
@@ -366,6 +380,34 @@ namespace prime::renderer {
         texture = nullptr; 
     }
     
+    UniformBuffer* GLRendererAPI::createUniformBuffer(u32 size, u32 binding)
+    {
+        UniformBuffer* uniform_buffer = new UniformBuffer();
+        glGenBuffers(1, &uniform_buffer->id);
+        glBindBuffer(GL_UNIFORM_BUFFER, uniform_buffer->id);
+        glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
+        glBindBufferBase(GL_UNIFORM_BUFFER, binding, uniform_buffer->id);
+
+        m_UniformBuffers.push_back(uniform_buffer);
+        return uniform_buffer;
+    }
+    
+    void GLRendererAPI::deleteUniformBuffer(UniformBuffer* uniform_buffer)
+    {
+        PRIME_ASSERT_MSG(uniform_buffer, "uniform_buffer is null");
+
+        auto it = std::find(m_UniformBuffers.begin(), m_UniformBuffers.end(), uniform_buffer);
+        if (it != m_UniformBuffers.end())
+        {
+            m_UniformBuffers.erase(it);
+        }
+
+        glDeleteBuffers(1, &uniform_buffer->id);
+        uniform_buffer->id = 0;
+        delete uniform_buffer;
+        uniform_buffer = nullptr;
+    }
+    
     void GLRendererAPI::makeActive()
     {
         m_Context->makeActive();
@@ -407,6 +449,12 @@ namespace prime::renderer {
         else {
             PRIME_WARN("vertex_buffer is static");
         }
+    }
+    
+    void GLRendererAPI::setUniformBufferData(const UniformBuffer* uniform_buffer, const void* data, u32 size)
+    {
+        PRIME_ASSERT_MSG(uniform_buffer, "uniform_buffer is null");
+        glBufferSubData(GL_UNIFORM_BUFFER, 0, size, data);
     }
     
     void GLRendererAPI::setVsync(b8 vsync)
@@ -547,6 +595,16 @@ namespace prime::renderer {
         else {
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glViewport(m_Viewport.x, m_Viewport.y, m_Viewport.width, m_Viewport.height);
+        }
+    }
+    
+    void GLRendererAPI::setUniformBuffer(const UniformBuffer* uniform_buffer)
+    {
+        if (uniform_buffer) {
+            glBindBuffer(GL_UNIFORM_BUFFER, uniform_buffer->id);
+        }
+        else {
+            glBindBuffer(GL_UNIFORM_BUFFER, 0);
         }
     }
     

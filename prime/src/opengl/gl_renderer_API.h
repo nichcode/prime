@@ -19,6 +19,7 @@ namespace prime::renderer {
         std::vector<Layout*> m_Layouts;
         std::vector<Shader*> m_Shaders;
         std::vector<Texture*> m_Textures;
+        std::vector<UniformBuffer*> m_UniformBuffers;
 
         u32 m_Index;
         Viewport m_Viewport;
@@ -48,6 +49,9 @@ namespace prime::renderer {
         virtual Texture* createTexture(u32 width, u32 height, b8 target, TextureFormat format) override;
         virtual void deleteTexture(Texture* texture) override;
 
+        virtual UniformBuffer* createUniformBuffer(u32 size, u32 binding) override;
+        virtual void deleteUniformBuffer(UniformBuffer* uniform_buffer) override;
+
         virtual void makeActive() override;
         virtual void clear() override;
         virtual void present() override;
@@ -56,6 +60,7 @@ namespace prime::renderer {
 
         virtual void setClearColor(const Color& color) override;
         virtual void setVertexBufferData(const VertexBuffer* vertex_buffer, const void* data, u32 size) override;
+        virtual void setUniformBufferData(const UniformBuffer* uniform_buffer, const void* data, u32 size) override;
         virtual void setVsync(b8 vsync = true) override;
         virtual void setViewport(const Viewport& viewport) override;
 
@@ -67,6 +72,7 @@ namespace prime::renderer {
         virtual void setTexture(Texture* texture, u32 slot) override;
 
         virtual void setRenderTarget(Texture* texture) override;
+        virtual void setUniformBuffer(const UniformBuffer* uniform_buffer) override;
 
         virtual void upload(const Shader* shader, const char* name, i32 data) override;
         virtual void upload(const Shader* shader, const char* name, i32* data, u32 count) override;
