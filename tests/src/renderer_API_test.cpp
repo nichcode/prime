@@ -22,6 +22,10 @@ b8 rendererAPITestGL()
     VertexArray* vertex_array = rendererAPI->createVertexArray();
     VertexBuffer* vertex_buffer = rendererAPI->createStaticVertexBuffer(vertices, sizeof(vertices));
     IndexBuffer* index_buffer = rendererAPI->createIndexBuffer(indices, 6);
+    Layout* layout = rendererAPI->createLayout();
+    rendererAPI->AddElement(layout, prime::DataTypeFloat2);
+
+    rendererAPI->setLayout(layout);
 
     while (!window->shouldClose()) {
         Window::pollEvents();

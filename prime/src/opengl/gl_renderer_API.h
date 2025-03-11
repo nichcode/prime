@@ -17,6 +17,9 @@ namespace prime::renderer {
         std::vector<VertexArray*> m_VertexArrays;
         std::vector<VertexBuffer*> m_VertexBuffers;
         std::vector<IndexBuffer*> m_IndexBuffers;
+        std::vector<Layout*> m_Layouts;
+
+        u32 m_Index;
 
     public:
         GLRendererAPI(const core::Scope<core::Window>& window);
@@ -32,6 +35,10 @@ namespace prime::renderer {
         virtual IndexBuffer* createIndexBuffer(u32* indices, u32 count) override;
         virtual void deleteIndexBuffer(IndexBuffer* index_buffer) override;
 
+        virtual Layout* createLayout() override;
+        virtual void deleteLayout(Layout* layout) override;
+        virtual void AddElement(Layout* layout, DataType type, u32 divisor, b8 normalize) override;
+
         virtual void makeActive() override;
         virtual void clear() override;
         virtual void present() override;
@@ -42,6 +49,7 @@ namespace prime::renderer {
         virtual void setVertexArray(const VertexArray* vertex_array) override;
         virtual void setVertexBuffer(const VertexBuffer* vertex_buffer) override;
         virtual void setIndexBuffer(const IndexBuffer* index_buffer) override;
+        virtual void setLayout(Layout* layout) override;
 
         virtual GraphicsAPI getAPI() const override { return m_API; }
     };

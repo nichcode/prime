@@ -26,12 +26,29 @@ namespace prime::renderer {
         u32 count = 0;
     };
 
+    struct Element
+    {
+        DataType type = DataTypeFloat3;
+        b8 normalize = false;
+        u64 offset = 0;
+        u32 size = 0;
+        u32 divisor = 0;
+    };
+
+    struct Layout
+    {
+        std::vector<Element> elements;
+        u32 stride = 0;
+    };
+
     GLRendererAPI::GLRendererAPI(const core::Scope<core::Window>& window)
     {
 #ifdef PRIME_PLATFORM_WINDOWS
         HWND handle = internal::getWin32WindowHandle(window);
         m_Context = core::createScope<WindowsGLContext>(handle);
 #endif // PRIME_PLATFORM_WINDOWS
+        
+        m_Index = 0;
     }
     
     GLRendererAPI::~GLRendererAPI()
@@ -61,9 +78,18 @@ namespace prime::renderer {
             index_buffer = nullptr;
         }
 
+        // layout
+        for (Layout* layout : m_Layouts) {
+            layout->elements.clear();
+            layout->stride = 0;
+            delete layout;
+            layout = nullptr;
+        }
+
         m_VertexArrays.clear();
         m_VertexBuffers.clear();
         m_IndexBuffers.clear();
+        m_Layouts.clear();
     }
     
     VertexArray* GLRendererAPI::createVertexArray()
@@ -162,6 +188,42 @@ namespace prime::renderer {
         index_buffer = nullptr;
     }
     
+    Layout* GLRendererAPI::createLayout()
+    {
+        Layout* layout = new Layout();
+        layout->elements.clear();
+        m_Layouts.push_back(layout);
+        return layout;
+    }
+    
+    void GLRendererAPI::deleteLayout(Layout* layout)
+    {
+        PRIME_ASSERT_MSG(layout, "layout is null");
+
+        auto it = std::find(m_Layouts.begin(), m_Layouts.end(), layout);
+        if (it != m_Layouts.end())
+        {
+            m_Layouts.erase(it);
+        }
+
+        layout->elements.clear();
+        layout->stride = 0;
+        delete layout;
+        layout = nullptr;
+    }
+    
+    void GLRendererAPI::AddElement(Layout* layout, DataType type, u32 divisor, b8 normalize)
+    {
+        PRIME_ASSERT_MSG(layout, "layout is null");
+
+        Element element;
+        element.divisor = divisor;
+        element.normalize = normalize;
+        element.type = type;
+        element.size = getDataTypeSize(type);
+        layout->elements.push_back(element);
+    }
+    
     void GLRendererAPI::makeActive()
     {
         m_Context->makeActive();
@@ -210,6 +272,62 @@ namespace prime::renderer {
     {
         PRIME_ASSERT_MSG(index_buffer, "index_buffer is null");
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index_buffer->id);
+    }
+    
+    void GLRendererAPI::setLayout(Layout* layout)
+    {
+        PRIME_ASSERT_MSG(layout, "layout is null");
+
+        layout->stride = 0;
+        for (Element& element : layout->elements) {
+            element.offset = layout->stride;
+            layout->stride += element.size;
+        }
+
+        for (const Element& element : layout->elements) {
+            u32 count = getDataTypeCount(element.type);
+            u32 type = typeToGLType(element.type);
+            u32 stride = layout->stride;
+
+            switch (element.type) {
+                case DataTypeFloat:
+                case DataTypeFloat2:
+                case DataTypeFloat3:
+                case DataTypeFloat4: {
+                    glVertexAttribPointer(
+                        m_Index,
+                        count,
+                        type,
+                        element.normalize,
+                        stride,
+                        (const void*)element.offset);
+
+                    glEnableVertexAttribArray(m_Index);
+                    glVertexAttribDivisor(m_Index, element.divisor);
+                    break;
+                }
+
+                case DataTypeInt:
+                case DataTypeInt2:
+                case DataTypeInt3:
+                case DataTypeInt4:
+                case DataTypeBool: {
+                    glVertexAttribIPointer(
+                        m_Index,
+                        count,
+                        type,
+                        stride,
+                        (const void*)element.offset);
+
+                    glEnableVertexAttribArray(m_Index);
+                    glVertexAttribDivisor(m_Index, element.divisor);
+                    break;
+                }
+
+            } // switch
+
+            m_Index++;
+        }
     }
     
 } // namespace prime::renderer
