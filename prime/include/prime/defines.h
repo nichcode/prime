@@ -15,7 +15,6 @@
 #define PRIME_FILE __FILE__
 #define PRIME_INLINE inline
 #define PRIME_MAX_TEXTURE_SLOTS 16
-#define PRIME_MAX_RENDER_TARGET_SIZE 8192
 
 #define PRIME_HANDLE(name) struct name;
     
@@ -221,6 +220,12 @@ namespace prime {
     {
         SourceTypeGLSL,
         SourceTypeHLSL
+    };
+
+    enum Anchor
+    {
+        AnchorTopLeft,
+        AnchorCenter
     };
 
     enum LogLevel
