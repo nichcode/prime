@@ -21,6 +21,11 @@ b8 renderer2dTest()
     Texture* texture = rendererAPI->loadTexture("textures/texture2d.png");
     f32 rotation = 0.0f;
 
+    Rect rect;
+    rect = Rect(100.0f, 0.0f, 50.0f, 50.0f);
+    Sprite sprite;
+    sprite = Sprite(200.0f, 0.0f, 50.0f, 50.0f, texture);
+
     while (!window->shouldClose()) {
         Window::pollEvents();
 
@@ -34,6 +39,9 @@ b8 renderer2dTest()
 
         renderer.draw({ 100.0f, 200.0f }, { 50.0f, 50.0f }, rotation);
         renderer.draw({ 300.0f, 300.0f }, { 100.0f, 100.0f }, texture, 45.0f);
+
+        rect.render(renderer);
+        sprite.render(renderer);
 
         renderer.flush();
 

@@ -1,4 +1,6 @@
 
+#pragma once
+
 #include "prime/renderer/renderer_API.h"
 #include "prime/renderer/camera2d.h"
 #include <vector>
@@ -8,7 +10,7 @@ namespace prime::renderer {
     class Renderer2D
     {
     private:
-        struct Sprite
+        struct SpriteVertex
         {
             maths::vec2 position;
             Color color;
@@ -30,8 +32,8 @@ namespace prime::renderer {
         maths::vec2 m_TextureCoordsFlipX[4];
         maths::vec2 m_TextureCoordsFlipY[4];
         maths::vec2 m_TextureCoordsFlipXY[4];
-        Sprite* m_SpritePtr;
-        Sprite* m_SpriteBase;
+        SpriteVertex* m_SpritePtr;
+        SpriteVertex* m_SpriteBase;
 
         u32 m_SpriteIndexCount;
         maths::mat4 m_Projection;

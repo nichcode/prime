@@ -13,6 +13,8 @@
 #include "filesystem.cpp"
 #include "camera2d.cpp"
 #include "renderer2d.cpp"
+#include "rect.cpp"
+#include "sprite.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"

@@ -84,9 +84,9 @@ namespace prime::renderer {
             offset += 4;
         }
         m_SpriteVAO = rendererAPI->createVertexArray();
-        m_SpriteVBO = rendererAPI->createDynamicVertexBuffer(sizeof(Sprite) * MAX_VERTICES);
+        m_SpriteVBO = rendererAPI->createDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_VERTICES);
         m_SpriteIBO = rendererAPI->createIndexBuffer(indices, MAX_INDICES);
-        m_SpriteBase = new Sprite[MAX_VERTICES];
+        m_SpriteBase = new SpriteVertex[MAX_VERTICES];
 
         rendererAPI->setLayout(m_SpriteLayout);
         m_SpriteShader = rendererAPI->createShader(s_SpriteVertexSrc, s_SpritePixelSrc, false);
