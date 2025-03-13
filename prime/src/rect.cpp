@@ -17,6 +17,20 @@ namespace prime::renderer {
         size.y = height;
     }
 
+    b8 Rect::collide(const Rect& rect)
+    {
+        if (
+            position.x < rect.position.x + rect.size.x  &&
+            position.x + size.x > rect.position.x       &&
+            position.y < rect.position.y + rect.size.y  &&
+            position.y + size.y > rect.position.y) 
+        { 
+            return true; 
+        }
+
+        return false;
+    }
+
     void Rect::render(Renderer2D& renderer)
     {
         renderer.draw(position, size);

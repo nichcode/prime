@@ -68,18 +68,18 @@ namespace prime::core {
 
 
 #ifdef PRIME_CONFIG_DEBUG
-#define PRIME_TRACE(message, ...)           prime::core::Logger::trace(message)
-#define PRIME_INFO(message, ...)            prime::core::Logger::info(message)
-#define PRIME_WARN(message, ...)            prime::core::Logger::warn(message)
-#define PRIME_ERROR(message, ...)           prime::core::Logger::error(message)
+#define PRIME_TRACE(message)                prime::core::Logger::trace(message)
+#define PRIME_INFO(message)                 prime::core::Logger::info(message)
+#define PRIME_WARN(message)                 prime::core::Logger::warn(message)
+#define PRIME_ERROR(message)                prime::core::Logger::error(message)
 #define PRIME_ASSERT(expr)                  prime::core::Logger::assertion(expr, PRIME_FILE, PRIME_LINE)
 #define PRIME_ASSERT_MSG(expr, message)     prime::core::Logger::assertion(expr, PRIME_FILE, PRIME_LINE, message)
 #else
-#define PRIME_TRACE(message, ...)         
-#define PRIME_DEBUG(message, ...)         
-#define PRIME_INFO(message, ...)         
-#define PRIME_WARN(message, ...)          
-#define PRIME_ERROR(message, ...)               
+#define PRIME_TRACE(message)         
+#define PRIME_DEBUG(message)         
+#define PRIME_INFO(message)         
+#define PRIME_WARN(message)          
+#define PRIME_ERROR(message)               
 #define PRIME_ASSERT(expr)
 #define PRIME_ASSERT_MSG(expr, message)
 #endif // PRIME_CONFIG_DEBUG
