@@ -20,12 +20,11 @@ namespace prime::renderer {
 
     private:
         RendererAPI* m_API;
-        VertexArray* m_SpriteVAO;
-        VertexBuffer* m_SpriteVBO;
-        IndexBuffer* m_SpriteIBO;
-        Shader* m_SpriteShader;
-        Layout* m_SpriteLayout;
-        UniformBuffer* m_UBO;
+        core::Ref<VertexArray> m_SpriteVAO;
+        core::Ref<VertexBuffer> m_SpriteVBO;
+        core::Ref<IndexBuffer> m_SpriteIBO;
+        core::Ref<Shader> m_SpriteShader;
+        core::Ref<UniformBuffer> m_UBO;
 
         maths::vec4 m_Vertices[4];
         maths::vec2 m_TextureCoords[4];
@@ -41,14 +40,14 @@ namespace prime::renderer {
         Color m_DrawColor;
         Color m_TintColor;
 
-        std::vector<Texture*> m_Textures;
+        std::vector<core::Ref<Texture>> m_Textures;
         f32 m_TextureIndex;
 
     public:
         Renderer2D();
         ~Renderer2D();
 
-        void init(RendererAPI* rendererAPI);
+        void init(core::Scope<RendererAPI>& API);
         void destroy();
 
         void setDrawColor(const Color& color) { m_DrawColor = color; }
@@ -59,16 +58,16 @@ namespace prime::renderer {
         void draw(const maths::vec2& pos, const maths::vec2& size);
         void draw(const maths::vec2& pos, const maths::vec2& size, f32 rotation, Anchor anchor = AnchorCenter);
 
-        void draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture);
-        void draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture, f32 rotation, Anchor anchor = AnchorCenter);
-        void draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture, b8 flip_x, b8 flip_y);
-        void draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture, b8 flip_x, b8 flip_y, f32 rotation, Anchor anchor = AnchorCenter);
+        void draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture);
+        void draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture, f32 rotation, Anchor anchor = AnchorCenter);
+        void draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture, b8 flip_x, b8 flip_y);
+        void draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture, b8 flip_x, b8 flip_y, f32 rotation, Anchor anchor = AnchorCenter);
 
         void flush();
 
     private:
         void reset();
-        f32 getIndex(Texture* texture);
+        f32 getIndex(core::Ref<Texture>& texture);
         void nextBatch();
     };
     

@@ -19,31 +19,28 @@ b8 rendererAPITestGL()
 
     u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
-    VertexArray* vertex_array = rendererAPI->createVertexArray();
-    VertexBuffer* vertex_buffer = rendererAPI->createStaticVertexBuffer(vertices, sizeof(vertices));
-    IndexBuffer* index_buffer = rendererAPI->createIndexBuffer(indices, 6);
-    Layout* layout = rendererAPI->createLayout();
-    rendererAPI->AddElement(layout, prime::DataTypeFloat3);
-    rendererAPI->AddElement(layout, prime::DataTypeFloat4);
-    rendererAPI->AddElement(layout, prime::DataTypeFloat2);
+    Ref<VertexArray> vertex_array = rendererAPI->createVertexArray();
+    Ref<VertexBuffer> vertex_buffer = rendererAPI->createStaticVertexBuffer(vertices, sizeof(vertices));
+    Ref<IndexBuffer> index_buffer = rendererAPI->createIndexBuffer(indices, 6);
+    Layout layout;
+    layout.add(prime::DataTypeFloat3);
+    layout.add(prime::DataTypeFloat4);
+    layout.add(prime::DataTypeFloat2);
+    layout.process();
 
-    rendererAPI->setLayout(layout);
+    vertex_array->setLayout(layout);
+    Ref<Shader> shader = rendererAPI->createShader("shaders/vertex.glsl", "shaders/pixel.glsl");
+    shader->bind();
+    shader->setInt("u_Texture", 0);
 
-    Shader* shader = rendererAPI->createShader("shaders/vertex.glsl", "shaders/pixel.glsl");
-    Texture* texture = rendererAPI->loadTexture("textures/texture2d.png");
-
-    rendererAPI->setShader(shader);
-    rendererAPI->upload(shader, "u_Texture", 0);
-    rendererAPI->setTexture(texture);
+    Ref<Texture> texture = rendererAPI->loadTexture("textures/texture2d.png");
+    texture->bind();
 
     while (!window->shouldClose()) {
         Window::pollEvents();
 
         rendererAPI->clear();
-
-        u32 count = rendererAPI->getIndexBufferCount(index_buffer);
-        rendererAPI->submit(prime::DrawTypeElements, prime::DrawModeTriangles, count);
-
+        rendererAPI->submit(prime::DrawTypeElements, prime::DrawModeTriangles, index_buffer->getCount());
         rendererAPI->present();
     }
 

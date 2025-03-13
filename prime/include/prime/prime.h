@@ -9,9 +9,13 @@
 
 #include "maths/mat4.h"
 
+#include "renderer/buffers.h"
 #include "renderer/camera2d.h"
 #include "renderer/color.h"
 #include "renderer/rect.h"
 #include "renderer/renderer_API.h"
 #include "renderer/renderer2d.h"
+#include "renderer/shader.h"
 #include "renderer/sprite.h"
+#include "renderer/texture.h"
+#include "renderer/vertex_array.h"

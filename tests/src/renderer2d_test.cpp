@@ -14,13 +14,13 @@ b8 renderer2dTest()
     rendererAPI->setVsync(true);
 
     Renderer2D renderer;
-    renderer.init(rendererAPI.get());
+    renderer.init(rendererAPI);
     renderer.setDrawColor(PRIME_COLOR_GREEN);
 
     Camera2D camera;
     camera.setProjection(640, 480);
 
-    Texture* texture = rendererAPI->loadTexture("textures/texture2d.png");
+    Ref<Texture> texture = rendererAPI->loadTexture("textures/texture2d.png");
     f32 rotation = 0.0f;
 
     Rect rect;
@@ -102,12 +102,14 @@ b8 collisionTest()
     rendererAPI->setVsync(true);
 
     Renderer2D renderer;
-    renderer.init(rendererAPI.get());
+    renderer.init(rendererAPI);
 
     Camera2D camera;
     camera.setProjection(640, 480);
 
-    Rect rect(295.0f, 215.0f, 50.0f, 50.0f);
+    Ref<Texture> texture = rendererAPI->loadTexture("textures/texture2d.png");
+    Sprite player(295.0f, 215.0f, 50.0f, 50.0f, texture);
+    Rect& rect = player.getRect();
 
     std::vector<Rect> walls;
     Rect left_wall(0.0f, 0.0f, 30.0f, 480.0f);
@@ -153,7 +155,7 @@ b8 collisionTest()
         rendererAPI->clear();
         renderer.setCamera(camera);
 
-        rect.render(renderer);
+        player.render(renderer);
 
         renderer.setDrawColor(PRIME_COLOR_GREEN);
         for (Rect& wall : walls) {

@@ -12,13 +12,6 @@ namespace prime::renderer {
     Renderer2D::Renderer2D()
     {
         m_API = nullptr;
-        m_SpriteVAO = nullptr;
-        m_SpriteVBO = nullptr;
-        m_SpriteIBO = nullptr;
-        m_SpriteShader = nullptr;
-        m_SpriteLayout = nullptr;
-        m_UBO = nullptr;
-
         m_SpritePtr = nullptr;
         m_SpriteBase = nullptr;
 
@@ -33,16 +26,17 @@ namespace prime::renderer {
         destroy();
     }
 
-    void Renderer2D::init(RendererAPI* rendererAPI)
+    void Renderer2D::init(core::Scope<RendererAPI>& API)
     {
-        m_API = rendererAPI;
-
+        m_API = API.get();
+        
         // sprite
-        m_SpriteLayout = rendererAPI->createLayout();
-        rendererAPI->AddElement(m_SpriteLayout, prime::DataTypeFloat2);
-        rendererAPI->AddElement(m_SpriteLayout, prime::DataTypeFloat4);
-        rendererAPI->AddElement(m_SpriteLayout, prime::DataTypeFloat2);
-        rendererAPI->AddElement(m_SpriteLayout, prime::DataTypeFloat);
+        Layout layout;
+        layout.add(prime::DataTypeFloat2);
+        layout.add(prime::DataTypeFloat4);
+        layout.add(prime::DataTypeFloat2);
+        layout.add(prime::DataTypeFloat);
+        layout.process();
 
         m_Vertices[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
         m_Vertices[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -83,19 +77,19 @@ namespace prime::renderer {
 
             offset += 4;
         }
-        m_SpriteVAO = rendererAPI->createVertexArray();
-        m_SpriteVBO = rendererAPI->createDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_VERTICES);
-        m_SpriteIBO = rendererAPI->createIndexBuffer(indices, MAX_INDICES);
+        m_SpriteVAO = API->createVertexArray();
+        m_SpriteVBO = API->createDynamicVertexBuffer(sizeof(SpriteVertex) * MAX_VERTICES);
+        m_SpriteIBO = API->createIndexBuffer(indices, MAX_INDICES);
         m_SpriteBase = new SpriteVertex[MAX_VERTICES];
+        m_SpriteVAO->setLayout(layout);
 
-        rendererAPI->setLayout(m_SpriteLayout);
-        m_SpriteShader = rendererAPI->createShader(s_SpriteVertexSrc, s_SpritePixelSrc, false);
+        m_SpriteShader = API->createShader(s_SpriteVertexSrc, s_SpritePixelSrc, false);
         i32 samplers[PRIME_MAX_TEXTURE_SLOTS]{};
         for (u32 i = 0; i < PRIME_MAX_TEXTURE_SLOTS; i++) { samplers[i] = i; }
-        rendererAPI->upload(m_SpriteShader, "u_Textures", samplers, PRIME_MAX_TEXTURE_SLOTS);
+        m_SpriteShader->setIntArray("u_Textures", samplers, PRIME_MAX_TEXTURE_SLOTS);
 
-        m_UBO = rendererAPI->createUniformBuffer(sizeof(maths::mat4), 0);
-        Texture* texture = rendererAPI->createTexture(1, 1);
+        m_UBO = API->createUniformBuffer(sizeof(maths::mat4), 0);
+        core::Ref<Texture> texture = API->createTexture(1, 1);
         m_Textures.push_back(texture);
 
         delete[] indices;
@@ -113,9 +107,9 @@ namespace prime::renderer {
 
     void Renderer2D::setCamera(const Camera2D& camera)
     {
-        m_API->setUniformBuffer(m_UBO);
+        m_UBO->bind();
         m_Projection = camera.getProjectionMatrix();
-        m_API->setUniformBufferData(m_UBO, &m_Projection, sizeof(maths::mat4));
+        m_UBO->setData(&m_Projection, sizeof(maths::mat4));
     }
     
     void Renderer2D::draw(const maths::vec2& pos)
@@ -196,7 +190,7 @@ namespace prime::renderer {
         }
     }
 
-    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture)
+    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture)
     {
         if (Texture) {
             nextBatch();
@@ -225,7 +219,7 @@ namespace prime::renderer {
         }
     }
 
-    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture, f32 rotation, Anchor anchor)
+    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture, f32 rotation, Anchor anchor)
     {
         if (rotation) {
             nextBatch();
@@ -300,7 +294,7 @@ namespace prime::renderer {
         }
     }
 
-    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture, b8 flip_x, b8 flip_y)
+    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture, b8 flip_x, b8 flip_y)
     {
         if (Texture) {
             nextBatch();
@@ -339,7 +333,7 @@ namespace prime::renderer {
         }
     }
     
-    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, Texture* Texture, b8 flip_x, b8 flip_y, f32 rotation, Anchor anchor)
+    void Renderer2D::draw(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& Texture, b8 flip_x, b8 flip_y, f32 rotation, Anchor anchor)
     {
         if (rotation) {
             nextBatch();
@@ -428,14 +422,14 @@ namespace prime::renderer {
     {
         if (m_SpriteIndexCount) {
             u32 size = (u32)((u8*)m_SpritePtr - (u8*)m_SpriteBase);
-            m_API->setVertexBuffer(m_SpriteVBO);
-            m_API->setVertexBufferData(m_SpriteVBO, m_SpriteBase, size);
+            m_SpriteVBO->bind();
+            m_SpriteVBO->setData(m_SpriteBase, size);
 
             for (u32 i = 0; i < m_TextureIndex; i++) {
-                m_API->setTexture(m_Textures[i], i);
+                m_Textures[i]->bind(i);
             }
 
-            m_API->setShader(m_SpriteShader);
+            m_SpriteShader->bind();
             m_API->submit(prime::DrawTypeElements, prime::DrawModeTriangles, m_SpriteIndexCount);
         }
 
@@ -449,7 +443,7 @@ namespace prime::renderer {
         m_TextureIndex = 1.0f;
     }
 
-    f32 Renderer2D::getIndex(Texture* texture)
+    f32 Renderer2D::getIndex(core::Ref<Texture>& texture)
     {
         f32 tex_index = 0.0f;
         for (u32 i = 1; i < m_TextureIndex; i++) {

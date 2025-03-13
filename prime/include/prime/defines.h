@@ -16,8 +16,6 @@
 #define PRIME_INLINE inline
 #define PRIME_MAX_TEXTURE_SLOTS 16
 
-#define PRIME_HANDLE(name) struct name;
-    
 /** @brief debug breakpoint. */
 #ifdef PRIME_PLATFORM_WINDOWS
 #define PRIME_BREAK __debugbreak();

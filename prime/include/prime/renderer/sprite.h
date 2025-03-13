@@ -2,22 +2,22 @@
 #pragma once
 
 #include "rect.h"
+#include "texture.h"
 
 namespace prime::renderer {
 
     class Sprite
     {
-    public:
-        maths::vec2 position;
-        maths::vec2 size;
-        Texture* texture;
+    private:
+        Rect rect;
+        core::Ref<Texture> texture;
 
     public:
-        Sprite() : texture(nullptr) {}
-        Sprite(const maths::vec2& pos, const maths::vec2& size, Texture* texture);
-        Sprite(f32 x, f32 y, f32 width, f32 height, Texture* texture);
+        Sprite() = default;
+        Sprite(const maths::vec2& pos, const maths::vec2& size, core::Ref<Texture>& texture);
+        Sprite(f32 x, f32 y, f32 width, f32 height, core::Ref<Texture>& texture);
 
-        const Rect getRect() { return Rect{ position, size }; }
+        Rect& getRect() { return rect; }
 
         void render(Renderer2D& renderer);
         void render(Renderer2D& renderer, b8 flip_x, b8 flip_y);
