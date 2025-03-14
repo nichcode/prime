@@ -2,6 +2,7 @@
 #pragma once
 
 #include "prime/defines.h"
+#include "entt/entt.hpp"
 
 namespace prime::utils {
 
@@ -15,4 +16,13 @@ namespace prime::utils {
     void mapKeyNames();
 
 } // namespace prime::utils
+
+namespace prime::scene {
+
+    struct SceneHandle
+    {
+        entt::registry registry;
+    };
+    
+} // namespace prime::scene
     

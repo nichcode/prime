@@ -17,6 +17,9 @@
 #include "renderer2d.cpp"
 #include "rect.cpp"
 #include "sprite.cpp"
+#include "entity.cpp"
+#include "scene2d.cpp"
+#include "scene_manager.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"

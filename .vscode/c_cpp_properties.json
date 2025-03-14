@@ -6,7 +6,8 @@
                 "${workspaceFolder}/prime/include",
                 "${workspaceFolder}/prime/src",
                 "${workspaceFolder}/vendor/glad/include",
-                "${workspaceFolder}/vendor/stb"
+                "${workspaceFolder}/vendor/stb",
+                "${workspaceFolder}/vendor/entt"
             ],
             "defines": [
                 "PRIME_CONFIG_DEBUG",

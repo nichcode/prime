@@ -19,3 +19,8 @@
 #include "renderer/sprite.h"
 #include "renderer/texture.h"
 #include "renderer/vertex_array.h"
+
+#include "scene/components.h"
+#include "scene/entity.h"
+#include "scene/scene_manager.h"
+#include "scene/scene2d.h"

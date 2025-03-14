@@ -15,7 +15,8 @@ project "prime"
         "include",
         "src",
         "%{wks.location}/vendor/glad/include",
-        "%{wks.location}/vendor/stb"
+        "%{wks.location}/vendor/stb",
+        "%{wks.location}/vendor/entt"
     }
 
     if (_ACTION == "gmake2") then
