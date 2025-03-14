@@ -12,14 +12,14 @@ namespace prime::maths {
     f32 cos(f32 num);
     f32 sin(f32 num);
 
-    PRIME_INLINE f32 toRadians(f32 radians)
+    PRIME_INLINE f32 toRadians(f32 degrees)
     {
-        return radians * 180.0f / PRIME_PI;
+        return degrees * 180.0f / PRIME_PI;
     }
 
-    PRIME_INLINE f32 toDegrees(f32 degrees)
+    PRIME_INLINE f32 toDegrees(f32 radians)
     {
-        return degrees * PRIME_PI / 180.0f;
+        return radians * PRIME_PI / 180.0f;
     }
 
 } // namespace prime::maths 

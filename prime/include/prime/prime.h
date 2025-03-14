@@ -3,6 +3,7 @@
 
 #include "core/fmt.h"
 #include "core/logger.h"
+#include "core/physics2d.h"
 #include "core/platform.h"
 #include "core/test_manager.h"
 #include "core/window.h"

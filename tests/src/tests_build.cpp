@@ -5,4 +5,5 @@
 #include "renderer_API_test.cpp"
 #include "renderer2d_test.cpp"
 #include "scene2d_test.cpp"
+#include "physics2d_test.cpp"
 #include "main.cpp"

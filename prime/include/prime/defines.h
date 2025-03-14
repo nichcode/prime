@@ -208,6 +208,18 @@ namespace prime {
         DrawModeLines
     };
 
+    enum BodyType2D
+	{
+		BodyType2DStatic,
+		BodyType2DDynamic,
+		BodyType2DKinematic,
+	};
+
+    enum ColliderType2D
+	{
+		ColliderType2DBox
+	};
+
     enum DrawType
     {
         DrawTypeArrays,

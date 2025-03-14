@@ -20,6 +20,7 @@
 #include "entity.cpp"
 #include "scene2d.cpp"
 #include "scene_manager.cpp"
+#include "physics2d.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_platform.cpp"

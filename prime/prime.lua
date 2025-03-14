@@ -16,12 +16,14 @@ project "prime"
         "src",
         "%{wks.location}/vendor/glad/include",
         "%{wks.location}/vendor/stb",
-        "%{wks.location}/vendor/entt"
+        "%{wks.location}/vendor/entt",
+        "%{wks.location}/vendor/box2d/include"
     }
 
     if (_ACTION == "gmake2") then
         links {
             "glad",
+            "box2d",
             "%{wks.location}/libs/Gdi32",
             "%{wks.location}/libs/Opengl32"
         }
