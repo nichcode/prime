@@ -27,4 +27,28 @@ namespace prime::scene {
 	{
 		renderer::Camera2D camera;
 	};
+
+	struct RigidBody2D
+	{
+	private:
+		void* m_Body = nullptr;
+		friend class Scene2D;
+
+	public:
+		BodyType2D type = BodyType2DStatic;
+		f32 density = 1.0f;
+		f32 friction = 0.5f;
+		f32 restitution = 0.0f;
+		f32 restitution_threshold = 0.5f;
+		b8 fixed_rotation = false;
+        f32 rotation = 0.0f;
+
+		void setVelocity(const maths::vec2& velocity);
+	};
+
+	struct BoxCollider2D
+	{
+		maths::vec2 offset = { 0.0f, 0.0f };
+		maths::vec2 size = { 50.0f, 50.0f };
+	};
 }

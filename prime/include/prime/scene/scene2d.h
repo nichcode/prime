@@ -3,6 +3,7 @@
 
 #include "entity.h"
 #include "prime/renderer/renderer2d.h"
+#include "prime/core/physics2d.h"
 
 namespace prime::scene {
 
@@ -13,6 +14,8 @@ namespace prime::scene {
     private:
         SceneHandle* m_Handle;
         u32 m_MainCamera2D;
+        void* m_World = nullptr;
+
         friend class Entity;
 
     public:
@@ -21,6 +24,9 @@ namespace prime::scene {
 
 		Entity createEntity();
 		void deleteEntity(Entity entity);
+
+        void initPhysics();
+        void stepPhysics(f32 delta_time = 1.0f / 60.0f);
 
         void render(renderer::Renderer2D& renderer);
     };

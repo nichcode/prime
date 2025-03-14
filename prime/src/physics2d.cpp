@@ -1,21 +1,9 @@
 
 #include "prime/core/physics2d.h"
 #include "prime/maths/maths.h"
-#include "box2d/box2d.h"
-
-#define P2M 30.0f
+#include "prime_utils.h"
 
 namespace prime::core {
-
-    PRIME_INLINE b2BodyType getBodyType(BodyType2D type)
-	{
-		switch (type) {
-            case BodyType2DStatic:    return b2_staticBody; break;
-            case BodyType2DDynamic:   return b2_dynamicBody; break;
-            case BodyType2DKinematic: return b2_kinematicBody; break;
-		}
-		return b2_staticBody;
-	}
 
     // body
     void Body2D::setVelocity(const maths::vec2& velocity)
@@ -49,16 +37,16 @@ namespace prime::core {
         maths::vec2 middle;
         middle.x = desc.position.x + desc.size.x / 2.0f;
         middle.y = desc.position.y + desc.size.y / 2.0f;
-        body_def.position.x = middle.x * (1.0f / P2M);
-        body_def.position.y = middle.y * (1.0f / P2M);
+        body_def.position.x = middle.x * (1.0f / PRIME_P2M);
+        body_def.position.y = middle.y * (1.0f / PRIME_P2M);
         body_def.angle = maths::toRadians(desc.rotation);
 
         b2Body* body = world->CreateBody(&body_def);
         body->SetFixedRotation(desc.fixed_rotation);
         if (desc.collider == ColliderType2DBox) {
             b2PolygonShape box_shape;
-            f32 width = desc.size.x * (1.0f / P2M);
-            f32 height = desc.size.y * (1.0f / P2M);
+            f32 width = desc.size.x * (1.0f / PRIME_P2M);
+            f32 height = desc.size.y * (1.0f / PRIME_P2M);
             box_shape.SetAsBox(width / 2.0f, height / 2.0f);
             b2FixtureDef fixture_def;
             fixture_def.shape = &box_shape;
@@ -93,8 +81,8 @@ namespace prime::core {
             b2Body* body = (b2Body*)body2d->m_Handle;
 
 			const auto& position = body->GetPosition();
-			body2d->m_Position.x = position.x  * P2M;
-			body2d->m_Position.y = position.y * P2M;
+			body2d->m_Position.x = position.x  * PRIME_P2M;
+			body2d->m_Position.y = position.y * PRIME_P2M;
 
             body2d->m_Position.x -= body2d->m_Size.x / 2.0f;
             body2d->m_Position.y -= body2d->m_Size.y / 2.0f;

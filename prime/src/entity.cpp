@@ -118,5 +118,77 @@ namespace prime::scene {
         PRIME_ASSERT_MSG(has, "entity does not have Camera2DComponent!");
         return m_Scene->registry.remove<Camera2DComponent>(id);
 	}
+
+     // rigidbody2d
+    template<> RigidBody2D&
+    Entity::addComponent<RigidBody2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        b8 has =  m_Scene->registry.has<RigidBody2D>(id);
+        PRIME_ASSERT_MSG(!has, "entity already has RigidBody2D!");
+        RigidBody2D& component = m_Scene->registry.emplace<RigidBody2D>(id);
+		return component;
+	}
+
+    template<> RigidBody2D&
+    Entity::getComponent<RigidBody2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        b8 has =  m_Scene->registry.has<RigidBody2D>(id);
+        PRIME_ASSERT_MSG(has, "entity does not have RigidBody2D!");
+		return m_Scene->registry.get<RigidBody2D>(id);
+	}
+
+    template<> b8
+    Entity::hasComponent<RigidBody2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        return m_Scene->registry.has<RigidBody2D>(id);
+	}
+
+    template<> void
+    Entity::removeComponent<RigidBody2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        b8 has =  m_Scene->registry.has<RigidBody2D>(id);
+        PRIME_ASSERT_MSG(has, "entity does not have RigidBody2D!");
+        return m_Scene->registry.remove<RigidBody2D>(id);
+	}
+    
+    // boxcollider
+    template<> BoxCollider2D&
+    Entity::addComponent<BoxCollider2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        b8 has =  m_Scene->registry.has<BoxCollider2D>(id);
+        PRIME_ASSERT_MSG(!has, "entity already has BoxCollider2D!");
+        BoxCollider2D& component = m_Scene->registry.emplace<BoxCollider2D>(id);
+		return component;
+	}
+
+    template<> BoxCollider2D&
+    Entity::getComponent<BoxCollider2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        b8 has =  m_Scene->registry.has<BoxCollider2D>(id);
+        PRIME_ASSERT_MSG(has, "entity does not have BoxCollider2D!");
+		return m_Scene->registry.get<BoxCollider2D>(id);
+	}
+
+    template<> b8
+    Entity::hasComponent<BoxCollider2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        return m_Scene->registry.has<BoxCollider2D>(id);
+	}
+
+    template<> void
+    Entity::removeComponent<BoxCollider2D>()
+	{
+        entt::entity id = (entt::entity)m_ID;
+        b8 has =  m_Scene->registry.has<BoxCollider2D>(id);
+        PRIME_ASSERT_MSG(has, "entity does not have BoxCollider2D!");
+        return m_Scene->registry.remove<BoxCollider2D>(id);
+	}
     
 } // namespace prime::scene

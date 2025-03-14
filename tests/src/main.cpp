@@ -9,6 +9,7 @@ b8 renderer2dTest();
 b8 collisionTest();
 b8 scene2dTest();
 b8 physics2dTest();
+b8 physics2dSceneTest();
 
 int main()
 {
@@ -23,7 +24,8 @@ int main()
     //core::TestManager::addTest(renderer2dTest, "renderer2dTest");
     //core::TestManager::addTest(collisionTest, "collisionTest");
     //core::TestManager::addTest(scene2dTest, "scene2dTest");
-    core::TestManager::addTest(physics2dTest, "physics2dTest");
+    //core::TestManager::addTest(physics2dTest, "physics2dTest");
+    core::TestManager::addTest(physics2dSceneTest, "physics2dSceneTest");
 
     core::TestManager::run();
     core::Platform::shutdown();
