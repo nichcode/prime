@@ -1,6 +1,8 @@
 
 #include "prime/prime.h"
 
+#include <iostream>
+
 int main(int argc, char** argv)
 {
     prime_device_type device_type;
