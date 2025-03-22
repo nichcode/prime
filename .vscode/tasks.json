@@ -1,0 +1,113 @@
+{
+    "tasks": [
+        {
+            // build prime debug
+            "type": "shell",
+            "label": "build prime debug make",
+            "command" : "${workspaceFolder}/prime/build_debug_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}/prime"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "build prime debug with make."
+        },
+        {
+            // build prime release
+            "type": "shell",
+            "label": "build prime release make",
+            "command" : "${workspaceFolder}/prime/build_release_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}/prime"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "build prime release with make."
+        },
+
+        {
+            // build tests debug
+            "type": "shell",
+            "label": "build tests debug make",
+            "command" : "${workspaceFolder}/tests/build_debug_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}/tests"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "build tests debug with make."
+        },
+        {
+            // build tests release
+            "type": "shell",
+            "label": "build tests release make",
+            "command" : "${workspaceFolder}/tests/build_release_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}/tests"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": "build",
+            "detail": "build tests release with make."
+        },
+
+        {
+            // build everything debug
+            "type": "shell",
+            "label": "build everything debug make",
+            "command": "${workspaceFolder}/scripts/build_debug_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "detail": "build everything debug with make.",
+                "isDefault": true
+            }
+        },
+        {
+            // build everything release
+            "type": "shell",
+            "label": "build everything release make",
+            "command": "${workspaceFolder}/scripts/build_release_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "detail": "build everything release with make."
+            }
+        },
+        {
+            // clean everything
+            "type": "shell",
+            "label": "clean everything make",
+            "command": "${workspaceFolder}/scripts/clean_make.bat",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "detail": "clean everything with make."
+            }
+        }
+
+    ],
+    "version": "2.0.0"
+}
