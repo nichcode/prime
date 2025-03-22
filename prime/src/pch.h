@@ -1,6 +1,9 @@
 
 #include "prime/defines.h"
 #include "utils.h"
+#include "prime/string.h"
+#include "prime/logger.h"
+
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>

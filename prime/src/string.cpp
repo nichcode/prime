@@ -3,9 +3,6 @@
 #include "utils.h"
 #include "pch.h"
 
-// TODO: remove
-#define PRIME_ASSERT_MSG(expr, message) 
-
 char* prime_string_format_args(const char* fmt, va_list args_list)
 {
     PRIME_ASSERT_MSG(fmt, "fmt is null");

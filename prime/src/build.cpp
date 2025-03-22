@@ -3,6 +3,7 @@
 
 // sources
 #include "string.cpp"
+#include "logger.cpp"
 #include "prime.cpp"
 
 // win32 sources

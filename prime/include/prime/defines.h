@@ -58,6 +58,10 @@ using b8 = bool;
 #define PRIME_FAILED 0
 #define PRIME_INLINE inline
 
+#define PRIME_STR(x) #x
+#define PRIME_LINE __LINE__
+#define PRIME_FILE __FILE__
+
 #ifdef PRIME_PLATFORM_WINDOWS
 #define PRIME_EXT __declspec(dllexport)
 #define PRIME_IMT __declspec(dllimport)

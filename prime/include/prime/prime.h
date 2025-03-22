@@ -2,6 +2,7 @@
 #pragma once
 
 #include "prime/defines.h"
+#include "prime/logger.h"
 #include "prime/string.h"
 
 enum prime_device_type
