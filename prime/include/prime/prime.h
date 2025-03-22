@@ -3,7 +3,9 @@
 
 #include "prime/defines.h"
 #include "prime/logger.h"
+#include "prime/maths.h"
 #include "prime/string.h"
+#include "prime/window.h"
 
 enum prime_device_type
 {

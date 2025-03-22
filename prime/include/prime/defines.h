@@ -62,6 +62,8 @@ using b8 = bool;
 #define PRIME_LINE __LINE__
 #define PRIME_FILE __FILE__
 
+#define PRIME_BIT(x) 1 << x
+
 #ifdef PRIME_PLATFORM_WINDOWS
 #define PRIME_EXT __declspec(dllexport)
 #define PRIME_IMT __declspec(dllimport)
