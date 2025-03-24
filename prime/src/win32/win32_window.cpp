@@ -325,6 +325,7 @@ prime_window* prime_create_window(prime_window_desc desc)
     SetPropW(window->handle, s_PropName, window);
     mapKeys(window);
     s_WindowCount++;
+    window->focused = true;
     return window;
 }
 

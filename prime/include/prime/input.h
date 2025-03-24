@@ -139,6 +139,6 @@ enum prime_action
     PRIME_ACTION_MAX
 };
 
-PRIME_API const char* prime_get_keyname(prime_key key);
-PRIME_API const char* prime_get_buttonname(prime_button button);
-PRIME_API const char* prime_get_actionname(prime_action action);
+PRIME_API const char* prime_get_key_name(u32 key);
+PRIME_API const char* prime_get_button_name(u32 button);
+PRIME_API const char* prime_get_action_name(u32 action);

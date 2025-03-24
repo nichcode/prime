@@ -8,6 +8,7 @@
 #include "prime/maths.h"
 #include "prime/platform.h"
 #include "prime/string.h"
+#include "prime/test.h"
 #include "prime/window.h"
 
 enum prime_device_type

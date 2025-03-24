@@ -129,21 +129,21 @@ void initInput()
     s_ActionNames[PRIME_ACTION_REPEAT] = "Repeat";
 }
 
-const char* prime_get_keyname(prime_key key)
+const char* prime_get_key_name(u32 key)
 {
     PRIME_ASSERT_MSG(key >= 0, "Invalid key");
     PRIME_ASSERT_MSG(key < PRIME_KEY_MAX, "Invalid key");
     return s_KeyNames[key].c_str();
 }
 
-const char* prime_get_buttonname(prime_button button)
+const char* prime_get_button_name(u32 button)
 {
     PRIME_ASSERT_MSG(button >= 0, "Invalid button");
     PRIME_ASSERT_MSG(button < PRIME_BUTTON_MAX, "Invalid button");
     return s_ButtonNames[button].c_str();
 }
 
-const char* prime_get_actionname(prime_action action)
+const char* prime_get_action_name(u32 action)
 {
     PRIME_ASSERT_MSG(action >= 0, "Invalid action");
     PRIME_ASSERT_MSG(action < PRIME_ACTION_MAX, "Invalid action");

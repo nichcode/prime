@@ -6,6 +6,7 @@
 #include "logger.cpp"
 #include "context.cpp"
 #include "input.cpp"
+#include "test.cpp"
 #include "prime.cpp"
 
 // win32 sources

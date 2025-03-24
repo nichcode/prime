@@ -9,8 +9,8 @@ struct prime_window;
 
 using prime_window_flag = u32;
 using prime_window_close_func = void(*)(prime_window* window);
-using prime_window_key_func = void(*)(prime_window* window, u32 key, i32 scancode, u8 action);
-using prime_window_button_func = void(*)(prime_window* window, u16 button, u8 action);
+using prime_window_key_func = void(*)(prime_window* window, u32 key, i32 scancode, u32 action);
+using prime_window_button_func = void(*)(prime_window* window, u32 button, u32 action);
 using prime_window_mouse_moved_func = void(*)(prime_window* window, i32 x, i32 y);
 using prime_window_mouse_scrolled_func = void(*)(prime_window* window, f32 x_offset, f32 y_offset);
 using prime_window_moved_func = void(*)(prime_window* window, i32 x, i32 y);
