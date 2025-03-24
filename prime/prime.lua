@@ -21,3 +21,9 @@ project "prime"
     defines {
         "PRIME_EXPORT"
     }
+
+    links {
+        "opengl32",
+        "user32",
+        "gdi32" 
+    }

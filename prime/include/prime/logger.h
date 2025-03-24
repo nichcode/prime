@@ -18,7 +18,7 @@ PRIME_API void prime_log_warn(const char* msg, ...);
 PRIME_API void prime_log_error(const char* msg, ...);
 
 PRIME_API void prime_assert(b8 expr, const char* file, u32 line);
-PRIME_API void prime_assert_msg(b8 expr, const char* file, u32 line, const char* msg);
+PRIME_API void prime_assert_msg(b8 expr, const char* file, u32 line, const char* msg, ...);
 
 #ifdef PRIME_CONFIG_DEBUG
 #define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)
@@ -26,7 +26,7 @@ PRIME_API void prime_assert_msg(b8 expr, const char* file, u32 line, const char*
 #define PRIME_WARN(...)                     prime_log_warn(__VA_ARGS__)
 #define PRIME_ERROR(...)                    prime_log_error(__VA_ARGS__)
 #define PRIME_ASSERT(expr)                  prime_assert(expr, PRIME_FILE, PRIME_LINE)
-#define PRIME_ASSERT_MSG(expr, message)     prime_assert_msg(expr, PRIME_FILE, PRIME_LINE, message)
+#define PRIME_ASSERT_MSG(expr, ...)         prime_assert_msg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
 #else
 #define PRIME_TRACE(...)         
 #define PRIME_DEBUG(...)         

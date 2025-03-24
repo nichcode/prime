@@ -1,17 +1,18 @@
 
 #include "prime/prime.h"
 #include "pch.h"
-
-struct prime_init_data
-{
-    prime_device_type type;
-};
-
-static prime_init_data s_init_data;
+#include "win32/wgl_context.h"
+#include "utils.h"
 
 b8 prime_init(prime_device_type type)
 {
     s_init_data.type = type;
+    switch (type)
+    {
+    case PRIME_DEVICE_TYPE_OPENGL:
+        createDummyWGLContext();
+        break;
+    }
     PRIME_INFO("prime init");
     return PRIME_PASSED;
 }

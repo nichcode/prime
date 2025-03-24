@@ -29,3 +29,5 @@ PRIME_API void prime_window_set_pos(prime_window* window, prime_ivec2 pos);
 PRIME_API b8 prime_window_should_close(prime_window* window);
 
 PRIME_API void prime_pull_events();
+
+PRIME_API void* prime_get_window_handle(prime_window* window);

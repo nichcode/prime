@@ -1,5 +1,6 @@
 
 #include "utils.h"
+#include "prime/platform.h"
 #include "pch.h"
 
 i32 multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)
@@ -33,4 +34,27 @@ void consoleWrite(prime_log_level level, const char* msg)
     WriteConsoleW(console, wstr, (DWORD)len, &number_written, 0);
     SetConsoleTextAttribute(console, 15);
     prime_wstring_free(wstr);
+}
+
+void* prime_load_library(const char* dll)
+{
+    HMODULE result = LoadLibraryA(dll);
+    PRIME_ASSERT_MSG(result, "failed to load dll %s", dll);
+    return result;
+}
+
+void* prime_load_library_func(void* dll, const char* func_name)
+{
+    PRIME_ASSERT_MSG(dll, "dll is null");
+    HMODULE dll_lib = (HMODULE)dll;
+
+    FARPROC proc = GetProcAddress((HMODULE)dll_lib, func_name);
+    PRIME_ASSERT_MSG(proc, "Failed to load function: %s from DLL", func_name);
+    return (void*)proc;
+}
+
+void prime_free_library(void* dll)
+{
+    PRIME_ASSERT_MSG((HMODULE)dll, "dll is null");
+    FreeLibrary((HMODULE)dll);
 }

@@ -146,6 +146,12 @@ void prime_pull_events()
     }
 }
 
+PRIME_API void* prime_get_window_handle(prime_window* window)
+{
+    PRIME_ASSERT_MSG(window, "window is null");
+    return window->handle;
+}
+
 LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 {
     prime_window* window = (prime_window*)GetPropW(hwnd, s_PropName);
