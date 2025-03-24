@@ -115,6 +115,8 @@ void loadOpenGLFunctions()
     glUniform1iv = (PFNGLUNIFORM1IVPROC)gl_load("glUniform1iv");
     glUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)gl_load("glUniformMatrix2fv");
     glUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)gl_load("glUniformMatrix3fv");
+    glVertexAttribIPointer =  (PFNGLVERTEXATTRIBIPOINTERPROC)gl_load("glVertexAttribIPointer");
+    glDrawElements = (PFNGLDRAWELEMENTSPROC)gl_load("glDrawElements");
 
     prime_free_library(s_Dll);
 }

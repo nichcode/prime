@@ -4,6 +4,99 @@
 #include "opengl/opengl_funcs.h"
 #include "prime/window.h"
 
+PRIME_INLINE u32 getDataTypeSize(prime_data_type type)
+{
+    switch (type)
+    {
+        case PRIME_DATA_TYPE_INT:
+        case PRIME_DATA_TYPE_FLOAT: {
+            return 4;
+        }
+
+        case PRIME_DATA_TYPE_INT2:
+        case PRIME_DATA_TYPE_FLOAT2: {
+            return 8;
+        }
+
+        case PRIME_DATA_TYPE_INT3:
+        case PRIME_DATA_TYPE_FLOAT3: {
+            return 12;
+        }
+
+        case PRIME_DATA_TYPE_INT4:
+        case PRIME_DATA_TYPE_FLOAT4: {
+            return 16;
+        }
+        case PRIME_DATA_TYPE_BOOL:     return 1;
+    }
+    return 0;
+}
+
+PRIME_INLINE u32 getDataTypeCount(prime_data_type type)
+{
+    switch (type)
+    {
+        case PRIME_DATA_TYPE_FLOAT:
+        case PRIME_DATA_TYPE_INT:
+        case PRIME_DATA_TYPE_BOOL: {
+            return 1;
+        }
+
+        case PRIME_DATA_TYPE_FLOAT2:
+        case PRIME_DATA_TYPE_INT2: {
+            return 2;
+        }
+
+        case PRIME_DATA_TYPE_FLOAT3:
+        case PRIME_DATA_TYPE_INT3: {
+            return 3;
+        }
+
+        case PRIME_DATA_TYPE_FLOAT4:
+        case PRIME_DATA_TYPE_INT4: {
+            return 4;
+        }
+    }
+    return 0;
+}
+
+PRIME_INLINE static GLenum typeToGLType(prime_data_type type)
+{
+    switch (type)
+    {
+        case PRIME_DATA_TYPE_INT:
+        case PRIME_DATA_TYPE_INT2:
+        case PRIME_DATA_TYPE_INT3:
+        case PRIME_DATA_TYPE_INT4:
+            return GL_INT;
+
+        case PRIME_DATA_TYPE_FLOAT:
+        case PRIME_DATA_TYPE_FLOAT2:
+        case PRIME_DATA_TYPE_FLOAT3:
+        case PRIME_DATA_TYPE_FLOAT4:
+            return GL_FLOAT;
+
+        case PRIME_DATA_TYPE_BOOL:
+            return GL_BOOL;
+    }
+    return 0;
+}
+
+PRIME_INLINE static GLenum drawModeToGL(prime_draw_mode mode)
+{
+    switch (mode)
+    {
+        case PRIME_DRAW_MODE_TRIANGLES:
+            return GL_TRIANGLES;
+            break;
+
+        case PRIME_DRAW_MODE_LINES:
+            return GL_LINES;
+            break;
+    }
+    return 0;
+}
+
 #ifdef PRIME_PLATFORM_WINDOWS
 
 #include "win32/wgl_context.h"
@@ -18,6 +111,21 @@ struct gl_buffer
 struct gl_shader
 {
     u32 id = 0;
+};
+
+struct Element
+{
+    prime_data_type type = PRIME_DATA_TYPE_FLOAT3;
+    b8 normalize = false;
+    u64 offset = 0;
+    u32 size = 0;
+    u32 divisor = 0;
+};
+
+struct gl_layout
+{
+    u32 stride = 0;
+    std::vector<Element> elements;
 };
 
 struct gl_context
@@ -36,7 +144,7 @@ PRIME_INLINE u32 bufferTypeToGL(prime_buffer_type type)
             break;
         }
         case PRIME_BUFFER_TYPE_INDEX: {
-            GL_ELEMENT_ARRAY_BUFFER;  
+            return GL_ELEMENT_ARRAY_BUFFER;  
             break;
         }
         case PRIME_BUFFER_TYPE_UNIFORM: {
@@ -187,6 +295,17 @@ void gl_context_set_vsync(void* context, b8 vsync)
 
 #endif // PRIME_PLATFORM_WINDOWS
 
+void gl_context_submit(void* context, prime_draw_type type, prime_draw_mode mode, u32 count)
+{
+    GLenum gl_type = drawModeToGL(mode);
+    if (type == PRIME_DRAW_TYPE_ARRAYS) {
+        glDrawArrays(gl_type, 0, count);
+    }
+    else if (type == PRIME_DRAW_TYPE_ELEMENTS) {
+        glDrawElements(gl_type, 6, GL_UNSIGNED_INT, nullptr);
+    }
+}
+
 void gl_context_clear(void* context)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -251,19 +370,19 @@ void gl_destroy_buffer(void* buffer)
 void* gl_create_shader(prime_shader_desc desc)
 {
     // TODO: transpiler
-    const char* vertex_src = nullptr;
-    const char* pixel_src = nullptr;
+    std::string vertex_src;
+    std::string pixel_src;
     if (desc.load) {
-        vertex_src = readfile(desc.vertex_src).c_str();
-        pixel_src = readfile(desc.pixel_src).c_str();
+        vertex_src = readfile(desc.vertex_src);
+        pixel_src = readfile(desc.pixel_src);
     }
     else {
         vertex_src = desc.vertex_src;
         pixel_src = desc.pixel_src;
     }
 
-    u32 vertex_shader = generateShader(GL_VERTEX_SHADER, vertex_src);
-    u32 pixel_shader = generateShader(GL_FRAGMENT_SHADER, pixel_src);
+    u32 vertex_shader = generateShader(GL_VERTEX_SHADER, vertex_src.c_str());
+    u32 pixel_shader = generateShader(GL_FRAGMENT_SHADER, pixel_src.c_str());
     
     gl_shader* shader = new gl_shader();
     shader->id = generateProgram(vertex_shader, pixel_shader);
@@ -282,10 +401,35 @@ void gl_destroy_shader(void* shader)
     shader = nullptr;
 }
 
+void* gl_create_layout()
+{
+    gl_layout* layout = new gl_layout();
+    return layout;
+}
+
+void gl_destroy_layout(void* layout)
+{
+    gl_layout* _layout = (gl_layout*)layout;
+    delete _layout;
+    layout = nullptr;
+    _layout = nullptr;
+}
+
 void gl_set_buffer_data(void* buffer, const void* data, u32 size)
 {
     gl_buffer* gl_buf = (gl_buffer*)buffer;
     glBufferSubData(gl_buf->type, 0, size, data);
+}
+
+void gl_add_attrib(void* layout, prime_data_type type, u32 divisor, b8 normalize)
+{
+    gl_layout* _layout = (gl_layout*)layout;
+    Element element;
+    element.divisor = divisor;
+    element.normalize = normalize;
+    element.type = type;
+    element.size = getDataTypeSize(type);
+    _layout->elements.push_back(element);
 }
 
 void gl_set_shader_int(void* shader, const char* name, i32 data)
@@ -361,4 +505,60 @@ void gl_set_shader(void* shader)
 {
     gl_shader* gl_shad = (gl_shader*)shader;
     glUseProgram(gl_shad->id);
+}
+
+void gl_set_layout(void* layout)
+{
+    gl_layout* _layout = (gl_layout*)layout;
+    _layout->stride = 0;
+    u32 index = 0;
+    
+    for (Element& element : _layout->elements) {
+        element.offset = _layout->stride;
+        _layout->stride += element.size;
+    }
+
+    for (const Element& element : _layout->elements) {
+        u32 count = getDataTypeCount(element.type);
+        u32 type = typeToGLType(element.type);
+        u32 stride = _layout->stride;
+
+        switch (element.type) {
+            case PRIME_DATA_TYPE_FLOAT:
+            case PRIME_DATA_TYPE_FLOAT2:
+            case PRIME_DATA_TYPE_FLOAT3:
+            case PRIME_DATA_TYPE_FLOAT4: {
+                glVertexAttribPointer(
+                    index,
+                    count,
+                    type,
+                    element.normalize,
+                    stride,
+                    (const void*)element.offset);
+
+                glEnableVertexAttribArray(index);
+                glVertexAttribDivisor(index, element.divisor);
+                break;
+            }
+
+            case PRIME_DATA_TYPE_INT:
+            case PRIME_DATA_TYPE_INT2:
+            case PRIME_DATA_TYPE_INT3:
+            case PRIME_DATA_TYPE_INT4:
+            case PRIME_DATA_TYPE_BOOL: {
+                glVertexAttribIPointer(
+                    index,
+                    count,
+                    type,
+                    stride,
+                    (const void*)element.offset);
+
+                glEnableVertexAttribArray(index);
+                glVertexAttribDivisor(index, element.divisor);
+                break;
+            }
+
+        } // switch
+        index++;
+    }
 }

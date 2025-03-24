@@ -20,6 +20,12 @@ struct prime_shader
     prime_shader_source_type source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
 };
 
+struct prime_layout
+{
+    prime_context* context = nullptr;
+    void* handle = nullptr;
+};
+
 struct prime_context
 {
     void* handle = nullptr;
@@ -27,6 +33,7 @@ struct prime_context
 
     std::vector<prime_buffer*> buffers;
     std::vector<prime_shader*> shaders;
+    std::vector<prime_layout*> layouts;
 
     void(*destroy_func)(void* handle) = nullptr;
     void(*present_func)(void* handle) = nullptr;
@@ -35,6 +42,7 @@ struct prime_context
     void(*vsync_func)(void* handle, b8 vsync) = nullptr;
     void(*color_func)(void* handle, f32 r, f32 g, f32 b, f32 a) = nullptr;
     void(*view_func)(void* handle, prime_view* view) = nullptr;
+    void(*submit_func)(void* handle, prime_draw_type type, prime_draw_mode mode, u32 count) = nullptr;
 
     // buffer
     void*(*create_buffer_func)(prime_buffer_desc desc) = nullptr;
@@ -55,6 +63,12 @@ struct prime_context
     void(*set_shader_mat2_func)(void* handle, const char* name, prime_mat2 data) = nullptr;
     void(*set_shader_mat3_func)(void* handle, const char* name, prime_mat3 data) = nullptr;
     void(*set_shader_mat4_func)(void* handle, const char* name, prime_mat4 data) = nullptr;
+
+    // layouts
+    void*(*create_layout_func)() = nullptr;
+    void(*destroy_layout_func)(void* handle) = nullptr;
+    void(*layout_add_func)(void* handle, prime_data_type type, u32 divisor, b8 normalize) = nullptr;
+    void(*set_layout_func)(void* handle) = nullptr;
 };
 
 prime_context* prime_create_context(prime_window* window)
@@ -77,6 +91,7 @@ prime_context* prime_create_context(prime_window* window)
             context->destroy_buffer_func = gl_destroy_buffer;
             context->set_buffer_func = gl_set_buffer;
             context->set_buffer_data_func = gl_set_buffer_data;
+            context->submit_func = gl_context_submit;
 
             // shader
             context->create_shader_func = gl_create_shader;
@@ -91,6 +106,12 @@ prime_context* prime_create_context(prime_window* window)
             context->set_shader_mat2_func = gl_set_shader_mat2;
             context->set_shader_mat3_func = gl_set_shader_mat3;
             context->set_shader_mat4_func = gl_set_shader_mat4;
+
+            // layout
+            context->create_layout_func = gl_create_layout;
+            context->destroy_layout_func = gl_destroy_layout;
+            context->layout_add_func = gl_add_attrib;
+            context->set_layout_func = gl_set_layout;
 
             return context;
             break;
@@ -119,8 +140,15 @@ void prime_destroy_context(prime_context* context)
         shader = nullptr;
     }
 
+    // layouts
+    for (prime_layout* layout : context->layouts) {
+        delete layout;
+        layout = nullptr;
+    }
+
     context->buffers.clear();
     context->shaders.clear();
+    context->layouts.clear();
 }
 
 void prime_context_clear(prime_context* context)
@@ -133,6 +161,12 @@ void prime_context_present(prime_context* context)
 {
     PRIME_ASSERT_MSG(context, "context is null");
     context->present_func(context->handle);
+}
+
+void prime_context_submit(prime_context* context, prime_draw_type type, prime_draw_mode mode, u32 count)
+{
+    PRIME_ASSERT_MSG(context, "context is null");
+    context->submit_func(context->handle, type, mode, count);
 }
 
 void prime_context_set_vsync(prime_context* context, b8 vsync)
@@ -221,12 +255,40 @@ void prime_destroy_shader(prime_shader* shader)
     shader = nullptr;
 }
 
+prime_layout* prime_create_layout(prime_context* context)
+{
+    prime_layout* layout = new prime_layout();
+    layout->context = context;
+    layout->handle = context->create_layout_func();
+    context->layouts.push_back(layout);
+    return layout;
+}
+
+void prime_destroy_layout(prime_layout* layout)
+{
+    PRIME_ASSERT_MSG(layout, "layout is null");
+
+    auto it = std::find(layout->context->layouts.begin(), layout->context->layouts.end(), layout);
+    if (it != layout->context->layouts.end()) {
+        layout->context->layouts.erase(it); 
+    }
+
+    delete layout;
+    layout = nullptr;
+}
+
 void prime_set_buffer_data(prime_buffer* buffer, const void* data, u32 size)
 {
     PRIME_ASSERT_MSG(buffer, "buffer is null");
     if (buffer->usage == PRIME_BUFFER_USAGE_DYNAMIC) {
         buffer->context->set_buffer_data_func(buffer->handle, data, size);
     }
+}
+
+void prime_add_attrib(prime_layout* layout, prime_data_type type, u32 divisor, b8 normalize)
+{
+    PRIME_ASSERT_MSG(layout, "layout is null");
+    layout->context->layout_add_func(layout->handle, type, divisor, normalize);
 }
 
 void prime_set_shader_int(prime_shader* shader, const char* name, i32 data)
@@ -293,4 +355,10 @@ void prime_set_shader(prime_shader* shader)
 {
     PRIME_ASSERT_MSG(shader, "shader is null");
     shader->context->set_shader_func(shader->handle);
+}
+
+void prime_set_layout(prime_layout* layout)
+{
+    PRIME_ASSERT_MSG(layout, "layout is null");
+    layout->context->set_layout_func(layout->handle);
 }

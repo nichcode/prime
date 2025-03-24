@@ -89,5 +89,7 @@ static PFNGLUNIFORM4FPROC glUniform4f;
 static PFNGLUNIFORM1IVPROC glUniform1iv;
 static PFNGLUNIFORMMATRIX2FVPROC glUniformMatrix2fv;
 static PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv;
+static PFNGLVERTEXATTRIBIPOINTERPROC glVertexAttribIPointer;
+static PFNGLDRAWELEMENTSPROC glDrawElements;
 
 void loadOpenGLFunctions();

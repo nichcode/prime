@@ -8,6 +8,7 @@ void gl_destroy_context(void* context);
 
 void gl_context_clear(void* context);
 void gl_context_present(void* context);
+void gl_context_submit(void* context, prime_draw_type type, prime_draw_mode mode, u32 count);
 
 void gl_context_make_active(void* context);
 void gl_context_set_vsync(void* context, b8 vsync);
@@ -21,7 +22,12 @@ void gl_destroy_buffer(void* buffer);
 void* gl_create_shader(prime_shader_desc desc);
 void gl_destroy_shader(void* shader);
 
+void* gl_create_layout();
+void gl_destroy_layout(void* layout);
+
 void gl_set_buffer_data(void* buffer, const void* data, u32 size);
+void gl_add_attrib(void* layout, prime_data_type type, u32 divisor, b8 normalize);
+
 void gl_set_shader_int(void* shader, const char* name, i32 data);
 void gl_set_shader_int_array(void* shader, const char* name, i32* data, u32 count);
 void gl_set_shader_float(void* shader, const char* name, f32 data);
@@ -34,3 +40,4 @@ void gl_set_shader_mat4(void* shader, const char* name, prime_mat4 data);
 
 void gl_set_buffer(void* buffer);
 void gl_set_shader(void* shader);
+void gl_set_layout(void* layout);
