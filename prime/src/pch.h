@@ -16,6 +16,8 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <fstream>
+#include <algorithm>
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #ifndef WIN32_LEAN_AND_MEAN

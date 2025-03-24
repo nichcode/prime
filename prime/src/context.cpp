@@ -13,10 +13,20 @@ struct prime_buffer
     prime_buffer_usage usage;
 };
 
+struct prime_shader
+{
+    prime_context* context = nullptr;
+    void* handle = nullptr;
+    prime_shader_source_type source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
+};
+
 struct prime_context
 {
     void* handle = nullptr;
     prime_view view;
+
+    std::vector<prime_buffer*> buffers;
+    std::vector<prime_shader*> shaders;
 
     void(*destroy_func)(void* handle) = nullptr;
     void(*present_func)(void* handle) = nullptr;
@@ -31,6 +41,20 @@ struct prime_context
     void(*destroy_buffer_func)(void* handle) = nullptr;
     void(*set_buffer_func)(void* handle) = nullptr;
     void(*set_buffer_data_func)(void* handle, const void* data, u32 size) = nullptr;
+
+    // shader
+    void*(*create_shader_func)(prime_shader_desc desc) = nullptr;
+    void(*destroy_shader_func)(void* handle) = nullptr;
+    void(*set_shader_func)(void* handle) = nullptr;
+    void(*set_shader_int_func)(void* handle, const char* name, i32 data) = nullptr;
+    void(*set_shader_int_array_func)(void* handle, const char* name, i32* data, u32 count) = nullptr;
+    void(*set_shader_float_func)(void* handle, const char* name, f32 data) = nullptr;
+    void(*set_shader_float2_func)(void* handle, const char* name, prime_vec2 data) = nullptr;
+    void(*set_shader_float3_func)(void* handle, const char* name, prime_vec3 data) = nullptr;
+    void(*set_shader_float4_func)(void* handle, const char* name, prime_vec4 data) = nullptr;
+    void(*set_shader_mat2_func)(void* handle, const char* name, prime_mat2 data) = nullptr;
+    void(*set_shader_mat3_func)(void* handle, const char* name, prime_mat3 data) = nullptr;
+    void(*set_shader_mat4_func)(void* handle, const char* name, prime_mat4 data) = nullptr;
 };
 
 prime_context* prime_create_context(prime_window* window)
@@ -54,6 +78,20 @@ prime_context* prime_create_context(prime_window* window)
             context->set_buffer_func = gl_set_buffer;
             context->set_buffer_data_func = gl_set_buffer_data;
 
+            // shader
+            context->create_shader_func = gl_create_shader;
+            context->destroy_shader_func = gl_destroy_shader;
+            context->set_shader_func = gl_set_shader;
+            context->set_shader_int_func = gl_set_shader_int;
+            context->set_shader_int_array_func = gl_set_shader_int_array;
+            context->set_shader_float_func = gl_set_shader_float;
+            context->set_shader_float2_func = gl_set_shader_float2;
+            context->set_shader_float3_func = gl_set_shader_float3;
+            context->set_shader_float4_func = gl_set_shader_float4;
+            context->set_shader_mat2_func = gl_set_shader_mat2;
+            context->set_shader_mat3_func = gl_set_shader_mat3;
+            context->set_shader_mat4_func = gl_set_shader_mat4;
+
             return context;
             break;
         }
@@ -66,6 +104,23 @@ void prime_destroy_context(prime_context* context)
 {
     PRIME_ASSERT_MSG(context, "context is null");
     context->destroy_func(context->handle);
+
+    // buffers
+    for (prime_buffer* buffer : context->buffers) {
+        context->destroy_buffer_func(buffer->handle);
+        delete buffer;
+        buffer = nullptr;
+    }
+
+    // shaders
+    for (prime_shader* shader : context->shaders) {
+        context->destroy_shader_func(shader->handle);
+        delete shader;
+        shader = nullptr;
+    }
+
+    context->buffers.clear();
+    context->shaders.clear();
 }
 
 void prime_context_clear(prime_context* context)
@@ -123,21 +178,47 @@ prime_buffer* prime_create_buffer(prime_context* context, prime_buffer_desc desc
     buffer->usage = desc.usage;
     buffer->context = context;
     buffer->handle = context->create_buffer_func(desc);
+    context->buffers.push_back(buffer);
     return buffer;
 }
 
 void prime_destroy_buffer(prime_buffer* buffer)
 {
     PRIME_ASSERT_MSG(buffer, "buffer is null");
+
+    auto it = std::find(buffer->context->buffers.begin(), buffer->context->buffers.end(), buffer);
+    if (it != buffer->context->buffers.end()) {
+        buffer->context->buffers.erase(it); 
+    }
+
     buffer->context->destroy_buffer_func(buffer->handle);
     delete buffer;
     buffer = nullptr;
 }
 
-void prime_set_buffer(prime_buffer* buffer)
+prime_shader* prime_create_shader(prime_context* context, prime_shader_desc desc)
 {
-    PRIME_ASSERT_MSG(buffer, "buffer is null");
-    buffer->context->set_buffer_func(buffer->handle);
+    PRIME_ASSERT_MSG(context, "context is null");
+    prime_shader* shader = new prime_shader();
+    shader->source_type = desc.source_type;
+    shader->context = context;
+    shader->handle = context->create_shader_func(desc);
+    context->shaders.push_back(shader);
+    return shader;
+}
+
+void prime_destroy_shader(prime_shader* shader)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+
+    auto it = std::find(shader->context->shaders.begin(), shader->context->shaders.end(), shader);
+    if (it != shader->context->shaders.end()) {
+        shader->context->shaders.erase(it); 
+    }
+
+    shader->context->destroy_shader_func(shader->handle);
+    delete shader;
+    shader = nullptr;
 }
 
 void prime_set_buffer_data(prime_buffer* buffer, const void* data, u32 size)
@@ -146,4 +227,70 @@ void prime_set_buffer_data(prime_buffer* buffer, const void* data, u32 size)
     if (buffer->usage == PRIME_BUFFER_USAGE_DYNAMIC) {
         buffer->context->set_buffer_data_func(buffer->handle, data, size);
     }
+}
+
+void prime_set_shader_int(prime_shader* shader, const char* name, i32 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_int_func(shader->handle, name, data);
+}
+
+void prime_set_shader_int_array(prime_shader* shader, const char* name, i32* data, u32 count)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_int_array_func(shader->handle, name, data, count);
+}
+
+void prime_set_shader_float(prime_shader* shader, const char* name, f32 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_float_func(shader->handle, name, data);
+}
+
+void prime_set_shader_float2(prime_shader* shader, const char* name, prime_vec2 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_float2_func(shader->handle, name, data);
+}
+
+void prime_set_shader_float3(prime_shader* shader, const char* name, prime_vec3 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_float3_func(shader->handle, name, data);
+}
+
+void prime_set_shader_float4(prime_shader* shader, const char* name, prime_vec4 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_float4_func(shader->handle, name, data);
+}
+
+void prime_set_shader_mat2(prime_shader* shader, const char* name, prime_mat2 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_mat2_func(shader->handle, name, data);
+}
+
+void prime_set_shader_mat3(prime_shader* shader, const char* name, prime_mat3 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_mat3_func(shader->handle, name, data);
+}
+
+void prime_set_shader_mat4(prime_shader* shader, const char* name, prime_mat4 data)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_mat4_func(shader->handle, name, data);
+}
+
+void prime_set_buffer(prime_buffer* buffer)
+{
+    PRIME_ASSERT_MSG(buffer, "buffer is null");
+    buffer->context->set_buffer_func(buffer->handle);
+}
+
+void prime_set_shader(prime_shader* shader)
+{
+    PRIME_ASSERT_MSG(shader, "shader is null");
+    shader->context->set_shader_func(shader->handle);
 }

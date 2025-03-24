@@ -83,5 +83,11 @@ static PFNGLDEPTHFUNCPROC glDepthFunc;
 static PFNGLCULLFACEPROC glCullFace;
 static PFNGLBLENDFUNCPROC glBlendFunc;
 static PFNGLFRONTFACEPROC glFrontFace;
+static PFNGLUNIFORM2FPROC glUniform2f;
+static PFNGLUNIFORM3FPROC glUniform3f;
+static PFNGLUNIFORM4FPROC glUniform4f;
+static PFNGLUNIFORM1IVPROC glUniform1iv;
+static PFNGLUNIFORMMATRIX2FVPROC glUniformMatrix2fv;
+static PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv;
 
 void loadOpenGLFunctions();

@@ -15,6 +15,11 @@ struct gl_buffer
     u32 usage;
 };
 
+struct gl_shader
+{
+    u32 id = 0;
+};
+
 struct gl_context
 {
     HWND window_handle;
@@ -61,6 +66,79 @@ PRIME_INLINE u32 bufferUsageToGL(prime_buffer_usage usage)
     } // switch
     PRIME_ASSERT_MSG(false, "invalid buffer usage");
     return 0;
+}
+
+static GLuint generateShader(i32 type, const char* source)
+{
+    int status = GL_FALSE;
+    int max_length = 0;
+
+    GLuint shader = glCreateShader(type);
+    const char* gl_source = source;
+    glShaderSource(shader, 1, &gl_source, 0);
+    glCompileShader(shader);
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &status);
+    glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &max_length);
+
+    if (status != GL_TRUE) {
+        std::vector<GLchar> info_log(max_length);
+        glGetShaderInfoLog(shader, max_length, &max_length, info_log.data());
+        if (type == GL_VERTEX_SHADER) {
+            PRIME_ASSERT_MSG(false, "Vertex shader compilation error : %s", info_log.data());
+        }
+        else if (type == GL_FRAGMENT_SHADER) {
+            PRIME_ASSERT_MSG(false, "Pixel shader compilation error : %s", info_log.data());
+        }
+    }
+    return shader;
+}
+
+static GLuint generateProgram(u32 vertexShader, u32 pixelShader)
+{
+    int status = GL_FALSE;
+    int max_length = 0;
+
+    u32 program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, pixelShader);
+    glLinkProgram(program);
+
+    glValidateProgram(program);
+    glGetProgramiv(program, GL_LINK_STATUS, &status);
+    glGetProgramiv(program, GL_INFO_LOG_LENGTH, &max_length);
+    if (status != GL_TRUE) {
+        std::vector<GLchar> info_log(max_length);
+        glGetProgramInfoLog(program, max_length, &max_length, info_log.data());
+
+        glDeleteProgram(program);
+        program = 0;
+        PRIME_ASSERT_MSG(false, "shader link error : %s", info_log.data());
+    }
+    return program;
+}
+
+std::string readfile(const char* filepath)
+{
+    std::string result;
+    std::ifstream file(filepath, std::ios::in | std::ios::binary);
+    if (file) {
+        file.seekg(0, std::ios::end);
+        size_t size = file.tellg();
+        if (size != -1) {
+            result.resize(size);
+            file.seekg(0, std::ios::beg);
+            file.read(&result[0], size);
+        }
+        else {
+            PRIME_ASSERT_MSG(false, "Could not read from file '%s'", filepath);
+            return nullptr;
+        }
+    }
+    else {
+        PRIME_ASSERT_MSG(false, "Could not read from file '%s'", filepath);
+        return nullptr;
+    }
+    return result;
 }
 
 void* gl_create_context(prime_window* window)
@@ -170,14 +248,117 @@ void gl_destroy_buffer(void* buffer)
     buffer = nullptr;
 }
 
-void gl_set_buffer(void* buffer)
+void* gl_create_shader(prime_shader_desc desc)
 {
-    gl_buffer* gl_buf = (gl_buffer*)buffer;
-    glBindBuffer(gl_buf->type, gl_buf->id);
+    // TODO: transpiler
+    const char* vertex_src = nullptr;
+    const char* pixel_src = nullptr;
+    if (desc.load) {
+        vertex_src = readfile(desc.vertex_src).c_str();
+        pixel_src = readfile(desc.pixel_src).c_str();
+    }
+    else {
+        vertex_src = desc.vertex_src;
+        pixel_src = desc.pixel_src;
+    }
+
+    u32 vertex_shader = generateShader(GL_VERTEX_SHADER, vertex_src);
+    u32 pixel_shader = generateShader(GL_FRAGMENT_SHADER, pixel_src);
+    
+    gl_shader* shader = new gl_shader();
+    shader->id = generateProgram(vertex_shader, pixel_shader);
+    glDeleteShader(vertex_shader);
+    glDeleteShader(pixel_shader);
+    
+    return shader;
+}
+
+void gl_destroy_shader(void* shader)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    glDeleteProgram(gl_shad->id);
+    delete gl_shad;
+    gl_shad = nullptr;
+    shader = nullptr;
 }
 
 void gl_set_buffer_data(void* buffer, const void* data, u32 size)
 {
     gl_buffer* gl_buf = (gl_buffer*)buffer;
     glBufferSubData(gl_buf->type, 0, size, data);
+}
+
+void gl_set_shader_int(void* shader, const char* name, i32 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniform1i(location, data);
+}
+
+void gl_set_shader_int_array(void* shader, const char* name, i32* data, u32 count)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniform1iv(location, count, data);
+}
+
+void gl_set_shader_float(void* shader, const char* name, f32 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniform1f(location, data);
+}
+
+void gl_set_shader_float2(void* shader, const char* name, prime_vec2 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniform2f(location, data.x, data.y);
+}
+
+void gl_set_shader_float3(void* shader, const char* name, prime_vec3 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniform3f(location, data.x, data.y, data.z);
+}
+
+void gl_set_shader_float4(void* shader, const char* name, prime_vec4 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniform4f(location, data.x, data.y, data.z, data.w);
+}
+
+void gl_set_shader_mat2(void* shader, const char* name, prime_mat2 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniformMatrix2fv(location, 1, GL_FALSE, data.data);
+}
+
+void gl_set_shader_mat3(void* shader, const char* name, prime_mat3 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniformMatrix3fv(location, 1, GL_FALSE, data.data);
+}
+
+void gl_set_shader_mat4(void* shader, const char* name, prime_mat4 data)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glUniformMatrix4fv(location, 1, GL_FALSE, data.data);
+}
+
+void gl_set_buffer(void* buffer)
+{
+    gl_buffer* gl_buf = (gl_buffer*)buffer;
+    glBindBuffer(gl_buf->type, gl_buf->id);
+}
+
+void gl_set_shader(void* shader)
+{
+    gl_shader* gl_shad = (gl_shader*)shader;
+    glUseProgram(gl_shad->id);
 }

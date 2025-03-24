@@ -109,5 +109,12 @@ void loadOpenGLFunctions()
     glBlendFunc = (PFNGLBLENDFUNCPROC)gl_load("glBlendFunc");
     glFrontFace = (PFNGLFRONTFACEPROC)gl_load("glFrontFace");
 
+    glUniform2f = (PFNGLUNIFORM2FPROC)gl_load("glUniform2f");
+    glUniform3f = (PFNGLUNIFORM3FPROC)gl_load("glUniform3f");
+    glUniform4f = (PFNGLUNIFORM4FPROC)gl_load("glUniform4f");
+    glUniform1iv = (PFNGLUNIFORM1IVPROC)gl_load("glUniform1iv");
+    glUniformMatrix2fv = (PFNGLUNIFORMMATRIX2FVPROC)gl_load("glUniformMatrix2fv");
+    glUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)gl_load("glUniformMatrix3fv");
+
     prime_free_library(s_Dll);
 }

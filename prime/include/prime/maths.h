@@ -65,3 +65,18 @@ struct prime_uvec4
     u32 z = 0;
     u32 w = 0;
 };
+
+struct prime_mat2
+{
+    f32 data[8];
+};
+
+struct prime_mat3
+{
+    f32 data[12];
+};
+
+struct prime_mat4
+{
+    f32 data[16];
+};
