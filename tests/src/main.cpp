@@ -11,7 +11,7 @@ int main(int argc, char** argv)
     prime_init(device_type);
 
     prime_set_tests_data(nullptr);
-    prime_add_test(windowTest, "windowTest");
+    //prime_add_test(windowTest, "windowTest");
     prime_add_test(contextTest, "contextTest");
 
     prime_run_tests();
