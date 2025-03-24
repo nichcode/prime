@@ -65,3 +65,8 @@ void gl_context_set_clearcolor(void* context, f32 r, f32 g, f32 b, f32 a)
 {
     glClearColor(r, g, b, a);
 }
+
+void gl_context_set_clearcolor(void* context, const prime_view* view)
+{
+    glViewport(view->pos.x, view->pos.y, view->size.x, view->size.y);
+}

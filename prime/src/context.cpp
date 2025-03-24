@@ -8,6 +8,7 @@
 struct prime_context
 {
     void* handle = nullptr;
+    prime_view view;
 
     void(*destroy_func)(void* handle) = nullptr;
     void(*present_func)(void* handle) = nullptr;
@@ -15,6 +16,8 @@ struct prime_context
     void(*clear_func)(void* handle) = nullptr;
     void(*vsync_func)(void* handle, b8 vsync) = nullptr;
     void(*color_func)(void* handle, f32 r, f32 g, f32 b, f32 a) = nullptr;
+
+    void(*view_func)(void* handle, prime_view* view) = nullptr;
 };
 
 prime_context* prime_create_context(prime_window* window)
@@ -22,6 +25,8 @@ prime_context* prime_create_context(prime_window* window)
     switch (s_init_data.type) {
         case PRIME_DEVICE_TYPE_OPENGL: {
             prime_context* context = new prime_context();
+            context->view.size = *prime_get_window_size(window);
+
             context->handle = gl_create_context(window);
             context->clear_func = gl_context_clear;
             context->destroy_func = gl_destroy_context;
@@ -61,19 +66,31 @@ void prime_context_set_vsync(prime_context* context, b8 vsync)
     context->vsync_func(context->handle, vsync);
 }
 
-void prime_context_set_clearcolor(prime_context* context, f32 r, f32 g, f32 b, f32 a)
+void prime_context_set_clearcolor(prime_context* context, const prime_vec4 color)
 {
     PRIME_ASSERT_MSG(context, "context is null");
-    context->color_func(context->handle, r, g, b, a);
+    context->color_func(context->handle, color.x, color.y, color.z, color.w);
 }
 
-void prime_context_set_clearcolori(prime_context* context, u32 r, u32 g, u32 b, u32 a)
+void prime_context_set_clearcolori(prime_context* context, const prime_uvec4 color)
 {
     PRIME_ASSERT_MSG(context, "context is null");
-    f32 fr = (f32)r / 255.0f;
-    f32 fg = (f32)g / 255.0f;
-    f32 fb = (f32)b / 255.0f;
-    f32 fa = (f32)a / 255.0f;
+    f32 fr = (f32)color.x / 255.0f;
+    f32 fg = (f32)color.y / 255.0f;
+    f32 fb = (f32)color.z / 255.0f;
+    f32 fa = (f32)color.w / 255.0f;
     context->color_func(context->handle, fr, fg, fb, fa);
 }
 
+void prime_context_setview(prime_context* context, const prime_view view)
+{
+    PRIME_ASSERT_MSG(context, "context is null");
+    context->view =  view;
+    context->view_func(context->handle, &context->view);
+}
+
+const prime_view* prime_context_getview(prime_context* context)
+{
+    PRIME_ASSERT_MSG(context, "context is null");
+    return &context->view;
+}

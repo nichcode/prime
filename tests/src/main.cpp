@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 
     prime_context* context = prime_create_context(window);
     prime_context_set_vsync(context, true);
-    prime_context_set_clearcolori(context, 50, 50, 50, 255);
+    prime_context_set_clearcolori(context, { 50, 50, 50, 255 });
 
     while (!prime_window_should_close(window)) {
         prime_pull_events();
