@@ -13,6 +13,8 @@ b8 prime_init(prime_device_type type)
         createDummyWGLContext();
         break;
     }
+    
+    initInput();
     PRIME_INFO("prime init");
     return PRIME_PASSED;
 }

@@ -5,6 +5,7 @@
 #include "string.cpp"
 #include "logger.cpp"
 #include "context.cpp"
+#include "input.cpp"
 #include "prime.cpp"
 
 // win32 sources

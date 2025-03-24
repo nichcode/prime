@@ -3,6 +3,7 @@
 
 #include "prime/context.h"
 #include "prime/defines.h"
+#include "prime/input.h"
 #include "prime/logger.h"
 #include "prime/maths.h"
 #include "prime/platform.h"
