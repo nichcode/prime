@@ -129,10 +129,10 @@ static GLuint generateShader(i32 type, const char* source)
         std::vector<GLchar> info_log(max_length);
         glGetShaderInfoLog(shader, max_length, &max_length, info_log.data());
         if (type == GL_VERTEX_SHADER) {
-            PRIME_ASSERT_MSG(false, "Vertex shader compilation error : %s", info_log.data());
+            PRIME_ASSERT_MSG(false, "vertex shader compilation error : %s", info_log.data());
         }
         else if (type == GL_FRAGMENT_SHADER) {
-            PRIME_ASSERT_MSG(false, "Pixel shader compilation error : %s", info_log.data());
+            PRIME_ASSERT_MSG(false, "pixel shader compilation error : %s", info_log.data());
         }
     }
     return shader;
@@ -250,7 +250,7 @@ void glSubmit(void* context, primeDrawType type, primeDrawMode mode, u32 count)
         glDrawArrays(gl_type, 0, count);
     }
     else if (type == PRIME_DRAW_TYPE_ELEMENTS) {
-        glDrawElements(gl_type, 6, GL_UNSIGNED_INT, nullptr);
+        glDrawElements(gl_type, count, GL_UNSIGNED_INT, nullptr);
     }
 }
 

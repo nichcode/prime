@@ -9,9 +9,11 @@ struct primeContext;
 struct primeBuffer;
 struct primeShader;
 struct primeLayout;
+struct primeRenderer2D;
 
 using primeTestFunc = b8(*)(void* data);
 using primeWindowFlag = u32;
+
 using primeCloseCallback = void(*)(primeWindow* window);
 using primeKeyCallback = void(*)(primeWindow* window, u32 key, i32 scancode, u32 action);
 using primeButtonCallback = void(*)(primeWindow* window, u32 button, u32 action);
@@ -248,4 +250,12 @@ struct primeShaderDesc
     const char* vertex_src = nullptr;
     const char* pixel_src = nullptr;
     b8 load = true;
+};
+
+struct primeRect
+{
+    f32 x = 0.0f;
+    f32 y = 0.0f;
+    f32 width = 50.0f;
+    f32 height = 50.0f;
 };

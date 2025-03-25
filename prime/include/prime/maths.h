@@ -78,5 +78,34 @@ struct primeMat3
 
 struct primeMat4
 {
-    f32 data[16];
+    f32 data[16]{};
 };
+
+PRIME_INLINE primeMat4 primeIdentity()
+{
+    primeMat4 mat;
+    mat.data[0] = 1.0f;
+    mat.data[5] = 1.0f;
+    mat.data[10] = 1.0f;
+    mat.data[15] = 1.0f;
+    return mat;
+}
+
+PRIME_INLINE primeMat4 primeOrtho(f32 left, f32 right, f32 bottom, f32 top, f32 near_clip, f32 far_clip)
+{
+    primeMat4 mat = primeIdentity();
+
+    f32 lr = 1.0f / (left - right);
+    f32 bt = 1.0f / (bottom - top);
+    f32 nf = 1.0f / (near_clip - far_clip);
+
+    mat.data[0] = -2.0f * lr;
+    mat.data[5] = -2.0f * bt;
+    mat.data[10] = 2.0f * nf;
+
+    mat.data[12] = (left + right) * lr;
+    mat.data[13] = (top + bottom) * bt;
+    mat.data[14] = (far_clip + near_clip) * nf;
+
+    return mat;
+}

@@ -6,6 +6,7 @@
 #include "logger.cpp"
 #include "context.cpp"
 #include "test.cpp"
+#include "renderer2d.cpp"
 
 // win32 sources
 #ifdef PRIME_PLATFORM_WINDOWS
