@@ -23,7 +23,7 @@ static void* gl_load(const char* func_name)
 
 void loadOpenGLFunctions()
 {
-    s_Dll = prime_load_library("opengl32.dll");
+    s_Dll = primeLoadLibrary("opengl32.dll");
 
     glGetstring = (PFNGLGETSTRINGPROC)gl_load("glGetString");
     const char* version = (const char*) glGetstring(GL_VERSION);
@@ -37,7 +37,7 @@ void loadOpenGLFunctions()
 
     PRIME_ASSERT_MSG(
         glVersion.major >= 4 || (glVersion.major == 3 && glVersion.minor >= 3),
-        "Prime requires at least OpenGL version 3.3!");
+        "prime requires at least OpenGL version 3.3!");
 
     glCreateProgram = (PFNGLCREATEPROGRAMPROC)gl_load("glCreateProgram");
     glDeleteTextures = (PFNGLDELETETEXTURESPROC)gl_load("glDeleteTextures");
@@ -118,5 +118,5 @@ void loadOpenGLFunctions()
     glVertexAttribIPointer =  (PFNGLVERTEXATTRIBIPOINTERPROC)gl_load("glVertexAttribIPointer");
     glDrawElements = (PFNGLDRAWELEMENTSPROC)gl_load("glDrawElements");
 
-    prime_free_library(s_Dll);
+    primeFreeLibrary(s_Dll);
 }

@@ -3,46 +3,46 @@
 
 #include "defines.h"
 
-struct prime_vec2
+struct primeVec2
 {
     f32 x = 0.0f;
     f32 y = 0.0f;
 };
 
-struct prime_ivec2
+struct primeVec2i
 {
     i32 x = 0;
     i32 y = 0;
 };
 
-struct prime_uvec2
+struct primeVec2u
 {
     u32 x = 0;
     u32 y = 0;
 };
 
-struct prime_vec3
+struct primeVec3
 {
     f32 x = 0.0f;
     f32 y = 0.0f;
     f32 z = 0.0f;
 };
 
-struct prime_ivec3
+struct primeVec3i
 {
     i32 x = 0;
     i32 y = 0;
     i32 z = 0;
 };
 
-struct prime_uvec3
+struct primeVec3u
 {
     u32 x = 0;
     u32 y = 0;
     u32 z = 0;
 };
 
-struct prime_vec4
+struct primeVec4
 {
     f32 x = 0.0f;
     f32 y = 0.0f;
@@ -50,7 +50,7 @@ struct prime_vec4
     f32 w = 0.0f;
 };
 
-struct prime_ivec4
+struct primeVec4i
 {
     i32 x = 0;
     i32 y = 0;
@@ -58,7 +58,7 @@ struct prime_ivec4
     i32 w = 0;
 };
 
-struct prime_uvec4
+struct primeVec4u
 {
     u32 x = 0;
     u32 y = 0;
@@ -66,17 +66,17 @@ struct prime_uvec4
     u32 w = 0;
 };
 
-struct prime_mat2
+struct primeMat2
 {
     f32 data[8];
 };
 
-struct prime_mat3
+struct primeMat3
 {
     f32 data[12];
 };
 
-struct prime_mat4
+struct primeMat4
 {
     f32 data[16];
 };

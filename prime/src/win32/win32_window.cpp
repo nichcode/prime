@@ -1,34 +1,26 @@
 
 #include "prime/window.h"
-#include "pch.h"
-
-static u32 s_WindowCount = 0;
-static HINSTANCE s_Instance;
-
-static const wchar_t* s_ClassName = L"WindowClass";
-static const wchar_t* s_PropName = L"WindowData";
-
-LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
+#include "win32_API.h"
 
 struct Win32Callbacks
 {
-    prime_window_close_func close = nullptr;
-    prime_window_key_func key = nullptr;
-    prime_window_button_func button = nullptr;
-    prime_window_mouse_moved_func mouseMoved = nullptr;
-    prime_window_mouse_scrolled_func mouseScrolled = nullptr;
-    prime_window_moved_func windowMoved = nullptr;
-    prime_window_resized_func windowResized = nullptr;
-    prime_window_focused_func windowFocused = nullptr;
+    primeCloseCallback close = nullptr;
+    primeKeyCallback key = nullptr;
+    primeButtonCallback button = nullptr;
+    primeMouseMovedCallback mouseMoved = nullptr;
+    primeMouseScrolledCallback mouseScrolled = nullptr;
+    primeMovedCallback moved = nullptr;
+    primeResizedCallback resized = nullptr;
+    primeFocusedCallback focused = nullptr;
 };
 
 static Win32Callbacks s_Callbacks;
 
-struct prime_window
+struct primeWindow
 {
     HWND handle;
-    prime_uvec2 size;
-    prime_ivec2 pos;
+    primeVec2u size;
+    primeVec2i pos;
     const char* title = nullptr;
     b8 should_close = false, focused = false;
 
@@ -37,36 +29,10 @@ struct prime_window
 
     u32 keys[PRIME_KEY_MAX + 1];
     u32 buttons[PRIME_BUTTON_MAX + 1];
-    prime_ivec2 mousePos;
+    primeVec2i mousePos;
 };
 
-static void registerWindowClass()
-{
-    s_Instance = GetModuleHandleW(nullptr);
-    WNDCLASSEXW wc = {};
-    wc.cbClsExtra = 0;
-    wc.cbSize = sizeof(WNDCLASSEXW);
-    wc.cbWndExtra = 0;
-    wc.hbrBackground = NULL;
-    wc.hCursor = LoadCursorW(s_Instance, IDC_ARROW);
-    wc.hIcon = LoadIconW(s_Instance, IDI_APPLICATION);
-    wc.hIconSm = LoadIconW(s_Instance, IDI_APPLICATION);
-    wc.hInstance = s_Instance;
-    wc.lpfnWndProc = win32Proc;
-    wc.lpszClassName = s_ClassName;
-    wc.lpszMenuName = NULL;
-    wc.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
-
-    ATOM success = RegisterClassExW(&wc);
-    PRIME_ASSERT_MSG(success, "Window Registration Failed");
-}
-
-static void unRegisterWindowClass()
-{
-    UnregisterClassW(s_ClassName, s_Instance);
-}
-
-static void centerWindow(prime_window* window)
+static void centerWindow(primeWindow* window)
 {
     MONITORINFO monitor_info;
     monitor_info.cbSize = sizeof(MONITORINFO);
@@ -81,7 +47,7 @@ static void centerWindow(prime_window* window)
     SetWindowPos(window->handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
-static void mapKeys(prime_window* window)
+static void mapKeys(primeWindow* window)
 {
     // from GLFW
     window->keycodes[0x01E] = PRIME_KEY_A;
@@ -196,7 +162,7 @@ static void mapKeys(prime_window* window)
     window->keycodes[0x04A] = PRIME_KEY_PSUBTRACT;
 }
 
-static void processKey(prime_window* window, u32 key, i32 scancode, u8 action)
+static void processKey(primeWindow* window, u32 key, i32 scancode, u8 action)
 {
     // from GLFW
     PRIME_ASSERT_MSG(key >= 0 && key < PRIME_KEY_MAX, "Invalid Key");
@@ -227,7 +193,7 @@ static void processKey(prime_window* window, u32 key, i32 scancode, u8 action)
     }
 }
 
-static void processButton(prime_window* window, u16 button, u8 action)
+static void processButton(primeWindow* window, u16 button, u8 action)
 {
     // from GLFW
     PRIME_ASSERT_MSG(button >= 0 && button < PRIME_BUTTON_MAX, "Invalid Key");
@@ -245,7 +211,7 @@ static void processButton(prime_window* window, u16 button, u8 action)
     }
 }
 
-static void processMouseMoved(prime_window* window, i32 x, i32 y)
+static void processMouseMoved(primeWindow* window, i32 x, i32 y)
 {
     window->mousePos.x = x;
     window->mousePos.y = y;
@@ -255,12 +221,12 @@ static void processMouseMoved(prime_window* window, i32 x, i32 y)
     }
 }
 
-static void processFocus(prime_window* window, b8 focused)
+static void processFocus(primeWindow* window, b8 focused)
 {
     // from GLFW
     window->focused = focused;
-    if (s_Callbacks.windowFocused) {
-        s_Callbacks.windowFocused(window, focused);
+    if (s_Callbacks.focused) {
+        s_Callbacks.focused(window, focused);
     }
 
     if (focused == false) {
@@ -281,11 +247,8 @@ static void processFocus(prime_window* window, b8 focused)
     }
 }
 
-prime_window* prime_create_window(prime_window_desc desc)
+primeWindow* primeCreateWindow(primeWindowDesc desc)
 {
-    if (s_WindowCount == 0) {
-        registerWindowClass();
-    }
     u32 style = WS_OVERLAPPEDWINDOW;
     u32 ex_style = WS_EX_APPWINDOW;
 
@@ -293,15 +256,15 @@ prime_window* prime_create_window(prime_window_desc desc)
     rect.right = desc.size.x;
     rect.bottom = desc.size.y;
     AdjustWindowRectEx(&rect, style, 0, ex_style);
-    wchar_t* wstr = prime_string_towstring(desc.title);
+    wchar_t* wstr = primeToWstring(desc.title);
 
-    prime_window* window = new prime_window();
+    primeWindow* window = new primeWindow();
     window->handle = CreateWindowExW(
         ex_style, s_ClassName, wstr, style, CW_USEDEFAULT,
         CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, 
         NULL, NULL, s_Instance,  NULL);
 
-    prime_wstring_free(wstr);
+    primeWstringFree(wstr);
     PRIME_ASSERT_MSG(window->handle, "win32 window creation failed");
     window->title = desc.title;
     window->size = desc.size;
@@ -324,25 +287,19 @@ prime_window* prime_create_window(prime_window_desc desc)
     ShowWindow(window->handle, SW_NORMAL);
     SetPropW(window->handle, s_PropName, window);
     mapKeys(window);
-    s_WindowCount++;
     window->focused = true;
     return window;
 }
 
-void prime_destroy_window(prime_window* window)
+void primeDestroyWindow(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
-    s_WindowCount--;
     DestroyWindow(window->handle);
-    if (s_WindowCount == 0)
-    {
-        unRegisterWindowClass();
-    }
     delete window;
     window = nullptr;
 }
 
-void prime_pull_events()
+void primePullEvents()
 {
     MSG msg;
     while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
@@ -354,7 +311,7 @@ void prime_pull_events()
     HWND handle = GetActiveWindow();
     if (handle) {
 
-        prime_window* window = (prime_window*)GetProp(handle, s_PropName);
+        primeWindow* window = (primeWindow*)GetProp(handle, s_PropName);
         if (window) {
             int i;
             const int keys[4][2] = {
@@ -378,31 +335,31 @@ void prime_pull_events()
     }
 }
 
-void prime_hide_window(prime_window* window)
+void primeHideWindow(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     ShowWindow(window->handle, SW_HIDE);
 }
 
-void prime_show_window(prime_window* window)
+void primeShowWindow(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     ShowWindow(window->handle, SW_SHOW);
 }
 
-void prime_reset_callbacks()
+void primeResetCallbacks()
 {
     s_Callbacks.button = nullptr;
     s_Callbacks.button = nullptr;
     s_Callbacks.key = nullptr;
     s_Callbacks.mouseMoved = nullptr;
     s_Callbacks.mouseScrolled = nullptr;
-    s_Callbacks.windowFocused = nullptr;
-    s_Callbacks.windowMoved = nullptr;
-    s_Callbacks.windowResized = nullptr;
+    s_Callbacks.focused = nullptr;
+    s_Callbacks.moved = nullptr;
+    s_Callbacks.resized = nullptr;
 }
 
-void prime_set_window_pos(prime_window* window, prime_ivec2 pos)
+void primeSetWindowPos(primeWindow* window, primeVec2i pos)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     RECT rect = { pos.x, pos.y, pos.x, pos.y };
@@ -415,7 +372,7 @@ void prime_set_window_pos(prime_window* window, prime_ivec2 pos)
     );
 }
 
-void prime_set_window_size(prime_window* window, prime_uvec2 size)
+void primeSetWindowSize(primeWindow* window, primeVec2u size)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     PRIME_ASSERT_MSG(size.x > 0 && size.y > 0, "invalid Parameter");
@@ -432,79 +389,79 @@ void prime_set_window_size(prime_window* window, prime_uvec2 size)
     );
 }
 
-void prime_set_window_title(prime_window* window, const char* title)
+void primeSetWindowTitle(primeWindow* window, const char* title)
 {
     window->title = title;
-    wchar_t* wstr = prime_string_towstring(title);
+    wchar_t* wstr = primeToWstring(title);
     SetWindowText(window->handle, wstr);
-    prime_wstring_free(wstr);
+    primeWstringFree(wstr);
 }
 
-void prime_set_window_close_func(prime_window_close_func func)
+void primeSetCloseCallback(primeCloseCallback callback)
 {
-    s_Callbacks.close = func;
+    s_Callbacks.close = callback;
 }
 
-void prime_set_window_key_func(prime_window_key_func func)
+void primeSetKeyCallback(primeKeyCallback callback)
 {
-    s_Callbacks.key = func;
+    s_Callbacks.key = callback;
 }
 
-void prime_set_window_button_func(prime_window_button_func func)
+void primeSetButtonCallback(primeButtonCallback callback)
 {
-    s_Callbacks.button = func;
+    s_Callbacks.button = callback;
 }
 
-void prime_set_window_mouse_moved_func(prime_window_mouse_moved_func func)
+void primeSetMouseMovedCallback(primeMouseMovedCallback callback)
 {
-    s_Callbacks.mouseMoved = func;
+    s_Callbacks.mouseMoved = callback;
 }
 
-void prime_set_window_mouse_scrolled_func(prime_window_mouse_scrolled_func func)
+void primeSetMouseScrolledCallback(primeMouseScrolledCallback callback)
 {
-    s_Callbacks.mouseScrolled = func;
+    s_Callbacks.mouseScrolled = callback;
 }
 
-void prime_set_window_moved_func(prime_window_moved_func func)
+void primeSetMovedCallback(primeMovedCallback callback)
 {
-    s_Callbacks.windowMoved = func;
+    s_Callbacks.moved = callback;
 }
 
-void prime_set_window_resized_func(prime_window_resized_func func)
+void primeSetResizedCallback(primeResizedCallback callback)
 {
-    s_Callbacks.windowResized = func;
+    s_Callbacks.resized = callback;
 }
 
-void prime_set_window_focused_func(prime_window_focused_func func)
+void primeSetFocusedCallback(primeFocusedCallback callback)
 {
-    s_Callbacks.windowFocused = func;
+    s_Callbacks.focused = callback;
 }
 
-b8 prime_window_should_close(prime_window* window)
+b8 primeWindowShouldClose(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     return window->should_close;
 }
 
-const void* prime_get_window_handle(prime_window* window)
+const void* primeGetWindowHandle(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     return window->handle;
 }
 
-const prime_uvec2* prime_get_window_size(prime_window* window)
+const primeVec2u* primeGetWindowSize(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     return &window->size;
 }
 
-const prime_ivec2* prime_get_window_pos(prime_window* window)
+const primeVec2i* primeGetWindowPos(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     return &window->pos;
 }
 
-const char* prime_get_window_title(prime_window* window)
+const char* primeGetWindowTitle(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     return window->title;
@@ -512,7 +469,7 @@ const char* prime_get_window_title(prime_window* window)
 
 LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 {
-    prime_window* window = (prime_window*)GetPropW(hwnd, s_PropName);
+    primeWindow* window = (primeWindow*)GetPropW(hwnd, s_PropName);
 
 	if (!window) {
 		// no window created
@@ -682,8 +639,8 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
             window->pos.x = x;
             window->pos.y = y;
 
-            if (s_Callbacks.windowMoved) {
-                s_Callbacks.windowMoved(window, x, y);
+            if (s_Callbacks.moved) {
+                s_Callbacks.moved(window, x, y);
             }
 
             return 0;
@@ -698,8 +655,8 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
                 window->size.x = width;
                 window->size.y = height;
 
-                if (s_Callbacks.windowResized) {
-                    s_Callbacks.windowResized(window, width, height);
+                if (s_Callbacks.resized) {
+                    s_Callbacks.resized(window, width, height);
                 }
             }
             return 0;

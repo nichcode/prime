@@ -1,32 +1,24 @@
 
 #pragma once
 
-#include "defines.h"
+#include "API.h"
 
-enum prime_log_level
-{
-    PRIME_LOG_LEVEL_TRACE,
-    PRIME_LOG_LEVEL_INFO,
-    PRIME_LOG_LEVEL_WARN,
-    PRIME_LOG_LEVEL_ERROR
-};
+PRIME_API void primeLog(primeLogLevel level, const char* msg, ...);
+PRIME_API void primeLogTrace(const char* msg, ...);
+PRIME_API void primeLogInfo(const char* msg, ...);
+PRIME_API void primeLogWarn(const char* msg, ...);
+PRIME_API void primeLogError(const char* msg, ...);
 
-PRIME_API void prime_log(prime_log_level level, const char* msg, ...);
-PRIME_API void prime_log_trace(const char* msg, ...);
-PRIME_API void prime_log_info(const char* msg, ...);
-PRIME_API void prime_log_warn(const char* msg, ...);
-PRIME_API void prime_log_error(const char* msg, ...);
-
-PRIME_API void prime_assert(b8 expr, const char* file, u32 line);
-PRIME_API void prime_assert_msg(b8 expr, const char* file, u32 line, const char* msg, ...);
+PRIME_API void primeAssert(b8 expr, const char* file, u32 line);
+PRIME_API void primeAssertMsg(b8 expr, const char* file, u32 line, const char* msg, ...);
 
 #ifdef PRIME_CONFIG_DEBUG
-#define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)
-#define PRIME_INFO(...)                     prime_log_info(__VA_ARGS__)
-#define PRIME_WARN(...)                     prime_log_warn(__VA_ARGS__)
-#define PRIME_ERROR(...)                    prime_log_error(__VA_ARGS__)
-#define PRIME_ASSERT(expr)                  prime_assert(expr, PRIME_FILE, PRIME_LINE)
-#define PRIME_ASSERT_MSG(expr, ...)         prime_assert_msg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
+#define PRIME_TRACE(...)                    primeLogTrace(__VA_ARGS__)
+#define PRIME_INFO(...)                     primeLogInfo(__VA_ARGS__)
+#define PRIME_WARN(...)                     primeLogWarn(__VA_ARGS__)
+#define PRIME_ERROR(...)                    primeLogError(__VA_ARGS__)
+#define PRIME_ASSERT(expr)                  primeAssert(expr, PRIME_FILE, PRIME_LINE)
+#define PRIME_ASSERT_MSG(expr, ...)         primeAssertMsg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
 #else
 #define PRIME_TRACE(...)         
 #define PRIME_DEBUG(...)         

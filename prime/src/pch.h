@@ -4,7 +4,6 @@
 #include "utils.h"
 #include "prime/string.h"
 #include "prime/logger.h"
-#include "prime/input.h"
 #include "prime/test.h"
 
 #include <stdio.h>

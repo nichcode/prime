@@ -1,7 +1,44 @@
 
-#include "utils.h"
 #include "prime/platform.h"
-#include "pch.h"
+#include "win32_API.h"
+#include "wgl_context.h"
+
+b8 primeInit(primeDeviceType type)
+{
+    s_Instance = GetModuleHandleW(nullptr);
+    WNDCLASSEXW wc = {};
+    wc.cbClsExtra = 0;
+    wc.cbSize = sizeof(WNDCLASSEXW);
+    wc.cbWndExtra = 0;
+    wc.hbrBackground = NULL;
+    wc.hCursor = LoadCursorW(s_Instance, IDC_ARROW);
+    wc.hIcon = LoadIconW(s_Instance, IDI_APPLICATION);
+    wc.hIconSm = LoadIconW(s_Instance, IDI_APPLICATION);
+    wc.hInstance = s_Instance;
+    wc.lpfnWndProc = win32Proc;
+    wc.lpszClassName = s_ClassName;
+    wc.lpszMenuName = NULL;
+    wc.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+
+    ATOM success = RegisterClassExW(&wc);
+    PRIME_ASSERT_MSG(success, "Window Registration Failed");
+
+    s_InitData.type = type;
+    switch (type)
+    {
+    case PRIME_DEVICE_TYPE_OPENGL:
+        createDummyWGLContext();
+        break;
+    }
+    
+    initInput();
+    return PRIME_PASSED;
+}
+
+void primeShutdown()
+{
+    UnregisterClassW(s_ClassName, s_Instance);
+}
 
 i32 multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)
 {
@@ -13,7 +50,7 @@ i32 wcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str)
     return WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, wstr_len, 0, 0);
 }
 
-void consoleWrite(prime_log_level level, const char* msg)
+void consoleWrite(primeLogLevel level, const char* msg)
 {
     b8 error = level > PRIME_LOG_LEVEL_WARN;
     HANDLE console = NULL;
@@ -27,23 +64,23 @@ void consoleWrite(prime_log_level level, const char* msg)
     }
 
     SetConsoleTextAttribute(console, levels[level]);
-    wchar_t* wstr = prime_string_towstring(msg);
+    wchar_t* wstr = primeToWstring(msg);
     u64 len = wcslen(wstr);
     DWORD number_written = 0;
 
     WriteConsoleW(console, wstr, (DWORD)len, &number_written, 0);
     SetConsoleTextAttribute(console, 15);
-    prime_wstring_free(wstr);
+    primeWstringFree(wstr);
 }
 
-void* prime_load_library(const char* dll)
+void* primeLoadLibrary(const char* dll)
 {
     HMODULE result = LoadLibraryA(dll);
     PRIME_ASSERT_MSG(result, "failed to load dll %s", dll);
     return result;
 }
 
-void* prime_load_library_func(void* dll, const char* func_name)
+void* primeLoadProc(void* dll, const char* func_name)
 {
     PRIME_ASSERT_MSG(dll, "dll is null");
     HMODULE dll_lib = (HMODULE)dll;
@@ -53,7 +90,7 @@ void* prime_load_library_func(void* dll, const char* func_name)
     return (void*)proc;
 }
 
-void prime_free_library(void* dll)
+void primeFreeLibrary(void* dll)
 {
     PRIME_ASSERT_MSG((HMODULE)dll, "dll is null");
     FreeLibrary((HMODULE)dll);

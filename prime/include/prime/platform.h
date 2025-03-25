@@ -1,8 +1,11 @@
 
 #pragma once
 
-#include "defines.h"
+#include "API.h"
 
-PRIME_API void* prime_load_library(const char* dll);
-PRIME_API void* prime_load_library_func(void* dll, const char* func_name);
-PRIME_API void prime_free_library(void* dll);
+PRIME_API b8 primeInit(primeDeviceType type);
+PRIME_API void primeShutdown();
+
+PRIME_API void* primeLoadLibrary(const char* dll);
+PRIME_API void* primeLoadProc(void* dll, const char* func_name);
+PRIME_API void primeFreeLibrary(void* dll);

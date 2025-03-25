@@ -4,63 +4,11 @@
 #include "opengl/opengl_funcs.h"
 #include "prime/window.h"
 
-PRIME_INLINE u32 getDataTypeSize(prime_data_type type)
-{
-    switch (type)
-    {
-        case PRIME_DATA_TYPE_INT:
-        case PRIME_DATA_TYPE_FLOAT: {
-            return 4;
-        }
+#ifdef PRIME_PLATFORM_WINDOWS
+#include "win32/wgl_context.h"
+#endif // PRIME_PLATFORM_WINDOWS
 
-        case PRIME_DATA_TYPE_INT2:
-        case PRIME_DATA_TYPE_FLOAT2: {
-            return 8;
-        }
-
-        case PRIME_DATA_TYPE_INT3:
-        case PRIME_DATA_TYPE_FLOAT3: {
-            return 12;
-        }
-
-        case PRIME_DATA_TYPE_INT4:
-        case PRIME_DATA_TYPE_FLOAT4: {
-            return 16;
-        }
-        case PRIME_DATA_TYPE_BOOL:     return 1;
-    }
-    return 0;
-}
-
-PRIME_INLINE u32 getDataTypeCount(prime_data_type type)
-{
-    switch (type)
-    {
-        case PRIME_DATA_TYPE_FLOAT:
-        case PRIME_DATA_TYPE_INT:
-        case PRIME_DATA_TYPE_BOOL: {
-            return 1;
-        }
-
-        case PRIME_DATA_TYPE_FLOAT2:
-        case PRIME_DATA_TYPE_INT2: {
-            return 2;
-        }
-
-        case PRIME_DATA_TYPE_FLOAT3:
-        case PRIME_DATA_TYPE_INT3: {
-            return 3;
-        }
-
-        case PRIME_DATA_TYPE_FLOAT4:
-        case PRIME_DATA_TYPE_INT4: {
-            return 4;
-        }
-    }
-    return 0;
-}
-
-PRIME_INLINE static GLenum typeToGLType(prime_data_type type)
+PRIME_INLINE GLenum typeToGLType(primeDataType type)
 {
     switch (type)
     {
@@ -82,7 +30,7 @@ PRIME_INLINE static GLenum typeToGLType(prime_data_type type)
     return 0;
 }
 
-PRIME_INLINE static GLenum drawModeToGL(prime_draw_mode mode)
+PRIME_INLINE GLenum drawModeToGL(primeDrawMode mode)
 {
     switch (mode)
     {
@@ -97,46 +45,7 @@ PRIME_INLINE static GLenum drawModeToGL(prime_draw_mode mode)
     return 0;
 }
 
-#ifdef PRIME_PLATFORM_WINDOWS
-
-#include "win32/wgl_context.h"
-
-struct gl_buffer
-{
-    u32 id = 0;
-    u32 type;
-    u32 usage;
-};
-
-struct gl_shader
-{
-    u32 id = 0;
-};
-
-struct Element
-{
-    prime_data_type type = PRIME_DATA_TYPE_FLOAT3;
-    b8 normalize = false;
-    u64 offset = 0;
-    u32 size = 0;
-    u32 divisor = 0;
-};
-
-struct gl_layout
-{
-    u32 stride = 0;
-    std::vector<Element> elements;
-};
-
-struct gl_context
-{
-    HWND window_handle;
-    HGLRC handle;
-    HDC device_context;
-    u32 vao = 0;
-};
-
-PRIME_INLINE u32 bufferTypeToGL(prime_buffer_type type)
+PRIME_INLINE u32 bufferTypeToGL(primeBufferType type)
 {
     switch (type) {
         case PRIME_BUFFER_TYPE_VERTEX: {
@@ -160,7 +69,7 @@ PRIME_INLINE u32 bufferTypeToGL(prime_buffer_type type)
     return 0;
 }
 
-PRIME_INLINE u32 bufferUsageToGL(prime_buffer_usage usage)
+PRIME_INLINE u32 bufferUsageToGL(primeBufferUsage usage)
 {
     switch (usage) {
         case PRIME_BUFFER_USAGE_STATIC: {
@@ -175,6 +84,34 @@ PRIME_INLINE u32 bufferUsageToGL(prime_buffer_usage usage)
     PRIME_ASSERT_MSG(false, "invalid buffer usage");
     return 0;
 }
+
+struct glBuffer
+{
+    u32 id = 0;
+    u32 type;
+    u32 usage;
+};
+
+struct glShader
+{
+    u32 id = 0;
+};
+
+struct glLayout
+{
+    u32 stride = 0;
+    std::vector<primeElement> elements;
+};
+
+struct glContext
+{
+#ifdef PRIME_PLATFORM_WINDOWS
+    HWND windowHandle;
+    HGLRC handle;
+    HDC deviceContext;
+#endif // PRIME_PLATFORM_WINDOWS
+    u32 vao = 0;
+};
 
 static GLuint generateShader(i32 type, const char* source)
 {
@@ -249,53 +186,64 @@ std::string readfile(const char* filepath)
     return result;
 }
 
-void* gl_create_context(prime_window* window)
+void* glCreateContext(primeWindow* window)
 {
-    gl_context* gl_con = new gl_context();
-    gl_con->window_handle = (HWND)prime_get_window_handle(window);
-    gl_con->handle = createWGLContext(gl_con->window_handle);
-    gl_con->device_context = GetDC(gl_con->window_handle);
+    glContext* context = new glContext();
 
-    glGenVertexArrays(1, &gl_con->vao);
-    glBindVertexArray(gl_con->vao);
-    return gl_con;
-}
-
-void gl_destroy_context(void* context)
-{
-    gl_context* gl_con = (gl_context*)context;
-    destroyWGLContext(gl_con->handle);
-    ReleaseDC(gl_con->window_handle, gl_con->device_context);
-    glDeleteVertexArrays(1, &gl_con->vao);
-    gl_con->window_handle = 0;
-    gl_con->handle = 0;
-    gl_con->device_context = 0;
-    
-    delete gl_con;
-    context = nullptr;
-    gl_con = nullptr;
-}
-
-void gl_context_present(void* context)
-{
-    gl_context* gl_con = (gl_context*)context;
-    SwapBuffers(gl_con->device_context);
-}
-
-void gl_context_make_active(void* context)
-{
-    gl_context* gl_con = (gl_context*)context;
-    makeWGLContextCurrent(gl_con->window_handle, gl_con->handle);
-}
-
-void gl_context_set_vsync(void* context, b8 vsync)
-{
-    setWGLContextVsync(vsync);
-}
-
+#ifdef PRIME_PLATFORM_WINDOWS
+    context->windowHandle = (HWND)primeGetWindowHandle(window);
+    context->handle = createWGLContext(context->windowHandle);
+    context->deviceContext = GetDC(context->windowHandle);
 #endif // PRIME_PLATFORM_WINDOWS
+    
+    glGenVertexArrays(1, &context->vao);
+    glBindVertexArray(context->vao);
+    return context;
+}
 
-void gl_context_submit(void* context, prime_draw_type type, prime_draw_mode mode, u32 count)
+void glDestroyContext(void* context)
+{
+    glContext* gl_context = (glContext*)context;
+
+#ifdef PRIME_PLATFORM_WINDOWS
+    destroyWGLContext(gl_context->handle);
+    ReleaseDC(gl_context->windowHandle, gl_context->deviceContext);
+#endif // PRIME_PLATFORM_WINDOWS
+   
+    glDeleteVertexArrays(1, &gl_context->vao);
+    gl_context->windowHandle = 0;
+    gl_context->handle = 0;
+    gl_context->deviceContext = 0;
+    
+    delete gl_context;
+    context = nullptr;
+    gl_context = nullptr;
+}
+
+void glPresent(void* context)
+{
+    glContext* gl_context = (glContext*)context;
+#ifdef PRIME_PLATFORM_WINDOWS
+    SwapBuffers(gl_context->deviceContext);
+#endif // PRIME_PLATFORM_WINDOWS
+}
+
+void glMakeActive(void* context)
+{
+    glContext* gl_context = (glContext*)context;
+#ifdef PRIME_PLATFORM_WINDOWS
+    makeWGLContextCurrent(gl_context->windowHandle, gl_context->handle);
+#endif // PRIME_PLATFORM_WINDOWS
+}
+
+void glSetVsync(void* context, b8 vsync)
+{
+#ifdef PRIME_PLATFORM_WINDOWS
+    setWGLContextVsync(vsync);
+#endif // PRIME_PLATFORM_WINDOWS
+}
+
+void glSubmit(void* context, primeDrawType type, primeDrawMode mode, u32 count)
 {
     GLenum gl_type = drawModeToGL(mode);
     if (type == PRIME_DRAW_TYPE_ARRAYS) {
@@ -306,24 +254,35 @@ void gl_context_submit(void* context, prime_draw_type type, prime_draw_mode mode
     }
 }
 
-void gl_context_clear(void* context)
+void glSubmitInstanced(void* context, primeDrawType type, primeDrawMode mode, u32 count, u32 ins_count)
+{
+    GLenum gl_type = drawModeToGL(mode);
+    if (type == PRIME_DRAW_TYPE_ARRAYS) {
+        glDrawArraysInstanced(gl_type, 0, count, ins_count);
+    }
+    else if (type == PRIME_DRAW_TYPE_ELEMENTS) {
+        glDrawElementsInstanced(gl_type, 6, GL_UNSIGNED_INT, nullptr, ins_count);
+    }
+}
+
+void _glClear(void* context)
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void gl_context_set_clearcolor(void* context, f32 r, f32 g, f32 b, f32 a)
+void glSetClearColor(void* context, f32 r, f32 g, f32 b, f32 a)
 {
     glClearColor(r, g, b, a);
 }
 
-void gl_context_set_clearcolor(void* context, const prime_view* view)
+void glSetView(void* context, const primeView* view)
 {
     glViewport(view->pos.x, view->pos.y, view->size.x, view->size.y);
 }
 
-void* gl_create_buffer(prime_buffer_desc desc)
+void* glCreateBuffer(primeBufferDesc desc)
 {
-    gl_buffer* buffer = new gl_buffer();
+    glBuffer* buffer = new glBuffer();
     buffer->type = bufferTypeToGL(desc.type);
     buffer->usage = bufferUsageToGL(desc.usage);
     glGenBuffers(1, &buffer->id);
@@ -358,16 +317,16 @@ void* gl_create_buffer(prime_buffer_desc desc)
     return buffer;
 }
 
-void gl_destroy_buffer(void* buffer)
+void glDestroyBuffer(void* buffer)
 {
-    gl_buffer* gl_buf = (gl_buffer*)buffer;
-    glDeleteBuffers(1, &gl_buf->id);
-    delete gl_buf;
-    gl_buf = nullptr;
+    glBuffer* gl_buffer = (glBuffer*)buffer;
+    glDeleteBuffers(1, &gl_buffer->id);
+    delete gl_buffer;
+    gl_buffer = nullptr;
     buffer = nullptr;
 }
 
-void* gl_create_shader(prime_shader_desc desc)
+void* _glCreateShader(primeShaderDesc desc)
 {
     // TODO: transpiler
     std::string vertex_src;
@@ -384,7 +343,7 @@ void* gl_create_shader(prime_shader_desc desc)
     u32 vertex_shader = generateShader(GL_VERTEX_SHADER, vertex_src.c_str());
     u32 pixel_shader = generateShader(GL_FRAGMENT_SHADER, pixel_src.c_str());
     
-    gl_shader* shader = new gl_shader();
+    glShader* shader = new glShader();
     shader->id = generateProgram(vertex_shader, pixel_shader);
     glDeleteShader(vertex_shader);
     glDeleteShader(pixel_shader);
@@ -392,136 +351,136 @@ void* gl_create_shader(prime_shader_desc desc)
     return shader;
 }
 
-void gl_destroy_shader(void* shader)
+void glDestroyShader(void* shader)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    glDeleteProgram(gl_shad->id);
-    delete gl_shad;
-    gl_shad = nullptr;
+    glShader* gl_shader = (glShader*)shader;
+    glDeleteProgram(gl_shader->id);
+    delete gl_shader;
+    gl_shader = nullptr;
     shader = nullptr;
 }
 
-void* gl_create_layout()
+void* glCreateLayout()
 {
-    gl_layout* layout = new gl_layout();
+    glLayout* layout = new glLayout();
     return layout;
 }
 
-void gl_destroy_layout(void* layout)
+void glDestroyLayout(void* layout)
 {
-    gl_layout* _layout = (gl_layout*)layout;
-    delete _layout;
+    glLayout* gl_layout = (glLayout*)layout;
+    delete gl_layout;
     layout = nullptr;
-    _layout = nullptr;
+    gl_layout = nullptr;
 }
 
-void gl_set_buffer_data(void* buffer, const void* data, u32 size)
+void glSetData(void* buffer, const void* data, u32 size)
 {
-    gl_buffer* gl_buf = (gl_buffer*)buffer;
-    glBufferSubData(gl_buf->type, 0, size, data);
+    glBuffer* gl_buffer = (glBuffer*)buffer;
+    glBufferSubData(gl_buffer->type, 0, size, data);
 }
 
-void gl_add_attrib(void* layout, prime_data_type type, u32 divisor, b8 normalize)
+void glAddAttrib(void* layout, primeDataType type, u32 divisor, b8 normalize)
 {
-    gl_layout* _layout = (gl_layout*)layout;
-    Element element;
+    glLayout* gl_layout = (glLayout*)layout;
+    primeElement element;
     element.divisor = divisor;
     element.normalize = normalize;
     element.type = type;
     element.size = getDataTypeSize(type);
-    _layout->elements.push_back(element);
+    gl_layout->elements.push_back(element);
 }
 
-void gl_set_shader_int(void* shader, const char* name, i32 data)
+void glSetInt(void* shader, const char* name, i32 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniform1i(location, data);
 }
 
-void gl_set_shader_int_array(void* shader, const char* name, i32* data, u32 count)
+void glSetIntArray(void* shader, const char* name, i32* data, u32 count)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniform1iv(location, count, data);
 }
 
-void gl_set_shader_float(void* shader, const char* name, f32 data)
+void glSetFloat(void* shader, const char* name, f32 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniform1f(location, data);
 }
 
-void gl_set_shader_float2(void* shader, const char* name, prime_vec2 data)
+void glSetFloat2(void* shader, const char* name, primeVec2 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniform2f(location, data.x, data.y);
 }
 
-void gl_set_shader_float3(void* shader, const char* name, prime_vec3 data)
+void glSetFloat3(void* shader, const char* name, primeVec3 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniform3f(location, data.x, data.y, data.z);
 }
 
-void gl_set_shader_float4(void* shader, const char* name, prime_vec4 data)
+void glSetFloat4(void* shader, const char* name, primeVec4 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniform4f(location, data.x, data.y, data.z, data.w);
 }
 
-void gl_set_shader_mat2(void* shader, const char* name, prime_mat2 data)
+void glSetMat2(void* shader, const char* name, primeMat2 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniformMatrix2fv(location, 1, GL_FALSE, data.data);
 }
 
-void gl_set_shader_mat3(void* shader, const char* name, prime_mat3 data)
+void glSetMat3(void* shader, const char* name, primeMat3 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniformMatrix3fv(location, 1, GL_FALSE, data.data);
 }
 
-void gl_set_shader_mat4(void* shader, const char* name, prime_mat4 data)
+void glSetMat4(void* shader, const char* name, primeMat4 data)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    GLint location = glGetUniformLocation(gl_shad->id, name);
+    glShader* gl_shader = (glShader*)shader;
+    GLint location = glGetUniformLocation(gl_shader->id, name);
     glUniformMatrix4fv(location, 1, GL_FALSE, data.data);
 }
 
-void gl_set_buffer(void* buffer)
+void glSetBuffer(void* buffer)
 {
-    gl_buffer* gl_buf = (gl_buffer*)buffer;
-    glBindBuffer(gl_buf->type, gl_buf->id);
+    glBuffer* gl_buffer = (glBuffer*)buffer;
+    glBindBuffer(gl_buffer->type, gl_buffer->id);
 }
 
-void gl_set_shader(void* shader)
+void glSetShader(void* shader)
 {
-    gl_shader* gl_shad = (gl_shader*)shader;
-    glUseProgram(gl_shad->id);
+    glShader* gl_shader = (glShader*)shader;
+    glUseProgram(gl_shader->id);
 }
 
-void gl_set_layout(void* layout)
+void glSetLayout(void* layout)
 {
-    gl_layout* _layout = (gl_layout*)layout;
-    _layout->stride = 0;
+    glLayout* gl_layout = (glLayout*)layout;
+    gl_layout->stride = 0;
     u32 index = 0;
     
-    for (Element& element : _layout->elements) {
-        element.offset = _layout->stride;
-        _layout->stride += element.size;
+    for (primeElement& element : gl_layout->elements) {
+        element.offset = gl_layout->stride;
+        gl_layout->stride += element.size;
     }
 
-    for (const Element& element : _layout->elements) {
+    for (const primeElement& element : gl_layout->elements) {
         u32 count = getDataTypeCount(element.type);
         u32 type = typeToGLType(element.type);
-        u32 stride = _layout->stride;
+        u32 stride = gl_layout->stride;
 
         switch (element.type) {
             case PRIME_DATA_TYPE_FLOAT:
