@@ -10,6 +10,7 @@
 #include "shader.cpp"
 #include "layout.cpp"
 #include "renderer2d.cpp"
+#include "texture.cpp"
 
 // win32 sources
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -24,3 +25,4 @@
 #include "opengl/opengl_shader.cpp"
 #include "opengl/opengl_layout.cpp"
 #include "opengl/opengl_context.cpp"
+#include "opengl/opengl_texture.cpp"

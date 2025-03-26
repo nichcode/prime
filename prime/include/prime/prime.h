@@ -14,4 +14,5 @@
 #include "shader.h"
 #include "prime/string.h"
 #include "prime/test.h"
+#include "prime/texture.h"
 #include "prime/window.h"

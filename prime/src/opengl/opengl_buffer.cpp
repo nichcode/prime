@@ -6,19 +6,19 @@
 PRIME_INLINE u32 bufferTypeToGL(primeBufferType type)
 {
     switch (type) {
-        case PRIME_BUFFER_TYPE_VERTEX: {
+        case primeBufferTypes_Vertex: {
             return GL_ARRAY_BUFFER;
             break;
         }
-        case PRIME_BUFFER_TYPE_INDEX: {
+        case primeBufferTypes_Index: {
             return GL_ELEMENT_ARRAY_BUFFER;  
             break;
         }
-        case PRIME_BUFFER_TYPE_UNIFORM: {
+        case primeBufferTypes_Uniform: {
             return GL_UNIFORM_BUFFER;
             break;
         }
-        case PRIME_BUFFER_TYPE_STORAGE: {
+        case primeBufferTypes_Storage: {
             return GL_SHADER_STORAGE_BUFFER;
             break;
         }
@@ -30,11 +30,11 @@ PRIME_INLINE u32 bufferTypeToGL(primeBufferType type)
 PRIME_INLINE u32 bufferUsageToGL(primeBufferUsage usage)
 {
     switch (usage) {
-        case PRIME_BUFFER_USAGE_STATIC: {
+        case primeBufferUsages_Static: {
             return GL_STATIC_DRAW;
             break;
         }
-        case PRIME_BUFFER_USAGE_DYNAMIC: {
+        case primeBufferUsages_Dynamic: {
             return GL_DYNAMIC_DRAW;  
             break;
         }
@@ -57,26 +57,26 @@ void* _glCreateBuffer(primeBufferDesc desc)
     buffer->usage = bufferUsageToGL(desc.usage);
     glGenBuffers(1, &buffer->id);
     switch (desc.type) {
-        case PRIME_BUFFER_TYPE_VERTEX: {
+        case primeBufferTypes_Vertex: {
             glBindBuffer(GL_ARRAY_BUFFER, buffer->id);
             glBufferData(GL_ARRAY_BUFFER, desc.size, desc.data, buffer->usage);
             break;
         }
 
-        case PRIME_BUFFER_TYPE_INDEX: {
+        case primeBufferTypes_Index: {
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer->id);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, desc.size, desc.data, buffer->usage);
             break;
         }
 
-        case PRIME_BUFFER_TYPE_UNIFORM: {
+        case primeBufferTypes_Uniform: {
             glBindBuffer(GL_UNIFORM_BUFFER, buffer->id);
             glBufferData(GL_UNIFORM_BUFFER, desc.size, desc.data, buffer->usage);
             glBindBufferBase(GL_UNIFORM_BUFFER, 0, buffer->id);
             break;
         }
 
-        case PRIME_BUFFER_TYPE_STORAGE: {
+        case primeBufferTypes_Storage: {
             glBindBuffer(GL_SHADER_STORAGE_BUFFER, buffer->id);
             glBufferData(GL_SHADER_STORAGE_BUFFER, desc.size, desc.data, buffer->usage);
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, buffer->id);

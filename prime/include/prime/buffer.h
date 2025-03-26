@@ -5,24 +5,27 @@
 
 struct primeBuffer;
 
-enum primeBufferType
+using primeBufferType = u32; 
+using primeBufferUsage = u32; 
+
+enum primeBufferTypes_
 {
-    PRIME_BUFFER_TYPE_VERTEX,
-    PRIME_BUFFER_TYPE_INDEX,
-    PRIME_BUFFER_TYPE_UNIFORM,
-    PRIME_BUFFER_TYPE_STORAGE
+    primeBufferTypes_Vertex,
+    primeBufferTypes_Index,
+    primeBufferTypes_Uniform,
+    primeBufferTypes_Storage
 };
 
-enum primeBufferUsage
+enum primeBufferUsages_
 {
-    PRIME_BUFFER_USAGE_STATIC,
-    PRIME_BUFFER_USAGE_DYNAMIC
+    primeBufferUsages_Static,
+    primeBufferUsages_Dynamic
 };
 
 struct primeBufferDesc
 {
-    primeBufferType type = PRIME_BUFFER_TYPE_VERTEX;
-    primeBufferUsage usage = PRIME_BUFFER_USAGE_DYNAMIC;
+    primeBufferType type = primeBufferTypes_Vertex;
+    primeBufferUsage usage = primeBufferUsages_Static;
     u32 size = 0;
     void* data = nullptr;
 };

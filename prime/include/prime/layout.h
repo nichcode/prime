@@ -5,17 +5,19 @@
 
 struct primeLayout;
 
-enum primeDataType
+using primeDataType = u32;
+
+enum primeDataTypes_
 {
-    PRIME_DATA_TYPE_INT,
-    PRIME_DATA_TYPE_INT2,
-    PRIME_DATA_TYPE_INT3,
-    PRIME_DATA_TYPE_INT4,
-    PRIME_DATA_TYPE_FLOAT,
-    PRIME_DATA_TYPE_FLOAT2,
-    PRIME_DATA_TYPE_FLOAT3,
-    PRIME_DATA_TYPE_FLOAT4,
-    PRIME_DATA_TYPE_BOOL
+    primeDataTypes_Int,
+    primeDataTypes_Int2,
+    primeDataTypes_Int3,
+    primeDataTypes_Int4,
+    primeDataTypes_Float,
+    primeDataTypes_Float2,
+    primeDataTypes_Float3,
+    primeDataTypes_Float4,
+    primeDataTypes_Bool
 };
 
 PRIME_API primeLayout* primeCreateLayout();

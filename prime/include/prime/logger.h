@@ -3,12 +3,14 @@
 
 #include "defines.h"
 
-enum primeLogLevel
+using primeLogLevel = u32;
+
+enum primeLogLevels_
 {
-    PRIME_LOG_LEVEL_TRACE,
-    PRIME_LOG_LEVEL_INFO,
-    PRIME_LOG_LEVEL_WARN,
-    PRIME_LOG_LEVEL_ERROR
+    primeLogLevels_Trace,
+    primeLogLevels_Info,
+    primeLogLevels_Warn,
+    primeLogLevels_Error
 };
 
 PRIME_API void primeLog(primeLogLevel level, const char* msg, ...);

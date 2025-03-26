@@ -6,16 +6,19 @@
 struct primeWindow;
 struct primeContext;
 
-enum primeDrawMode
+using primeDrawType = u32;
+using primeDrawMode = u32;
+
+enum primeDrawTypes_
 {
-    PRIME_DRAW_MODE_TRIANGLES,
-    PRIME_DRAW_MODE_LINES
+    primeDrawTypes_Array,
+    primeDrawTypes_Element
 };
 
-enum primeDrawType
+enum primeDrawModes_
 {
-    PRIME_DRAW_TYPE_ARRAYS,
-    PRIME_DRAW_TYPE_ELEMENTS
+    primeDrawModes_Triangles,
+    primeDrawModes_Lines
 };
 
 struct primeView
@@ -40,4 +43,4 @@ PRIME_API void primeSetClearColor(primeContext* context, const primeVec4 color);
 PRIME_API void primeSetClearColori(primeContext* context, const primeVec4u color);
 
 PRIME_API void primeSetView(primeContext* context, const primeView view);
-PRIME_API const primeView* primeGetView(primeContext* context);
+PRIME_API primeView primeGetView(primeContext* context);

@@ -9,6 +9,7 @@ struct primeContext;
 struct primeBuffer;
 struct primeShader;
 struct primeLayout;
+struct primeTexture;
 
 struct primeInitData
 {
@@ -17,11 +18,14 @@ struct primeInitData
     std::vector<primeBuffer*> buffers;
     std::vector<primeShader*> shaders;
     std::vector<primeLayout*> layouts;
+    std::vector<primeTexture*> textures;
 
     primeContext* activeContext = nullptr;
     primeBuffer* activeBuffer = nullptr;
     primeShader* activeShader = nullptr;
     primeLayout* activeLayout = nullptr;
+    primeTexture* activeTexture = nullptr;
+    primeTexture* activeRenderTarget = nullptr;
 };
 
 static primeInitData s_InitData;
@@ -36,3 +40,4 @@ void _primeDeleteContext(primeContext* context);
 void _primeDeleteBuffer(primeBuffer* buffer);
 void _primeDeleteShader(primeShader* shader);
 void _primeDeleteLayout(primeLayout* layout);
+void _primeDeleteTexture(primeTexture* texture);

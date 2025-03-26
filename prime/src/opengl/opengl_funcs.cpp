@@ -119,5 +119,11 @@ void loadOpenGLFunctions()
     glDrawElements = (PFNGLDRAWELEMENTSPROC)gl_load("glDrawElements");
     glDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)gl_load("glDisableVertexAttribArray");
 
+    glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)gl_load("glGenRenderbuffers");
+    glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)gl_load("glBindRenderbuffer");
+    glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)gl_load("glRenderbufferStorage");
+    glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)gl_load("glFramebufferRenderbuffer");
+    glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)gl_load("glDeleteRenderbuffers");
+
     primeFreeLibrary(s_Dll);
 }

@@ -1,138 +1,141 @@
 
 #pragma once
 
-enum primeKey
+using primeKey = u32;
+using primeButton = u32;
+using primeAction = u32;
+
+enum primeKeys_
 {
-    // from GLFW
-    PRIME_KEY_A,
-    PRIME_KEY_B,
-    PRIME_KEY_C,
-    PRIME_KEY_D,
-    PRIME_KEY_E,
-    PRIME_KEY_F,
-    PRIME_KEY_G,
-    PRIME_KEY_H,
-    PRIME_KEY_I,
-    PRIME_KEY_J,
-    PRIME_KEY_K,
-    PRIME_KEY_L,
-    PRIME_KEY_M,
-    PRIME_KEY_N,
-    PRIME_KEY_O,
-    PRIME_KEY_P,
-    PRIME_KEY_Q,
-    PRIME_KEY_R,
-    PRIME_KEY_S,
-    PRIME_KEY_T,
-    PRIME_KEY_U,
-    PRIME_KEY_V,
-    PRIME_KEY_W,
-    PRIME_KEY_X,
-    PRIME_KEY_Y,
-    PRIME_KEY_Z,
+    primeKeys_A,
+    primeKeys_B,
+    primeKeys_C,
+    primeKeys_D,
+    primeKeys_E,
+    primeKeys_F,
+    primeKeys_G,
+    primeKeys_H,
+    primeKeys_I,
+    primeKeys_J,
+    primeKeys_K,
+    primeKeys_L,
+    primeKeys_M,
+    primeKeys_N,
+    primeKeys_O,
+    primeKeys_P,
+    primeKeys_Q,
+    primeKeys_R,
+    primeKeys_S,
+    primeKeys_T,
+    primeKeys_U,
+    primeKeys_V,
+    primeKeys_W,
+    primeKeys_X,
+    primeKeys_Y,
+    primeKeys_Z,
 
-    PRIME_KEY_ESCAPE,
-    PRIME_KEY_ENTER,
-    PRIME_KEY_TAB,
-    PRIME_KEY_BACK_SPACE,
-    PRIME_KEY_INSERT,
-    PRIME_KEY_DELETE,
-    PRIME_KEY_RIGHT,
-    PRIME_KEY_LEFT,
-    PRIME_KEY_DOWN,
-    PRIME_KEY_UP,
-    PRIME_KEY_PAGE_UP,
-    PRIME_KEY_PAGE_DOWN,
-    PRIME_KEY_HOME,
-    PRIME_KEY_END,
-    PRIME_KEY_CAPS_LOCK,
-    PRIME_KEY_SCROLL_LOCK,
-    PRIME_KEY_NUM_LOCK,
-    PRIME_KEY_PRINT_SCREEN,
-    PRIME_KEY_PAUSE,
-    PRIME_KEY_F1,
-    PRIME_KEY_F2,
-    PRIME_KEY_F3,
-    PRIME_KEY_F4,
-    PRIME_KEY_F5,
-    PRIME_KEY_F6,
-    PRIME_KEY_F7,
-    PRIME_KEY_F8,
-    PRIME_KEY_F9,
-    PRIME_KEY_F10,
-    PRIME_KEY_F11,
-    PRIME_KEY_F12,
+    primeKeys_Escape,
+    primeKeys_Enter,
+    primeKeys_Tab,
+    primeKeys_Backspace,
+    primeKeys_Insert,
+    primeKeys_Delete,
+    primeKeys_Right,
+    primeKeys_Left,
+    primeKeys_Down,
+    primeKeys_Up,
+    primeKeys_PageUp,
+    primeKeys_PageDown,
+    primeKeys_Home,
+    primeKeys_End,
+    primeKeys_CapsLock,
+    primeKeys_ScrollLock,
+    primeKeys_NumLock,
+    primeKeys_PrintScreen,
+    primeKeys_Pause,
+    primeKeys_F1,
+    primeKeys_F2,
+    primeKeys_F3,
+    primeKeys_F4,
+    primeKeys_F5,
+    primeKeys_F6,
+    primeKeys_F7,
+    primeKeys_F8,
+    primeKeys_F9,
+    primeKeys_F10,
+    primeKeys_F11,
+    primeKeys_F12,
 
-    PRIME_KEY_LEFT_SHIFT,
-    PRIME_KEY_LEFT_CTRL,
-    PRIME_KEY_LEFT_ALT,
-    PRIME_KEY_LEFT_SUPER,
-    PRIME_KEY_RIGHT_SHIFT,
-    PRIME_KEY_RIGHT_CTRL,
-    PRIME_KEY_RIGHT_ALT,
-    PRIME_KEY_RIGHT_SUPER,
-    PRIME_KEY_MENU,
+    primeKeys_LeftShift,
+    primeKeys_LeftControl,
+    primeKeys_LeftAlt,
+    primeKeys_LeftSuper,
+    primeKeys_RightShift,
+    primeKeys_RightControl,
+    primeKeys_RightAlt,
+    primeKeys_RightSuper,
+    primeKeys_Menu,
 
-    PRIME_KEY_LEFT_BRACKET, /* [ */
-    PRIME_KEY_BACK_SLASH, /* \ */
-    PRIME_KEY_RIGHT_BRACKET,  /* ] */
-    PRIME_KEY_GRAVE_ACCENT,  /* ` */
-    PRIME_KEY_SEMI_COLON, /* ; */
-    PRIME_KEY_EQUAL, /* = */
+    primeKeys_LeftBracket, /* [ */
+    primeKeys_Backslash, /* \ */
+    primeKeys_RightBracket,  /* ] */
+    primeKeys_GraveAccent,  /* ` */
+    primeKeys_SemiColon, /* ; */
+    primeKeys_Equal, /* = */
 
-    PRIME_KEY_SPACE,
-    PRIME_KEY_APOSTROPHE, /* ' */
-    PRIME_KEY_COMMA, /* , */
-    PRIME_KEY_MINUS, /* - */
-    PRIME_KEY_PERIOD, /* . */
-    PRIME_KEY_SLASH, /* / */
+    primeKeys_Space,
+    primeKeys_Apostrophe, /* ' */
+    primeKeys_Comma, /* , */
+    primeKeys_Minus, /* - */
+    primeKeys_Period, /* . */
+    primeKeys_Slash, /* / */
 
-    PRIME_KEY_0, /* 0 */
-    PRIME_KEY_1, /* 1 */
-    PRIME_KEY_2, /* 2 */
-    PRIME_KEY_3, /* 3 */
-    PRIME_KEY_4, /* 4 */
-    PRIME_KEY_5, /* 5 */
-    PRIME_KEY_6, /* 6 */
-    PRIME_KEY_7, /* 7 */
-    PRIME_KEY_8, /* 8 */
-    PRIME_KEY_9, /* 9 */
+    primeKeys_0, /* 0 */
+    primeKeys_1, /* 1 */
+    primeKeys_2, /* 2 */
+    primeKeys_3, /* 3 */
+    primeKeys_4, /* 4 */
+    primeKeys_5, /* 5 */
+    primeKeys_6, /* 6 */
+    primeKeys_7, /* 7 */
+    primeKeys_8, /* 8 */
+    primeKeys_9, /* 9 */
 
-    PRIME_KEY_P0,
-    PRIME_KEY_P1,
-    PRIME_KEY_P2,
-    PRIME_KEY_P3,
-    PRIME_KEY_P4,
-    PRIME_KEY_P5,
-    PRIME_KEY_P6,
-    PRIME_KEY_P7,
-    PRIME_KEY_P8,
-    PRIME_KEY_P9,
-    PRIME_KEY_PDECIMAL,
-    PRIME_KEY_PDIVIDE,
-    PRIME_KEY_PMULTIPLE,
-    PRIME_KEY_PSUBTRACT,
-    PRIME_KEY_PADD,
-    PRIME_KEY_PENTER,
-    PRIME_KEY_PEQUAL,
+    primeKeys_P0,
+    primeKeys_P1,
+    primeKeys_P2,
+    primeKeys_P3,
+    primeKeys_P4,
+    primeKeys_P5,
+    primeKeys_P6,
+    primeKeys_P7,
+    primeKeys_P8,
+    primeKeys_P9,
+    primeKeys_PDecimal,
+    primeKeys_PDivide,
+    primeKeys_PMultiply,
+    primeKeys_PSubtract,
+    primeKeys_PAdd,
+    primeKeys_PEnter,
+    primeKeys_PEqual,
 
-    PRIME_KEY_MAX
+    primeKeys_Max
 };
 
-enum primeButton
+enum primeButtons_
 {
-    PRIME_BUTTON_LEFT,
-    PRIME_BUTTON_RIGHT,
-    PRIME_BUTTON_MIDDLE,
+    primeButtons_Left,
+    primeButtons_Right,
+    primeButtons_Middle,
 
-    PRIME_BUTTON_MAX
+    primeButtons_Max
 };
 
-enum primeAction
+enum primeActions_
 {
-    PRIME_ACTION_RELEASE,
-    PRIME_ACTION_PRESS,
-    PRIME_ACTION_REPEAT,
+    primeActions_Release,
+    primeActions_Press,
+    primeActions_Repeat,
 
-    PRIME_ACTION_MAX
+    primeActions_Max
 };

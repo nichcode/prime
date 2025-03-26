@@ -5,55 +5,76 @@
 #include "prime/layout.h"
 #include "prime/shader.h"
 #include "prime/buffer.h"
+#include "prime/texture.h"
 #include "shader_sources.h"
 
 #define MAX_RENDERABLES 1000
 #define MAX_VERTICES MAX_RENDERABLES * 4
 #define MAX_INDICES MAX_RENDERABLES * 6
 
-#define SPRITE_ID 0.0f
-#define FONT_ID 1.0f
-
-struct Vertex
+struct SpriteVertex
 {
-    primeVec2 pos;
+    primeVec4 vertex;
     primeVec4 color;
-    f32 id = 0.0f;
+    f32 index;
 };
 
 struct primeRenderer2D
 {
     primeContext* context = nullptr;
-    primeBuffer* vbo = nullptr;
-    primeBuffer* ibo = nullptr;
     primeBuffer* ubo = nullptr;
-    primeShader* shader = nullptr;
-    primeLayout* layout = nullptr;
-
-    Vertex* base = nullptr;
-    Vertex* ptr = nullptr;
-
-    u32 indexCount = 0;
     primeMat4 projection;
     primeVec4 color;
+    primeVec4 tintColor;
+
+    // sprite
+    primeBuffer* spriteVbo = nullptr;
+    primeBuffer* spriteIbo = nullptr;
+    primeShader* spriteShader = nullptr;
+    primeLayout* spriteLayout = nullptr;
+    SpriteVertex* spriteBase = nullptr;
+    SpriteVertex* spritePtr = nullptr;
+    u32 spriteIndexCount = 0;
+
+    std::vector<primeTexture*> textures;
+    primeVec2 coords[4]{};
+    f32 textureIndex = 1;
 };
 
-void setProjection(primeRenderer2D* renderer, f32 x, f32 y, f32 width, f32 height)
+void setProjection(primeRenderer2D* renderer, primeView view)
 {
+    f32 x = (f32)view.pos.x;
+    f32 y = (f32)view.pos.y;
+    f32 width = (f32)view.size.x;
+    f32 height = (f32)view.size.y;
     renderer->projection = primeOrtho(x, width, height, y, -1.0f, 1.0f);
+    primeSetBufferData(renderer->ubo, &renderer->projection, sizeof(primeMat4));
 }
 
-primeRenderer2D* primeCreateRenderer2D(primeContext* context)
+f32 getTextureIndex(primeRenderer2D* renderer, primeTexture* texture)
 {
-    primeRenderer2D* renderer = new primeRenderer2D();
-    renderer->context = context;
-    const primeView* view = primeGetView(context);
-    setProjection(renderer, (f32)view->pos.x, (f32)view->pos.y, (f32)view->size.x, (f32)view->size.y);
+    f32 tex_index = 0.0f;
+    for (u32 i = 1; i < renderer->textureIndex; i++) {
+        if (renderer->textures[i] == texture) {
+            tex_index = (f32)i;
+            break;
+        }
+    }
 
-    renderer->layout = primeCreateLayout();
-    primeAddAttrib(renderer->layout, PRIME_DATA_TYPE_FLOAT2, 0, false);
-    primeAddAttrib(renderer->layout, PRIME_DATA_TYPE_FLOAT4, 0, false);
-    primeAddAttrib(renderer->layout, PRIME_DATA_TYPE_FLOAT, 0, false);
+    if (tex_index == 0.0f) {
+        tex_index = renderer->textureIndex;
+        renderer->textures.push_back(texture);
+        renderer->textureIndex++;
+    }
+    return tex_index;
+}
+
+void initSprites(primeRenderer2D* renderer)
+{
+    renderer->spriteLayout = primeCreateLayout();
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float4, 0, false);
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float4, 0, false);
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float, 0, false);
 
     u32* indices = new u32[MAX_INDICES];
     u32 offset = 0;
@@ -72,49 +93,80 @@ primeRenderer2D* primeCreateRenderer2D(primeContext* context)
 
     primeBufferDesc buffer_desc;
     buffer_desc.data = nullptr;
-    buffer_desc.size = sizeof(Vertex) * MAX_VERTICES;
-    buffer_desc.type = PRIME_BUFFER_TYPE_VERTEX;
-    buffer_desc.usage = PRIME_BUFFER_USAGE_DYNAMIC;
-    renderer->vbo = primeCreateBuffer(buffer_desc);
+    buffer_desc.size = sizeof(SpriteVertex) * MAX_VERTICES;
+    buffer_desc.type = primeBufferTypes_Vertex;
+    buffer_desc.usage = primeBufferUsages_Dynamic;
+    renderer->spriteVbo = primeCreateBuffer(buffer_desc);
 
     buffer_desc.data = indices;
     buffer_desc.size = sizeof(u32) * MAX_INDICES;
-    buffer_desc.type = PRIME_BUFFER_TYPE_INDEX;
-    buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
-    renderer->ibo = primeCreateBuffer(buffer_desc);
-
-    buffer_desc.data = nullptr;
-    buffer_desc.size = sizeof(primeMat4);
-    buffer_desc.type = PRIME_BUFFER_TYPE_UNIFORM;
-    buffer_desc.usage = PRIME_BUFFER_USAGE_DYNAMIC;
-    renderer->ubo = primeCreateBuffer(buffer_desc);
+    buffer_desc.type = primeBufferTypes_Index;
+    buffer_desc.usage = primeBufferUsages_Static;
+    renderer->spriteIbo = primeCreateBuffer(buffer_desc);
 
     primeShaderDesc shader_desc;
     shader_desc.load = false;
-    shader_desc.vertex_src = s_VertexSource;
-    shader_desc.pixel_src = s_PixelSource;
-    shader_desc.source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
-    renderer->shader = primeCreateShader(shader_desc);
+    shader_desc.vertex_src = s_SpriteVertexSource;
+    shader_desc.pixel_src = s_SpritePixelSource;
+    shader_desc.source_type = primeShaderSourceTypes_GLSL;
+    renderer->spriteShader = primeCreateShader(shader_desc);
 
-    primeBindLayout(renderer->layout);
-    primeBindShader(renderer->shader);
+    primeBindLayout(renderer->spriteLayout);
+    primeBindShader(renderer->spriteShader);
+    i32 samplers[PRIME_MAX_TEXTURE_SLOTS]{};
+    for (u32 i = 0; i < PRIME_MAX_TEXTURE_SLOTS; i++) { samplers[i] = i; }
+    primeSetIntArray(renderer->spriteShader, "u_Textures", samplers, PRIME_MAX_TEXTURE_SLOTS);
 
-    renderer->base = new Vertex[MAX_VERTICES];
-    renderer->ptr = renderer->base;
+    renderer->spriteBase = new SpriteVertex[MAX_VERTICES];
+    renderer->spritePtr = renderer->spriteBase;
     renderer->color = { 0.0f, 0.0f, 0.0f, 1.0f };
+    renderer->tintColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+
     delete[] indices;
+}
+
+void shutdownSprites(primeRenderer2D* renderer)
+{
+    delete[] renderer->spriteBase;
+    primeDestroyLayout(renderer->spriteLayout);
+    primeDestroyBuffer(renderer->spriteVbo);
+    primeDestroyBuffer(renderer->spriteIbo);
+    primeDestroyShader(renderer->spriteShader);
+}
+
+primeRenderer2D* primeCreateRenderer2D(primeContext* context)
+{
+    primeRenderer2D* renderer = new primeRenderer2D();
+    renderer->context = context;
+    primeView view = primeGetView(context);
+
+    primeBufferDesc buffer_desc;
+    buffer_desc.data = nullptr;
+    buffer_desc.size = sizeof(primeMat4);
+    buffer_desc.type = primeBufferTypes_Uniform;
+    buffer_desc.usage = primeBufferUsages_Dynamic;
+    renderer->ubo = primeCreateBuffer(buffer_desc);
+
+    renderer->coords[0] = { 0.0f, 0.0f };
+    renderer->coords[1] = { 1.0f, 0.0f };
+    renderer->coords[2] = { 1.0f, 1.0f };
+    renderer->coords[3] = { 0.0f, 1.0f };
+
+    primeTextureDesc desc;
+    primeTexture* texture = primeCreateTexture(desc);
+    renderer->textures.push_back(texture);
+
+    setProjection(renderer, view);
+    initSprites(renderer);
     return renderer;
 }
 
 void primeDestroyRenderer2D(primeRenderer2D* renderer)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    delete[] renderer->base;
-    primeDestroyLayout(renderer->layout);
-    primeDestroyBuffer(renderer->vbo);
-    primeDestroyBuffer(renderer->ibo);
+    renderer->textures.clear();
     primeDestroyBuffer(renderer->ubo);
-    primeDestroyShader(renderer->shader);
+    shutdownSprites(renderer);
     delete renderer;
     renderer = nullptr;
 }
@@ -122,42 +174,112 @@ void primeDestroyRenderer2D(primeRenderer2D* renderer)
 void primeDrawRect(primeRenderer2D* renderer, const primeRect rect)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    renderer->ptr->pos = { rect.x, rect.y };
-    renderer->ptr->color = renderer->color;
-    renderer->ptr->id = SPRITE_ID;
-    renderer->ptr++;
+    renderer->spritePtr->vertex.x = rect.x;
+    renderer->spritePtr->vertex.y = rect.y;
+    renderer->spritePtr->vertex.z = renderer->coords[0].x;
+    renderer->spritePtr->vertex.w = renderer->coords[0].y;
+    renderer->spritePtr->color = renderer->color;
+    renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr++;
 
-    renderer->ptr->pos = { rect.x + rect.width, rect.y };
-    renderer->ptr->color = renderer->color;
-    renderer->ptr->id = SPRITE_ID;
-    renderer->ptr++;
+    renderer->spritePtr->vertex.x = rect.x + rect.width;
+    renderer->spritePtr->vertex.y = rect.y;
+    renderer->spritePtr->vertex.z = renderer->coords[1].x;
+    renderer->spritePtr->vertex.w = renderer->coords[1].y;
+    renderer->spritePtr->color = renderer->color;
+    renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr++;
 
-    renderer->ptr->pos = { rect.x + rect.width, rect.y + rect.height };
-    renderer->ptr->color = renderer->color;
-    renderer->ptr->id = SPRITE_ID;
-    renderer->ptr++;
+    renderer->spritePtr->vertex.x = rect.x + rect.width;
+    renderer->spritePtr->vertex.y = rect.y + rect.height;
+    renderer->spritePtr->vertex.z = renderer->coords[2].x;
+    renderer->spritePtr->vertex.w = renderer->coords[2].y;
+    renderer->spritePtr->color = renderer->color;
+    renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr++;
 
-    renderer->ptr->pos = { rect.x, rect.y + rect.height };
-    renderer->ptr->color = renderer->color;
-    renderer->ptr->id = SPRITE_ID;
-    renderer->ptr++;
-    renderer->indexCount += 6;
+    renderer->spritePtr->vertex.x = rect.x;
+    renderer->spritePtr->vertex.y = rect.y + rect.height;
+    renderer->spritePtr->vertex.z = renderer->coords[3].x;
+    renderer->spritePtr->vertex.w = renderer->coords[3].y;
+    renderer->spritePtr->color = renderer->color;
+    renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr++;
+
+    renderer->spriteIndexCount += 6;
+}
+
+void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos, 
+                                primeTexture* texture, const primeVec2 scale)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+
+    if (texture) {
+        primeVec2u texture_size = primeGetTextureSize(texture);
+        primeVec2 size;
+        size.x = (f32)texture_size.x * scale.x;
+        size.y = (f32)texture_size.y * scale.y;
+        f32 index = getTextureIndex(renderer, texture);
+
+        renderer->spritePtr->vertex.x = pos.x;
+        renderer->spritePtr->vertex.y = pos.y;
+        renderer->spritePtr->vertex.z = renderer->coords[0].x;
+        renderer->spritePtr->vertex.w = renderer->coords[0].y;
+        renderer->spritePtr->color = renderer->tintColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr++;
+
+        renderer->spritePtr->vertex.x = pos.x + size.x;
+        renderer->spritePtr->vertex.y = pos.y;
+        renderer->spritePtr->vertex.z = renderer->coords[1].x;
+        renderer->spritePtr->vertex.w = renderer->coords[1].y;
+        renderer->spritePtr->color = renderer->tintColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr++;
+
+        renderer->spritePtr->vertex.x = pos.x + size.x;
+        renderer->spritePtr->vertex.y = pos.y + size.y;
+        renderer->spritePtr->vertex.z = renderer->coords[2].x;
+        renderer->spritePtr->vertex.w = renderer->coords[2].y;
+        renderer->spritePtr->color = renderer->tintColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr++;
+
+        renderer->spritePtr->vertex.x = pos.x;
+        renderer->spritePtr->vertex.y = pos.y + size.y;
+        renderer->spritePtr->vertex.z = renderer->coords[3].x;
+        renderer->spritePtr->vertex.w = renderer->coords[3].y;
+        renderer->spritePtr->color = renderer->tintColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr++;
+
+        renderer->spriteIndexCount += 6;
+    }
+    else {
+        primeDrawRect(renderer, { pos.x, pos.y, 50.0f, 50.0f });
+    }
 }
 
 void primeRenderer2DFlush(primeRenderer2D* renderer)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    if (renderer->indexCount) {
-        u32 size = (u32)((u8*)renderer->ptr - (u8*)renderer->base);
-        primeSetBufferData(renderer->vbo, renderer->base, size);
-        primeSetBufferData(renderer->ubo, &renderer->projection, sizeof(primeMat4));
+    if (renderer->spriteIndexCount) {
+        u32 size = (u32)((u8*)renderer->spritePtr - (u8*)renderer->spriteBase);
+        primeBindBuffer(renderer->spriteVbo);
+        primeSetBufferData(renderer->spriteVbo, renderer->spriteBase, size);
 
-        primeSubmit(renderer->context, PRIME_DRAW_TYPE_ELEMENTS, 
-                    PRIME_DRAW_MODE_TRIANGLES, renderer->indexCount);
+        for (u32 i = 0; i < renderer->textureIndex; i++) {
+            primeBindTexture(renderer->textures[i], i);
+        }
+
+        primeBindShader(renderer->spriteShader);
+        primeSubmit(renderer->context, primeDrawTypes_Element, 
+                    primeDrawModes_Triangles, renderer->spriteIndexCount);
     }
 
-    renderer->ptr = renderer->base;
-    renderer->indexCount = 0;
+    renderer->spritePtr = renderer->spriteBase;
+    renderer->spriteIndexCount = 0;
+    renderer->textureIndex = 1;
 }
 
 void primeSetDrawColor(primeRenderer2D* renderer, const primeVec4 color)
@@ -173,4 +295,19 @@ void primeSetDrawColori(primeRenderer2D* renderer, const primeVec4u color)
     renderer->color.y = (f32)color.y / 255.0f;
     renderer->color.z = (f32)color.z / 255.0f;
     renderer->color.w = (f32)color.w / 255.0f;
+}
+
+void primeSetTintColor(primeRenderer2D* renderer, const primeVec4 color)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    renderer->tintColor = color;
+}
+
+void primeSetTintColori(primeRenderer2D* renderer, const primeVec4u color)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    renderer->tintColor.x = (f32)color.x / 255.0f;
+    renderer->tintColor.y = (f32)color.y / 255.0f;
+    renderer->tintColor.z = (f32)color.z / 255.0f;
+    renderer->tintColor.w = (f32)color.w / 255.0f;
 }

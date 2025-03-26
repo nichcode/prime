@@ -8,7 +8,7 @@ b8 renderer2dTest(void* data);
 int main(int argc, char** argv)
 {
     primeDeviceType device_type;
-    device_type = PRIME_DEVICE_TYPE_OPENGL;
+    device_type = primeDeviceTypes_OpenGL;
     primeInit(device_type);
 
     primeSetTestsData(nullptr);

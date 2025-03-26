@@ -67,7 +67,7 @@ b8 windowTest(void* data)
     desc.size.x = 640;
     desc.size.y = 480;
     desc.title = "window";
-    desc.flag = PRIME_WINDOW_FLAGS_CENTER;
+    desc.flag = primeWindowFlags_Center;
     primeWindow* window = primeCreateWindow(desc);
 
     // callbacks

@@ -18,7 +18,7 @@ primeLayout* primeCreateLayout()
 {
     primeLayout* layout = new primeLayout();
     switch (s_InitData.type) {
-        case PRIME_DEVICE_TYPE_OPENGL: {
+        case primeDeviceTypes_OpenGL: {
             layout->handle = _glCreateLayout();
             layout->destroy = _glDestroyLayout;
             layout->add = _glAddAttrib;

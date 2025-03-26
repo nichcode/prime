@@ -30,7 +30,7 @@ primeContext* primeCreateContext(primeWindow* window)
     context->view.size = *primeGetWindowSize(window);
 
     switch (s_InitData.type) {
-        case PRIME_DEVICE_TYPE_OPENGL: {
+        case primeDeviceTypes_OpenGL: {
             context->handle = _glCreateContext(window);
             context->clear = _glClear;
             context->destroy = _glDestroyContext;
@@ -145,8 +145,8 @@ void primeSetView(primeContext* context, const primeView view)
     context->setView(context->handle, &context->view);
 }
 
-const primeView* primeGetView(primeContext* context)
+primeView primeGetView(primeContext* context)
 {
     PRIME_ASSERT_MSG(context, "context is null");
-    return &context->view;
+    return context->view;
 }

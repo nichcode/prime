@@ -27,7 +27,7 @@ b8 primeInit(primeDeviceType type)
     s_InitData.type = type;
     switch (type)
     {
-    case PRIME_DEVICE_TYPE_OPENGL:
+    case primeDeviceTypes_OpenGL:
         createDummyWGLContext();
         break;
     }
@@ -60,10 +60,23 @@ void primeShutdown()
         _primeDeleteLayout(layout);
     }
 
+    // layouts
+    for (primeTexture* texture : s_InitData.textures) {
+        _primeDeleteTexture(texture);
+    }
+
+    s_InitData.activeContext = nullptr;
+    s_InitData.activeBuffer = nullptr;
+    s_InitData.activeShader = nullptr;
+    s_InitData.activeLayout = nullptr;
+    s_InitData.activeTexture = nullptr;
+    s_InitData.activeRenderTarget = nullptr;
+
     s_InitData.contexts.clear();
     s_InitData.buffers.clear();
     s_InitData.shaders.clear();
     s_InitData.layouts.clear();
+    s_InitData.textures.clear();
 }
 
 i32 multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)
@@ -78,7 +91,7 @@ i32 wcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str)
 
 void consoleWrite(primeLogLevel level, const char* msg)
 {
-    b8 error = level > PRIME_LOG_LEVEL_WARN;
+    b8 error = level > primeLogLevels_Warn;
     HANDLE console = NULL;
     static u8 levels[4] = { 8, 2, 6, 4 };
 

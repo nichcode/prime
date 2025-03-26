@@ -22,7 +22,7 @@ primeBuffer* primeCreateBuffer(primeBufferDesc desc)
     buffer->type = desc.type;
     buffer->usage = desc.usage;
     switch (s_InitData.type) {
-        case PRIME_DEVICE_TYPE_OPENGL: {
+        case primeDeviceTypes_OpenGL: {
             buffer->handle = _glCreateBuffer(desc);
             buffer->destroy = _glDestroyBuffer;
             buffer->bind = _glBindBuffer;
@@ -59,7 +59,7 @@ void _primeDeleteBuffer(primeBuffer* buffer)
 void primeSetBufferData(primeBuffer* buffer, const void* data, u32 size)
 {
     PRIME_ASSERT_MSG(buffer, "buffer is null");
-    if (buffer->usage == PRIME_BUFFER_USAGE_DYNAMIC) {
+    if (buffer->usage == primeBufferUsages_Dynamic) {
         buffer->set(buffer->handle, data, size);
     }
 }

@@ -12,11 +12,11 @@ PRIME_INLINE GLenum drawModeToGL(primeDrawMode mode)
 {
     switch (mode)
     {
-        case PRIME_DRAW_MODE_TRIANGLES:
+        case primeDrawModes_Triangles:
             return GL_TRIANGLES;
             break;
 
-        case PRIME_DRAW_MODE_LINES:
+        case primeDrawModes_Lines:
             return GL_LINES;
             break;
     }
@@ -101,10 +101,10 @@ void _glSetVsync(void* context, b8 vsync)
 void _glSubmit(void* context, primeDrawType type, primeDrawMode mode, u32 count)
 {
     GLenum gl_type = drawModeToGL(mode);
-    if (type == PRIME_DRAW_TYPE_ARRAYS) {
+    if (type == primeDrawTypes_Array) {
         glDrawArrays(gl_type, 0, count);
     }
-    else if (type == PRIME_DRAW_TYPE_ELEMENTS) {
+    else if (type == primeDrawTypes_Element) {
         glDrawElements(gl_type, count, GL_UNSIGNED_INT, nullptr);
     }
 }
@@ -112,10 +112,10 @@ void _glSubmit(void* context, primeDrawType type, primeDrawMode mode, u32 count)
 void _glSubmitInstanced(void* context, primeDrawType type, primeDrawMode mode, u32 count, u32 ins_count)
 {
     GLenum gl_type = drawModeToGL(mode);
-    if (type == PRIME_DRAW_TYPE_ARRAYS) {
+    if (type == primeDrawTypes_Array) {
         glDrawArraysInstanced(gl_type, 0, count, ins_count);
     }
-    else if (type == PRIME_DRAW_TYPE_ELEMENTS) {
+    else if (type == primeDrawTypes_Element) {
         glDrawElementsInstanced(gl_type, 6, GL_UNSIGNED_INT, nullptr, ins_count);
     }
 }

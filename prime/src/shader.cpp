@@ -7,7 +7,7 @@
 struct primeShader
 {
     void* handle = nullptr;
-    primeShaderSourceType source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
+    primeShaderSourceType source_type = primeShaderSourceTypes_GLSL;
 
     void(*destroy)(void* handle) = nullptr;
     void(*bind)(void* handle) = nullptr;
@@ -28,7 +28,7 @@ primeShader* primeCreateShader(primeShaderDesc desc)
     primeShader* shader = new primeShader();
     shader->source_type = desc.source_type;
     switch (s_InitData.type) {
-        case PRIME_DEVICE_TYPE_OPENGL: {
+        case primeDeviceTypes_OpenGL: {
             shader->handle = _glCreateShader(desc);
             shader->destroy = _glDestroyShader;
             shader->bind = _glBindShader;

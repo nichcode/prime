@@ -6,14 +6,16 @@
 
 struct primeShader;
 
-enum primeShaderSourceType
+using primeShaderSourceType = u32;
+
+enum primeShaderSourceTypes_
 {
-    PRIME_SHADER_SOURCE_TYPE_GLSL
+    primeShaderSourceTypes_GLSL
 };
 
 struct primeShaderDesc
 {
-    primeShaderSourceType source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
+    primeShaderSourceType source_type = primeShaderSourceTypes_GLSL;
     const char* vertex_src = nullptr;
     const char* pixel_src = nullptr;
     b8 load = true;

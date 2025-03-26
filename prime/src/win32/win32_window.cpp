@@ -24,11 +24,11 @@ struct primeWindow
     const char* title = nullptr;
     b8 should_close = false, focused = false;
 
-    u32 keycodes[512];
-    u32 scancodes[PRIME_KEY_MAX + 1];
+    primeKey keycodes[512];
+    u32 scancodes[primeKeys_Max + 1];
 
-    u32 keys[PRIME_KEY_MAX + 1];
-    u32 buttons[PRIME_BUTTON_MAX + 1];
+    primeKey keys[primeKeys_Max + 1];
+    primeButton buttons[primeButtons_Max + 1];
     primeVec2i mousePos;
 };
 
@@ -50,142 +50,142 @@ static void centerWindow(primeWindow* window)
 static void mapKeys(primeWindow* window)
 {
     // from GLFW
-    window->keycodes[0x01E] = PRIME_KEY_A;
-    window->keycodes[0x030] = PRIME_KEY_B;
-    window->keycodes[0x02E] = PRIME_KEY_C;
-    window->keycodes[0x020] = PRIME_KEY_D;
-    window->keycodes[0x012] = PRIME_KEY_E;
-    window->keycodes[0x021] = PRIME_KEY_F;
-    window->keycodes[0x022] = PRIME_KEY_G;
-    window->keycodes[0x023] = PRIME_KEY_H;
-    window->keycodes[0x017] = PRIME_KEY_I;
-    window->keycodes[0x024] = PRIME_KEY_J;
-    window->keycodes[0x025] = PRIME_KEY_K;
-    window->keycodes[0x026] = PRIME_KEY_L;
-    window->keycodes[0x032] = PRIME_KEY_M;
-    window->keycodes[0x031] = PRIME_KEY_N;
-    window->keycodes[0x018] = PRIME_KEY_O;
-    window->keycodes[0x019] = PRIME_KEY_P;
-    window->keycodes[0x010] = PRIME_KEY_Q;
-    window->keycodes[0x013] = PRIME_KEY_R;
-    window->keycodes[0x01F] = PRIME_KEY_S;
-    window->keycodes[0x014] = PRIME_KEY_T;
-    window->keycodes[0x016] = PRIME_KEY_U;
-    window->keycodes[0x02F] = PRIME_KEY_V;
-    window->keycodes[0x011] = PRIME_KEY_W;
-    window->keycodes[0x02D] = PRIME_KEY_X;
-    window->keycodes[0x015] = PRIME_KEY_Y;
-    window->keycodes[0x02C] = PRIME_KEY_Z;
+    window->keycodes[0x01E] = primeKeys_A;
+    window->keycodes[0x030] = primeKeys_B;
+    window->keycodes[0x02E] = primeKeys_C;
+    window->keycodes[0x020] = primeKeys_D;
+    window->keycodes[0x012] = primeKeys_E;
+    window->keycodes[0x021] = primeKeys_F;
+    window->keycodes[0x022] = primeKeys_G;
+    window->keycodes[0x023] = primeKeys_H;
+    window->keycodes[0x017] = primeKeys_I;
+    window->keycodes[0x024] = primeKeys_J;
+    window->keycodes[0x025] = primeKeys_K;
+    window->keycodes[0x026] = primeKeys_L;
+    window->keycodes[0x032] = primeKeys_M;
+    window->keycodes[0x031] = primeKeys_N;
+    window->keycodes[0x018] = primeKeys_O;
+    window->keycodes[0x019] = primeKeys_P;
+    window->keycodes[0x010] = primeKeys_Q;
+    window->keycodes[0x013] = primeKeys_R;
+    window->keycodes[0x01F] = primeKeys_S;
+    window->keycodes[0x014] = primeKeys_T;
+    window->keycodes[0x016] = primeKeys_U;
+    window->keycodes[0x02F] = primeKeys_V;
+    window->keycodes[0x011] = primeKeys_W;
+    window->keycodes[0x02D] = primeKeys_X;
+    window->keycodes[0x015] = primeKeys_Y;
+    window->keycodes[0x02C] = primeKeys_Z;
 
-    window->keycodes[0x00B] = PRIME_KEY_0;
-    window->keycodes[0x002] = PRIME_KEY_1;
-    window->keycodes[0x003] = PRIME_KEY_2;
-    window->keycodes[0x004] = PRIME_KEY_3;
-    window->keycodes[0x005] = PRIME_KEY_4;
-    window->keycodes[0x006] = PRIME_KEY_5;
-    window->keycodes[0x007] = PRIME_KEY_6;
-    window->keycodes[0x008] = PRIME_KEY_7;
-    window->keycodes[0x009] = PRIME_KEY_8;
-    window->keycodes[0x00A] = PRIME_KEY_9;
+    window->keycodes[0x00B] = primeKeys_0;
+    window->keycodes[0x002] = primeKeys_1;
+    window->keycodes[0x003] = primeKeys_2;
+    window->keycodes[0x004] = primeKeys_3;
+    window->keycodes[0x005] = primeKeys_4;
+    window->keycodes[0x006] = primeKeys_5;
+    window->keycodes[0x007] = primeKeys_6;
+    window->keycodes[0x008] = primeKeys_7;
+    window->keycodes[0x009] = primeKeys_8;
+    window->keycodes[0x00A] = primeKeys_9;
 
-    window->keycodes[0x028] = PRIME_KEY_APOSTROPHE;
-    window->keycodes[0x02B] = PRIME_KEY_BACK_SLASH;
-    window->keycodes[0x033] = PRIME_KEY_COMMA;
-    window->keycodes[0x00D] = PRIME_KEY_EQUAL;
-    window->keycodes[0x029] = PRIME_KEY_GRAVE_ACCENT;
-    window->keycodes[0x01A] = PRIME_KEY_LEFT_BRACKET;
-    window->keycodes[0x00C] = PRIME_KEY_MINUS;
-    window->keycodes[0x034] = PRIME_KEY_PERIOD;
-    window->keycodes[0x01B] = PRIME_KEY_RIGHT_BRACKET;
-    window->keycodes[0x027] = PRIME_KEY_SEMI_COLON;
-    window->keycodes[0x035] = PRIME_KEY_SLASH;
+    window->keycodes[0x028] = primeKeys_Apostrophe;
+    window->keycodes[0x02B] = primeKeys_Backslash;
+    window->keycodes[0x033] = primeKeys_Comma;
+    window->keycodes[0x00D] = primeKeys_Equal;
+    window->keycodes[0x029] = primeKeys_GraveAccent;
+    window->keycodes[0x01A] = primeKeys_LeftBracket;
+    window->keycodes[0x00C] = primeKeys_Minus;
+    window->keycodes[0x034] = primeKeys_Period;
+    window->keycodes[0x01B] = primeKeys_RightBracket;
+    window->keycodes[0x027] = primeKeys_SemiColon;
+    window->keycodes[0x035] = primeKeys_Slash;
 
-    window->keycodes[0x00E] = PRIME_KEY_BACK_SPACE;
-    window->keycodes[0x153] = PRIME_KEY_DELETE;
-    window->keycodes[0x14F] = PRIME_KEY_END;
-    window->keycodes[0x01C] = PRIME_KEY_ENTER;
-    window->keycodes[0x001] = PRIME_KEY_ESCAPE;
-    window->keycodes[0x147] = PRIME_KEY_HOME;
-    window->keycodes[0x152] = PRIME_KEY_INSERT;
-    window->keycodes[0x15D] = PRIME_KEY_MENU;
-    window->keycodes[0x151] = PRIME_KEY_PAGE_DOWN;
-    window->keycodes[0x149] = PRIME_KEY_PAGE_UP;
-    window->keycodes[0x045] = PRIME_KEY_PAUSE;
-    window->keycodes[0x039] = PRIME_KEY_SPACE;
-    window->keycodes[0x00F] = PRIME_KEY_TAB;
-    window->keycodes[0x03A] = PRIME_KEY_CAPS_LOCK;
-    window->keycodes[0x145] = PRIME_KEY_NUM_LOCK;
-    window->keycodes[0x046] = PRIME_KEY_SCROLL_LOCK;
-    window->keycodes[0x03B] = PRIME_KEY_F1;
-    window->keycodes[0x03C] = PRIME_KEY_F2;
-    window->keycodes[0x03D] = PRIME_KEY_F3;
-    window->keycodes[0x03E] = PRIME_KEY_F4;
-    window->keycodes[0x03F] = PRIME_KEY_F5;
-    window->keycodes[0x040] = PRIME_KEY_F6;
-    window->keycodes[0x041] = PRIME_KEY_F7;
-    window->keycodes[0x042] = PRIME_KEY_F8;
-    window->keycodes[0x043] = PRIME_KEY_F9;
-    window->keycodes[0x044] = PRIME_KEY_F10;
-    window->keycodes[0x057] = PRIME_KEY_F11;
-    window->keycodes[0x058] = PRIME_KEY_F12;
+    window->keycodes[0x00E] = primeKeys_Backspace;
+    window->keycodes[0x153] = primeKeys_Delete;
+    window->keycodes[0x14F] = primeKeys_End;
+    window->keycodes[0x01C] = primeKeys_Enter;
+    window->keycodes[0x001] = primeKeys_Escape;
+    window->keycodes[0x147] = primeKeys_Home;
+    window->keycodes[0x152] = primeKeys_Insert;
+    window->keycodes[0x15D] = primeKeys_Menu;
+    window->keycodes[0x151] = primeKeys_PageDown;
+    window->keycodes[0x149] = primeKeys_PageUp;
+    window->keycodes[0x045] = primeKeys_Pause;
+    window->keycodes[0x039] = primeKeys_Space;
+    window->keycodes[0x00F] = primeKeys_Tab;
+    window->keycodes[0x03A] = primeKeys_CapsLock;
+    window->keycodes[0x145] = primeKeys_NumLock;
+    window->keycodes[0x046] = primeKeys_ScrollLock;
+    window->keycodes[0x03B] = primeKeys_F1;
+    window->keycodes[0x03C] = primeKeys_F2;
+    window->keycodes[0x03D] = primeKeys_F3;
+    window->keycodes[0x03E] = primeKeys_F4;
+    window->keycodes[0x03F] = primeKeys_F5;
+    window->keycodes[0x040] = primeKeys_F6;
+    window->keycodes[0x041] = primeKeys_F7;
+    window->keycodes[0x042] = primeKeys_F8;
+    window->keycodes[0x043] = primeKeys_F9;
+    window->keycodes[0x044] = primeKeys_F10;
+    window->keycodes[0x057] = primeKeys_F11;
+    window->keycodes[0x058] = primeKeys_F12;
 
-    window->keycodes[0x038] = PRIME_KEY_LEFT_ALT;
-    window->keycodes[0x01D] = PRIME_KEY_LEFT_CTRL;
-    window->keycodes[0x02A] = PRIME_KEY_LEFT_SHIFT;
-    window->keycodes[0x15B] = PRIME_KEY_LEFT_SUPER;
-    window->keycodes[0x137] = PRIME_KEY_PRINT_SCREEN;
-    window->keycodes[0x138] = PRIME_KEY_RIGHT_ALT;
-    window->keycodes[0x11D] = PRIME_KEY_RIGHT_CTRL;
-    window->keycodes[0x036] = PRIME_KEY_RIGHT_SHIFT;
-    window->keycodes[0x15C] = PRIME_KEY_RIGHT_SUPER;
-    window->keycodes[0x150] = PRIME_KEY_DOWN;
-    window->keycodes[0x14B] = PRIME_KEY_LEFT;
-    window->keycodes[0x14D] = PRIME_KEY_RIGHT;
-    window->keycodes[0x148] = PRIME_KEY_UP;
+    window->keycodes[0x038] = primeKeys_LeftAlt;
+    window->keycodes[0x01D] = primeKeys_LeftControl;
+    window->keycodes[0x02A] = primeKeys_LeftShift;
+    window->keycodes[0x15B] = primeKeys_LeftSuper;
+    window->keycodes[0x137] = primeKeys_PrintScreen;
+    window->keycodes[0x138] = primeKeys_RightAlt;
+    window->keycodes[0x11D] = primeKeys_RightControl;
+    window->keycodes[0x036] = primeKeys_RightShift;
+    window->keycodes[0x15C] = primeKeys_RightSuper;
+    window->keycodes[0x150] = primeKeys_Down;
+    window->keycodes[0x14B] = primeKeys_Left;
+    window->keycodes[0x14D] = primeKeys_Right;
+    window->keycodes[0x148] = primeKeys_Up;
 
-    window->keycodes[0x052] = PRIME_KEY_P0;
-    window->keycodes[0x04F] = PRIME_KEY_P1;
-    window->keycodes[0x050] = PRIME_KEY_P2;
-    window->keycodes[0x051] = PRIME_KEY_P3;
-    window->keycodes[0x04B] = PRIME_KEY_P4;
-    window->keycodes[0x04C] = PRIME_KEY_P5;
-    window->keycodes[0x04D] = PRIME_KEY_P6;
-    window->keycodes[0x047] = PRIME_KEY_P7;
-    window->keycodes[0x048] = PRIME_KEY_P8;
-    window->keycodes[0x049] = PRIME_KEY_P9;
-    window->keycodes[0x04E] = PRIME_KEY_PADD;
-    window->keycodes[0x053] = PRIME_KEY_PDECIMAL;
-    window->keycodes[0x135] = PRIME_KEY_PDIVIDE;
-    window->keycodes[0x11C] = PRIME_KEY_PENTER;
-    window->keycodes[0x059] = PRIME_KEY_PEQUAL;
-    window->keycodes[0x037] = PRIME_KEY_PMULTIPLE;
-    window->keycodes[0x04A] = PRIME_KEY_PSUBTRACT;
+    window->keycodes[0x052] = primeKeys_P0;
+    window->keycodes[0x04F] = primeKeys_P1;
+    window->keycodes[0x050] = primeKeys_P2;
+    window->keycodes[0x051] = primeKeys_P3;
+    window->keycodes[0x04B] = primeKeys_P4;
+    window->keycodes[0x04C] = primeKeys_P5;
+    window->keycodes[0x04D] = primeKeys_P6;
+    window->keycodes[0x047] = primeKeys_P7;
+    window->keycodes[0x048] = primeKeys_P8;
+    window->keycodes[0x049] = primeKeys_P9;
+    window->keycodes[0x04E] = primeKeys_PAdd;
+    window->keycodes[0x053] = primeKeys_PDecimal;
+    window->keycodes[0x135] = primeKeys_PDivide;
+    window->keycodes[0x11C] = primeKeys_PEnter;
+    window->keycodes[0x059] = primeKeys_PEqual;
+    window->keycodes[0x037] = primeKeys_PMultiply;
+    window->keycodes[0x04A] = primeKeys_PSubtract;
 }
 
 static void processKey(primeWindow* window, u32 key, i32 scancode, u8 action)
 {
     // from GLFW
-    PRIME_ASSERT_MSG(key >= 0 && key < PRIME_KEY_MAX, "Invalid Key");
-    PRIME_ASSERT_MSG(action == PRIME_ACTION_RELEASE || action == PRIME_ACTION_PRESS, "Invalid action");
+    PRIME_ASSERT_MSG(key >= 0 && key < primeKeys_Max, "Invalid Key");
+    PRIME_ASSERT_MSG(action == primeActions_Release || action == primeActions_Press, "Invalid action");
 
     b8 repeated = false;
-    if (action == PRIME_ACTION_RELEASE && window->keys[key] == PRIME_ACTION_RELEASE) {
+    if (action == primeActions_Release && window->keys[key] == primeActions_Release) {
         return;
     }
 
-    if (action == PRIME_ACTION_PRESS && window->keys[key] == PRIME_ACTION_PRESS) {
+    if (action == primeActions_Press && window->keys[key] == primeActions_Press) {
         repeated = true;
     }
 
-    if (action == PRIME_ACTION_PRESS && window->keys[key] == PRIME_ACTION_RELEASE) {
-        window->keys[key] = PRIME_ACTION_PRESS;
+    if (action == primeActions_Press && window->keys[key] == primeActions_Release) {
+        window->keys[key] = primeActions_Press;
     }
     else {
         window->keys[key] = action;
     }
 
     if (repeated) {
-        action = PRIME_ACTION_REPEAT;
+        action = primeActions_Repeat;
     }
 
     if (s_Callbacks.key) {
@@ -196,11 +196,11 @@ static void processKey(primeWindow* window, u32 key, i32 scancode, u8 action)
 static void processButton(primeWindow* window, u16 button, u8 action)
 {
     // from GLFW
-    PRIME_ASSERT_MSG(button >= 0 && button < PRIME_BUTTON_MAX, "Invalid Key");
-    PRIME_ASSERT_MSG(action == PRIME_ACTION_RELEASE || action == PRIME_ACTION_PRESS, "Invalid action");
+    PRIME_ASSERT_MSG(button >= 0 && button < primeButtons_Max, "Invalid Key");
+    PRIME_ASSERT_MSG(action == primeActions_Release || action == primeActions_Press, "Invalid action");
 
-    if (action == PRIME_ACTION_PRESS && window->buttons[button] == PRIME_ACTION_RELEASE) {
-        window->buttons[button] = PRIME_ACTION_PRESS;
+    if (action == primeActions_Press && window->buttons[button] == primeActions_Release) {
+        window->buttons[button] = primeActions_Press;
     }
     else {
         window->buttons[button] = action;
@@ -231,17 +231,17 @@ static void processFocus(primeWindow* window, b8 focused)
 
     if (focused == false) {
         // process keys
-        for (u32 key = 0; key <= PRIME_KEY_MAX; key++) {
-            if (window->keys[key] == PRIME_ACTION_PRESS) {
+        for (u32 key = 0; key <= primeKeys_Max; key++) {
+            if (window->keys[key] == primeActions_Press) {
                 const i32 scancode = window->scancodes[key];
-                processKey(window, key, scancode, PRIME_ACTION_RELEASE);
+                processKey(window, key, scancode, primeActions_Release);
             }
         }
 
         // proces mouse buttons
-        for (u32 button = 0; button <= PRIME_BUTTON_MAX; button++) {
-            if (window->buttons[button] == PRIME_ACTION_PRESS) {
-                processButton(window, button, PRIME_ACTION_RELEASE);
+        for (u32 button = 0; button <= primeButtons_Max; button++) {
+            if (window->buttons[button] == primeActions_Press) {
+                processButton(window, button, primeActions_Release);
             }
         }
     }
@@ -269,7 +269,7 @@ primeWindow* primeCreateWindow(primeWindowDesc desc)
     window->title = desc.title;
     window->size = desc.size;
 
-    if (desc.flag & PRIME_WINDOW_FLAGS_CENTER) {
+    if (desc.flag & primeWindowFlags_Center) {
         centerWindow(window);
     }
     else {
@@ -315,10 +315,10 @@ void primePullEvents()
         if (window) {
             int i;
             const int keys[4][2] = {
-                { VK_LSHIFT, PRIME_KEY_LEFT_SHIFT },
-                { VK_RSHIFT, PRIME_KEY_RIGHT_SHIFT },
-                { VK_LWIN, PRIME_KEY_LEFT_SUPER },
-                { VK_RWIN, PRIME_KEY_RIGHT_SUPER }
+                { VK_LSHIFT, primeKeys_LeftShift },
+                { VK_RSHIFT, primeKeys_RightShift },
+                { VK_LWIN, primeKeys_LeftSuper },
+                { VK_RWIN, primeKeys_RightSuper }
             };
 
             for (i = 0; i < 4; i++) {
@@ -327,9 +327,9 @@ void primePullEvents()
                 const int scancode = window->scancodes[key];
 
                 if ((GetKeyState(vk) & 0x8000)) { continue; }
-                if (window->keycodes[key] != PRIME_ACTION_PRESS) { continue; }
+                if (window->keycodes[key] != primeActions_Press) { continue; }
 
-                processKey(window, key, scancode, PRIME_ACTION_RELEASE);
+                processKey(window, key, scancode, primeActions_Release);
             }
         }
     }
@@ -493,7 +493,7 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
             i32 scancode;
 
             // from GLFW
-            action = (HIWORD(l_param) & KF_UP) ? PRIME_ACTION_RELEASE : PRIME_ACTION_PRESS;
+            action = (HIWORD(l_param) & KF_UP) ? primeActions_Release : primeActions_Press;
             scancode = (HIWORD(l_param) & (KF_EXTENDED | 0xff));
             if (!scancode) {
                 // NOTE: Some synthetic key messages have a scancode of zero
@@ -516,7 +516,7 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
             if (w_param == VK_CONTROL) {
                 if (HIWORD(l_param) & KF_EXTENDED) {
                     // Right side keys have the extended key bit set
-                    key = PRIME_KEY_RIGHT_CTRL;
+                    key = primeKeys_RightControl;
                 }
                 else {
                     // NOTE: Alt Gr sends Left Ctrl followed by Right Alt
@@ -541,7 +541,7 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
                     }
 
                     // This is a regular Left Ctrl message
-                    key = PRIME_KEY_LEFT_CTRL;
+                    key = primeKeys_LeftControl;
                 }
             }
             else if (w_param == VK_PROCESSKEY) {
@@ -550,17 +550,17 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
                 break;
             }
 
-            if (action == PRIME_ACTION_RELEASE && w_param == VK_SHIFT) {
+            if (action == primeActions_Release && w_param == VK_SHIFT) {
                 // HACK: Release both Shift keys on Shift up event, as when both
                 //       are pressed the first release does not emit any event
                 // NOTE: The other half of this is in _glfwPollEventsWin32
-                processKey(window, PRIME_KEY_LEFT_SHIFT, scancode, action);
-                processKey(window, PRIME_KEY_RIGHT_SHIFT, scancode, action);
+                processKey(window, primeKeys_LeftShift, scancode, action);
+                processKey(window, primeKeys_RightShift, scancode, action);
             }
             else if (w_param == VK_SNAPSHOT) {
                 // HACK: Key down is not reported for the Print Screen key
-                processKey(window, key, scancode, PRIME_ACTION_PRESS);
-                processKey(window, key, scancode, PRIME_ACTION_RELEASE);
+                processKey(window, key, scancode, primeActions_Press);
+                processKey(window, key, scancode, primeActions_Release);
             }
             else {
                 processKey(window, key, scancode, action);
@@ -581,23 +581,23 @@ LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
             u16 button;
 
             if (msg == WM_LBUTTONDOWN || msg == WM_LBUTTONUP) {
-                button = PRIME_BUTTON_LEFT;
+                button = primeButtons_Left;
             }
 
             else if (msg == WM_RBUTTONDOWN || msg == WM_RBUTTONUP) {
-                button = PRIME_BUTTON_RIGHT;
+                button = primeButtons_Right;
             }
 
             else if (msg == WM_MBUTTONDOWN || msg == WM_MBUTTONUP) {
-                button = PRIME_BUTTON_MIDDLE;
+                button = primeButtons_Middle;
             }
 
             if (msg == WM_LBUTTONDOWN || msg == WM_RBUTTONDOWN ||
                 msg == WM_MBUTTONDOWN || msg == WM_XBUTTONDOWN) {
-                action = PRIME_ACTION_PRESS;
+                action = primeActions_Press;
             }
             else {
-                action = PRIME_ACTION_RELEASE;
+                action = primeActions_Release;
             }
 
             if (msg == WM_LBUTTONDOWN) {

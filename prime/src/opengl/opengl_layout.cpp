@@ -7,26 +7,26 @@ PRIME_INLINE u32 getDataTypeSize(primeDataType type)
 {
     switch (type)
     {
-        case PRIME_DATA_TYPE_INT:
-        case PRIME_DATA_TYPE_FLOAT: {
+        case primeDataTypes_Int:
+        case primeDataTypes_Float: {
             return 4;
         }
 
-        case PRIME_DATA_TYPE_INT2:
-        case PRIME_DATA_TYPE_FLOAT2: {
+        case primeDataTypes_Int2:
+        case primeDataTypes_Float2: {
             return 8;
         }
 
-        case PRIME_DATA_TYPE_INT3:
-        case PRIME_DATA_TYPE_FLOAT3: {
+        case primeDataTypes_Int3:
+        case primeDataTypes_Float3: {
             return 12;
         }
 
-        case PRIME_DATA_TYPE_INT4:
-        case PRIME_DATA_TYPE_FLOAT4: {
+        case primeDataTypes_Int4:
+        case primeDataTypes_Float4: {
             return 16;
         }
-        case PRIME_DATA_TYPE_BOOL:     return 1;
+        case primeDataTypes_Bool:     return 1;
     }
     return 0;
 }
@@ -35,24 +35,24 @@ PRIME_INLINE u32 getDataTypeCount(primeDataType type)
 {
     switch (type)
     {
-        case PRIME_DATA_TYPE_FLOAT:
-        case PRIME_DATA_TYPE_INT:
-        case PRIME_DATA_TYPE_BOOL: {
+        case primeDataTypes_Float:
+        case primeDataTypes_Int:
+        case primeDataTypes_Bool: {
             return 1;
         }
 
-        case PRIME_DATA_TYPE_FLOAT2:
-        case PRIME_DATA_TYPE_INT2: {
+        case primeDataTypes_Float2:
+        case primeDataTypes_Int2: {
             return 2;
         }
 
-        case PRIME_DATA_TYPE_FLOAT3:
-        case PRIME_DATA_TYPE_INT3: {
+        case primeDataTypes_Float3:
+        case primeDataTypes_Int3: {
             return 3;
         }
 
-        case PRIME_DATA_TYPE_FLOAT4:
-        case PRIME_DATA_TYPE_INT4: {
+        case primeDataTypes_Float4:
+        case primeDataTypes_Int4: {
             return 4;
         }
     }
@@ -63,19 +63,19 @@ PRIME_INLINE GLenum typeToGLType(primeDataType type)
 {
     switch (type)
     {
-        case PRIME_DATA_TYPE_INT:
-        case PRIME_DATA_TYPE_INT2:
-        case PRIME_DATA_TYPE_INT3:
-        case PRIME_DATA_TYPE_INT4:
+        case primeDataTypes_Int:
+        case primeDataTypes_Int2:
+        case primeDataTypes_Int3:
+        case primeDataTypes_Int4:
             return GL_INT;
 
-        case PRIME_DATA_TYPE_FLOAT:
-        case PRIME_DATA_TYPE_FLOAT2:
-        case PRIME_DATA_TYPE_FLOAT3:
-        case PRIME_DATA_TYPE_FLOAT4:
+        case primeDataTypes_Float:
+        case primeDataTypes_Float2:
+        case primeDataTypes_Float3:
+        case primeDataTypes_Float4:
             return GL_FLOAT;
 
-        case PRIME_DATA_TYPE_BOOL:
+        case primeDataTypes_Bool:
             return GL_BOOL;
     }
     return 0;
@@ -83,7 +83,7 @@ PRIME_INLINE GLenum typeToGLType(primeDataType type)
 
 struct Element
 {
-    primeDataType type = PRIME_DATA_TYPE_FLOAT3;
+    primeDataType type = primeDataTypes_Float3;
     b8 normalize = false;
     u64 offset = 0;
     u32 size = 0;
@@ -138,10 +138,10 @@ void _glBindLayout(void* handle)
         u32 stride = layout->stride;
 
         switch (element.type) {
-            case PRIME_DATA_TYPE_FLOAT:
-            case PRIME_DATA_TYPE_FLOAT2:
-            case PRIME_DATA_TYPE_FLOAT3:
-            case PRIME_DATA_TYPE_FLOAT4: {
+            case primeDataTypes_Float:
+            case primeDataTypes_Float2:
+            case primeDataTypes_Float3:
+            case primeDataTypes_Float4: {
                 glVertexAttribPointer(
                     index,
                     count,
@@ -155,11 +155,11 @@ void _glBindLayout(void* handle)
                 break;
             }
 
-            case PRIME_DATA_TYPE_INT:
-            case PRIME_DATA_TYPE_INT2:
-            case PRIME_DATA_TYPE_INT3:
-            case PRIME_DATA_TYPE_INT4:
-            case PRIME_DATA_TYPE_BOOL: {
+            case primeDataTypes_Int:
+            case primeDataTypes_Int2:
+            case primeDataTypes_Int3:
+            case primeDataTypes_Int4:
+            case primeDataTypes_Bool: {
                 glVertexAttribIPointer(
                     index,
                     count,
@@ -183,19 +183,19 @@ void _glUnbindLayout(void* handle)
     static u32 index = 0;
     for (const Element& element : layout->elements) {
         switch (element.type) {
-            case PRIME_DATA_TYPE_FLOAT:
-            case PRIME_DATA_TYPE_FLOAT2:
-            case PRIME_DATA_TYPE_FLOAT3:
-            case PRIME_DATA_TYPE_FLOAT4: {
+            case primeDataTypes_Float:
+            case primeDataTypes_Float2:
+            case primeDataTypes_Float3:
+            case primeDataTypes_Float4: {
                 glDisableVertexAttribArray(index);
                 break;
             }
 
-            case PRIME_DATA_TYPE_INT:
-            case PRIME_DATA_TYPE_INT2:
-            case PRIME_DATA_TYPE_INT3:
-            case PRIME_DATA_TYPE_INT4:
-            case PRIME_DATA_TYPE_BOOL: {
+            case primeDataTypes_Int:
+            case primeDataTypes_Int2:
+            case primeDataTypes_Int3:
+            case primeDataTypes_Int4:
+            case primeDataTypes_Bool: {
                 glDisableVertexAttribArray(index);
                 break;
             }

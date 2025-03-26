@@ -9,17 +9,41 @@ struct primeVec2
     f32 y = 0.0f;
 };
 
+PRIME_INLINE primeVec2 primeCreateVec2(f32 x, f32 y)
+{
+    primeVec2 v;
+    v.x = x;
+    v.y = y;
+    return v;
+}
+
 struct primeVec2i
 {
     i32 x = 0;
     i32 y = 0;
 };
 
+PRIME_INLINE primeVec2i primeCreateVec2i(i32 x, i32 y)
+{
+    primeVec2i v;
+    v.x = x;
+    v.y = y;
+    return v;
+}
+
 struct primeVec2u
 {
     u32 x = 0;
     u32 y = 0;
 };
+
+PRIME_INLINE primeVec2u primeCreateVec2u(u32 x, u32 y)
+{
+    primeVec2u v;
+    v.x = x;
+    v.y = y;
+    return v;
+}
 
 struct primeVec3
 {
@@ -28,6 +52,15 @@ struct primeVec3
     f32 z = 0.0f;
 };
 
+PRIME_INLINE primeVec3 primeCreateVec3(f32 x, f32 y, f32 z)
+{
+    primeVec3 v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+}
+
 struct primeVec3i
 {
     i32 x = 0;
@@ -35,12 +68,30 @@ struct primeVec3i
     i32 z = 0;
 };
 
+PRIME_INLINE primeVec3i primeCreateVec3i(i32 x, i32 y, i32 z)
+{
+    primeVec3i v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+}
+
 struct primeVec3u
 {
     u32 x = 0;
     u32 y = 0;
     u32 z = 0;
 };
+
+PRIME_INLINE primeVec3u primeCreateVec3u(u32 x, u32 y, u32 z)
+{
+    primeVec3u v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+}
 
 struct primeVec4
 {
@@ -50,6 +101,16 @@ struct primeVec4
     f32 w = 0.0f;
 };
 
+PRIME_INLINE primeVec4 primeCreateVec4(f32 x, f32 y, f32 z, f32 w)
+{
+    primeVec4 v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
+}
+
 struct primeVec4i
 {
     i32 x = 0;
@@ -58,6 +119,16 @@ struct primeVec4i
     i32 w = 0;
 };
 
+PRIME_INLINE primeVec4i primeCreateVec4i(i32 x, i32 y, i32 z, i32 w)
+{
+    primeVec4i v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
+}
+
 struct primeVec4u
 {
     u32 x = 0;
@@ -65,6 +136,16 @@ struct primeVec4u
     u32 z = 0;
     u32 w = 0;
 };
+
+PRIME_INLINE primeVec4u primeCreateVec4u(u32 x, u32 y, u32 z, u32 w)
+{
+    primeVec4u v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    v.w = w;
+    return v;
+}
 
 struct primeMat2
 {

@@ -3,9 +3,11 @@
 
 #include "defines.h"
 
-enum primeDeviceType
+using primeDeviceType = u32;
+
+enum primeDeviceTypes_
 {
-    PRIME_DEVICE_TYPE_OPENGL
+    primeDeviceTypes_OpenGL
 };
 
 PRIME_API b8 primeInit(primeDeviceType type);

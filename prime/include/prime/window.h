@@ -14,18 +14,18 @@ using primeMovedCallback = void(*)(primeWindow* window, i32 x, i32 y);
 using primeResizedCallback = void(*)(primeWindow* window, u32 width, u32 height);
 using primeFocusedCallback = void(*)(primeWindow* window, b8 focused);
 
-enum primeWindowflags
+enum primeWindowFlags_
 {
-    NONE = 0,
-    PRIME_WINDOW_FLAGS_CENTER = PRIME_BIT(0)
+    primeWindowFlags_None = 0,
+    primeWindowFlags_Center = PRIME_BIT(0)
 };
 
 struct primeWindowDesc
 {
-    primeVec2u size;
+    primeVec2u size = primeCreateVec2u(640, 480);
     primeVec2i pos;
-    const char* title = nullptr;
-    primeWindowFlag flag;
+    const char* title = "prime window";
+    primeWindowFlag flag = primeWindowFlags_None;
 };
 
 PRIME_API primeWindow* primeCreateWindow(primeWindowDesc desc);
