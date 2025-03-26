@@ -23,7 +23,7 @@ b8 contextTest(void* data)
 
     u32 indices[] = {0, 1, 2, 2, 3, 0 };
 
-    primeLayout* layout = primeCreateLayout(context);
+    primeLayout* layout = primeCreateLayout();
     primeAddAttrib(layout, PRIME_DATA_TYPE_FLOAT3, 0, false);
 
     primeBufferDesc buffer_desc;
@@ -31,28 +31,28 @@ b8 contextTest(void* data)
     buffer_desc.size = sizeof(vertices);
     buffer_desc.type = PRIME_BUFFER_TYPE_VERTEX;
     buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
-    primeBuffer* vertex_buffer = primeCreateBuffer(context, buffer_desc);
+    primeBuffer* vertex_buffer = primeCreateBuffer(buffer_desc);
 
     buffer_desc.data = indices;
     buffer_desc.size = sizeof(indices);
     buffer_desc.type = PRIME_BUFFER_TYPE_INDEX;
     buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
-    primeBuffer* index_buffer = primeCreateBuffer(context, buffer_desc);
+    primeBuffer* index_buffer = primeCreateBuffer(buffer_desc);
 
-    primeSetLayout(layout);
+    primeBindLayout(layout);
 
     primeShaderDesc shader_desc;
     shader_desc.load = true;
     shader_desc.vertex_src = "shaders/vertex.glsl";
     shader_desc.pixel_src = "shaders/pixel.glsl";
     shader_desc.source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
-    primeShader* shader = primeCreateShader(context, shader_desc);
+    primeShader* shader = primeCreateShader(shader_desc);
 
     while (!primeWindowShouldClose(window)) {
         primePullEvents();
 
         primeClear(context);
-        primeSetShader(shader);
+        primeBindShader(shader);
         primeSubmit(context, PRIME_DRAW_TYPE_ELEMENTS, PRIME_DRAW_MODE_TRIANGLES, 6);
         primePresent(context);
     }

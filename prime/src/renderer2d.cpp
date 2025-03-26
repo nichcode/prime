@@ -1,7 +1,10 @@
 
-#include "prime/renderer2d.h"
 #include "pch.h"
+#include "prime/renderer2d.h"
 #include "prime/context.h"
+#include "prime/layout.h"
+#include "prime/shader.h"
+#include "prime/buffer.h"
 #include "shader_sources.h"
 
 #define MAX_RENDERABLES 1000
@@ -47,7 +50,7 @@ primeRenderer2D* primeCreateRenderer2D(primeContext* context)
     const primeView* view = primeGetView(context);
     setProjection(renderer, (f32)view->pos.x, (f32)view->pos.y, (f32)view->size.x, (f32)view->size.y);
 
-    renderer->layout = primeCreateLayout(context);
+    renderer->layout = primeCreateLayout();
     primeAddAttrib(renderer->layout, PRIME_DATA_TYPE_FLOAT2, 0, false);
     primeAddAttrib(renderer->layout, PRIME_DATA_TYPE_FLOAT4, 0, false);
     primeAddAttrib(renderer->layout, PRIME_DATA_TYPE_FLOAT, 0, false);
@@ -72,35 +75,33 @@ primeRenderer2D* primeCreateRenderer2D(primeContext* context)
     buffer_desc.size = sizeof(Vertex) * MAX_VERTICES;
     buffer_desc.type = PRIME_BUFFER_TYPE_VERTEX;
     buffer_desc.usage = PRIME_BUFFER_USAGE_DYNAMIC;
-    renderer->vbo = primeCreateBuffer(context, buffer_desc);
+    renderer->vbo = primeCreateBuffer(buffer_desc);
 
     buffer_desc.data = indices;
     buffer_desc.size = sizeof(u32) * MAX_INDICES;
     buffer_desc.type = PRIME_BUFFER_TYPE_INDEX;
     buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
-    renderer->ibo = primeCreateBuffer(context, buffer_desc);
+    renderer->ibo = primeCreateBuffer(buffer_desc);
 
     buffer_desc.data = nullptr;
     buffer_desc.size = sizeof(primeMat4);
     buffer_desc.type = PRIME_BUFFER_TYPE_UNIFORM;
     buffer_desc.usage = PRIME_BUFFER_USAGE_DYNAMIC;
-    renderer->ubo = primeCreateBuffer(context, buffer_desc);
+    renderer->ubo = primeCreateBuffer(buffer_desc);
 
     primeShaderDesc shader_desc;
     shader_desc.load = false;
     shader_desc.vertex_src = s_VertexSource;
     shader_desc.pixel_src = s_PixelSource;
     shader_desc.source_type = PRIME_SHADER_SOURCE_TYPE_GLSL;
-    renderer->shader = primeCreateShader(context, shader_desc);
+    renderer->shader = primeCreateShader(shader_desc);
 
-    primeSetLayout(renderer->layout);
+    primeBindLayout(renderer->layout);
+    primeBindShader(renderer->shader);
 
     renderer->base = new Vertex[MAX_VERTICES];
     renderer->ptr = renderer->base;
-    renderer->color.x = 0.0f;
-    renderer->color.y = 0.0f;
-    renderer->color.z = 0.0f;
-    renderer->color.w = 1.0f;
+    renderer->color = { 0.0f, 0.0f, 0.0f, 1.0f };
     delete[] indices;
     return renderer;
 }
@@ -147,14 +148,10 @@ void primeRenderer2DFlush(primeRenderer2D* renderer)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     if (renderer->indexCount) {
-        primeSetBuffer(renderer->vbo);
         u32 size = (u32)((u8*)renderer->ptr - (u8*)renderer->base);
-        primeSetData(renderer->vbo, renderer->base, size);
+        primeSetBufferData(renderer->vbo, renderer->base, size);
+        primeSetBufferData(renderer->ubo, &renderer->projection, sizeof(primeMat4));
 
-        primeSetBuffer(renderer->ubo);
-        primeSetData(renderer->ubo, &renderer->projection, sizeof(primeMat4));
-
-        primeSetShader(renderer->shader);
         primeSubmit(renderer->context, PRIME_DRAW_TYPE_ELEMENTS, 
                     PRIME_DRAW_MODE_TRIANGLES, renderer->indexCount);
     }

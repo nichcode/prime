@@ -1,7 +1,12 @@
 
 #pragma once
 
-#include "API.h"
+#include "defines.h"
+
+enum primeDeviceType
+{
+    PRIME_DEVICE_TYPE_OPENGL
+};
 
 PRIME_API b8 primeInit(primeDeviceType type);
 PRIME_API void primeShutdown();

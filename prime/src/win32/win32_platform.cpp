@@ -2,6 +2,7 @@
 #include "prime/platform.h"
 #include "win32_API.h"
 #include "wgl_context.h"
+#include "pch.h"
 
 b8 primeInit(primeDeviceType type)
 {
@@ -38,6 +39,31 @@ b8 primeInit(primeDeviceType type)
 void primeShutdown()
 {
     UnregisterClassW(s_ClassName, s_Instance);
+
+    // context
+    for (primeContext* context : s_InitData.contexts) {
+        _primeDeleteContext(context);
+    }
+
+    // buffers
+    for (primeBuffer* buffer : s_InitData.buffers) {
+        _primeDeleteBuffer(buffer);
+    }
+
+    // shaders
+    for (primeShader* shader : s_InitData.shaders) {
+        _primeDeleteShader(shader);
+    }
+
+    // layouts
+    for (primeLayout* layout : s_InitData.layouts) {
+        _primeDeleteLayout(layout);
+    }
+
+    s_InitData.contexts.clear();
+    s_InitData.buffers.clear();
+    s_InitData.shaders.clear();
+    s_InitData.layouts.clear();
 }
 
 i32 multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)

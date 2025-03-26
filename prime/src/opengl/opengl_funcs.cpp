@@ -117,6 +117,7 @@ void loadOpenGLFunctions()
     glUniformMatrix3fv = (PFNGLUNIFORMMATRIX3FVPROC)gl_load("glUniformMatrix3fv");
     glVertexAttribIPointer =  (PFNGLVERTEXATTRIBIPOINTERPROC)gl_load("glVertexAttribIPointer");
     glDrawElements = (PFNGLDRAWELEMENTSPROC)gl_load("glDrawElements");
+    glDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)gl_load("glDisableVertexAttribArray");
 
     primeFreeLibrary(s_Dll);
 }

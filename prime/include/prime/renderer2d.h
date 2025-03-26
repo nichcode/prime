@@ -1,7 +1,11 @@
 
 #pragma once
 
-#include "API.h"
+#include "prime/rect.h"
+#include "prime/maths.h"
+
+struct primeContext;
+struct primeRenderer2D;
 
 PRIME_API primeRenderer2D* primeCreateRenderer2D(primeContext* context);
 PRIME_API void primeDestroyRenderer2D(primeRenderer2D* renderer);

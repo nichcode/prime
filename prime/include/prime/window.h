@@ -1,7 +1,32 @@
 
 #pragma once
 
-#include "API.h"
+#include "prime/maths.h"
+#include "prime/input.h"
+
+using primeWindowFlag = u32;
+using primeCloseCallback = void(*)(primeWindow* window);
+using primeKeyCallback = void(*)(primeWindow* window, u32 key, i32 scancode, u32 action);
+using primeButtonCallback = void(*)(primeWindow* window, u32 button, u32 action);
+using primeMouseMovedCallback = void(*)(primeWindow* window, i32 x, i32 y);
+using primeMouseScrolledCallback = void(*)(primeWindow* window, f32 offsetX, f32 offsetY);
+using primeMovedCallback = void(*)(primeWindow* window, i32 x, i32 y);
+using primeResizedCallback = void(*)(primeWindow* window, u32 width, u32 height);
+using primeFocusedCallback = void(*)(primeWindow* window, b8 focused);
+
+enum primeWindowflags
+{
+    NONE = 0,
+    PRIME_WINDOW_FLAGS_CENTER = PRIME_BIT(0)
+};
+
+struct primeWindowDesc
+{
+    primeVec2u size;
+    primeVec2i pos;
+    const char* title = nullptr;
+    primeWindowFlag flag;
+};
 
 PRIME_API primeWindow* primeCreateWindow(primeWindowDesc desc);
 PRIME_API void primeDestroyWindow(primeWindow* window);

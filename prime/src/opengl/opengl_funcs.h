@@ -91,5 +91,6 @@ static PFNGLUNIFORMMATRIX2FVPROC glUniformMatrix2fv = nullptr;
 static PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv = nullptr;
 static PFNGLVERTEXATTRIBIPOINTERPROC glVertexAttribIPointer = nullptr;
 static PFNGLDRAWELEMENTSPROC glDrawElements = nullptr;
+static PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
 
 void loadOpenGLFunctions();

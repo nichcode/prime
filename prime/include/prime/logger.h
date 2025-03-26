@@ -1,7 +1,15 @@
 
 #pragma once
 
-#include "API.h"
+#include "defines.h"
+
+enum primeLogLevel
+{
+    PRIME_LOG_LEVEL_TRACE,
+    PRIME_LOG_LEVEL_INFO,
+    PRIME_LOG_LEVEL_WARN,
+    PRIME_LOG_LEVEL_ERROR
+};
 
 PRIME_API void primeLog(primeLogLevel level, const char* msg, ...);
 PRIME_API void primeLogTrace(const char* msg, ...);

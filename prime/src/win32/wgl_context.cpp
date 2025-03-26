@@ -111,9 +111,14 @@ void destroyWGLContext(HGLRC context)
     context = nullptr;
 }
 
-void makeWGLContextCurrent(HWND window, HGLRC context)
+void bindWGLContextCurrent(HDC deviceContext, HGLRC context)
 {
-    wglMakeCurrent(GetDC(window), context);
+    wglMakeCurrent(deviceContext, context);
+}
+
+void unbindWGLContextCurrent(HDC deviceContext, HGLRC context)
+{
+    wglMakeCurrent(deviceContext, 0);
 }
 
 void setWGLContextVsync(int interval)

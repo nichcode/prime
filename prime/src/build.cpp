@@ -6,6 +6,9 @@
 #include "logger.cpp"
 #include "context.cpp"
 #include "test.cpp"
+#include "buffer.cpp"
+#include "shader.cpp"
+#include "layout.cpp"
 #include "renderer2d.cpp"
 
 // win32 sources
@@ -17,4 +20,7 @@
 
 // opengl sources
 #include "opengl/opengl_funcs.cpp"
+#include "opengl/opengl_buffer.cpp"
+#include "opengl/opengl_shader.cpp"
+#include "opengl/opengl_layout.cpp"
 #include "opengl/opengl_context.cpp"

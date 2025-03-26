@@ -1,10 +1,10 @@
 
 
-#include "prime/defines.h"
 #include "utils.h"
 #include "prime/string.h"
 #include "prime/logger.h"
 #include "prime/test.h"
+#include "prime/input.h"
 
 #include <stdio.h>
 #include <stdint.h>
