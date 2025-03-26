@@ -5,6 +5,7 @@
             "includePath": [
                 "${workspaceFolder}/prime/include",
                 "${workspaceFolder}/prime/src",
+                "${workspaceFolder}/prime/src/vendor/freetype",
             ],
             "defines": [
                 "PRIME_CONFIG_DEBUG",

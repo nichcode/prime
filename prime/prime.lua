@@ -15,7 +15,8 @@ project "prime"
 
     includedirs {
         "include",
-        "src"    
+        "src",
+        "src/vendor/freetype"
     }
     
     defines {
@@ -25,5 +26,6 @@ project "prime"
     links {
         "opengl32",
         "user32",
-        "gdi32" 
+        "gdi32",
+        "src/vendor/libfreetype",
     }
