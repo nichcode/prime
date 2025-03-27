@@ -124,6 +124,8 @@ void loadOpenGLFunctions()
     glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)gl_load("glRenderbufferStorage");
     glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)gl_load("glFramebufferRenderbuffer");
     glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)gl_load("glDeleteRenderbuffers");
+    glPixelStorei = (PFNGLPIXELSTOREIPROC)gl_load("glPixelStorei");
+    glTexSubImage2D = (PFNGLTEXSUBIMAGE2DPROC)gl_load("glTexSubImage2D");
 
     primeFreeLibrary(s_Dll);
 }

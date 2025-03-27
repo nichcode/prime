@@ -15,6 +15,7 @@ struct primeContext
     void(*bind)(void* handle) = nullptr;
     void(*unbind)(void* handle) = nullptr;
     void(*clear)(void* handle) = nullptr;
+    void(*setblend)(void* handle, primeBlendMode blend) = nullptr;
     void(*setVsync)(void* handle, b8 vsync) = nullptr;
     void(*color)(void* handle, f32 r, f32 g, f32 b, f32 a) = nullptr;
     void(*setView)(void* handle, const primeView* view) = nullptr;
@@ -38,6 +39,7 @@ primeContext* primeCreateContext(primeWindow* window)
             context->unbind = _glUnbindContext;
             context->present = _glPresent;
             context->setVsync = _glSetVsync;
+            context->setblend = _glSetBlendMode;
             context->color = _glSetClearColor;
             context->setView = _glSetView;
             context->submit = _glSubmit;
@@ -120,6 +122,12 @@ void primeSetVsync(primeContext* context, b8 vsync)
 {
     PRIME_ASSERT_MSG(context, "context is null");
     context->setVsync(context->handle, vsync);
+}
+
+void primeSetBlendMode(primeContext* context, primeBlendMode blend)
+{
+    PRIME_ASSERT_MSG(context, "context is null");
+    context->setblend(context->handle, blend);
 }
 
 void primeSetClearColor(primeContext* context, const primeVec4 color)

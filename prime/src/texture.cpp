@@ -15,6 +15,7 @@ struct primeTexture
     void(*unbind)(void* handle) = nullptr;
     void(*bindTarget)(void* handle, u32 width, u32 height) = nullptr;
     void(*unbindTarget)(void* handle) = nullptr;
+    void(*set)(void* handle, u32 x, u32 y, u32 width, u32 height, void* data) = nullptr;
 };
 
 primeTexture* primeCreateTexture(primeTextureDesc desc)
@@ -28,9 +29,12 @@ primeTexture* primeCreateTexture(primeTextureDesc desc)
             texture->unbind = _glUnbindTexture;
             texture->bindTarget = _glBindRenderTarget;
             texture->unbindTarget = _glUnbindRenderTarget;
+            texture->set = _glSetTextureData;
             break;
         } 
     } 
+    texture->size = desc.size;
+    texture->flag = desc.flag;
     s_InitData.textures.push_back(texture);
     return texture;
 }
@@ -82,6 +86,12 @@ void _primeDeleteTexture(primeTexture* texture)
     texture->destroy(texture->handle);
     delete texture;
     texture = nullptr;
+}
+
+void primeSetTextureData(primeTexture* texture, u32 x, u32 y, u32 width, u32 height, void* data)
+{
+    PRIME_ASSERT_MSG(texture, "texture is null");
+    texture->set(texture->handle, x, y, width, height, data);
 }
 
 primeVec2u primeGetTextureSize(primeTexture* texture)

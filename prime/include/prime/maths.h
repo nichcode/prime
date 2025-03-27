@@ -3,6 +3,22 @@
 
 #include "defines.h"
 
+PRIME_INLINE i32 primeMax(i32 a, i32 b)
+{
+    if(a > b) {
+        return a;
+    }
+    return b;
+}
+
+PRIME_INLINE i32 primeMin(i32 a, i32 b)
+{
+    if(a < b) {
+        return a;
+    }
+    return b;
+}
+
 struct primeVec2
 {
     f32 x = 0.0f;

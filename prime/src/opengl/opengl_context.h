@@ -16,5 +16,7 @@ void _glSubmitInstanced(void* context, primeDrawType type, primeDrawMode mode, u
 
 void _glMakeActive(void* context);
 void _glSetVsync(void* context, b8 vsync);
+void _glSetBlendMode(void* context, primeBlendMode blend);
+
 void _glSetClearColor(void* context, f32 r, f32 g, f32 b, f32 a);
 void _glSetView(void* context, const primeView* view);

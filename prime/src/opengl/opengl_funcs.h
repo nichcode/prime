@@ -97,5 +97,7 @@ static PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
 static PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 static PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 static PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+static PFNGLPIXELSTOREIPROC glPixelStorei;
+static PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
 
 void loadOpenGLFunctions();

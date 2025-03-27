@@ -7,13 +7,16 @@ static const char* s_SpriteVertexSource = {
 
     #version 330 core
 
-    layout(location = 0) in vec4 a_Vertex;
+    layout(location = 0) in vec2 a_Position;
     layout(location = 1) in vec4 a_Color;
-    layout(location = 2) in float a_Index;
+    layout(location = 2) in vec2 a_Coords;
+    layout(location = 3) in float a_Index;
+    layout(location = 4) in float a_ID;
 
-    layout(location = 0) out vec4 v_Vertex;
     layout(location = 1) out vec4 v_Color;
-    layout(location = 2) out float v_Index;
+    layout(location = 2) out vec2 v_Coords;
+    layout(location = 3) out float v_Index;
+    layout(location = 4) out float v_ID;
 
     layout(std140) uniform u_ProjectionBlock
     {
@@ -22,10 +25,11 @@ static const char* s_SpriteVertexSource = {
 
     void main()
     {
-        gl_Position = u_ViewProjection * vec4(a_Vertex.xy, 0.0, 1.0);
-        v_Vertex = a_Vertex;
+        gl_Position = u_ViewProjection * vec4(a_Position, 0.0, 1.0);
         v_Color = a_Color;
+        v_Coords = a_Coords;
         v_Index = a_Index;
+        v_ID = a_ID;
     }
 
     )"
@@ -37,18 +41,28 @@ static const char* s_SpritePixelSource = {
 
     #version 330 core
 
-    layout (location = 0) in vec4 v_Vertex;
     layout (location = 1) in vec4 v_Color;
-    layout (location = 2) in float v_Index;
+    layout (location = 2) in vec2 v_Coords;
+    layout (location = 3) in float v_Index;
+    layout (location = 4) in float v_ID;
 
     layout(location = 0) out vec4 color;
 
     uniform sampler2D u_Textures[16];
 
+    float TextureID = 0.0f;
+    float FontID = 1.0f;
+
     void main()
     {
         int index = int(v_Index);
-        color = texture(u_Textures[index], v_Vertex.zw) * v_Color;
+        if (v_ID == TextureID) {
+            color = texture(u_Textures[index], v_Coords) * v_Color;
+        }
+        else if (v_ID == FontID) {
+            vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_Textures[index], v_Coords).r);
+            color = v_Color * sampled;
+        }
     }
 
     )"

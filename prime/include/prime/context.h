@@ -8,6 +8,7 @@ struct primeContext;
 
 using primeDrawType = u32;
 using primeDrawMode = u32;
+using primeBlendMode = u32;
 
 enum primeDrawTypes_
 {
@@ -19,6 +20,12 @@ enum primeDrawModes_
 {
     primeDrawModes_Triangles,
     primeDrawModes_Lines
+};
+
+enum primeBlendModes_
+{
+    primeBlendModes_None,
+    primeBlendModes_Alpha
 };
 
 struct primeView
@@ -39,6 +46,7 @@ PRIME_API void primeSubmit(primeContext* context, primeDrawType type, primeDrawM
 PRIME_API void primeSubmitInstanced(primeContext* context, primeDrawType type, primeDrawMode mode, u32 count, u32 instance_count);
 
 PRIME_API void primeSetVsync(primeContext* context, b8 vsync);
+PRIME_API void primeSetBlendMode(primeContext* context, primeBlendMode blend);
 PRIME_API void primeSetClearColor(primeContext* context, const primeVec4 color);
 PRIME_API void primeSetClearColori(primeContext* context, const primeVec4u color);
 

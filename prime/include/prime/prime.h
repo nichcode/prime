@@ -4,6 +4,7 @@
 #include "buffer.h"
 #include "prime/context.h"
 #include "prime/defines.h"
+#include "prime/font.h"
 #include "input.h"
 #include "layout.h"
 #include "prime/logger.h"

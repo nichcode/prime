@@ -10,14 +10,14 @@ using primeTextureFormat = u32;
 
 enum primeTextureFlags_
 {
-    primeTextureFlags_None = 0,
-    primeTextureFlags_Target = PRIME_BIT(0),
-    primeTextureFlags_Storage = PRIME_BIT(1)
+    primeTextureFlags_None,
+    primeTextureFlags_Target,
+    primeTextureFlags_Storage
 };
 
 enum primeTextureFormats_
 {
-    primeTextureFormat_Red,
+    primeTextureFormat_R8,
     primeTextureFormat_RGB8,
     primeTextureFormat_RGB16,
     primeTextureFormat_RGB16F,
@@ -33,11 +33,14 @@ struct primeTextureDesc
     primeTextureFlag flag = primeTextureFlags_None;
     primeTextureFormat format = primeTextureFormat_RGBA8;
     primeVec2u size = primeCreateVec2u(1, 1);
+    void* data = nullptr;
 };
 
 PRIME_API primeTexture* primeCreateTexture(primeTextureDesc desc);
 PRIME_API primeTexture* primeLoadTexture(const char* filepath);
 PRIME_API void primeDestroyTexture(primeTexture* texture);
+
+PRIME_API void primeSetTextureData(primeTexture* texture, u32 x, u32 y, u32 width, u32 height, void* data);
 
 PRIME_API primeVec2u primeGetTextureSize(primeTexture* texture);
 

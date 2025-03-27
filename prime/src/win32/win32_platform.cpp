@@ -33,9 +33,6 @@ b8 primeInit(primeDeviceType type)
     }
     
     initInput();
-    int freetype_success = FT_Init_FreeType(&s_Library);
-    PRIME_ASSERT_MSG(!freetype_success, "Freetype initialization failed!");
-    
     return PRIME_PASSED;
 }
 
@@ -68,6 +65,11 @@ void primeShutdown()
         _primeDeleteTexture(texture);
     }
 
+    // font
+    for (primeFont* font : s_InitData.fonts) {
+        _primeDeleteFont(font);
+    }
+
     s_InitData.activeContext = nullptr;
     s_InitData.activeBuffer = nullptr;
     s_InitData.activeShader = nullptr;
@@ -80,8 +82,7 @@ void primeShutdown()
     s_InitData.shaders.clear();
     s_InitData.layouts.clear();
     s_InitData.textures.clear();
-
-    FT_Done_FreeType(s_Library);
+    s_InitData.fonts.clear();
 }
 
 i32 multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)

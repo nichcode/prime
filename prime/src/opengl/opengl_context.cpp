@@ -134,3 +134,18 @@ void _glSetView(void* context, const primeView* view)
 {
     glViewport(view->pos.x, view->pos.y, view->size.x, view->size.y);
 }
+
+void _glSetBlendMode(void* context, primeBlendMode blend)
+{
+    switch (blend) {
+        case primeBlendModes_None: {
+            glDisable(GL_BLEND);
+            break;
+        }
+        case primeBlendModes_Alpha: {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            break;
+        }
+    }
+}

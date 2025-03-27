@@ -6,17 +6,22 @@
 #include "prime/shader.h"
 #include "prime/buffer.h"
 #include "prime/texture.h"
+#include "prime/font.h"
 #include "shader_sources.h"
 
 #define MAX_RENDERABLES 1000
 #define MAX_VERTICES MAX_RENDERABLES * 4
 #define MAX_INDICES MAX_RENDERABLES * 6
+#define TEXTURE_ID 0.0f
+#define FONT_ID 1.0f
 
 struct SpriteVertex
 {
-    primeVec4 vertex;
+    primeVec2 pos;
     primeVec4 color;
+    primeVec2 coords;
     f32 index;
+    f32 id;
 };
 
 struct primeRenderer2D
@@ -26,6 +31,10 @@ struct primeRenderer2D
     primeMat4 projection;
     primeVec4 color;
     primeVec4 tintColor;
+    primeVec4 textColor;
+    primeFont* font = nullptr;
+    f32 fontScale = 1.0f;
+    f32 textureScale = 1.0f;
 
     // sprite
     primeBuffer* spriteVbo = nullptr;
@@ -72,8 +81,10 @@ f32 getTextureIndex(primeRenderer2D* renderer, primeTexture* texture)
 void initSprites(primeRenderer2D* renderer)
 {
     renderer->spriteLayout = primeCreateLayout();
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float2, 0, false);
     primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float4, 0, false);
-    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float4, 0, false);
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float2, 0, false);
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float, 0, false);
     primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float, 0, false);
 
     u32* indices = new u32[MAX_INDICES];
@@ -121,6 +132,7 @@ void initSprites(primeRenderer2D* renderer)
     renderer->spritePtr = renderer->spriteBase;
     renderer->color = { 0.0f, 0.0f, 0.0f, 1.0f };
     renderer->tintColor = { 1.0f, 1.0f, 1.0f, 1.0f };
+    renderer->textColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 
     delete[] indices;
 }
@@ -158,6 +170,7 @@ primeRenderer2D* primeCreateRenderer2D(primeContext* context)
 
     setProjection(renderer, view);
     initSprites(renderer);
+    primeSetBlendMode(context, primeBlendModes_Alpha);
     return renderer;
 }
 
@@ -174,83 +187,73 @@ void primeDestroyRenderer2D(primeRenderer2D* renderer)
 void primeDrawRect(primeRenderer2D* renderer, const primeRect rect)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    renderer->spritePtr->vertex.x = rect.x;
-    renderer->spritePtr->vertex.y = rect.y;
-    renderer->spritePtr->vertex.z = renderer->coords[0].x;
-    renderer->spritePtr->vertex.w = renderer->coords[0].y;
+    renderer->spritePtr->pos = { rect.x, rect.y };
+    renderer->spritePtr->coords = renderer->coords[0];
     renderer->spritePtr->color = renderer->color;
     renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr->id = TEXTURE_ID;
     renderer->spritePtr++;
 
-    renderer->spritePtr->vertex.x = rect.x + rect.width;
-    renderer->spritePtr->vertex.y = rect.y;
-    renderer->spritePtr->vertex.z = renderer->coords[1].x;
-    renderer->spritePtr->vertex.w = renderer->coords[1].y;
+    renderer->spritePtr->pos = {rect.x + rect.width, rect.y };
+    renderer->spritePtr->coords = renderer->coords[1];
     renderer->spritePtr->color = renderer->color;
     renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr->id = TEXTURE_ID;
     renderer->spritePtr++;
 
-    renderer->spritePtr->vertex.x = rect.x + rect.width;
-    renderer->spritePtr->vertex.y = rect.y + rect.height;
-    renderer->spritePtr->vertex.z = renderer->coords[2].x;
-    renderer->spritePtr->vertex.w = renderer->coords[2].y;
+    renderer->spritePtr->pos = { rect.x + rect.width, rect.y + rect.height };
+    renderer->spritePtr->coords = renderer->coords[2];
     renderer->spritePtr->color = renderer->color;
     renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr->id = TEXTURE_ID;
     renderer->spritePtr++;
 
-    renderer->spritePtr->vertex.x = rect.x;
-    renderer->spritePtr->vertex.y = rect.y + rect.height;
-    renderer->spritePtr->vertex.z = renderer->coords[3].x;
-    renderer->spritePtr->vertex.w = renderer->coords[3].y;
+    renderer->spritePtr->pos = { rect.x, rect.y + rect.height };
+    renderer->spritePtr->coords = renderer->coords[3];
     renderer->spritePtr->color = renderer->color;
     renderer->spritePtr->index = 0.0f;
+    renderer->spritePtr->id = TEXTURE_ID;
     renderer->spritePtr++;
 
     renderer->spriteIndexCount += 6;
 }
 
-void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos, 
-                                primeTexture* texture, const primeVec2 scale)
+void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos, primeTexture* texture)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
 
     if (texture) {
-        primeVec2u texture_size = primeGetTextureSize(texture);
-        primeVec2 size;
-        size.x = (f32)texture_size.x * scale.x;
-        size.y = (f32)texture_size.y * scale.y;
+        primeVec2u size = primeGetTextureSize(texture);
+        size.x *= renderer->textureScale;
+        size.y *= renderer->textureScale;
         f32 index = getTextureIndex(renderer, texture);
 
-        renderer->spritePtr->vertex.x = pos.x;
-        renderer->spritePtr->vertex.y = pos.y;
-        renderer->spritePtr->vertex.z = renderer->coords[0].x;
-        renderer->spritePtr->vertex.w = renderer->coords[0].y;
+        renderer->spritePtr->pos = { pos.x, pos.y };
+        renderer->spritePtr->coords = renderer->coords[0];
         renderer->spritePtr->color = renderer->tintColor;
         renderer->spritePtr->index = index;
+        renderer->spritePtr->id = TEXTURE_ID;
         renderer->spritePtr++;
 
-        renderer->spritePtr->vertex.x = pos.x + size.x;
-        renderer->spritePtr->vertex.y = pos.y;
-        renderer->spritePtr->vertex.z = renderer->coords[1].x;
-        renderer->spritePtr->vertex.w = renderer->coords[1].y;
+        renderer->spritePtr->pos = { pos.x + (f32)size.x, pos.y };
+        renderer->spritePtr->coords = renderer->coords[1];
         renderer->spritePtr->color = renderer->tintColor;
         renderer->spritePtr->index = index;
+        renderer->spritePtr->id = TEXTURE_ID;
         renderer->spritePtr++;
 
-        renderer->spritePtr->vertex.x = pos.x + size.x;
-        renderer->spritePtr->vertex.y = pos.y + size.y;
-        renderer->spritePtr->vertex.z = renderer->coords[2].x;
-        renderer->spritePtr->vertex.w = renderer->coords[2].y;
+        renderer->spritePtr->pos = { pos.x + (f32)size.x, pos.y + (f32)size.y };
+        renderer->spritePtr->coords = renderer->coords[2];
         renderer->spritePtr->color = renderer->tintColor;
         renderer->spritePtr->index = index;
+        renderer->spritePtr->id = TEXTURE_ID;
         renderer->spritePtr++;
 
-        renderer->spritePtr->vertex.x = pos.x;
-        renderer->spritePtr->vertex.y = pos.y + size.y;
-        renderer->spritePtr->vertex.z = renderer->coords[3].x;
-        renderer->spritePtr->vertex.w = renderer->coords[3].y;
+        renderer->spritePtr->pos = { pos.x, pos.y + (f32)size.y };
+        renderer->spritePtr->coords = renderer->coords[3];
         renderer->spritePtr->color = renderer->tintColor;
         renderer->spritePtr->index = index;
+        renderer->spritePtr->id = TEXTURE_ID;
         renderer->spritePtr++;
 
         renderer->spriteIndexCount += 6;
@@ -258,6 +261,81 @@ void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos,
     else {
         primeDrawRect(renderer, { pos.x, pos.y, 50.0f, 50.0f });
     }
+}
+
+void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 pos)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    PRIME_ASSERT_MSG(renderer->font, "renderer font is null");
+    if(!text) { return; }
+    primeTexture* texture = primeGetFontTexture(renderer->font);
+    f32 index = getTextureIndex(renderer, texture);
+    f32 size = (f32)primeGetTextureSize(texture).x;
+    primeVec2 origin = pos;
+
+    b8 first_char = true;
+    f32 x = 0;
+    f32 y = 0;
+    f32 base = primeGetFontBaseLine(renderer->font);
+
+    while(char c = *(text++)) {
+        auto glyph = primeGetFontGlyph(renderer->font, c);
+        if (first_char) {
+            x = origin.x * renderer->fontScale;
+            y = origin.y * renderer->fontScale;
+            first_char = false;
+        }
+        else {
+            x = origin.x + glyph.offset.x * renderer->fontScale;
+            y = origin.y + (base - glyph.offset.y) * renderer->fontScale;
+        }
+        
+        f32 width = (f32)glyph.size.x * renderer->fontScale;
+        f32 height = (f32)glyph.size.y * renderer->fontScale;
+        
+        f32 left = (f32)glyph.index.x / size;
+        f32 top = (f32)glyph.index.y / size;
+        f32 right = (f32)(glyph.index.x + glyph.size.x) / size;
+        f32 bottom = (f32)(glyph.index.y + glyph.size.y) / size;
+
+        renderer->spritePtr->pos = { x, y };
+        renderer->spritePtr->coords = { left, top };
+        renderer->spritePtr->color = renderer->textColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr->id = FONT_ID;
+        renderer->spritePtr++;
+
+        renderer->spritePtr->pos = { x + width, y };
+        renderer->spritePtr->coords = { right, top };
+        renderer->spritePtr->color = renderer->textColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr->id = FONT_ID;
+        renderer->spritePtr++;
+
+        renderer->spritePtr->pos = { x + width, y + height };
+        renderer->spritePtr->coords = { right, bottom };
+        renderer->spritePtr->color = renderer->textColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr->id = FONT_ID;
+        renderer->spritePtr++;
+
+        renderer->spritePtr->pos = { x, y + height };
+        renderer->spritePtr->coords = { left, bottom };
+        renderer->spritePtr->color = renderer->textColor;
+        renderer->spritePtr->index = index;
+        renderer->spritePtr->id = FONT_ID;
+        renderer->spritePtr++;
+
+        renderer->spriteIndexCount += 6;
+        origin.x += glyph.advance.x * renderer->fontScale; 
+    }
+}
+
+void primeSetFont(primeRenderer2D* renderer, primeFont* font)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is nullptr");
+    PRIME_ASSERT_MSG(font, "font is nullptr");
+    renderer->font = font;
 }
 
 void primeRenderer2DFlush(primeRenderer2D* renderer)
@@ -280,6 +358,18 @@ void primeRenderer2DFlush(primeRenderer2D* renderer)
     renderer->spritePtr = renderer->spriteBase;
     renderer->spriteIndexCount = 0;
     renderer->textureIndex = 1;
+}
+
+void primeRenderer2DSetFontScale(primeRenderer2D* renderer, f32 scale)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    renderer->fontScale = scale;
+}
+
+void primeRenderer2DSetTextureScale(primeRenderer2D* renderer, f32 scale)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    renderer->textureScale = scale;
 }
 
 void primeSetDrawColor(primeRenderer2D* renderer, const primeVec4 color)
@@ -310,4 +400,19 @@ void primeSetTintColori(primeRenderer2D* renderer, const primeVec4u color)
     renderer->tintColor.y = (f32)color.y / 255.0f;
     renderer->tintColor.z = (f32)color.z / 255.0f;
     renderer->tintColor.w = (f32)color.w / 255.0f;
+}
+
+void primeSetTextColor(primeRenderer2D* renderer, const primeVec4 color)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    renderer->textColor = color;
+}
+
+void primeSetTextColori(primeRenderer2D* renderer, const primeVec4u color)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    renderer->textColor.x = (f32)color.x / 255.0f;
+    renderer->textColor.y = (f32)color.y / 255.0f;
+    renderer->textColor.z = (f32)color.z / 255.0f;
+    renderer->textColor.w = (f32)color.w / 255.0f;
 }

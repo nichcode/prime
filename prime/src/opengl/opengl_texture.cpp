@@ -13,44 +13,9 @@ static u32 s_TextureData = 0xffffffff;
 PRIME_INLINE GLenum dataFormatToGL(primeTextureFormat format)
 {
     switch (format) {
-        case primeTextureFormat_Red:
-            return GL_RED;
-            break;
-
-        case primeTextureFormat_RGB8:
-        case primeTextureFormat_RGB16:
-            return GL_RGB;
-            break;
-
-        case primeTextureFormat_RGB16F:
-            return GL_RGB16F;
-            break;
-
-        case primeTextureFormat_RGB32F:
-            return GL_RGB32F;
-            break;
-
-        case primeTextureFormat_RGBA8:
-        case primeTextureFormat_RGBA16:
-            return GL_RGBA;
-            break;
-
-        case primeTextureFormat_RGBA16F:
-            return GL_RGBA16F;
-            break;
-
-        case primeTextureFormat_RGBA32F:
-            return GL_RGBA32F;
-            break;
-    }
-    return 0;
-}
-
-PRIME_INLINE GLenum intFormatToGL(primeTextureFormat format)
-{
-    switch (format) {
-        case primeTextureFormat_Red:
-            return GL_RED;
+        case primeTextureFormat_R8:
+            glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+            return GL_R8;
             break;
 
         case primeTextureFormat_RGB8:
@@ -88,11 +53,36 @@ PRIME_INLINE GLenum intFormatToGL(primeTextureFormat format)
     return 0;
 }
 
+PRIME_INLINE GLenum intFormatToGL(primeTextureFormat format)
+{
+    switch (format) {
+        case primeTextureFormat_R8:
+            return GL_RED;
+            break;
+
+        case primeTextureFormat_RGB8:
+        case primeTextureFormat_RGB16:
+        case primeTextureFormat_RGB16F:
+        case primeTextureFormat_RGB32F:
+            return GL_RGB;
+            break;
+
+        case primeTextureFormat_RGBA8:
+        case primeTextureFormat_RGBA16:
+        case primeTextureFormat_RGBA16F:
+        case primeTextureFormat_RGBA32F:
+            return GL_RGBA;
+            break;
+    }
+    return 0;
+}
+
 struct glTexture
 {
     u32 id = 0;
     u32 buffer = 0;
     u32 depth = 0;
+    u32 int_format = 0;
 };
 
 void* _glCreateTexture(primeTextureDesc desc)
@@ -100,8 +90,9 @@ void* _glCreateTexture(primeTextureDesc desc)
     glTexture* texture = new glTexture();
     u32 data_format = dataFormatToGL(desc.format);
     u32 int_format = intFormatToGL(desc.format);
+    texture->int_format = int_format;
 
-    if (desc.flag & primeTextureFlags_Target) {
+    if (desc.flag == primeTextureFlags_Target) {
         glGenFramebuffers(1, &texture->buffer);
         glBindFramebuffer(GL_FRAMEBUFFER, texture->buffer);
 
@@ -114,8 +105,8 @@ void* _glCreateTexture(primeTextureDesc desc)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTexImage2D( GL_TEXTURE_2D, 0, int_format, desc.size.x, desc.size.y,
-                      0, data_format, GL_UNSIGNED_BYTE, nullptr);
+        glTexImage2D( GL_TEXTURE_2D, 0, data_format, desc.size.x, desc.size.y,
+                      0, int_format, GL_UNSIGNED_BYTE, nullptr);
         
         glGenerateMipmap(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -145,14 +136,22 @@ void* _glCreateTexture(primeTextureDesc desc)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    if (desc.flag & primeTextureFlags_Storage) {
-        glTexImage2D( GL_TEXTURE_2D, 0, int_format, desc.size.x, desc.size.y,
-                    0, data_format, GL_UNSIGNED_BYTE, nullptr);
+    if (desc.flag == primeTextureFlags_Storage) {
+        glTexImage2D( GL_TEXTURE_2D, 0, data_format, desc.size.x, desc.size.y,
+                    0, int_format, GL_UNSIGNED_BYTE, desc.data);
+
+        return texture;
     }
-    glTexImage2D( GL_TEXTURE_2D, 0, int_format, desc.size.x, desc.size.y,
-                    0, data_format, GL_UNSIGNED_BYTE, &s_TextureData);
+    glTexImage2D( GL_TEXTURE_2D, 0, data_format, desc.size.x, desc.size.y,
+                    0, int_format, GL_UNSIGNED_BYTE, &s_TextureData);
 
     return texture;
+}
+
+void _glSetTextureData(void* handle, u32 x, u32 y, u32 width, u32 height, void* data)
+{
+    glTexture* texture = (glTexture*)handle;
+    glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, width, height, texture->int_format, GL_UNSIGNED_BYTE, data);
 }
 
 void* _glLoadTexture(const char* filepath, u32* width, u32* height)
@@ -164,15 +163,16 @@ void* _glLoadTexture(const char* filepath, u32* width, u32* height)
 
         GLenum int_fmt = 0, data_fmt = 0;
         if (channels == 4) {
-            int_fmt = GL_RGBA8;
-            data_fmt = GL_RGBA;
+            data_fmt = GL_RGBA8;
+            int_fmt = GL_RGBA;
         }
         else if (channels == 3) {
-            int_fmt = GL_RGB8;
-            data_fmt = GL_RGB;
+            data_fmt = GL_RGB8;
+            int_fmt = GL_RGB;
         }
 
         PRIME_ASSERT_MSG(int_fmt & data_fmt, "Format not supported!");
+        texture->int_format = int_fmt;
 
         glGenTextures(1, &texture->id);
         glBindTexture(GL_TEXTURE_2D, texture->id);
@@ -182,7 +182,7 @@ void* _glLoadTexture(const char* filepath, u32* width, u32* height)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        glTexImage2D( GL_TEXTURE_2D, 0, int_fmt, w, h, 0, data_fmt, GL_UNSIGNED_BYTE, data);
+        glTexImage2D( GL_TEXTURE_2D, 0, data_fmt, w, h, 0, int_fmt, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         *width = w;
