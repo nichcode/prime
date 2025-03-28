@@ -65,7 +65,7 @@ static const char* s_SpritePixelSource = {
         else if (v_ID == FontID) {
             float distance = 1.0 - texture(u_Textures[index], v_Coords).r;
             float alpha = 1.0 - smoothstep(width, width + edge, distance);
-            color = vec4(1.0, 0.0, 0.0, alpha);
+            color = vec4(v_Color.x, v_Color.y, v_Color.z, alpha);
         }
     }
 

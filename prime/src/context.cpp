@@ -28,7 +28,7 @@ struct primeContext
 primeContext* primeCreateContext(primeWindow* window)
 {
     primeContext* context = new primeContext();
-    context->view.size = *primeGetWindowSize(window);
+    context->view.size = primeGetWindowSize(window);
 
     switch (s_InitData.type) {
         case primeDeviceTypes_OpenGL: {
@@ -136,7 +136,7 @@ void primeSetClearColor(primeContext* context, const primeVec4 color)
     context->color(context->handle, color.x, color.y, color.z, color.w);
 }
 
-void primeSetClearColori(primeContext* context, const primeVec4u color)
+void primeSetClearColori(primeContext* context, const primeVec4i color)
 {
     PRIME_ASSERT_MSG(context, "context is null");
     f32 fr = (f32)color.x / 255.0f;

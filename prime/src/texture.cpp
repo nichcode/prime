@@ -7,7 +7,7 @@
 struct primeTexture
 {
     void* handle = nullptr;
-    primeVec2u size;
+    primeVec2i size;
     primeTextureFlag flag;
 
     void(*destroy)(void* handle) = nullptr;
@@ -94,7 +94,7 @@ void primeSetTextureData(primeTexture* texture, u32 x, u32 y, u32 width, u32 hei
     texture->set(texture->handle, x, y, width, height, data);
 }
 
-primeVec2u primeGetTextureSize(primeTexture* texture)
+primeVec2i primeGetTextureSize(primeTexture* texture)
 {
     PRIME_ASSERT_MSG(texture, "texture is null");
     return texture->size;

@@ -18,8 +18,6 @@ struct primeShader
     void(*setFloat2)(void* handle, const char* name, primeVec2 data) = nullptr;
     void(*setFloat3)(void* handle, const char* name, primeVec3 data) = nullptr;
     void(*setFloat4)(void* handle, const char* name, primeVec4 data) = nullptr;
-    void(*setMat2)(void* handle, const char* name, primeMat2 data) = nullptr;
-    void(*setMat3)(void* handle, const char* name, primeMat3 data) = nullptr;
     void(*setMat4)(void* handle, const char* name, primeMat4 data) = nullptr;
 };
 
@@ -39,8 +37,6 @@ primeShader* primeCreateShader(primeShaderDesc desc)
             shader->setFloat2 = _glSetFloat2;
             shader->setFloat3 = _glSetFloat3;
             shader->setFloat4 = _glSetFloat4;
-            shader->setMat2 = _glSetMat2;
-            shader->setMat3 = _glSetMat3;
             shader->setMat4 = _glSetMat4;
             break;
         } 
@@ -104,18 +100,6 @@ void primeSetFloat4(primeShader* shader, const char* name, primeVec4 data)
 {
     PRIME_ASSERT_MSG(shader, "shader is null");
     shader->setFloat4(shader->handle, name, data);
-}
-
-void primeSetMat2(primeShader* shader, const char* name, primeMat2 data)
-{
-    PRIME_ASSERT_MSG(shader, "shader is null");
-    shader->setMat2(shader->handle, name, data);
-}
-
-void primeSetMat3(primeShader* shader, const char* name, primeMat3 data)
-{
-    PRIME_ASSERT_MSG(shader, "shader is null");
-    shader->setMat3(shader->handle, name, data);
 }
 
 void primeSetMat4(primeShader* shader, const char* name, primeMat4 data)

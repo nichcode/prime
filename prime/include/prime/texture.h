@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "prime/maths.h"
+#include "prime/vec2i.h"
 
 struct primeTexture;
 struct primeSubTexture;
@@ -33,7 +33,7 @@ struct primeTextureDesc
 {
     primeTextureFlag flag = primeTextureFlags_None;
     primeTextureFormat format = primeTextureFormat_RGBA8;
-    primeVec2u size = primeCreateVec2u(1, 1);
+    primeVec2i size = primeCreateVec2i(1, 1);
     void* data = nullptr;
 };
 
@@ -46,7 +46,7 @@ PRIME_API void primeDestroySubTexture(primeSubTexture* sub_texture);
 
 PRIME_API void primeSetTextureData(primeTexture* texture, u32 x, u32 y, u32 width, u32 height, void* data);
 
-PRIME_API primeVec2u primeGetTextureSize(primeTexture* texture);
+PRIME_API primeVec2i primeGetTextureSize(primeTexture* texture);
 
 PRIME_API void primeBindTexture(primeTexture* texture, u32 slot);
 PRIME_API void primeUnbindTexture(primeTexture* texture);

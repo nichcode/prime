@@ -62,6 +62,7 @@ using b8 = bool;
 #define PRIME_LINE __LINE__
 #define PRIME_FILE __FILE__
 #define PRIME_MAX_TEXTURE_SLOTS 16
+#define PRIME_PI 3.14159265358979323846f
 
 #define PRIME_BIT(x) 1 << x
 

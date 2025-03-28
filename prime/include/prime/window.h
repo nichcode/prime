@@ -1,8 +1,10 @@
 
 #pragma once
 
-#include "prime/maths.h"
 #include "prime/input.h"
+#include "prime/vec2i.h"
+
+struct primeWindow;
 
 using primeWindowFlag = u32;
 using primeCloseCallback = void(*)(primeWindow* window);
@@ -22,7 +24,7 @@ enum primeWindowFlags_
 
 struct primeWindowDesc
 {
-    primeVec2u size = primeCreateVec2u(640, 480);
+    primeVec2i size = primeCreateVec2i(640, 480);
     primeVec2i pos;
     const char* title = "prime window";
     primeWindowFlag flag = primeWindowFlags_None;
@@ -37,7 +39,7 @@ PRIME_API void primeShowWindow(primeWindow* window);
 PRIME_API void primeResetCallbacks();
 
 PRIME_API void primeSetWindowPos(primeWindow* window, primeVec2i pos);
-PRIME_API void primeSetWindowSize(primeWindow* window, primeVec2u size);
+PRIME_API void primeSetWindowSize(primeWindow* window, primeVec2i size);
 PRIME_API void primeSetWindowTitle(primeWindow* window, const char* title);
 
 PRIME_API void primeSetCloseCallback(primeCloseCallback callback);
@@ -51,8 +53,8 @@ PRIME_API void primeSetFocusedCallback(primeFocusedCallback callback);
 
 PRIME_API b8 primeWindowShouldClose(primeWindow* window);
 PRIME_API const void* primeGetWindowHandle(primeWindow* window);
-PRIME_API const primeVec2i* primeGetWindowPos(primeWindow* window);
-PRIME_API const primeVec2u* primeGetWindowSize(primeWindow* window);
+PRIME_API primeVec2i primeGetWindowPos(primeWindow* window);
+PRIME_API primeVec2i primeGetWindowSize(primeWindow* window);
 PRIME_API const char* primeGetWindowTitle(primeWindow* window);
 
 PRIME_API b8 primeGetKeyState(primeWindow* window, u32 key);

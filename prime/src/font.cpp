@@ -31,10 +31,10 @@ primeFont* primeLoadFont(const char* filepath, u32 size)
     }
 
     FT_Set_Pixel_Sizes(font_face, 0, size);
-    u32 padding = 2;
-    u32 row = 0;
-    u32 col = padding;
-    static u32 texture_size = 512;
+    i32 padding = 2;
+    i32 row = 0;
+    i32 col = padding;
+    static i32 texture_size = 512;
     char buffer[texture_size  * texture_size];
     primeFont* font = new primeFont();
     FT_GlyphSlot slot =  font_face->glyph;

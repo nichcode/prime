@@ -2,7 +2,7 @@
 #pragma once
 
 #include "defines.h"
-#include "prime/maths.h"
+#include "prime/mat4.h"
 
 struct primeShader;
 
@@ -30,8 +30,6 @@ PRIME_API void primeSetFloat(primeShader* shader, const char* name, f32 data);
 PRIME_API void primeSetFloat2(primeShader* shader, const char* name, primeVec2 data);
 PRIME_API void primeSetFloat3(primeShader* shader, const char* name, primeVec3 data);
 PRIME_API void primeSetFloat4(primeShader* shader, const char* name, primeVec4 data);
-PRIME_API void primeSetMat2(primeShader* shader, const char* name, primeMat2 data);
-PRIME_API void primeSetMat3(primeShader* shader, const char* name, primeMat3 data);
 PRIME_API void primeSetMat4(primeShader* shader, const char* name, primeMat4 data);
 
 PRIME_API void primeBindShader(primeShader* shader);

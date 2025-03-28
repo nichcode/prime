@@ -12,6 +12,7 @@
 #include "renderer2d.cpp"
 #include "texture.cpp"
 #include "font.cpp"
+#include "maths.cpp"
 
 // win32 sources
 #ifdef PRIME_PLATFORM_WINDOWS

@@ -28,9 +28,12 @@ b8 renderer2dTest(void* data)
     primeSubTexture* ship3 = primeGetSubTexture(sheet, 247, 84, 99, 75);
 
     primeSetFontScale(renderer, 1.0f);
+    f32 rotation = 0.0f;
 
     while (!primeWindowShouldClose(window)) {
         primePullEvents();
+
+        rotation += 3.0f;
 
         primeClear(context);
         primeSetTexture(renderer, texture);
@@ -47,6 +50,12 @@ b8 renderer2dTest(void* data)
         primeDrawSubTexture(renderer, ship, { 400.0f, 200.0f });
         primeDrawSubTexture(renderer, ship2, { 400.0f, 300.0f });
         primeDrawSubTexture(renderer, ship3, { 400.0f, 400.0f });
+
+        primeSetAnchor(renderer, primeAnchors_Center);
+        primeDrawRectEx(renderer, { 100.0f, 100.0f, 50.0f, 50.0f }, rotation);
+        
+        primeSetAnchor(renderer, primeAnchors_TopLeft);
+        primeDrawRectEx(renderer, { 100.0f, 200.0f, 50.0f, 50.0f }, rotation);
 
         primeFlush(renderer);
         primePresent(context);

@@ -36,6 +36,7 @@ struct primeRenderer2D
     primeTexture* texture = nullptr;
     f32 fontScale = 1.0f;
     f32 textureScale = 1.0f;
+    primeAnchor anchor;
 
     // sprite
     primeBuffer* spriteVbo = nullptr;
@@ -48,6 +49,7 @@ struct primeRenderer2D
 
     std::vector<primeTexture*> textures;
     primeVec2 coords[4]{};
+    primeVec4 vertices[4]{};
     f32 textureIndex = 1;
 };
 
@@ -135,6 +137,11 @@ void initSprites(primeRenderer2D* renderer)
     renderer->tintColor = { 1.0f, 1.0f, 1.0f, 1.0f };
     renderer->textColor = { 1.0f, 0.0f, 0.0f, 1.0f };
 
+    renderer->vertices[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    renderer->vertices[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    renderer->vertices[2] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    renderer->vertices[3] = { 0.0f, 1.0f, 0.0f, 1.0f };
+
     delete[] indices;
 }
 
@@ -219,11 +226,59 @@ void primeDrawRect(primeRenderer2D* renderer, const primeRect rect)
     renderer->spriteIndexCount += 6;
 }
 
+void primeDrawRectEx(primeRenderer2D* renderer, const primeRect rect, f32 rotation)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    if (rotation) {
+        primeMat4 transform;
+
+        switch (renderer->anchor) {
+            case primeAnchors_Center: {
+                primeVec2 origin;
+                origin.x = rect.width / 2.0f;
+                origin.y = rect.height / 2.0f;
+
+                transform = primeTranslate({ rect.x + origin.x, rect.y + origin.y, 0.0f })
+                            * primeRotateZ(rotation)
+                            * primeTranslate({ -origin.x, -origin.y, 0.0f })
+                            * primeScale({ rect.width, rect.height, 1.0f });
+                            
+                break;
+            }
+        
+            case primeAnchors_TopLeft: {
+                transform = primeTranslate({ rect.x, rect.y, 0.0f })
+                    * primeRotateZ(rotation) 
+                    * primeScale({ rect.width, rect.height, 1.0f });
+                
+                break;
+            }
+        } // switch
+
+        for (size_t i = 0; i < 4; i++) {
+            primeVec4 position = transform * renderer->vertices[i];
+            renderer->spritePtr->pos.x = position.x;
+            renderer->spritePtr->pos.y = position.y;
+
+            renderer->spritePtr->coords = renderer->coords[0];
+            renderer->spritePtr->color = renderer->color;
+            renderer->spritePtr->index = 0.0f;
+            renderer->spritePtr->id = TEXTURE_ID;
+            renderer->spritePtr++;
+        }
+
+        renderer->spriteIndexCount += 6;
+    }
+    else {
+        primeDrawRect(renderer, rect);
+    }
+}
+
 void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     if (renderer->texture) {
-        primeVec2u size = primeGetTextureSize(renderer->texture);
+        primeVec2i size = primeGetTextureSize(renderer->texture);
         size.x *= renderer->textureScale;
         size.y *= renderer->textureScale;
         f32 index = getTextureIndex(renderer, renderer->texture);
@@ -358,6 +413,12 @@ void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 
     }
 }
 
+void primeSetAnchor(primeRenderer2D* renderer, primeAnchor anchor)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is nullptr");
+    renderer->anchor = anchor;
+}
+
 void primeSetTexture(primeRenderer2D* renderer, primeTexture* texture)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is nullptr");
@@ -412,7 +473,7 @@ void primeSetDrawColor(primeRenderer2D* renderer, const primeVec4 color)
     renderer->color = color;
 }
 
-void primeSetDrawColori(primeRenderer2D* renderer, const primeVec4u color)
+void primeSetDrawColori(primeRenderer2D* renderer, const primeVec4i color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->color.x = (f32)color.x / 255.0f;
@@ -427,7 +488,7 @@ void primeSetTintColor(primeRenderer2D* renderer, const primeVec4 color)
     renderer->tintColor = color;
 }
 
-void primeSetTintColori(primeRenderer2D* renderer, const primeVec4u color)
+void primeSetTintColori(primeRenderer2D* renderer, const primeVec4i color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->tintColor.x = (f32)color.x / 255.0f;
@@ -442,7 +503,7 @@ void primeSetTextColor(primeRenderer2D* renderer, const primeVec4 color)
     renderer->textColor = color;
 }
 
-void primeSetTextColori(primeRenderer2D* renderer, const primeVec4u color)
+void primeSetTextColori(primeRenderer2D* renderer, const primeVec4i color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->textColor.x = (f32)color.x / 255.0f;

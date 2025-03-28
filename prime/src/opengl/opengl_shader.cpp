@@ -157,20 +157,6 @@ void _glSetFloat4(void* handle, const char* name, primeVec4 data)
     glUniform4f(location, data.x, data.y, data.z, data.w);
 }
 
-void _glSetMat2(void* handle, const char* name, primeMat2 data)
-{
-    glShader* shader = (glShader*)handle;
-    GLint location = glGetUniformLocation(shader->id, name);
-    glUniformMatrix2fv(location, 1, GL_FALSE, data.data);
-}
-
-void _glSetMat3(void* handle, const char* name, primeMat3 data)
-{
-    glShader* shader = (glShader*)handle;
-    GLint location = glGetUniformLocation(shader->id, name);
-    glUniformMatrix3fv(location, 1, GL_FALSE, data.data);
-}
-
 void _glSetMat4(void* handle, const char* name, primeMat4 data)
 {
     glShader* shader = (glShader*)handle;

@@ -3,7 +3,7 @@
 
 #include "prime/logger.h"
 #include "prime/platform.h"
-#include "prime/maths.h"
+#include "prime/vec2.h"
 #include <vector>
 
 struct primeContext;

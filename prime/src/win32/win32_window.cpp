@@ -19,7 +19,7 @@ static Win32Callbacks s_Callbacks;
 struct primeWindow
 {
     HWND handle;
-    primeVec2u size;
+    primeVec2i size;
     primeVec2i pos;
     const char* title = nullptr;
     b8 should_close = false, focused = false;
@@ -372,7 +372,7 @@ void primeSetWindowPos(primeWindow* window, primeVec2i pos)
     );
 }
 
-void primeSetWindowSize(primeWindow* window, primeVec2u size)
+void primeSetWindowSize(primeWindow* window, primeVec2i size)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     PRIME_ASSERT_MSG(size.x > 0 && size.y > 0, "invalid Parameter");
@@ -449,16 +449,16 @@ const void* primeGetWindowHandle(primeWindow* window)
     return window->handle;
 }
 
-const primeVec2u* primeGetWindowSize(primeWindow* window)
+primeVec2i primeGetWindowSize(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
-    return &window->size;
+    return window->size;
 }
 
-const primeVec2i* primeGetWindowPos(primeWindow* window)
+primeVec2i primeGetWindowPos(primeWindow* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
-    return &window->pos;
+    return window->pos;
 }
 
 const char* primeGetWindowTitle(primeWindow* window)

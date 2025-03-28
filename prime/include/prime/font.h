@@ -1,17 +1,18 @@
 
 #pragma once
 
-#include "prime/maths.h"
+#include "prime/vec2.h"
+#include "prime/vec2i.h"
 
 struct primeFont;
 struct primeTexture;
 
 struct primeGlyph
 {
-    primeVec2u index;
+    primeVec2i index;
     primeVec2 offset;
-    primeVec2u advance;
-    primeVec2u size;
+    primeVec2i advance;
+    primeVec2i size;
 };
 
 PRIME_API primeFont* primeLoadFont(const char* filepath, u32 size);

@@ -1,7 +1,9 @@
 
 #pragma once
 
-#include "prime/maths.h"
+#include "prime/vec2i.h"
+#include "prime/vec4i.h"
+#include "prime/vec4.h"
 
 struct primeWindow;
 struct primeContext;
@@ -31,7 +33,7 @@ enum primeBlendModes_
 struct primeView
 {
     primeVec2i pos;
-    primeVec2u size;
+    primeVec2i size;
 };
 
 PRIME_API primeContext* primeCreateContext(primeWindow* window);
@@ -48,7 +50,7 @@ PRIME_API void primeSubmitInstanced(primeContext* context, primeDrawType type, p
 PRIME_API void primeSetVsync(primeContext* context, b8 vsync);
 PRIME_API void primeSetBlendMode(primeContext* context, primeBlendMode blend);
 PRIME_API void primeSetClearColor(primeContext* context, const primeVec4 color);
-PRIME_API void primeSetClearColori(primeContext* context, const primeVec4u color);
+PRIME_API void primeSetClearColori(primeContext* context, const primeVec4i color);
 
 PRIME_API void primeSetView(primeContext* context, const primeView view);
 PRIME_API primeView primeGetView(primeContext* context);
