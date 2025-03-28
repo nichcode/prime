@@ -20,7 +20,7 @@ b8 renderer2dTest(void* data)
 
     primeTexture* texture = primeLoadTexture("textures/texture2d.png");
     primeFont* font = primeLoadFont("fonts/font.ttf", 30);
-    primeSetFont(renderer, font);
+    primeFont* font2 = primeLoadFont("fonts/font2.ttf", 30);
 
     while (!primeWindowShouldClose(window)) {
         primePullEvents();
@@ -29,7 +29,10 @@ b8 renderer2dTest(void* data)
 
         primeDrawRect(renderer, { 0.0f, 0.0f, 50.0f, 50.0f });
         primeDrawTexture(renderer, { 100.0f, 200.0f }, texture);
+        primeSetFont(renderer, font);
         primeDrawText(renderer, "Text Rendering", { 200.0f, 00.0f });
+        primeSetFont(renderer, font2);
+        primeDrawText(renderer, "Text Rendering", { 200.0f, 100.0f });
 
         primeRenderer2DFlush(renderer);
         primePresent(context);
