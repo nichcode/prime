@@ -70,6 +70,11 @@ void primeShutdown()
         _primeDeleteFont(font);
     }
 
+    // subtexture
+    for (primeSubTexture* sub_texture : s_InitData.subTextures) {
+        delete sub_texture;
+    }
+
     s_InitData.activeContext = nullptr;
     s_InitData.activeBuffer = nullptr;
     s_InitData.activeShader = nullptr;
@@ -83,6 +88,7 @@ void primeShutdown()
     s_InitData.layouts.clear();
     s_InitData.textures.clear();
     s_InitData.fonts.clear();
+    s_InitData.subTextures.clear();
 }
 
 i32 multibyteToWchar(const char* str, u32 str_len, wchar_t* wstr)

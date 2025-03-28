@@ -185,7 +185,7 @@ void primeDestroyRenderer2D(primeRenderer2D* renderer)
     renderer = nullptr;
 }
 
-void primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect rect)
+void primeDrawRect(primeRenderer2D* renderer, const primeRect rect)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->spritePtr->pos = { rect.x, rect.y };
@@ -219,7 +219,7 @@ void primeRenderer2DDrawRect(primeRenderer2D* renderer, const primeRect rect)
     renderer->spriteIndexCount += 6;
 }
 
-void primeRenderer2DDrawTexture(primeRenderer2D* renderer, const primeVec2 pos)
+void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     if (renderer->texture) {
@@ -259,11 +259,49 @@ void primeRenderer2DDrawTexture(primeRenderer2D* renderer, const primeVec2 pos)
         renderer->spriteIndexCount += 6;
     }
     else {
-        primeRenderer2DDrawRect(renderer, { pos.x, pos.y, 50.0f, 50.0f });
+        primeDrawRect(renderer, { pos.x, pos.y, 50.0f, 50.0f });
     }
 }
 
-void primeRenderer2DDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 pos)
+void primeDrawSubTexture(primeRenderer2D* renderer, primeSubTexture* sub_texture, const primeVec2 pos)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    PRIME_ASSERT_MSG(sub_texture, "sub_texture is null");
+
+    f32 index = getTextureIndex(renderer, renderer->texture);
+
+    renderer->spritePtr->pos = { pos.x, pos.y };
+    renderer->spritePtr->coords = sub_texture->coords[0];
+    renderer->spritePtr->color = renderer->tintColor;
+    renderer->spritePtr->index = index;
+    renderer->spritePtr->id = TEXTURE_ID;
+    renderer->spritePtr++;
+
+    renderer->spritePtr->pos = { pos.x + sub_texture->size.x, pos.y };
+    renderer->spritePtr->coords = sub_texture->coords[1];
+    renderer->spritePtr->color = renderer->tintColor;
+    renderer->spritePtr->index = index;
+    renderer->spritePtr->id = TEXTURE_ID;
+    renderer->spritePtr++;
+
+    renderer->spritePtr->pos = { pos.x + sub_texture->size.x, pos.y + sub_texture->size.y };
+    renderer->spritePtr->coords = sub_texture->coords[2];
+    renderer->spritePtr->color = renderer->tintColor;
+    renderer->spritePtr->index = index;
+    renderer->spritePtr->id = TEXTURE_ID;
+    renderer->spritePtr++;
+
+    renderer->spritePtr->pos = { pos.x, pos.y + sub_texture->size.y };
+    renderer->spritePtr->coords = sub_texture->coords[3];
+    renderer->spritePtr->color = renderer->tintColor;
+    renderer->spritePtr->index = index;
+    renderer->spritePtr->id = TEXTURE_ID;
+    renderer->spritePtr++;
+
+    renderer->spriteIndexCount += 6;
+}
+
+void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 pos)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     PRIME_ASSERT_MSG(renderer->font, "renderer font is null");
@@ -320,21 +358,21 @@ void primeRenderer2DDrawText(primeRenderer2D* renderer, const char* text, const 
     }
 }
 
-void primeRenderer2DSetTexture(primeRenderer2D* renderer, primeTexture* texture)
+void primeSetTexture(primeRenderer2D* renderer, primeTexture* texture)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is nullptr");
     PRIME_ASSERT_MSG(texture, "font is nullptr");
     renderer->texture = texture;
 }
 
-void primeRenderer2DSetFont(primeRenderer2D* renderer, primeFont* font)
+void primeSetFont(primeRenderer2D* renderer, primeFont* font)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is nullptr");
     PRIME_ASSERT_MSG(font, "font is nullptr");
     renderer->font = font;
 }
 
-void primeRenderer2DFlush(primeRenderer2D* renderer)
+void primeFlush(primeRenderer2D* renderer)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     if (renderer->spriteIndexCount) {
@@ -356,25 +394,25 @@ void primeRenderer2DFlush(primeRenderer2D* renderer)
     renderer->textureIndex = 1;
 }
 
-void primeRenderer2DSetFontScale(primeRenderer2D* renderer, f32 scale)
+void primeSetFontScale(primeRenderer2D* renderer, f32 scale)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->fontScale = scale;
 }
 
-void primeRenderer2DSetTextureScale(primeRenderer2D* renderer, f32 scale)
+void primeSetTextureScale(primeRenderer2D* renderer, f32 scale)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->textureScale = scale;
 }
 
-void primeRenderer2DSetDrawColor(primeRenderer2D* renderer, const primeVec4 color)
+void primeSetDrawColor(primeRenderer2D* renderer, const primeVec4 color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->color = color;
 }
 
-void primeRenderer2DSetDrawColori(primeRenderer2D* renderer, const primeVec4u color)
+void primeSetDrawColori(primeRenderer2D* renderer, const primeVec4u color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->color.x = (f32)color.x / 255.0f;
@@ -383,13 +421,13 @@ void primeRenderer2DSetDrawColori(primeRenderer2D* renderer, const primeVec4u co
     renderer->color.w = (f32)color.w / 255.0f;
 }
 
-void primeRenderer2DSetTintColor(primeRenderer2D* renderer, const primeVec4 color)
+void primeSetTintColor(primeRenderer2D* renderer, const primeVec4 color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->tintColor = color;
 }
 
-void primeRenderer2DSetTintColori(primeRenderer2D* renderer, const primeVec4u color)
+void primeSetTintColori(primeRenderer2D* renderer, const primeVec4u color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->tintColor.x = (f32)color.x / 255.0f;
@@ -398,13 +436,13 @@ void primeRenderer2DSetTintColori(primeRenderer2D* renderer, const primeVec4u co
     renderer->tintColor.w = (f32)color.w / 255.0f;
 }
 
-void primeRenderer2DSetTextColor(primeRenderer2D* renderer, const primeVec4 color)
+void primeSetTextColor(primeRenderer2D* renderer, const primeVec4 color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->textColor = color;
 }
 
-void primeRenderer2DSetTextColori(primeRenderer2D* renderer, const primeVec4u color)
+void primeSetTextColori(primeRenderer2D* renderer, const primeVec4u color)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
     renderer->textColor.x = (f32)color.x / 255.0f;
