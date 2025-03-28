@@ -53,6 +53,9 @@ static const char* s_SpritePixelSource = {
     float TextureID = 0.0f;
     float FontID = 1.0f;
 
+    const float width  = 0.5;
+    const float edge  = 0.1;
+
     void main()
     {
         int index = int(v_Index);
@@ -60,8 +63,9 @@ static const char* s_SpritePixelSource = {
             color = texture(u_Textures[index], v_Coords) * v_Color;
         }
         else if (v_ID == FontID) {
-            vec4 sampled = vec4(1.0, 1.0, 1.0, texture(u_Textures[index], v_Coords).r);
-            color = v_Color * sampled;
+            float distance = 1.0 - texture(u_Textures[index], v_Coords).r;
+            float alpha = 1.0 - smoothstep(width, width + edge, distance);
+            color = vec4(1.0, 0.0, 0.0, alpha);
         }
     }
 

@@ -37,6 +37,7 @@ primeFont* primeLoadFont(const char* filepath, u32 size)
     static u32 texture_size = 512;
     char buffer[texture_size  * texture_size];
     primeFont* font = new primeFont();
+    FT_GlyphSlot slot =  font_face->glyph;
 
     for (u8 c = 32; c < 127; c++) {
         if (FT_Load_Char(font_face, c, FT_LOAD_RENDER)) {
@@ -44,29 +45,31 @@ primeFont* primeLoadFont(const char* filepath, u32 size)
             continue;
         }
 
-        if (col + font_face->glyph->bitmap.width + padding >= texture_size) {
+        FT_Render_Glyph(slot, FT_RENDER_MODE_SDF);
+
+        if (col + slot->bitmap.width + padding >= texture_size) {
             col = padding;
             row += size;
         }
 
-        for (u32 y = 0; y < font_face->glyph->bitmap.rows; ++y) {
-            for (u32 x = 0; x < font_face->glyph->bitmap.width; ++x) {
+        for (u32 y = 0; y < slot->bitmap.rows; ++y) {
+            for (u32 x = 0; x < slot->bitmap.width; ++x) {
             buffer[(row + y) * texture_size + col + x] =
-                font_face->glyph->bitmap.buffer[y * font_face->glyph->bitmap.width + x];
+                slot->bitmap.buffer[y * slot->bitmap.width + x];
             }
         }
 
         primeGlyph glyph;
         glyph.index = { col, row };
-        glyph.advance.x = (u32)font_face->glyph->advance.x >> 6;
-        glyph.advance.y = (u32)font_face->glyph->advance.y >> 6;
-        glyph.offset.x = (f32)font_face->glyph->bitmap_left,
-        glyph.offset.y = (f32)font_face->glyph->bitmap_top,
-        glyph.size.x = font_face->glyph->bitmap.width;
-        glyph.size.y = font_face->glyph->bitmap.rows;
+        glyph.advance.x = (u32)slot->advance.x >> 6;
+        glyph.advance.y = (u32)slot->advance.y >> 6;
+        glyph.offset.x = (f32)slot->bitmap_left,
+        glyph.offset.y = (f32)slot->bitmap_top,
+        glyph.size.x = slot->bitmap.width;
+        glyph.size.y = slot->bitmap.rows;
         font->glyphs.insert(std::pair<u8, primeGlyph>(c, glyph));
 
-        col += font_face->glyph->bitmap.width + padding;
+        col += slot->bitmap.width + padding;
     }
 
     primeTextureDesc desc;
