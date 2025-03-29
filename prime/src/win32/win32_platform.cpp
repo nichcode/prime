@@ -140,3 +140,13 @@ void primeFreeLibrary(void* dll)
     PRIME_ASSERT_MSG((HMODULE)dll, "dll is null");
     FreeLibrary((HMODULE)dll);
 }
+
+void primeSetUserData(void* data)
+{
+    s_InitData.userData = data;
+}
+
+void* primeGetUserData()
+{
+    return s_InitData.userData;
+}

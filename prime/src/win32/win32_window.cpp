@@ -467,6 +467,16 @@ const char* primeGetWindowTitle(primeWindow* window)
     return window->title;
 }
 
+b8 primeIsMaximized(primeWindow* window)
+{
+    PRIME_ASSERT_MSG(window, "window is null");
+    GetWindowPlacement(window->handle, &s_WndPlacement);
+    if (s_WndPlacement.showCmd == SW_SHOWMAXIMIZED) {
+        return true;
+    }
+    return false;
+}
+
 LRESULT CALLBACK win32Proc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)
 {
     primeWindow* window = (primeWindow*)GetPropW(hwnd, s_PropName);

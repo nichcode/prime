@@ -29,6 +29,8 @@ struct primeInitData
     primeLayout* activeLayout = nullptr;
     primeTexture* activeTexture = nullptr;
     primeTexture* activeRenderTarget = nullptr;
+
+    void* userData = nullptr;
 };
 
 static primeInitData s_InitData;

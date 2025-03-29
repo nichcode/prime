@@ -4,8 +4,8 @@
 #include "prime/rect.h"
 #include "prime/vec4.h"
 #include "prime/vec4i.h"
+#include "prime/context.h"
 
-struct primeContext;
 struct primeTexture;
 struct primeRenderer2D;
 
@@ -40,6 +40,7 @@ PRIME_API void primeDrawSubTextureEx(primeRenderer2D* renderer, f32 x, f32 y, f3
 PRIME_API void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 pos);
 PRIME_API void primeDrawTextEx(primeRenderer2D* renderer, const char* text, const primeVec2 pos, primeFlip flip);
 
+PRIME_API void primeRenderSetView(primeRenderer2D* renderer, primeView view, f32 scale);
 PRIME_API void primeSetAnchor(primeRenderer2D* renderer, primeAnchor anchor);
 PRIME_API void primeSetTexture(primeRenderer2D* renderer, primeTexture* texture);
 

@@ -59,3 +59,4 @@ PRIME_API const char* primeGetWindowTitle(primeWindow* window);
 
 PRIME_API b8 primeGetKeyState(primeWindow* window, u32 key);
 PRIME_API b8 primeGetbuttonState(primeWindow* window, u32 button);
+PRIME_API b8 primeIsMaximized(primeWindow* window);

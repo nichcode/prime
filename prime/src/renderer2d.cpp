@@ -52,13 +52,14 @@ struct primeRenderer2D
     f32 textureIndex = 1;
 };
 
-void setProjection(primeRenderer2D* renderer, primeView view)
+void setProjection(primeRenderer2D* renderer, primeView view, f32 scale)
 {
     f32 x = (f32)view.pos.x;
     f32 y = (f32)view.pos.y;
-    f32 width = (f32)view.size.x;
-    f32 height = (f32)view.size.y;
+    f32 width = (f32)view.size.x / scale;
+    f32 height = (f32)view.size.y / scale;
     renderer->projection = primeOrtho(x, width, height, y, -1.0f, 1.0f);
+    primeBindBuffer(renderer->ubo);
     primeSetBufferData(renderer->ubo, &renderer->projection, sizeof(primeMat4));
 }
 
@@ -174,7 +175,7 @@ primeRenderer2D* primeCreateRenderer2D(primeContext* context)
     primeTexture* texture = primeCreateTexture(desc);
     renderer->textures.push_back(texture);
 
-    setProjection(renderer, view);
+    setProjection(renderer, view, 1.0f);
     initSprites(renderer);
     primeSetBlendMode(context, primeBlendModes_Alpha);
     return renderer;
@@ -583,6 +584,12 @@ void primeDrawTextEx(primeRenderer2D* renderer, const char* text, const primeVec
         renderer->spriteIndexCount += 6;
         origin.x += glyph.advance.x * renderer->fontScale; 
     }
+}
+
+void primeRenderSetView(primeRenderer2D* renderer, primeView view, f32 scale)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    setProjection(renderer, view, scale);
 }
 
 void primeSetAnchor(primeRenderer2D* renderer, primeAnchor anchor)
