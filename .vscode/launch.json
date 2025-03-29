@@ -24,7 +24,8 @@
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 },
-            ]
+            ],
+            "preLaunchTask": "build everything debug make"
         },
 
         {
@@ -49,7 +50,8 @@
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 },
-            ]
+            ],
+            "preLaunchTask": "build everything release make"
         }
     ]
 }

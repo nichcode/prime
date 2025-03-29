@@ -7,15 +7,22 @@
 
 struct primeContext;
 struct primeTexture;
-struct primeSubTexture;
 struct primeRenderer2D;
 
 using primeAnchor = u32;
+using primeFlip = u32;
 
 enum primeAnchors_
 {
     primeAnchors_TopLeft,
     primeAnchors_Center
+};
+
+enum primeFlips_
+{
+    primeFlips_None = 0,
+    primeFlips_X = PRIME_BIT(0),
+    primeFlips_Y = PRIME_BIT(1)
 };
 
 PRIME_API primeRenderer2D* primeCreateRenderer2D(primeContext* context);
@@ -25,9 +32,13 @@ PRIME_API void primeDrawRect(primeRenderer2D* renderer, const primeRect rect);
 PRIME_API void primeDrawRectEx(primeRenderer2D* renderer, const primeRect rect, f32 rotation);
 
 PRIME_API void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos);
+PRIME_API void primeDrawTextureEx(primeRenderer2D* renderer, const primeVec2 pos, f32 rotation, primeFlip flip);
 
-PRIME_API void primeDrawSubTexture(primeRenderer2D* renderer, primeSubTexture* sub_texture, const primeVec2 pos);
+PRIME_API void primeDrawSubTexture(primeRenderer2D* renderer, f32 x, f32 y, f32 w, f32 h, const primeVec2 pos);
+PRIME_API void primeDrawSubTextureEx(primeRenderer2D* renderer, f32 x, f32 y, f32 w, f32 h, const primeVec2 pos, f32 rotation, primeFlip flip);
+
 PRIME_API void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 pos);
+PRIME_API void primeDrawTextEx(primeRenderer2D* renderer, const char* text, const primeVec2 pos, primeFlip flip);
 
 PRIME_API void primeSetAnchor(primeRenderer2D* renderer, primeAnchor anchor);
 PRIME_API void primeSetTexture(primeRenderer2D* renderer, primeTexture* texture);

@@ -20,8 +20,7 @@ struct SpriteVertex
     primeVec2 pos;
     primeVec4 color;
     primeVec2 coords;
-    f32 index;
-    f32 id;
+    primeVec2 index;
 };
 
 struct primeRenderer2D
@@ -87,8 +86,7 @@ void initSprites(primeRenderer2D* renderer)
     primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float2, 0, false);
     primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float4, 0, false);
     primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float2, 0, false);
-    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float, 0, false);
-    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float, 0, false);
+    primeAddAttrib(renderer->spriteLayout, primeDataTypes_Float2, 0, false);
 
     u32* indices = new u32[MAX_INDICES];
     u32 offset = 0;
@@ -195,40 +193,28 @@ void primeDestroyRenderer2D(primeRenderer2D* renderer)
 void primeDrawRect(primeRenderer2D* renderer, const primeRect rect)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    renderer->spritePtr->pos = { rect.x, rect.y };
-    renderer->spritePtr->coords = renderer->coords[0];
-    renderer->spritePtr->color = renderer->color;
-    renderer->spritePtr->index = 0.0f;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
 
-    renderer->spritePtr->pos = {rect.x + rect.width, rect.y };
-    renderer->spritePtr->coords = renderer->coords[1];
-    renderer->spritePtr->color = renderer->color;
-    renderer->spritePtr->index = 0.0f;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
+    primeVec2 position[4];
+    position[0] = { rect.x, rect.y };
+    position[1] = { rect.x + rect.width, rect.y };
+    position[2] = { rect.x + rect.width, rect.y + rect.height };
+    position[3] = { rect.x, rect.y + rect.height };
 
-    renderer->spritePtr->pos = { rect.x + rect.width, rect.y + rect.height };
-    renderer->spritePtr->coords = renderer->coords[2];
-    renderer->spritePtr->color = renderer->color;
-    renderer->spritePtr->index = 0.0f;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
-
-    renderer->spritePtr->pos = { rect.x, rect.y + rect.height };
-    renderer->spritePtr->coords = renderer->coords[3];
-    renderer->spritePtr->color = renderer->color;
-    renderer->spritePtr->index = 0.0f;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
-
+    for (size_t i = 0; i < 4; i++) {
+        renderer->spritePtr->pos = position[i];
+        renderer->spritePtr->coords = renderer->coords[i];
+        renderer->spritePtr->color = renderer->color;
+        renderer->spritePtr->index.x = 0.0f;
+        renderer->spritePtr->index.y =TEXTURE_ID;
+        renderer->spritePtr++;
+    }
     renderer->spriteIndexCount += 6;
 }
 
 void primeDrawRectEx(primeRenderer2D* renderer, const primeRect rect, f32 rotation)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
+
     if (rotation) {
         primeMat4 transform;
 
@@ -260,13 +246,12 @@ void primeDrawRectEx(primeRenderer2D* renderer, const primeRect rect, f32 rotati
             renderer->spritePtr->pos.x = position.x;
             renderer->spritePtr->pos.y = position.y;
 
-            renderer->spritePtr->coords = renderer->coords[0];
+            renderer->spritePtr->coords = renderer->coords[i];
             renderer->spritePtr->color = renderer->color;
-            renderer->spritePtr->index = 0.0f;
-            renderer->spritePtr->id = TEXTURE_ID;
+            renderer->spritePtr->index.x = 0.0f;
+            renderer->spritePtr->index.y = TEXTURE_ID;
             renderer->spritePtr++;
         }
-
         renderer->spriteIndexCount += 6;
     }
     else {
@@ -277,40 +262,28 @@ void primeDrawRectEx(primeRenderer2D* renderer, const primeRect rect, f32 rotati
 void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
+    PRIME_ASSERT_MSG(renderer->texture, "no texture set to renderer");
+
     if (renderer->texture) {
         primeVec2i size = primeGetTextureSize(renderer->texture);
         size.x *= renderer->textureScale;
         size.y *= renderer->textureScale;
         f32 index = getTextureIndex(renderer, renderer->texture);
 
-        renderer->spritePtr->pos = { pos.x, pos.y };
-        renderer->spritePtr->coords = renderer->coords[0];
-        renderer->spritePtr->color = renderer->tintColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = TEXTURE_ID;
-        renderer->spritePtr++;
+        primeVec2 position[4];
+        position[0] = { pos.x, pos.y };
+        position[1] = { pos.x + (f32)size.x, pos.y };
+        position[2] = { pos.x + (f32)size.x, pos.y + (f32)size.y };
+        position[3] = { pos.x, pos.y + (f32)size.y };
 
-        renderer->spritePtr->pos = { pos.x + (f32)size.x, pos.y };
-        renderer->spritePtr->coords = renderer->coords[1];
-        renderer->spritePtr->color = renderer->tintColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = TEXTURE_ID;
-        renderer->spritePtr++;
-
-        renderer->spritePtr->pos = { pos.x + (f32)size.x, pos.y + (f32)size.y };
-        renderer->spritePtr->coords = renderer->coords[2];
-        renderer->spritePtr->color = renderer->tintColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = TEXTURE_ID;
-        renderer->spritePtr++;
-
-        renderer->spritePtr->pos = { pos.x, pos.y + (f32)size.y };
-        renderer->spritePtr->coords = renderer->coords[3];
-        renderer->spritePtr->color = renderer->tintColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = TEXTURE_ID;
-        renderer->spritePtr++;
-
+        for (size_t i = 0; i < 4; i++) {
+            renderer->spritePtr->pos = position[i];
+            renderer->spritePtr->coords = renderer->coords[i];
+            renderer->spritePtr->color = renderer->tintColor;
+            renderer->spritePtr->index.x = index;
+            renderer->spritePtr->index.y =TEXTURE_ID;
+            renderer->spritePtr++;
+        }
         renderer->spriteIndexCount += 6;
     }
     else {
@@ -318,49 +291,195 @@ void primeDrawTexture(primeRenderer2D* renderer, const primeVec2 pos)
     }
 }
 
-void primeDrawSubTexture(primeRenderer2D* renderer, primeSubTexture* sub_texture, const primeVec2 pos)
+void primeDrawTextureEx(primeRenderer2D* renderer, const primeVec2 pos, f32 rotation, primeFlip flip)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    PRIME_ASSERT_MSG(sub_texture, "sub_texture is null");
+    PRIME_ASSERT_MSG(renderer->texture, "no texture set to renderer");
 
-    f32 index = getTextureIndex(renderer, renderer->texture);
+    if (rotation || flip != primeFlips_None) {
+        primeMat4 transform;
+        primeVec2i size = primeGetTextureSize(renderer->texture);
+        f32 width = (f32)size.x * renderer->textureScale;
+        f32 height = (f32)size.y * renderer->textureScale;
+        f32 index = getTextureIndex(renderer, renderer->texture);
 
-    renderer->spritePtr->pos = { pos.x, pos.y };
-    renderer->spritePtr->coords = sub_texture->coords[0];
-    renderer->spritePtr->color = renderer->tintColor;
-    renderer->spritePtr->index = index;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
+        f32 left = 0.0f;
+        f32 top = 0.0f;
+        f32 right = 1.0f;
+        f32 bottom = 1.0f;
 
-    renderer->spritePtr->pos = { pos.x + sub_texture->size.x, pos.y };
-    renderer->spritePtr->coords = sub_texture->coords[1];
-    renderer->spritePtr->color = renderer->tintColor;
-    renderer->spritePtr->index = index;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
+        if (flip & primeFlips_X) {
+            f32 temp = right;
+            right = left;
+            left = temp;
+        }
+        if (flip & primeFlips_Y) {
+            f32 temp = top;
+            top = bottom;
+            bottom = temp;
+        }
 
-    renderer->spritePtr->pos = { pos.x + sub_texture->size.x, pos.y + sub_texture->size.y };
-    renderer->spritePtr->coords = sub_texture->coords[2];
-    renderer->spritePtr->color = renderer->tintColor;
-    renderer->spritePtr->index = index;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
+        primeVec2 coords[4];
+        coords[0] = { left, top };
+        coords[1] = { right, top };
+        coords[2] = { right, bottom };
+        coords[3] = { left, bottom };
+        
+        switch (renderer->anchor) {
+            case primeAnchors_Center: {
+                primeVec2 origin;
+                origin.x = width / 2.0f;
+                origin.y = height / 2.0f;
 
-    renderer->spritePtr->pos = { pos.x, pos.y + sub_texture->size.y };
-    renderer->spritePtr->coords = sub_texture->coords[3];
-    renderer->spritePtr->color = renderer->tintColor;
-    renderer->spritePtr->index = index;
-    renderer->spritePtr->id = TEXTURE_ID;
-    renderer->spritePtr++;
+                transform = primeTranslate({ pos.x + origin.x, pos.y + origin.y, 0.0f })
+                            * primeRotateZ(rotation)
+                            * primeTranslate({ -origin.x, -origin.y, 0.0f })
+                            * primeScale({ width, height, 1.0f });
+                            
+                break;
+            }
+        
+            case primeAnchors_TopLeft: {
+                transform = primeTranslate({ pos.x, pos.y, 0.0f })
+                    * primeRotateZ(rotation) 
+                    * primeScale({ width, height, 1.0f });
+                
+                break;
+            }
+        } // switch
 
+        for (size_t i = 0; i < 4; i++) {
+            primeVec4 position = transform * renderer->vertices[i];
+            renderer->spritePtr->pos.x = position.x;
+            renderer->spritePtr->pos.y = position.y;
+            renderer->spritePtr->coords = coords[i];
+            renderer->spritePtr->color = renderer->tintColor;
+            renderer->spritePtr->index.x = index;
+            renderer->spritePtr->index.y = TEXTURE_ID;
+            renderer->spritePtr++;
+        }
+        renderer->spriteIndexCount += 6;
+    }
+    else {
+        primeDrawTexture(renderer, pos);
+    }
+}
+
+void primeDrawSubTexture(primeRenderer2D* renderer, f32 x, f32 y, f32 w, f32 h, const primeVec2 pos)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    PRIME_ASSERT_MSG(renderer->texture, "no texture set to renderer");
+
+    primeVec2i size = primeGetTextureSize(renderer->texture);
+    f32 index = getTextureIndex(renderer, renderer->texture); 
+
+    f32 left = (f32)x / (f32)size.x;
+    f32 top = (f32)y / (f32)size.y;
+    f32 right = (f32)(x + w) / (f32)size.x;
+    f32 bottom = (f32)(y + h) / (f32)size.y;
+
+    primeVec2 coords[4];
+    coords[0] = { left, top };
+    coords[1] = { right, top };
+    coords[2] = { right, bottom };
+    coords[3] = { left, bottom };
+
+    primeVec2 position[4];
+    position[0] = { pos.x, pos.y };
+    position[1] = { pos.x + w, pos.y };
+    position[2] = { pos.x + w, pos.y + h };
+    position[3] = { pos.x, pos.y + h };
+
+    for (size_t i = 0; i < 4; i++) {
+        renderer->spritePtr->pos = position[i];
+        renderer->spritePtr->coords = coords[i];
+        renderer->spritePtr->color = renderer->tintColor;
+        renderer->spritePtr->index.x = index;
+        renderer->spritePtr->index.y =TEXTURE_ID;
+        renderer->spritePtr++;
+    }
     renderer->spriteIndexCount += 6;
+}
+
+void primeDrawSubTextureEx(primeRenderer2D* renderer, f32 x, f32 y, f32 w, f32 h, const primeVec2 pos, f32 rotation, primeFlip flip)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    PRIME_ASSERT_MSG(renderer->texture, "no texture set to renderer");
+
+    if (rotation || flip != primeFlips_None) {
+        primeMat4 transform;
+        f32 index = getTextureIndex(renderer, renderer->texture);
+        primeVec2i size = primeGetTextureSize(renderer->texture);
+
+        f32 left = (f32)x / (f32)size.x;
+        f32 top = (f32)y / (f32)size.y;
+        f32 right = (f32)(x + w) / (f32)size.x;
+        f32 bottom = (f32)(y + h) / (f32)size.y;
+
+        if (flip & primeFlips_X) {
+            f32 temp = right;
+            right = left;
+            left = temp;
+        }
+        if (flip & primeFlips_Y) {
+            f32 temp = top;
+            top = bottom;
+            bottom = temp;
+        }
+
+        primeVec2 coords[4];
+        coords[0] = { left, top };
+        coords[1] = { right, top };
+        coords[2] = { right, bottom };
+        coords[3] = { left, bottom };
+
+        switch (renderer->anchor) {
+            case primeAnchors_Center: {
+                primeVec2 origin;
+                origin.x = w / 2.0f;
+                origin.y = h / 2.0f;
+
+                transform = primeTranslate({ pos.x + origin.x, pos.y + origin.y, 0.0f })
+                            * primeRotateZ(rotation)
+                            * primeTranslate({ -origin.x, -origin.y, 0.0f })
+                            * primeScale({ w, h, 1.0f });
+                            
+                break;
+            }
+        
+            case primeAnchors_TopLeft: {
+                transform = primeTranslate({ pos.x, pos.y, 0.0f })
+                    * primeRotateZ(rotation) 
+                    * primeScale({ w, h, 1.0f });
+                
+                break;
+            }
+        } // switch
+
+        for (size_t i = 0; i < 4; i++) {
+            primeVec4 position = transform * renderer->vertices[i];
+            renderer->spritePtr->pos.x = position.x;
+            renderer->spritePtr->pos.y = position.y;
+
+            renderer->spritePtr->coords = coords[i];
+            renderer->spritePtr->color = renderer->tintColor;
+            renderer->spritePtr->index.x = index;
+            renderer->spritePtr->index.y = TEXTURE_ID;
+            renderer->spritePtr++;
+        }
+        renderer->spriteIndexCount += 6;
+    }
+    else {
+        primeDrawSubTexture(renderer, x, y, w, h, pos);
+    }
 }
 
 void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 pos)
 {
     PRIME_ASSERT_MSG(renderer, "renderer is null");
-    PRIME_ASSERT_MSG(renderer->font, "renderer font is null");
+    PRIME_ASSERT_MSG(renderer->font, "no font set to renderer");
     if(!text) { return; }
+
     primeTexture* texture = primeGetFontTexture(renderer->font);
     f32 index = getTextureIndex(renderer, texture);
     f32 size = (f32)primeGetTextureSize(texture).x;
@@ -380,34 +499,87 @@ void primeDrawText(primeRenderer2D* renderer, const char* text, const primeVec2 
         f32 right = (f32)(glyph.index.x + glyph.size.x) / size;
         f32 bottom = (f32)(glyph.index.y + glyph.size.y) / size;
 
-        renderer->spritePtr->pos = { x, y };
-        renderer->spritePtr->coords = { left, top };
-        renderer->spritePtr->color = renderer->textColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = FONT_ID;
-        renderer->spritePtr++;
+        primeVec2 coords[4];
+        coords[0] = { left, top };
+        coords[1] = { right, top };
+        coords[2] = { right, bottom };
+        coords[3] = { left, bottom };
 
-        renderer->spritePtr->pos = { x + width, y };
-        renderer->spritePtr->coords = { right, top };
-        renderer->spritePtr->color = renderer->textColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = FONT_ID;
-        renderer->spritePtr++;
+        primeVec2 position[4];
+        position[0] = { x, y };
+        position[1] = { x + width, y };
+        position[2] = { x + width, y + height };
+        position[3] = { x, y + height };
 
-        renderer->spritePtr->pos = { x + width, y + height };
-        renderer->spritePtr->coords = { right, bottom };
-        renderer->spritePtr->color = renderer->textColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = FONT_ID;
-        renderer->spritePtr++;
+        for (size_t i = 0; i < 4; i++) {
+            renderer->spritePtr->pos = position[i];
+            renderer->spritePtr->coords = coords[i];
+            renderer->spritePtr->color = renderer->textColor;
+            renderer->spritePtr->index.x = index;
+            renderer->spritePtr->index.y = FONT_ID;
+            renderer->spritePtr++;
+        }
+        renderer->spriteIndexCount += 6;
+        origin.x += glyph.advance.x * renderer->fontScale; 
+    }
+}
 
-        renderer->spritePtr->pos = { x, y + height };
-        renderer->spritePtr->coords = { left, bottom };
-        renderer->spritePtr->color = renderer->textColor;
-        renderer->spritePtr->index = index;
-        renderer->spritePtr->id = FONT_ID;
-        renderer->spritePtr++;
+void primeDrawTextEx(primeRenderer2D* renderer, const char* text, const primeVec2 pos, primeFlip flip)
+{
+    PRIME_ASSERT_MSG(renderer, "renderer is null");
+    PRIME_ASSERT_MSG(renderer->font, "no font set to renderer");
+    if(!text) { return; }
 
+    primeTexture* texture = primeGetFontTexture(renderer->font);
+    f32 index = getTextureIndex(renderer, texture);
+    f32 size = (f32)primeGetTextureSize(texture).x;
+    primeVec2 origin = pos;
+
+    f32 base = primeGetFontBaseLine(renderer->font);
+    while(char c = *(text++)) {
+        auto glyph = primeGetFontGlyph(renderer->font, c);
+        f32 x = origin.x + glyph.offset.x * renderer->fontScale;
+        f32 y = origin.y + (base - glyph.offset.y) * renderer->fontScale;
+        
+        f32 width = (f32)glyph.size.x * renderer->fontScale;
+        f32 height = (f32)glyph.size.y * renderer->fontScale;
+        
+        f32 left = (f32)glyph.index.x / size;
+        f32 top = (f32)glyph.index.y / size;
+        f32 right = (f32)(glyph.index.x + glyph.size.x) / size;
+        f32 bottom = (f32)(glyph.index.y + glyph.size.y) / size;
+
+        if (flip & primeFlips_X) {
+            f32 temp = right;
+            right = left;
+            left = temp;
+        }
+        if (flip & primeFlips_Y) {
+            f32 temp = top;
+            top = bottom;
+            bottom = temp;
+        }
+
+        primeVec2 coords[4];
+        coords[0] = { left, top };
+        coords[1] = { right, top };
+        coords[2] = { right, bottom };
+        coords[3] = { left, bottom };
+
+        primeVec2 position[4];
+        position[0] = { x, y };
+        position[1] = { x + width, y };
+        position[2] = { x + width, y + height };
+        position[3] = { x, y + height };
+
+        for (size_t i = 0; i < 4; i++) {
+            renderer->spritePtr->pos = position[i];
+            renderer->spritePtr->coords = coords[i];
+            renderer->spritePtr->color = renderer->textColor;
+            renderer->spritePtr->index.x = index;
+            renderer->spritePtr->index.y = FONT_ID;
+            renderer->spritePtr++;
+        }
         renderer->spriteIndexCount += 6;
         origin.x += glyph.advance.x * renderer->fontScale; 
     }

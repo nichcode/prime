@@ -143,32 +143,3 @@ void primeUnbindRenderTarget(primeTexture* texture)
         }
     }
 }
-
-void primeDestroySubTexture(primeSubTexture* sub_texture)
-{
-    PRIME_ASSERT_MSG(sub_texture, "sub_texture is null");
-    delete sub_texture;
-    sub_texture = nullptr;
-}
-
-primeSubTexture* primeGetSubTexture(primeTexture* texture, u32 x, u32 y, u32 w, u32 h)
-{
-    PRIME_ASSERT_MSG(texture, "texture is null");
-    f32 size = (f32)primeGetTextureSize(texture).x;
-    primeSubTexture* sub_texture = new primeSubTexture();
-    sub_texture->size.x = (f32)w;
-    sub_texture->size.y = (f32)h;
-
-    f32 left = (f32)x / size;
-    f32 top = (f32)y / size;
-    f32 right = (f32)(x + w) / size;
-    f32 bottom = (f32)(y + h) / size;
-
-    sub_texture->coords[0] = { left, top };
-    sub_texture->coords[1] = { right, top };
-    sub_texture->coords[2] = { right, bottom };
-    sub_texture->coords[3] = { left, bottom };
-
-    s_InitData.subTextures.push_back(sub_texture);
-    return sub_texture;
-}

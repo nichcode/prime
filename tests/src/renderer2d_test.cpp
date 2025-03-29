@@ -4,15 +4,15 @@
 b8 renderer2dTest(void* data)
 {
     primeWindowDesc desc;
-    desc.size.x = 640;
-    desc.size.y = 480;
+    desc.size.x = 1000;
+    desc.size.y = 600;
     desc.title = "window";
     desc.flag = primeWindowFlags_Center;
     primeWindow* window = primeCreateWindow(desc);
 
     primeContext* context = primeCreateContext(window);
     primeSetVsync(context, true);
-    primeSetClearColori(context, { 50, 50, 50, 255 });
+    primeSetClearColor(context, { .2f, .2f, .2f, 1.0f });
 
     primeRenderer2D* renderer = primeCreateRenderer2D(context);
     primeSetDrawColor(renderer, { 1.0f, 0.0, 0.0, 1.0f });
@@ -23,39 +23,48 @@ b8 renderer2dTest(void* data)
     primeFont* font2 = primeLoadFont("fonts/font2.ttf", 30);
 
     primeTexture* sheet = primeLoadTexture("textures/sheet.png");
-    primeSubTexture* ship = primeGetSubTexture(sheet, 211, 941, 99, 75);
-    primeSubTexture* ship2 = primeGetSubTexture(sheet, 237, 377, 99, 75);
-    primeSubTexture* ship3 = primeGetSubTexture(sheet, 247, 84, 99, 75);
-
     primeSetFontScale(renderer, 1.0f);
+    primeSetTextureScale(renderer, .5f);
     f32 rotation = 0.0f;
 
     while (!primeWindowShouldClose(window)) {
         primePullEvents();
 
         rotation += 3.0f;
-
         primeClear(context);
-        primeSetTexture(renderer, texture);
 
-        primeDrawRect(renderer, { 0.0f, 0.0f, 50.0f, 50.0f });
-        primeDrawTexture(renderer, { 100.0f, 200.0f });
-        primeSetFont(renderer, font);
-        primeDrawText(renderer, "Text Rendering", { 200.0f, 0.0f });
-        primeDrawText(renderer, "Hello", { 200.0f, 50.0f });
-        primeSetFont(renderer, font2);
-        primeDrawText(renderer, "Text Rendering", { 200.0f, 100.0f });
-
-        primeSetTexture(renderer, sheet);
-        primeDrawSubTexture(renderer, ship, { 400.0f, 200.0f });
-        primeDrawSubTexture(renderer, ship2, { 400.0f, 300.0f });
-        primeDrawSubTexture(renderer, ship3, { 400.0f, 400.0f });
-
-        primeSetAnchor(renderer, primeAnchors_Center);
-        primeDrawRectEx(renderer, { 100.0f, 100.0f, 50.0f, 50.0f }, rotation);
+        // rects
+        primeDrawRect(renderer, { 100.0f, 50.0f, 50.0f, 50.0f });
         
         primeSetAnchor(renderer, primeAnchors_TopLeft);
-        primeDrawRectEx(renderer, { 100.0f, 200.0f, 50.0f, 50.0f }, rotation);
+        primeDrawRectEx(renderer, { 100.0f, 250.0f, 50.0f, 50.0f }, rotation);
+        primeSetAnchor(renderer, primeAnchors_Center);
+        primeDrawRectEx(renderer, { 100.0f, 450.0f, 50.0f, 50.0f }, rotation);
+
+        // textures
+        primeSetTexture(renderer, texture);
+        primeDrawTexture(renderer, { 300.0f, 50.0f });
+        primeSetAnchor(renderer, primeAnchors_TopLeft);
+        primeDrawTextureEx(renderer, { 300.0f, 250.0f }, rotation, primeFlips_Y);
+        primeSetAnchor(renderer, primeAnchors_Center);
+        primeDrawTextureEx(renderer, { 300.0f, 450.0f }, rotation, primeFlips_None);
+
+        // texts
+        primeSetFont(renderer, font);
+        primeDrawText(renderer, "Text Rendering", { 500.0f, 50.0f });
+        primeSetAnchor(renderer, primeAnchors_TopLeft);
+        primeDrawTextEx(renderer, "Hello", { 500.0f, 250.0f }, primeFlips_X);
+        primeSetFont(renderer, font2);
+        primeSetAnchor(renderer, primeAnchors_Center);
+        primeDrawTextEx(renderer, "Text Rendering", { 500.0f, 450.0f }, primeFlips_Y);
+
+        // sub textures
+        primeSetTexture(renderer, sheet);
+        primeDrawSubTexture(renderer, 211, 941, 99, 75, { 700.0f, 50.0f });
+        primeSetAnchor(renderer, primeAnchors_TopLeft);
+        primeDrawSubTextureEx(renderer, 237, 377, 99, 75, { 700.0f, 250.0f }, rotation, primeFlips_Y);
+        primeSetAnchor(renderer, primeAnchors_Center);
+        primeDrawSubTextureEx(renderer, 247, 84, 99, 75, { 700.0f, 450.0f }, rotation, primeFlips_None);
 
         primeFlush(renderer);
         primePresent(context);

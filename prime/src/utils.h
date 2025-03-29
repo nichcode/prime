@@ -11,7 +11,6 @@ struct primeBuffer;
 struct primeShader;
 struct primeLayout;
 struct primeTexture;
-struct primeSubTexture;
 struct primeFont;
 
 struct primeInitData
@@ -23,7 +22,6 @@ struct primeInitData
     std::vector<primeLayout*> layouts;
     std::vector<primeTexture*> textures;
     std::vector<primeFont*> fonts;
-    std::vector<primeSubTexture*> subTextures;
 
     primeContext* activeContext = nullptr;
     primeBuffer* activeBuffer = nullptr;
@@ -31,12 +29,6 @@ struct primeInitData
     primeLayout* activeLayout = nullptr;
     primeTexture* activeTexture = nullptr;
     primeTexture* activeRenderTarget = nullptr;
-};
-
-struct primeSubTexture
-{
-    primeVec2 size;
-    primeVec2 coords[4];
 };
 
 static primeInitData s_InitData;

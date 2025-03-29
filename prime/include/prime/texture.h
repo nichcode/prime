@@ -4,7 +4,6 @@
 #include "prime/vec2i.h"
 
 struct primeTexture;
-struct primeSubTexture;
 
 using primeTextureFlag = u32;
 using primeTextureFormat = u32;
@@ -39,10 +38,8 @@ struct primeTextureDesc
 
 PRIME_API primeTexture* primeCreateTexture(primeTextureDesc desc);
 PRIME_API primeTexture* primeLoadTexture(const char* filepath);
-PRIME_API primeSubTexture* primeGetSubTexture(primeTexture* texture, u32 x, u32 y, u32 w, u32 h);
 
 PRIME_API void primeDestroyTexture(primeTexture* texture);
-PRIME_API void primeDestroySubTexture(primeSubTexture* sub_texture);
 
 PRIME_API void primeSetTextureData(primeTexture* texture, u32 x, u32 y, u32 width, u32 height, void* data);
 
