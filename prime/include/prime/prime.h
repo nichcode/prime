@@ -3,25 +3,16 @@
 
 #include "prime/prime_log.h"
 #include "prime/prime_maths.h"
+#include "prime/prime_window.h"
 #include <stdarg.h>
-
-using prime_device_type = u32;
 
 enum prime_device_types
 {
     PRIME_DEVICE_OPENGL
 };
 
-struct prime_allocator;
-
-PRIME_API b8 prime_init(prime_device_type type);
+PRIME_API b8 prime_init(u32 type);
 PRIME_API void prime_shutdown();
-
-PRIME_API prime_allocator* prime_create_allocator(u64 size);
-PRIME_API void prime_destroy_allocator(prime_allocator* allocator);
-
-PRIME_API void* prime_alloc(prime_allocator* allocator, u64 size);
-PRIME_API void prime_clear_allocator(prime_allocator* allocator);
 
 PRIME_API char* prime_format(const char* fmt, ...);
 PRIME_API char* prime_format_args(const char* fmt, va_list args_list);

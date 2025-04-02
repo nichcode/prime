@@ -3,8 +3,6 @@
 
 #include "prime_defines.h"
 
-using prime_log_level = u32;
-
 enum prime_log_levels
 {
     PRIME_LEVEL_TRACE,
@@ -13,7 +11,7 @@ enum prime_log_levels
     PRIME_LEVEL_ERROR
 };
 
-PRIME_API void prime_log(prime_log_level level, const char* msg, ...);
+PRIME_API void prime_log(u32 level, const char* msg, ...);
 PRIME_API void prime_log_trace(const char* msg, ...);
 PRIME_API void prime_log_info(const char* msg, ...);
 PRIME_API void prime_log_warn(const char* msg, ...);
