@@ -3,9 +3,9 @@
 
 #include "prime_defines.h"
 
-using prime_LogLevel = u32;
+using prime_log_level = u32;
 
-enum prime_LogLevels
+enum prime_log_levels
 {
     PRIME_LEVEL_TRACE,
     PRIME_LEVEL_INFO,
@@ -13,22 +13,22 @@ enum prime_LogLevels
     PRIME_LEVEL_ERROR
 };
 
-PRIME_API void prime_Log(prime_LogLevel level, const char* msg, ...);
-PRIME_API void prime_LogTrace(const char* msg, ...);
-PRIME_API void prime_LogInfo(const char* msg, ...);
-PRIME_API void prime_LogWarn(const char* msg, ...);
-PRIME_API void prime_LogError(const char* msg, ...);
+PRIME_API void prime_log(prime_log_level level, const char* msg, ...);
+PRIME_API void prime_log_trace(const char* msg, ...);
+PRIME_API void prime_log_info(const char* msg, ...);
+PRIME_API void prime_log_warn(const char* msg, ...);
+PRIME_API void prime_log_error(const char* msg, ...);
 
-PRIME_API void prime_Assert(b8 expr, const char* file, u32 line);
-PRIME_API void prime_AssertMsg(b8 expr, const char* file, u32 line, const char* msg, ...);
+PRIME_API void prime_assert(b8 expr, const char* file, u32 line);
+PRIME_API void prime_assert_msg(b8 expr, const char* file, u32 line, const char* msg, ...);
 
 #ifdef PRIME_CONFIG_DEBUG
-#define PRIME_TRACE(...)                    prime_LogTrace(__VA_ARGS__)
-#define PRIME_INFO(...)                     prime_LogInfo(__VA_ARGS__)
-#define PRIME_WARN(...)                     prime_LogWarn(__VA_ARGS__)
-#define PRIME_ERROR(...)                    prime_LogError(__VA_ARGS__)
-#define PRIME_ASSERT(expr)                  prime_Assert(expr, PRIME_FILE, PRIME_LINE)
-#define PRIME_ASSERT_MSG(expr, ...)         prime_AssertMsg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
+#define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)
+#define PRIME_INFO(...)                     prime_log_info(__VA_ARGS__)
+#define PRIME_WARN(...)                     prime_log_warn(__VA_ARGS__)
+#define PRIME_ERROR(...)                    prime_log_error(__VA_ARGS__)
+#define PRIME_ASSERT(expr)                  prime_assert(expr, PRIME_FILE, PRIME_LINE)
+#define PRIME_ASSERT_MSG(expr, ...)         prime_assert_msg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
 #else
 #define PRIME_TRACE(...)         
 #define PRIME_DEBUG(...)         

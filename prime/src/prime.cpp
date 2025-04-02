@@ -3,44 +3,44 @@
 #include "prime_utils.h"
 #include "prime/prime.h"
 
-struct prime_Allocator
+struct prime_allocator
 {
     u64 size = 0;
     u64 allocated = 0;
     void* memory = nullptr;
 };
 
-struct prime_InitData
+struct prime_init_data
 {
-    prime_Allocator* allocator = nullptr;
-    prime_DeviceType type;
+    prime_allocator* allocator = nullptr;
+    prime_device_type type;
 };
 
-static prime_InitData s_Data;
+static prime_init_data s_Data;
 
-b8 prime_Init(prime_DeviceType type)
+b8 prime_init(prime_device_type type)
 {
     s_Data.type = type;
-    s_Data.allocator = prime_CreateAllocator(PRIME_MB);
+    s_Data.allocator = prime_create_allocator(PRIME_MB);
     return PRIME_PASSED;
 }
 
-void prime_Shutdown()
+void prime_shutdown()
 {
-    prime_DestroyAllocator(s_Data.allocator);
+    prime_destroy_allocator(s_Data.allocator);
 }
 
-prime_Allocator* prime_CreateAllocator(u64 size)
+prime_allocator* prime_create_allocator(u64 size)
 {
-    prime_Allocator* allocator;
-    allocator = (prime_Allocator*)malloc(sizeof(prime_Allocator));
-    memset(allocator, 0, sizeof(prime_Allocator));
+    prime_allocator* allocator;
+    allocator = (prime_allocator*)malloc(sizeof(prime_allocator));
+    memset(allocator, 0, sizeof(prime_allocator));
     allocator->memory = malloc(size);
     allocator->size = size;
     return allocator;
 }
 
-void prime_DestroyAllocator(prime_Allocator* allocator)
+void prime_destroy_allocator(prime_allocator* allocator)
 {
     PRIME_ASSERT_MSG(allocator, "allocator is null");
     free(allocator->memory);
@@ -50,7 +50,7 @@ void prime_DestroyAllocator(prime_Allocator* allocator)
     allocator = nullptr;
 }
 
-void* prime_Allocate(prime_Allocator* allocator, u64 size)
+void* prime_alloc(prime_allocator* allocator, u64 size)
 {
     PRIME_ASSERT_MSG(allocator, "allocator is null");
     if (allocator->allocated + size > allocator->size) {
@@ -63,23 +63,23 @@ void* prime_Allocate(prime_Allocator* allocator, u64 size)
     return block;
 }
 
-void prime_ClearAllocator(prime_Allocator* allocator)
+void prime_clear_allocator(prime_allocator* allocator)
 {
     PRIME_ASSERT_MSG(allocator, "allocator is null");
     memset(allocator->memory, 0, allocator->size);
 }
 
-char* prime_Format(const char* fmt, ...)
+char* prime_format(const char* fmt, ...)
 {
     PRIME_ASSERT_MSG(fmt, "fmt is null");
     va_list arg_ptr;
     va_start(arg_ptr, fmt);
-    char* result = prime_FormatArgs(fmt, arg_ptr);
+    char* result = prime_format_args(fmt, arg_ptr);
     va_end(arg_ptr);
     return result;
 }
 
-char* prime_FormatArgs(const char* fmt, va_list args_list)
+char* prime_format_args(const char* fmt, va_list args_list)
 {
     PRIME_ASSERT_MSG(fmt, "fmt is null");
     va_list list_copy;
@@ -94,13 +94,13 @@ char* prime_FormatArgs(const char* fmt, va_list args_list)
 
     i32 length = vsnprintf(0, 0, fmt, list_copy);
     va_end(list_copy);
-    char* result = (char*)prime_Allocate(s_Data.allocator, length + 1);
+    char* result = (char*)prime_alloc(s_Data.allocator, length + 1);
     vsnprintf(result, length + 1, fmt, args_list);
     result[length] = 0;
     return result;
 }
 
-char* prime_ToString(const wchar_t* wstring)
+char* prime_to_string(const wchar_t* wstring)
 {
     PRIME_ASSERT_MSG(wstring, "wstring is null");
     int len = wcharToMultibyte(wstring, 0, nullptr);
@@ -108,12 +108,12 @@ char* prime_ToString(const wchar_t* wstring)
         return nullptr;
     }
     
-    char* result = (char*)prime_Allocate(s_Data.allocator, len + 1);
+    char* result = (char*)prime_alloc(s_Data.allocator, len + 1);
     wcharToMultibyte(wstring, len, result);
     return result;
 }
 
-wchar_t* prime_ToWstring(const char* string)
+wchar_t* prime_to_wstring(const char* string)
 {
     PRIME_ASSERT_MSG(string, "string is null");
     int len = multibyteToWchar(string, 0, nullptr);
@@ -121,7 +121,27 @@ wchar_t* prime_ToWstring(const char* string)
         return nullptr;
     }
 
-    wchar_t* result = (wchar_t*)prime_Allocate(s_Data.allocator, sizeof(wchar_t) * len);
+    wchar_t* result = (wchar_t*)prime_alloc(s_Data.allocator, sizeof(wchar_t) * len);
     multibyteToWchar(string, len, result);
     return result;
+}
+
+f32 prime_sqrt(f32 number)
+{
+    return sqrtf(number);
+}
+
+f32 prime_tan(f32 number)
+{
+    return tanf(number);
+}
+
+f32 prime_cos(f32 number)
+{
+    return cosf(number);
+}
+
+f32 prime_sin(f32 number)
+{
+    return sinf(number);
 }

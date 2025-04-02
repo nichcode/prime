@@ -14,7 +14,7 @@ i32 wcharToMultibyte(const wchar_t* wstr, u32 wstr_len, char* str)
     return WideCharToMultiByte(CP_UTF8, 0, wstr, -1, str, wstr_len, 0, 0);
 }
 
-void consoleWrite(prime_LogLevel level, const char* msg)
+void consoleWrite(prime_log_level level, const char* msg)
 {
     b8 error = level > PRIME_LEVEL_WARN;
     HANDLE console = NULL;
@@ -28,7 +28,7 @@ void consoleWrite(prime_LogLevel level, const char* msg)
     }
 
     SetConsoleTextAttribute(console, levels[level]);
-    wchar_t* wstr = prime_ToWstring(msg);
+    wchar_t* wstr = prime_to_wstring(msg);
     u64 len = wcslen(wstr);
     DWORD number_written = 0;
 

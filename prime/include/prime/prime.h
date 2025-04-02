@@ -2,29 +2,58 @@
 #pragma once
 
 #include "prime/prime_log.h"
+#include "prime/prime_maths.h"
 #include <stdarg.h>
 
-using prime_DeviceType = u32;
-using prime_LogLevel = u32;
+using prime_device_type = u32;
 
-enum prime_DeviceTypes
+enum prime_device_types
 {
     PRIME_DEVICE_OPENGL
 };
 
-struct prime_Allocator;
+struct prime_allocator;
 
-PRIME_API b8 prime_Init(prime_DeviceType type);
-PRIME_API void prime_Shutdown();
+PRIME_API b8 prime_init(prime_device_type type);
+PRIME_API void prime_shutdown();
 
-PRIME_API prime_Allocator* prime_CreateAllocator(u64 size);
-PRIME_API void prime_DestroyAllocator(prime_Allocator* allocator);
+PRIME_API prime_allocator* prime_create_allocator(u64 size);
+PRIME_API void prime_destroy_allocator(prime_allocator* allocator);
 
-PRIME_API void* prime_Allocate(prime_Allocator* allocator, u64 size);
-PRIME_API void prime_ClearAllocator(prime_Allocator* allocator);
+PRIME_API void* prime_alloc(prime_allocator* allocator, u64 size);
+PRIME_API void prime_clear_allocator(prime_allocator* allocator);
 
-PRIME_API char* prime_Format(const char* fmt, ...);
-PRIME_API char* prime_FormatArgs(const char* fmt, va_list args_list);
+PRIME_API char* prime_format(const char* fmt, ...);
+PRIME_API char* prime_format_args(const char* fmt, va_list args_list);
 
-PRIME_API char* prime_ToString(const wchar_t* wstring);
-PRIME_API wchar_t* prime_ToWstring(const char* string);
+PRIME_API char* prime_to_string(const wchar_t* wstring);
+PRIME_API wchar_t* prime_to_wstring(const char* string);
+
+PRIME_INLINE char* prime_vec2_to_string(prime_vec2 vec)
+{
+    return prime_format("vec2(%.2f, %.2f)", vec.x, vec.y);
+}
+
+PRIME_INLINE char* prime_vec3_to_string(prime_vec3 vec)
+{
+    return prime_format("vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
+}
+
+PRIME_INLINE char* prime_vec4_to_string(prime_vec4 vec)
+{
+    return prime_format("vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
+}
+
+PRIME_INLINE char* primeMat4ToString(prime_mat4 matrix)
+{
+    const f32* d = matrix.data;
+    char* row1 = prime_format("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
+    char* row2 = prime_format("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
+    char* row3 = prime_format("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
+    char* row4 = prime_format("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
+
+    char* str = prime_format("mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
+                        row1, row2, row3,  row4);
+
+    return str;
+}

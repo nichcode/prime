@@ -1,5 +1,6 @@
 
 #include "prime/prime_log.h"
+#include "prime/prime_maths.h"
 #include "prime_utils.h"
 
 #include <stdio.h>
