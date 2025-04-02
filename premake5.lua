@@ -17,6 +17,17 @@ workspace "prime"
     configurations { "Debug", "Release" }
     flags { "MultiProcessorCompile" }
 
+    if (_ACTION == "vs2022") then
+        characterset ("Unicode")
+    end
+
+    if (_ACTION == "gmake2") then
+        defines {
+            "UNICODE",
+            "_UNICODE"
+        }
+    end
+
     filter {"system:windows", "configurations:*"}
         architecture "x64"
         systemversion "latest"
@@ -27,7 +38,7 @@ workspace "prime"
         symbols "on"
         runtime "Debug"
 
-        defines { "PR_CONFIG_DEBUG" }
+        defines { "PRIME_CONFIG_DEBUG" }
 
     filter "configurations:Release"
         symbols "off"
@@ -45,7 +56,7 @@ workspace "prime"
 
         pchheader "%{wks.location}/prime/src/pch.h"
         files { "%{wks.location}/prime/src/build.cpp" }
-        defines { "PR_EXPORT" }
+        defines { "PRIME_EXPORT" }
 
         includedirs {
             "%{wks.location}/prime/include",

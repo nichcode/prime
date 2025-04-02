@@ -1,5 +1,5 @@
 
-#include "prime/pr_defines.h"
+#include "prime/prime_defines.h"
 
 #include <stdio.h>
 #include <stdint.h>
@@ -7,9 +7,12 @@
 #include <string>
 #include <stdarg.h>
 #include <math.h>
+#include <memory.h>
 
 #include <string>
 #include <vector>
 #include <map>
 #include <fstream>
 #include <algorithm>
+#include <memory>
+#include <iostream>
