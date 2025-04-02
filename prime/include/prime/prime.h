@@ -1,18 +1,16 @@
 
 #pragma once
 
-#include "prime_defines.h"
+#include "prime/prime_log.h"
 #include <stdarg.h>
 
 using prime_DeviceType = u32;
+using prime_LogLevel = u32;
 
 enum prime_DeviceTypes
 {
     PRIME_DEVICE_OPENGL
 };
-
-// TODO: remove
-#define PRIME_ASSERT_MSG(expr, ...)
 
 struct prime_Allocator;
 

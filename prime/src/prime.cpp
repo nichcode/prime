@@ -22,14 +22,12 @@ b8 prime_Init(prime_DeviceType type)
 {
     s_Data.type = type;
     s_Data.allocator = prime_CreateAllocator(PRIME_MB);
-    std::cout << "Init" << std::endl;
     return PRIME_PASSED;
 }
 
 void prime_Shutdown()
 {
     prime_DestroyAllocator(s_Data.allocator);
-    std::cout << "Shutdown" << std::endl;
 }
 
 prime_Allocator* prime_CreateAllocator(u64 size)
@@ -57,7 +55,7 @@ void* prime_Allocate(prime_Allocator* allocator, u64 size)
     PRIME_ASSERT_MSG(allocator, "allocator is null");
     if (allocator->allocated + size > allocator->size) {
         u64 remaining = allocator->size - allocator->allocated;
-        //PRIME_ASSERT_MSG("Tried to allocate %lluB, only %lluB remaining.", size, remaining);
+        PRIME_ASSERT_MSG(false, "Tried to allocate %lluB, only %lluB remaining.", size, remaining);
         return nullptr;
     }
     void* block = ((u8*)allocator->memory) + allocator->allocated;

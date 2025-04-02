@@ -1,6 +1,7 @@
 
 #include "prime/prime_defines.h"
 
+#include "prime_log.cpp"
 #include "prime.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
