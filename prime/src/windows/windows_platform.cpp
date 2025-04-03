@@ -1,6 +1,6 @@
 
 #include "pch.h"
-#include "windows_API.h"
+#include "wgl_context.h"
 #include "prime/prime.h"
 #include "prime_utils.h"
 
@@ -25,6 +25,10 @@ namespace prime {
 
         ATOM success = RegisterClassExW(&wc);
         PRIME_ASSERT_MSG(success, "Window Registration Failed");
+
+        if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
+            prime::wglCreateDummyContext();
+        }
     }
 
     void windowsShutdown()
@@ -66,3 +70,26 @@ namespace prime {
     }
     
 } // namespace prime
+
+void* prime_load_library(const char* dll)
+{
+    HMODULE result = LoadLibraryA(dll);
+    PRIME_ASSERT_MSG(result, "failed to load dll %s", dll);
+    return result;
+}
+
+void* prime_load_proc(void* dll, const char* func_name)
+{
+    PRIME_ASSERT_MSG(dll, "dll is null");
+    HMODULE dll_lib = (HMODULE)dll;
+
+    FARPROC proc = GetProcAddress((HMODULE)dll_lib, func_name);
+    PRIME_ASSERT_MSG(proc, "Failed to load function: %s from DLL", func_name);
+    return (void*)proc;
+}
+
+void prime_free_library(void* dll)
+{
+    PRIME_ASSERT_MSG((HMODULE)dll, "dll is null");
+    FreeLibrary((HMODULE)dll);
+}

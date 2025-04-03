@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "prime/prime_defines.h"
+#include "prime/prime.h"
 
 struct prime_window;
 

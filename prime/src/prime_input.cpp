@@ -1,6 +1,6 @@
 
 #include "pch.h"
-#include "prime/prime_input.h"
+#include "prime/prime.h"
 
 static std::string s_ActionNames[PRIME_ACTION_MAX + 1] = {};
 static std::string s_ButtonNames[PRIME_BUTTON_MAX + 1] = {};

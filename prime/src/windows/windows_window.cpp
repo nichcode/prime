@@ -1,11 +1,14 @@
 
 #include "pch.h"
-#include "windows_API.h"
+#include "wgl_context.h"
+#include "opengl/opengl_funcs.h"
 #include "prime/prime.h"
 
 struct prime_window
 {
     HWND handle;
+    HGLRC wglContext;
+    HDC deviceContext;
     prime_vec2u size;
     prime_vec2i pos;
     const char* title = nullptr;
@@ -273,12 +276,20 @@ prime_window* prime_create_window(prime_window_desc desc)
     SetPropW(window->handle, s_PropName, window);
     mapKeys(window);
     window->focused = true;
+
+    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
+        window->wglContext = prime::wglCreateContext(window->handle); 
+        window->deviceContext = GetDC(window->handle);
+    }
+
     return window;
 }
 
 void prime_destroy_window(prime_window* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
+    prime::wglDestroyContext(window->wglContext);
+    ReleaseDC(window->handle, window->deviceContext);
     DestroyWindow(window->handle);
     window = nullptr;
 }
@@ -316,6 +327,14 @@ void prime_pull_events()
                 processKey(window, key, scancode, PRIME_ACTION_RELEASE);
             }
         }
+    }
+}
+
+void prime_swap_buffers(prime_window* window)
+{
+    PRIME_ASSERT_MSG(window, "window is null");
+    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
+        SwapBuffers(window->deviceContext);
     }
 }
 
@@ -373,11 +392,27 @@ void prime_set_window_size(prime_window* window, prime_vec2u size)
     );
 }
 
-void primeSetWindowTitle(prime_window* window, const char* title)
+void prime_set_window_title(prime_window* window, const char* title)
 {
     window->title = title;
     wchar_t* wstr = prime_to_wstring(title);
     SetWindowText(window->handle, wstr);
+}
+
+void prime_set_vsync(prime_window* window, b8 vsync)
+{
+    PRIME_ASSERT_MSG(window, "window is null");
+    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
+        prime::wglSetSetVsync(vsync);
+    }
+}
+
+void prime_make_active(prime_window* window)
+{
+    PRIME_ASSERT_MSG(window, "window is null");
+    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
+        prime::wglMakeActive(window->deviceContext, window->wglContext);
+    }
 }
 
 void prime_set_close_callback(prime_close_func callback)

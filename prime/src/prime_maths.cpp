@@ -1,81 +1,8 @@
 
-#pragma once
+#include "pch.h"
+#include "prime/prime.h"
 
-PRIME_API f32 prime_sqrt(f32 number);
-PRIME_API f32 prime_tan(f32 number);
-
-PRIME_API f32 prime_cos(f32 number);
-PRIME_API f32 prime_sin(f32 number);
-
-struct prime_vec2
-{
-    f32 x = 0.0f;
-    f32 y = 0.0f;
-};
-
-struct prime_vec2i
-{
-    i32 x = 0;
-    i32 y = 0;
-};
-
-struct prime_vec2u
-{
-    u32 x = 0;
-    u32 y = 0;
-};
-
-struct prime_vec3
-{
-    f32 x = 0.0f;
-    f32 y = 0.0f;
-    f32 z = 0.0f;
-};
-
-struct prime_vec3i
-{
-    i32 x = 0;
-    i32 y = 0;
-    i32 z = 0;
-};
-
-struct prime_vec3u
-{
-    u32 x = 0;
-    u32 y = 0;
-    u32 z = 0;
-};
-
-struct prime_vec4
-{
-    f32 x = 0.0f;
-    f32 y = 0.0f;
-    f32 z = 0.0f;
-    f32 w = 0.0f;
-};
-
-struct prime_vec4i
-{
-    i32 x = 0;
-    i32 y = 0;
-    i32 z = 0;
-    i32 w = 0;
-};
-
-struct prime_vec4u
-{
-    u32 x = 0;
-    u32 y = 0;
-    u32 z = 0;
-    u32 w = 0;
-};
-
-struct prime_mat4
-{
-    f32 data[16]{};
-};
-
-PRIME_INLINE i32 prime_maxi(i32 a, i32 b)
+i32 prime_maxi(i32 a, i32 b)
 {
     if(a > b) {
         return a;
@@ -83,7 +10,7 @@ PRIME_INLINE i32 prime_maxi(i32 a, i32 b)
     return b;
 }
 
-PRIME_INLINE i32 prime_mini(i32 a, i32 b)
+i32 prime_mini(i32 a, i32 b)
 {
     if(a < b) {
         return a;
@@ -91,17 +18,17 @@ PRIME_INLINE i32 prime_mini(i32 a, i32 b)
     return b;
 }
 
-PRIME_INLINE f32 prime_to_radians(f32 degrees)
+f32 prime_to_radians(f32 degrees)
 {
     return (PRIME_PI * degrees) / 180.0f;
 }
 
-PRIME_INLINE f32 prime_to_degrees(f32 radians)
+f32 prime_to_degrees(f32 radians)
 {
     return (radians * 180.0f) / PRIME_PI;
 }
 
-PRIME_INLINE prime_vec2 prime_create_vec2(f32 x, f32 y)
+prime_vec2 prime_create_vec2(f32 x, f32 y)
 {
     prime_vec2 v;
     v.x = x;
@@ -109,59 +36,59 @@ PRIME_INLINE prime_vec2 prime_create_vec2(f32 x, f32 y)
     return v;
 }
 
-PRIME_INLINE prime_vec2 prime_add_vec2(const prime_vec2 a, const prime_vec2 b)
+prime_vec2 prime_add_vec2(const prime_vec2 a, const prime_vec2 b)
 {
     return prime_create_vec2(a.x + b.x, a.y + b.y);
 }
 
-PRIME_INLINE prime_vec2 prime_sub_vec2(const prime_vec2 a, const prime_vec2 b)
+prime_vec2 prime_sub_vec2(const prime_vec2 a, const prime_vec2 b)
 {
     return prime_create_vec2(a.x - b.x, a.y - b.y);
 }
 
-PRIME_INLINE prime_vec2 prime_div_vec2(const prime_vec2 a, const prime_vec2 b)
+prime_vec2 prime_div_vec2(const prime_vec2 a, const prime_vec2 b)
 {
     return prime_create_vec2(a.x / b.x, a.y / b.y);
 }
 
-PRIME_INLINE prime_vec2 prime_div_vec2_s(const prime_vec2 a, f32 scaler)
+prime_vec2 prime_div_vec2_s(const prime_vec2 a, f32 scaler)
 {
     return prime_create_vec2(a.x / scaler, a.y / scaler);
 }
 
-PRIME_INLINE prime_vec2 prime_mul_vec2(const prime_vec2 a, const prime_vec2 b)
+prime_vec2 prime_mul_vec2(const prime_vec2 a, const prime_vec2 b)
 {
     return prime_create_vec2(a.x * b.x, a.y * b.y);
 }
 
-PRIME_INLINE prime_vec2 prime_mul_vec2_s(const prime_vec2 a, f32 scaler)
+prime_vec2 prime_mul_vec2_s(const prime_vec2 a, f32 scaler)
 {
     return prime_create_vec2(a.x * scaler, a.y * scaler);
 }
 
-PRIME_INLINE f32 prime_vec2_length(const prime_vec2 vec)
+f32 prime_vec2_length(const prime_vec2 vec)
 {
     return vec.x * vec.x + vec.y * vec.y;
 }
 
-PRIME_INLINE f32 prime_vec2_length_s(const prime_vec2 vec)
+f32 prime_vec2_length_s(const prime_vec2 vec)
 {
     return prime_sqrt(vec.x * vec.x + vec.y * vec.y);
 }
 
-PRIME_INLINE f32 prime_vec2_distance(const prime_vec2 a, const prime_vec2 b)
+f32 prime_vec2_distance(const prime_vec2 a, const prime_vec2 b)
 {
     prime_vec2 vec = prime_create_vec2(a.x - b.x, a.y - b.y);
     return prime_vec2_length(vec);
 }
 
-PRIME_INLINE f32 prime_vec2_distance_s(const prime_vec2 a, const prime_vec2 b)
+f32 prime_vec2_distance_s(const prime_vec2 a, const prime_vec2 b)
 {
     prime_vec2 vec = prime_create_vec2(a.x - b.x, a.y - b.y);
     return prime_vec2_length_s(vec);
 }
 
-PRIME_INLINE prime_vec2 prime_vec2_normalized(const prime_vec2 vec)
+prime_vec2 prime_vec2_normalized(const prime_vec2 vec)
 {
     prime_vec2 v = vec;
     const f32 length = prime_vec2_length(vec);
@@ -170,13 +97,17 @@ PRIME_INLINE prime_vec2 prime_vec2_normalized(const prime_vec2 vec)
     return v;
 }
 
-PRIME_INLINE b8 prime_vec2_equal(const prime_vec2 a, const prime_vec2 b)
+b8 prime_vec2_equal(const prime_vec2 a, const prime_vec2 b)
 {
     return a.x == b.x && a.y == b.y;
 }
 
+char* prime_vec2_to_string(prime_vec2 vec)
+{
+    return prime_format("vec2(%.2f, %.2f)", vec.x, vec.y);
+}
 
-PRIME_INLINE prime_vec3 prime_create_vec3(f32 x, f32 y, f32 z)
+prime_vec3 prime_create_vec3(f32 x, f32 y, f32 z)
 {
     prime_vec3 v;
     v.x = x;
@@ -185,59 +116,59 @@ PRIME_INLINE prime_vec3 prime_create_vec3(f32 x, f32 y, f32 z)
     return v;
 }
 
-PRIME_INLINE prime_vec3 prime_add_vec3(const prime_vec3 a, const prime_vec3 b)
+prime_vec3 prime_add_vec3(const prime_vec3 a, const prime_vec3 b)
 {
     return prime_create_vec3(a.x + b.x, a.y + b.y, a.z + b.z);
 }
 
-PRIME_INLINE prime_vec3 prime_sub_vec3(const prime_vec3 a, const prime_vec3 b)
+prime_vec3 prime_sub_vec3(const prime_vec3 a, const prime_vec3 b)
 {
     return prime_create_vec3(a.x - b.x, a.y - b.y, a.z - b.z);
 }
 
-PRIME_INLINE prime_vec3 prime_div_vec3(const prime_vec3 a, const prime_vec3 b)
+prime_vec3 prime_div_vec3(const prime_vec3 a, const prime_vec3 b)
 {
     return prime_create_vec3(a.x / b.x, a.y / b.y, a.z / b.z);
 }
 
-PRIME_INLINE prime_vec3 prime_div_vec3_s(const prime_vec3 a, f32 scaler)
+prime_vec3 prime_div_vec3_s(const prime_vec3 a, f32 scaler)
 {
     return prime_create_vec3(a.x / scaler, a.y / scaler, a.z / scaler);
 }
 
-PRIME_INLINE prime_vec3 prime_mul_vec3(const prime_vec3 a, const prime_vec3 b)
+prime_vec3 prime_mul_vec3(const prime_vec3 a, const prime_vec3 b)
 {
     return prime_create_vec3(a.x * b.x, a.y * b.y, a.z * b.z);
 }
 
-PRIME_INLINE prime_vec3 prime_mul_vec3_s(const prime_vec3 a, f32 scaler)
+prime_vec3 prime_mul_vec3_s(const prime_vec3 a, f32 scaler)
 {
     return prime_create_vec3(a.x * scaler, a.y * scaler, a.z * scaler);
 }
 
-PRIME_INLINE f32 prime_vec3_length(const prime_vec3 vec)
+f32 prime_vec3_length(const prime_vec3 vec)
 {
     return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z;
 }
 
-PRIME_INLINE f32 prime_vec3_length_s(const prime_vec3 vec)
+f32 prime_vec3_length_s(const prime_vec3 vec)
 {
     return prime_sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z);
 }
 
-PRIME_INLINE f32 prime_vec3_distance(const prime_vec3 a, const prime_vec3 b)
+f32 prime_vec3_distance(const prime_vec3 a, const prime_vec3 b)
 {
     prime_vec3 vec = prime_create_vec3(a.x - b.x, a.y - b.y, a.z - b.z);
     return prime_vec3_length(vec);
 }
 
-PRIME_INLINE f32 prime_vec3_distance_s(const prime_vec3 a, const prime_vec3 b)
+f32 prime_vec3_distance_s(const prime_vec3 a, const prime_vec3 b)
 {
     prime_vec3 vec = prime_create_vec3(a.x - b.x, a.y - b.y, a.z - b.z);
     return prime_vec3_length_s(vec);
 }
 
-PRIME_INLINE prime_vec3 prime_vec3_normalized(const prime_vec3 vec)
+prime_vec3 prime_vec3_normalized(const prime_vec3 vec)
 {
     prime_vec3 v = vec;
     const f32 length = prime_vec3_length(vec);
@@ -247,7 +178,7 @@ PRIME_INLINE prime_vec3 prime_vec3_normalized(const prime_vec3 vec)
     return v;
 }
 
-PRIME_INLINE f32 prime_vec3_dot(const prime_vec3 a, const prime_vec3 b)
+f32 prime_vec3_dot(const prime_vec3 a, const prime_vec3 b)
 {
     f32 p = 0;
     p += a.x * b.x;
@@ -256,7 +187,7 @@ PRIME_INLINE f32 prime_vec3_dot(const prime_vec3 a, const prime_vec3 b)
     return p;
 }
 
-PRIME_INLINE prime_vec3 prime_vec3_cross(const prime_vec3 a, const prime_vec3 b)
+prime_vec3 prime_vec3_cross(const prime_vec3 a, const prime_vec3 b)
 {
     return prime_create_vec3(
             a.y * b.z - a.z * b.y,
@@ -265,13 +196,17 @@ PRIME_INLINE prime_vec3 prime_vec3_cross(const prime_vec3 a, const prime_vec3 b)
         );
 }
 
-PRIME_INLINE b8 prime_vec3_equal(const prime_vec3 a, const prime_vec3 b)
+b8 prime_vec3_equal(const prime_vec3 a, const prime_vec3 b)
 {
     return a.x == b.x && a.y == b.y && a.z == b.z;
 }
 
+char* prime_vec3_to_string(prime_vec3 vec)
+{
+    return prime_format("vec3(%.2f, %.2f, %.2f)", vec.x, vec.y, vec.z);
+}
 
-PRIME_INLINE prime_vec4 prime_create_vec4(f32 x, f32 y, f32 z, f32 w)
+prime_vec4 prime_create_vec4(f32 x, f32 y, f32 z, f32 w)
 {
     prime_vec4 v;
     v.x = x;
@@ -281,59 +216,59 @@ PRIME_INLINE prime_vec4 prime_create_vec4(f32 x, f32 y, f32 z, f32 w)
     return v;
 }
 
-PRIME_INLINE prime_vec4 prime_add_vec4(const prime_vec4 a, const prime_vec4 b)
+prime_vec4 prime_add_vec4(const prime_vec4 a, const prime_vec4 b)
 {
     return prime_create_vec4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
 }
 
-PRIME_INLINE prime_vec4 prime_sub_vec4(const prime_vec4 a, const prime_vec4 b)
+prime_vec4 prime_sub_vec4(const prime_vec4 a, const prime_vec4 b)
 {
     return prime_create_vec4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
 }
 
-PRIME_INLINE prime_vec4 prime_div_vec4(const prime_vec4 a, const prime_vec4 b)
+prime_vec4 prime_div_vec4(const prime_vec4 a, const prime_vec4 b)
 {
     return prime_create_vec4(a.x / b.x, a.y / b.y, a.z / b.z, a.w / b.w);
 }
 
-PRIME_INLINE prime_vec4 prime_div_vec4_s(const prime_vec4 a, f32 scaler)
+prime_vec4 prime_div_vec4_s(const prime_vec4 a, f32 scaler)
 {
     return prime_create_vec4(a.x / scaler, a.y / scaler, a.z / scaler, a.w / scaler);
 }
 
-PRIME_INLINE prime_vec4 prime_mul_vec4(const prime_vec4 a, const prime_vec4 b)
+prime_vec4 prime_mul_vec4(const prime_vec4 a, const prime_vec4 b)
 {
     return prime_create_vec4(a.x * b.x, a.y * b.y, a.z * b.z, a.w * b.w);
 }
 
-PRIME_INLINE prime_vec4 prime_mul_vec4_s(const prime_vec4 a, f32 scaler)
+prime_vec4 prime_mul_vec4_s(const prime_vec4 a, f32 scaler)
 {
     return prime_create_vec4(a.x * scaler, a.y * scaler, a.z * scaler, a.w * scaler);
 }
 
-PRIME_INLINE f32 prime_vec4_length(const prime_vec4 vec)
+f32 prime_vec4_length(const prime_vec4 vec)
 {
     return vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w;
 }
 
-PRIME_INLINE f32 prime_vec4_length_s(const prime_vec4 vec)
+f32 prime_vec4_length_s(const prime_vec4 vec)
 {
     return prime_sqrt(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
 }
 
-PRIME_INLINE f32 prime_vec4_distance(const prime_vec4 a, const prime_vec4 b)
+f32 prime_vec4_distance(const prime_vec4 a, const prime_vec4 b)
 {
     prime_vec4 vec = prime_create_vec4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
     return prime_vec4_length(vec);
 }
 
-PRIME_INLINE f32 prime_vec4_distance_s(const prime_vec4 a, const prime_vec4 b)
+f32 prime_vec4_distance_s(const prime_vec4 a, const prime_vec4 b)
 {
     prime_vec4 vec = prime_create_vec4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
     return prime_vec4_length_s(vec);
 }
 
-PRIME_INLINE prime_vec4 prime_vec4_normalized(const prime_vec4 vec)
+prime_vec4 prime_vec4_normalized(const prime_vec4 vec)
 {
     prime_vec4 v = vec;
     const f32 length = prime_vec4_length(vec);
@@ -344,13 +279,17 @@ PRIME_INLINE prime_vec4 prime_vec4_normalized(const prime_vec4 vec)
     return v;
 }
 
-PRIME_INLINE b8 prime_vec4_equal(const prime_vec4 a, const prime_vec4 b)
+b8 prime_vec4_equal(const prime_vec4 a, const prime_vec4 b)
 {
     return a.x == b.x && a.y == b.y && a.z == b.z && a.w == b.w;
 }
 
+char* prime_vec4_to_string(prime_vec4 vec)
+{
+    return prime_format("vec4(%.2f, %.2f, %.2f, %.2f)", vec.x, vec.y, vec.z, vec.w);
+}
 
-PRIME_INLINE prime_mat4 prime_identity()
+prime_mat4 prime_identity()
 {
     prime_mat4 mat;
     mat.data[0] = 1.0f;
@@ -360,7 +299,7 @@ PRIME_INLINE prime_mat4 prime_identity()
     return mat;
 }
 
-PRIME_INLINE prime_mat4 prime_mat4_mul(const prime_mat4 a, const prime_mat4 b)
+prime_mat4 prime_mat4_mul(const prime_mat4 a, const prime_mat4 b)
 {
     prime_mat4 mat = prime_identity();
     const f32* m1_ptr = b.data;
@@ -378,7 +317,7 @@ PRIME_INLINE prime_mat4 prime_mat4_mul(const prime_mat4 a, const prime_mat4 b)
     return mat;
 }
 
-PRIME_INLINE prime_mat4 prime_ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near_clip, f32 far_clip)
+prime_mat4 prime_ortho(f32 left, f32 right, f32 bottom, f32 top, f32 near_clip, f32 far_clip)
 {
     prime_mat4 mat = prime_identity();
 
@@ -397,7 +336,7 @@ PRIME_INLINE prime_mat4 prime_ortho(f32 left, f32 right, f32 bottom, f32 top, f3
     return mat;
 }
 
-PRIME_INLINE prime_mat4 prime_perspective(f32 fov_radians, f32 aspect_ratio, f32 near_clip, f32 far_clip)
+prime_mat4 prime_perspective(f32 fov_radians, f32 aspect_ratio, f32 near_clip, f32 far_clip)
 {
     f32 half_tan_fov = prime_tan(fov_radians * 0.5f);
     prime_mat4 mat;
@@ -411,7 +350,7 @@ PRIME_INLINE prime_mat4 prime_perspective(f32 fov_radians, f32 aspect_ratio, f32
     return mat;
 }
 
-PRIME_INLINE prime_mat4 prime_look_at(const prime_vec3 position, const prime_vec3 target, const prime_vec3 up)
+prime_mat4 prime_look_at(const prime_vec3 position, const prime_vec3 target, const prime_vec3 up)
 {
     prime_mat4 mat;
     prime_vec3 z_axis;
@@ -443,7 +382,7 @@ PRIME_INLINE prime_mat4 prime_look_at(const prime_vec3 position, const prime_vec
     return mat;
 }
 
-PRIME_INLINE prime_mat4 prime_transposed(const prime_mat4& matrix)
+prime_mat4 prime_transposed(const prime_mat4& matrix)
 {
     prime_mat4 out_matrix = prime_identity();
     out_matrix.data[0] = matrix.data[0];
@@ -465,7 +404,7 @@ PRIME_INLINE prime_mat4 prime_transposed(const prime_mat4& matrix)
     return out_matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_inverse(const prime_mat4& matrix)
+prime_mat4 prime_inverse(const prime_mat4& matrix)
 {
     const f32* m = matrix.data;
 
@@ -540,7 +479,7 @@ PRIME_INLINE prime_mat4 prime_inverse(const prime_mat4& matrix)
     return out_matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_translate(const prime_vec3 translation)
+prime_mat4 prime_translate(const prime_vec3 translation)
 {
     prime_mat4 matrix = prime_identity();
     matrix.data[12] = translation.x;
@@ -549,7 +488,7 @@ PRIME_INLINE prime_mat4 prime_translate(const prime_vec3 translation)
     return matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_scale(const prime_vec3 scale)
+prime_mat4 prime_scale(const prime_vec3 scale)
 {
     prime_mat4 matrix = prime_identity();
     matrix.data[0] = scale.x;
@@ -558,7 +497,7 @@ PRIME_INLINE prime_mat4 prime_scale(const prime_vec3 scale)
     return matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_rotate_x(f32 angle_degrees)
+prime_mat4 prime_rotate_x(f32 angle_degrees)
 {
     prime_mat4 matrix = prime_identity();
     f32 angle_radians = prime_to_radians(angle_degrees);
@@ -572,7 +511,7 @@ PRIME_INLINE prime_mat4 prime_rotate_x(f32 angle_degrees)
     return matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_rotate_y(f32 angle_degrees)
+prime_mat4 prime_rotate_y(f32 angle_degrees)
 {
     prime_mat4 matrix = prime_identity();
     f32 angle_radians = prime_to_radians(angle_degrees);
@@ -586,7 +525,7 @@ PRIME_INLINE prime_mat4 prime_rotate_y(f32 angle_degrees)
     return matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_rotate_z(f32 angle_degrees)
+prime_mat4 prime_rotate_z(f32 angle_degrees)
 {
     prime_mat4 matrix = prime_identity();
     f32 angle_radians = prime_to_radians(angle_degrees);
@@ -600,7 +539,7 @@ PRIME_INLINE prime_mat4 prime_rotate_z(f32 angle_degrees)
     return matrix;
 }
 
-PRIME_INLINE prime_mat4 prime_rotate(f32 x_degrees, f32 y_degrees, f32 z_degrees)
+prime_mat4 prime_rotate(f32 x_degrees, f32 y_degrees, f32 z_degrees)
 {
     prime_mat4 rx = prime_rotate_x(x_degrees);
     prime_mat4 ry = prime_rotate_y(y_degrees);
@@ -610,7 +549,7 @@ PRIME_INLINE prime_mat4 prime_rotate(f32 x_degrees, f32 y_degrees, f32 z_degrees
     return matrix;
 }
 
-PRIME_INLINE prime_vec4 prime_vec4_mul_mat4(const prime_vec4 vec, const prime_mat4 mat)
+prime_vec4 prime_vec4_mul_mat4(const prime_vec4 vec, const prime_mat4 mat)
 {
     return prime_create_vec4(
         vec.x * mat.data[0] + vec.y * mat.data[1] + vec.z * mat.data[2] + vec.w * mat.data[3],
@@ -620,7 +559,7 @@ PRIME_INLINE prime_vec4 prime_vec4_mul_mat4(const prime_vec4 vec, const prime_ma
     );
 }
 
-PRIME_INLINE prime_vec4 prime_mat4_mul_vec4(const prime_mat4 matrix, const prime_vec4 vec)
+prime_vec4 prime_mat4_mul_vec4(const prime_mat4 matrix, const prime_vec4 vec)
 {
     const f32* m = matrix.data;
 
@@ -632,273 +571,16 @@ PRIME_INLINE prime_vec4 prime_mat4_mul_vec4(const prime_mat4 matrix, const prime
     );
 }
 
-#ifdef __cplusplus
-
-PRIME_INLINE prime_vec2 operator + (const prime_vec2& a, const prime_vec2& b)
+char* prime_mat4_to_string(prime_mat4 matrix)
 {
-    return prime_add_vec2(a, b);
+    const f32* d = matrix.data;
+    char* row1 = prime_format("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
+    char* row2 = prime_format("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
+    char* row3 = prime_format("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
+    char* row4 = prime_format("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
+
+    char* str = prime_format("mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
+                        row1, row2, row3,  row4);
+
+    return str;
 }
-
-PRIME_INLINE prime_vec2 operator - (const prime_vec2& a, const prime_vec2& b)
-{
-    return prime_sub_vec2(a, b);
-}
-
-PRIME_INLINE prime_vec2 operator / (const prime_vec2& a, const prime_vec2& b)
-{
-    return prime_div_vec2(a, b);
-}
-
-PRIME_INLINE prime_vec2 operator / (const prime_vec2& a, const f32 scaler)
-{
-    return prime_div_vec2_s(a, scaler);
-}
-
-PRIME_INLINE prime_vec2 operator * (const prime_vec2& a, const prime_vec2& b)
-{
-    return prime_mul_vec2(a, b);
-}
-
-PRIME_INLINE prime_vec2 operator * (const prime_vec2& a, const f32 scaler)
-{
-    return prime_mul_vec2_s(a, scaler);
-}
-
-PRIME_INLINE prime_vec2& operator += (prime_vec2& a, const prime_vec2& b)
-{
-    a.x += b.x;
-    a.y += b.y;
-    return a;
-}
-
-PRIME_INLINE prime_vec2& operator -= (prime_vec2& a, const prime_vec2& b)
-{
-    a.x -= b.x;
-    a.y -= b.y;
-    return a;
-}
-
-PRIME_INLINE prime_vec2& operator /= (prime_vec2& a, const prime_vec2& b)
-{
-    a.x /= b.x;
-    a.y /= b.y;
-    return a;
-}
-
-PRIME_INLINE prime_vec2& operator /= (prime_vec2& a, f32 scaler)
-{
-    a.x /= scaler;
-    a.y /= scaler;
-    return a;
-}
-
-PRIME_INLINE prime_vec2& operator *= (prime_vec2& a, const prime_vec2& b)
-{
-    a.x *= b.x;
-    a.y *= b.y;
-    return a;
-}
-
-PRIME_INLINE prime_vec2& operator *= (prime_vec2& a, f32 scaler)
-{
-    a.x *= scaler;
-    a.y *= scaler;
-    return a;
-}
-
-PRIME_INLINE b8 operator == (const prime_vec2& a, const prime_vec2& b)
-{
-    return prime_vec2_equal(a, b);
-}
-
-
-PRIME_INLINE prime_vec3 operator + (const prime_vec3& a, const prime_vec3& b)
-{
-    return prime_add_vec3(a, b);
-}
-
-PRIME_INLINE prime_vec3 operator - (const prime_vec3& a, const prime_vec3& b)
-{
-    return prime_sub_vec3(a, b);
-}
-
-PRIME_INLINE prime_vec3 operator / (const prime_vec3& a, const prime_vec3& b)
-{
-    return prime_div_vec3(a, b);
-}
-
-PRIME_INLINE prime_vec3 operator / (const prime_vec3& a, const f32 scaler)
-{
-    return prime_div_vec3_s(a, scaler);
-}
-
-PRIME_INLINE prime_vec3 operator * (const prime_vec3& a, const prime_vec3& b)
-{
-    return prime_mul_vec3(a, b);
-}
-
-PRIME_INLINE prime_vec3 operator * (const prime_vec3& a, const f32 scaler)
-{
-    return prime_mul_vec3_s(a, scaler);
-}
-
-PRIME_INLINE prime_vec3& operator += (prime_vec3& a, const prime_vec3& b)
-{
-    a.x += b.x;
-    a.y += b.y;
-    a.z += b.z;
-    return a;
-}
-
-PRIME_INLINE prime_vec3& operator -= (prime_vec3& a, const prime_vec3& b)
-{
-    a.x -= b.x;
-    a.y -= b.y;
-    a.z -= b.z;
-    return a;
-}
-
-PRIME_INLINE prime_vec3& operator /= (prime_vec3& a, const prime_vec3& b)
-{
-    a.x /= b.x;
-    a.y /= b.y;
-    a.z /= b.z;
-    return a;
-}
-
-PRIME_INLINE prime_vec3& operator /= (prime_vec3& a, f32 scaler)
-{
-    a.x /= scaler;
-    a.y /= scaler;
-    a.z /= scaler;
-    return a;
-}
-
-PRIME_INLINE prime_vec3& operator *= (prime_vec3& a, const prime_vec3& b)
-{
-    a.x *= b.x;
-    a.y *= b.y;
-    a.z *= b.y;
-    return a;
-}
-
-PRIME_INLINE prime_vec3& operator *= (prime_vec3& a, f32 scaler)
-{
-    a.x *= scaler;
-    a.y *= scaler;
-    a.z *= scaler;
-    return a;
-}
-
-PRIME_INLINE b8 operator == (const prime_vec3& a, const prime_vec3& b)
-{
-    return prime_vec3_equal(a, b);
-}
-
-
-PRIME_INLINE prime_vec4 operator + (const prime_vec4& a, const prime_vec4& b)
-{
-    return prime_add_vec4(a, b);
-}
-
-PRIME_INLINE prime_vec4 operator - (const prime_vec4& a, const prime_vec4& b)
-{
-    return prime_sub_vec4(a, b);
-}
-
-PRIME_INLINE prime_vec4 operator / (const prime_vec4& a, const prime_vec4& b)
-{
-    return prime_div_vec4(a, b);
-}
-
-PRIME_INLINE prime_vec4 operator / (const prime_vec4& a, const f32 scaler)
-{
-    return prime_div_vec4_s(a, scaler);
-}
-
-PRIME_INLINE prime_vec4 operator * (const prime_vec4& a, const prime_vec4& b)
-{
-    return prime_mul_vec4(a, b);
-}
-
-PRIME_INLINE prime_vec4 operator * (const prime_vec4& a, const f32 scaler)
-{
-    return prime_mul_vec4_s(a, scaler);
-}
-
-PRIME_INLINE prime_vec4& operator += (prime_vec4& a, const prime_vec4& b)
-{
-    a.x += b.x;
-    a.y += b.y;
-    a.z += b.z;
-    a.w += b.w;
-    return a;
-}
-
-PRIME_INLINE prime_vec4& operator -= (prime_vec4& a, const prime_vec4& b)
-{
-    a.x -= b.x;
-    a.y -= b.y;
-    a.z -= b.z;
-    a.w -= b.w;
-    return a;
-}
-
-PRIME_INLINE prime_vec4& operator /= (prime_vec4& a, const prime_vec4& b)
-{
-    a.x /= b.x;
-    a.y /= b.y;
-    a.z /= b.z;
-    a.w /= b.w;
-    return a;
-}
-
-PRIME_INLINE prime_vec4& operator /= (prime_vec4& a, f32 scaler)
-{
-    a.x /= scaler;
-    a.y /= scaler;
-    a.z /= scaler;
-    a.w /= scaler;
-    return a;
-}
-
-PRIME_INLINE prime_vec4& operator *= (prime_vec4& a, const prime_vec4& b)
-{
-    a.x *= b.x;
-    a.y *= b.y;
-    a.z *= b.y;
-    a.w *= b.y;
-    return a;
-}
-
-PRIME_INLINE prime_vec4& operator *= (prime_vec4& a, f32 scaler)
-{
-    a.x *= scaler;
-    a.y *= scaler;
-    a.z *= scaler;
-    a.w *= scaler;
-    return a;
-}
-
-PRIME_INLINE b8 operator == (const prime_vec4& a, const prime_vec4& b)
-{
-    return prime_vec4_equal(a, b);
-}
-
-
-PRIME_INLINE prime_mat4 operator * (const prime_mat4& a, const prime_mat4& b)
-{
-    return prime_mat4_mul(a, b);
-}
-
-PRIME_INLINE prime_vec4 operator * (const prime_mat4& mat, const prime_vec4& vec)
-{
-    return prime_mat4_mul_vec4(mat, vec);
-}
-
-PRIME_INLINE prime_vec4 operator * (const prime_vec4& vec, const prime_mat4& mat)
-{
-    return prime_vec4_mul_mat4(vec, mat);
-}
-
-#endif // __cplusplus

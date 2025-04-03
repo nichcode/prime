@@ -17,16 +17,7 @@ workspace "prime"
     configurations { "Debug", "Release" }
     flags { "MultiProcessorCompile" }
 
-    if (_ACTION == "vs2022") then
-        characterset ("Unicode")
-    end
-
-    if (_ACTION == "gmake2") then
-        defines {
-            "UNICODE",
-            "_UNICODE"
-        }
-    end
+    defines { "UNICODE", "_UNICODE" }
 
     filter {"system:windows", "configurations:*"}
         architecture "x64"
@@ -61,6 +52,13 @@ workspace "prime"
         includedirs {
             "%{wks.location}/prime/include",
             "%{wks.location}/prime/src",
+            "%{wks.location}/prime/vendor",
+        }
+
+        links {
+            "opengl32",
+            "user32",
+            "gdi32"
         }
 
     if (_OPTIONS["with-demo"]) then
