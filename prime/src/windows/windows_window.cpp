@@ -7,8 +7,7 @@
 struct prime_window
 {
     HWND handle;
-    HGLRC wglContext;
-    HDC deviceContext;
+    prime_context* context;
     prime_vec2u size;
     prime_vec2i pos;
     const char* title = nullptr;
@@ -242,7 +241,7 @@ prime_window* prime_create_window(prime_window_desc desc)
     AdjustWindowRectEx(&rect, style, 0, ex_style);
     wchar_t* wstr = prime_to_wstring(desc.title);
 
-    prime_window* window = (prime_window*)prime::s_Data.allocator.allocate(sizeof(prime_window));
+    prime_window* window = new prime_window();
     window->handle = CreateWindowExW(
         ex_style, s_ClassName, wstr, style, CW_USEDEFAULT,
         CW_USEDEFAULT, rect.right - rect.left, rect.bottom - rect.top, 
@@ -276,21 +275,17 @@ prime_window* prime_create_window(prime_window_desc desc)
     SetPropW(window->handle, s_PropName, window);
     mapKeys(window);
     window->focused = true;
+    s_Data.activeWindow = window;
 
-    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
-        window->wglContext = prime::wglCreateContext(window->handle); 
-        window->deviceContext = GetDC(window->handle);
-    }
-
+    prime_free_wstring(wstr);
     return window;
 }
 
 void prime_destroy_window(prime_window* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
-    prime::wglDestroyContext(window->wglContext);
-    ReleaseDC(window->handle, window->deviceContext);
     DestroyWindow(window->handle);
+    delete window;
     window = nullptr;
 }
 
@@ -327,14 +322,6 @@ void prime_pull_events()
                 processKey(window, key, scancode, PRIME_ACTION_RELEASE);
             }
         }
-    }
-}
-
-void prime_swap_buffers(prime_window* window)
-{
-    PRIME_ASSERT_MSG(window, "window is null");
-    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
-        SwapBuffers(window->deviceContext);
     }
 }
 
@@ -397,22 +384,7 @@ void prime_set_window_title(prime_window* window, const char* title)
     window->title = title;
     wchar_t* wstr = prime_to_wstring(title);
     SetWindowText(window->handle, wstr);
-}
-
-void prime_set_vsync(prime_window* window, b8 vsync)
-{
-    PRIME_ASSERT_MSG(window, "window is null");
-    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
-        prime::wglSetSetVsync(vsync);
-    }
-}
-
-void prime_make_active(prime_window* window)
-{
-    PRIME_ASSERT_MSG(window, "window is null");
-    if (prime::s_Data.type == PRIME_DEVICE_OPENGL) {
-        prime::wglMakeActive(window->deviceContext, window->wglContext);
-    }
+    prime_free_wstring(wstr);
 }
 
 void prime_set_close_callback(prime_close_func callback)
@@ -440,7 +412,7 @@ void prime_set_mouse_scrolled_callback(prime_mouse_scrolled_func callback)
     s_Callbacks.mouseScrolled = callback;
 }
 
-void prime_set_window_Moved_callback(prime_window_moved_func callback)
+void prime_set_window_moved_callback(prime_window_moved_func callback)
 {
     s_Callbacks.moved = callback;
 }
@@ -453,12 +425,6 @@ void prime_set_window_resized_callback(prime_window_resized_func callback)
 void prime_set_window_focused_callback(prime_window_focused_func callback)
 {
     s_Callbacks.focused = callback;
-}
-
-void prime_set_window(prime_window* window)
-{
-    PRIME_ASSERT_MSG(window, "window is null");
-    prime::s_Data.window = window;
 }
 
 b8 prime_window_should_close(prime_window* window)
@@ -477,7 +443,7 @@ b8 prime_is_maximized(prime_window* window)
     return false;
 }
 
-const void* prime_get_window_handle(prime_window* window)
+void* prime_get_window_handle(prime_window* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
     return window->handle;
@@ -501,18 +467,28 @@ const char* prime_get_window_title(prime_window* window)
     return window->title;
 }
 
+void prime_SetContext(prime_window* window, prime_context* context)
+{
+    window->context = context;
+}
+
+b8 prime_HasContext(prime_window* window)
+{
+    return window->context;
+}
+
 b8 prime_get_key_state(u32 key)
 {
     PRIME_ASSERT_MSG(key >= 0, "Invalid key");
     PRIME_ASSERT_MSG(key < PRIME_KEY_MAX, "Invalid key");
-    return prime::s_Data.window->keys[key] = PRIME_ACTION_PRESS;
+    return s_Data.activeWindow->keys[key] = PRIME_ACTION_PRESS;
 }
 
-b8 prime_get_nutton_state(u32 button)
+b8 prime_get_button_state(u32 button)
 {
      PRIME_ASSERT_MSG(button >= 0, "Invalid button");
     PRIME_ASSERT_MSG(button < PRIME_BUTTON_MAX, "Invalid button");
-    return prime::s_Data.window->buttons[button] == PRIME_ACTION_PRESS;
+    return s_Data.activeWindow->buttons[button] == PRIME_ACTION_PRESS;
 }
 
 LRESULT CALLBACK windowsProc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)

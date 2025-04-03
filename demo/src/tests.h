@@ -6,8 +6,9 @@
 
 using TestFunc = b8(*)();
 
-void addTest(TestFunc func);
+void addTest(TestFunc func, const char* name);
 void runTests();
 
 // tests
 b8 windowTest();
+b8 contextTest();

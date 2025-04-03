@@ -574,13 +574,7 @@ prime_vec4 prime_mat4_mul_vec4(const prime_mat4 matrix, const prime_vec4 vec)
 char* prime_mat4_to_string(prime_mat4 matrix)
 {
     const f32* d = matrix.data;
-    char* row1 = prime_format("[%f %f %f %f]", d[0], d[1], d[2], d[3]);
-    char* row2 = prime_format("[%f %f %f %f]", d[4], d[5], d[6], d[7]);
-    char* row3 = prime_format("[%f %f %f %f]", d[8], d[9], d[10], d[11]);
-    char* row4 = prime_format("[%f %f %f %f]", d[12], d[13], d[14], d[15]);
-
-    char* str = prime_format("mat4(%s \n\t     %s \n\t     %s \n\t     %s)",
-                        row1, row2, row3,  row4);
-
-    return str;
+    return prime_format("mat4([%f %f %f %f] \n \t     [%f %f %f %f] \n \t     [%f %f %f %f] \n \t     [%f %f %f %f]",
+                            d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7],
+                            d[8], d[9], d[10], d[11], d[12], d[13], d[14], d[15]);
 }

@@ -114,6 +114,7 @@ PRIME_STATIC_ASSERT(sizeof(f32) == 4, "Expected f32 to be 4 bytes.");
 PRIME_STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 struct prime_window;
+struct prime_context;
 
 using prime_close_func = void(*)(prime_window* window);
 using prime_key_func = void(*)(prime_window* window, u32 key, i32 scancode, u32 action);
@@ -345,6 +346,9 @@ PRIME_API char* prime_format_args(const char* fmt, va_list args_list);
 PRIME_API char* prime_to_string(const wchar_t* wstring);
 PRIME_API wchar_t* prime_to_wstring(const char* string);
 
+PRIME_API void prime_free_string(char* string);
+PRIME_API void prime_free_wstring(wchar_t* wstring);
+
 PRIME_API void* prime_load_library(const char* dll);
 PRIME_API void* prime_load_proc(void* dll, const char* func_name);
 PRIME_API void prime_free_library(void* dll);
@@ -358,15 +362,10 @@ PRIME_API void prime_log_error(const char* msg, ...);
 PRIME_API void prime_assert(b8 expr, const char* file, u32 line);
 PRIME_API void prime_assert_msg(b8 expr, const char* file, u32 line, const char* msg, ...);
 
-PRIME_API const char* prime_get_key_name(u32 key);
-PRIME_API const char* prime_get_nutton_name(u32 button);
-PRIME_API const char* prime_get_action_name(u32 action);
-
 PRIME_API prime_window* prime_create_window(prime_window_desc desc);
 PRIME_API void prime_destroy_window(prime_window* window);
 
 PRIME_API void prime_pull_events();
-PRIME_API void prime_swap_buffers(prime_window* window);
 PRIME_API void prime_hide_Window(prime_window* window);
 PRIME_API void prime_show_window(prime_window* window);
 PRIME_API void prime_reset_callbacks();
@@ -374,36 +373,49 @@ PRIME_API void prime_reset_callbacks();
 PRIME_API void prime_set_window_pos(prime_window* window, prime_vec2i pos);
 PRIME_API void prime_set_window_size(prime_window* window, prime_vec2u size);
 PRIME_API void prime_set_window_title(prime_window* window, const char* title);
-PRIME_API void prime_set_vsync(prime_window* window, b8 vsync);
 
 PRIME_API void prime_set_close_callback(prime_close_func callback);
 PRIME_API void prime_set_key_callback(prime_key_func callback);
 PRIME_API void prime_set_button_callback(prime_button_func callback);
 PRIME_API void prime_set_mouse_moved_callback(prime_mouse_moved_func callback);
 PRIME_API void prime_set_mouse_scrolled_callback(prime_mouse_scrolled_func callback);
-PRIME_API void prime_set_window_Moved_callback(prime_window_moved_func callback);
+PRIME_API void prime_set_window_moved_callback(prime_window_moved_func callback);
 PRIME_API void prime_set_window_resized_callback(prime_window_resized_func callback);
 PRIME_API void prime_set_window_focused_callback(prime_window_focused_func callback);
 
 PRIME_API b8 prime_window_should_close(prime_window* window);
 PRIME_API b8 prime_is_maximized(prime_window* window);
 
-PRIME_API const void* prime_get_window_handle(prime_window* window);
+PRIME_API void* prime_get_window_handle(prime_window* window);
 PRIME_API prime_vec2i prime_get_window_pos(prime_window* window);
 PRIME_API prime_vec2u prime_get_window_size(prime_window* window);
 PRIME_API const char* prime_get_window_title(prime_window* window);
 
-PRIME_API void prime_set_window(prime_window* window);
-
+PRIME_API void prime_input_set_window(prime_window* window);
 PRIME_API b8 prime_get_key_state(u32 key);
-PRIME_API b8 prime_get_nutton_state(u32 button);
+PRIME_API b8 prime_get_button_state(u32 button);
 PRIME_API b8 prime_get_action_state(u32 action);
+
+PRIME_API const char* prime_get_key_name(u32 key);
+PRIME_API const char* prime_get_button_name(u32 button);
+PRIME_API const char* prime_get_action_name(u32 action);
 
 PRIME_API f32 prime_sqrt(f32 number);
 PRIME_API f32 prime_tan(f32 number);
 
 PRIME_API f32 prime_cos(f32 number);
 PRIME_API f32 prime_sin(f32 number);
+
+PRIME_API prime_context* prime_create_context(prime_window* window);
+PRIME_API void prime_destroy_context(prime_context* context);
+
+PRIME_API void prime_swap_buffers();
+PRIME_API void prime_clear();
+PRIME_API void prime_make_active(prime_context* context);
+
+PRIME_API void prime_set_vsync(b8 vsync);
+PRIME_API void prime_set_clear_color(prime_vec4 color);
+PRIME_API void prime_set_clear_colori(prime_vec4i color);
 
 #ifdef PRIME_CONFIG_DEBUG
 #define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)
@@ -502,4 +514,4 @@ PRIME_API prime_mat4 prime_rotate_z(f32 angle_degrees);
 PRIME_API prime_mat4 prime_rotate(f32 x_degrees, f32 y_degrees, f32 z_degrees);
 PRIME_API prime_vec4 prime_vec4_mul_mat4(const prime_vec4 vec, const prime_mat4 mat);
 PRIME_API prime_vec4 prime_mat4_mul_vec4(const prime_mat4 matrix, const prime_vec4 vec);
-PRIME_API char* primeMat4ToString(prime_mat4 matrix);
+PRIME_API char* prime_mat4_to_string(prime_mat4 matrix);

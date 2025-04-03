@@ -3,16 +3,12 @@
 
 #include "windows_API.h"
 
-namespace prime {
+void wgl_CreateDummyContext();
 
-    void wglCreateDummyContext();
+HGLRC wgl_CreateContext(HWND window);
+void wgl_DestroyContext(HGLRC context);
 
-    HGLRC wglCreateContext(HWND window);
-    void wglDestroyContext(HGLRC context);
-
-    void wglMakeActive(HDC deviceContext, HGLRC context);
-    void wglSetSetVsync(int interval);
-    
-} // namespace prime
+void wgl_MakeActive(HDC deviceContext, HGLRC context);
+void wgl_SetSetVsync(int interval);
 
 

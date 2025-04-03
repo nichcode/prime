@@ -6,7 +6,7 @@ static std::string s_ActionNames[PRIME_ACTION_MAX + 1] = {};
 static std::string s_ButtonNames[PRIME_BUTTON_MAX + 1] = {};
 static std::string s_KeyNames[PRIME_KEY_MAX + 1] = {};
 
-void initInput()
+void prime_InitInput()
 {
     s_KeyNames[PRIME_KEY_A] = "Key A";
     s_KeyNames[PRIME_KEY_B] = "Key B";
@@ -108,6 +108,12 @@ void initInput()
     s_ActionNames[PRIME_ACTION_RELEASE] = "Release";
     s_ActionNames[PRIME_ACTION_PRESS] = "Press";
     s_ActionNames[PRIME_ACTION_REPEAT] = "Repeat";
+}
+
+void prime_input_set_window(prime_window* window)
+{
+    PRIME_ASSERT_MSG(window, "window is null");
+    s_Data.activeWindow = window;
 }
 
 const char* prime_get_key_name(u32 key)

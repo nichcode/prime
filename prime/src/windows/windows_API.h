@@ -16,9 +16,5 @@ static const wchar_t* s_PropName = L"WindowData";
 
 LRESULT CALLBACK windowsProc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param);
 
-namespace prime {
-
-    void windowsInit();
-    void windowsShutdown();
-    
-} // namespace prime
+void windows_PlatformInit();
+void windows_PlatformShutdown();

@@ -3,26 +3,19 @@
 #include "prime_utils.h"
 #include "prime/prime.h"
 
-#ifdef PRIME_PLATFORM_WINDOWS
-#include "windows/windows_API.h"
-#endif // PRIME_PLATFORM_WINDOWS
-
 b8 prime_init(u32 type)
 {
-    prime::s_Data.type = type;
-    prime::s_Data.allocator.init();
-#ifdef PRIME_PLATFORM_WINDOWS
-    prime::windowsInit();
-#endif // PRIME_PLATFORM_WINDOWS
+    s_Data.type = type;
+    prime_InitAPI();
+    prime_InitInput();
+    s_Data.activeContext = nullptr;
+    s_Data.activeWindow = nullptr;
     return PRIME_PASSED;
 }
 
 void prime_shutdown()
 {
-    prime::s_Data.allocator.shutdown();
-#ifdef PRIME_PLATFORM_WINDOWS
-    prime::windowsShutdown();
-#endif // PRIME_PLATFORM_WINDOWS
+    prime_ShutdownAPI();
 }
 
 char* prime_format(const char* fmt, ...)
@@ -50,7 +43,7 @@ char* prime_format_args(const char* fmt, va_list args_list)
 
     i32 length = vsnprintf(0, 0, fmt, list_copy);
     va_end(list_copy);
-    char* result = (char*)prime::s_Data.allocator.allocate(length + 1);
+    char* result = new char[length + 1];
     vsnprintf(result, length + 1, fmt, args_list);
     result[length] = 0;
     return result;
@@ -59,27 +52,39 @@ char* prime_format_args(const char* fmt, va_list args_list)
 char* prime_to_string(const wchar_t* wstring)
 {
     PRIME_ASSERT_MSG(wstring, "wstring is null");
-    int len = prime::wcharToMultibyte(wstring, 0, nullptr);
+    int len = prime_WcharToMultibyte(wstring, 0, nullptr);
     if (len == 0) {
         return nullptr;
     }
     
-    char* result = (char*)prime::s_Data.allocator.allocate(len + 1);
-    prime::wcharToMultibyte(wstring, len, result);
+    char* result = new char[len + 1];
+    prime_WcharToMultibyte(wstring, len, result);
     return result;
 }
 
 wchar_t* prime_to_wstring(const char* string)
 {
     PRIME_ASSERT_MSG(string, "string is null");
-    int len = prime::multibyteToWchar(string, 0, nullptr);
+    int len = prime_MultibyteToWchar(string, 0, nullptr);
     if (len == 0) {
         return nullptr;
     }
 
-    wchar_t* result = (wchar_t*)prime::s_Data.allocator.allocate(sizeof(wchar_t) * len);
-    prime::multibyteToWchar(string, len, result);
+    wchar_t* result = new wchar_t[len + sizeof(wchar_t)];
+    prime_MultibyteToWchar(string, len, result);
     return result;
+}
+
+void prime_free_string(char* string)
+{
+    PRIME_ASSERT_MSG(string, "string is null");
+    delete[] string;
+}
+
+void prime_free_wstring(wchar_t* wstring)
+{
+    PRIME_ASSERT_MSG(wstring, "wstring is null");
+    delete[] wstring;
 }
 
 f32 prime_sqrt(f32 number)

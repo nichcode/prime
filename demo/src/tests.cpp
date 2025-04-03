@@ -4,16 +4,25 @@
 #include "tests.h"
 #include <vector>
 
-static std::vector<TestFunc> s_Tests;
-
-void addTest(TestFunc func)
+struct Entry
 {
-    s_Tests.push_back(func);
+    TestFunc func;
+    const char* name;
+};
+
+static std::vector<Entry> s_Tests;
+
+void addTest(TestFunc func, const char* name)
+{
+    Entry test;
+    test.func = func;
+    test.name = name;
+    s_Tests.push_back(test);
 }
 
 void runTests()
 {
-    for (TestFunc func : s_Tests) {
-        b8 result = func();
+    for (auto& test : s_Tests) {
+        b8 result = test.func();
     }
 }
