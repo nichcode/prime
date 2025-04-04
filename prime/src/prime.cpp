@@ -11,12 +11,42 @@ b8 prime_init(u32 type)
     s_Data.activeWindow = nullptr;
     s_Data.activeBuffer = nullptr;
     s_Data.activeShader = nullptr;
+
+    s_Data.windows.clear();
+    s_Data.contexts.clear();
+    s_Data.buffers.clear();
+    s_Data.shaders.clear();
     return PRIME_PASSED;
 }
 
 void prime_shutdown()
 {
     prime_ShutdownAPI();
+
+    // windows
+    for (prime_window* window : s_Data.windows) {
+        prime_DestroyWindow(window);
+    }
+
+    // context
+    for (prime_context* context : s_Data.contexts) {
+        prime_DestroyContext(context);
+    }
+
+    // buffers
+    for (prime_buffer* buffer : s_Data.buffers) {
+        prime_DestroyBuffer(buffer);
+    }
+
+    // shaders
+    for (prime_shader* shader : s_Data.shaders) {
+        prime_DestroyShader(shader);
+    }
+
+    s_Data.windows.clear();
+    s_Data.contexts.clear();
+    s_Data.buffers.clear();
+    s_Data.shaders.clear();
 }
 
 void prime_set_user_data(void* data)

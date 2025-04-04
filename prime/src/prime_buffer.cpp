@@ -14,18 +14,18 @@ prime_buffer* prime_create_buffer(prime_buffer_desc desc)
 
     buffer->dataSent = false;
     buffer->handle = s_Data.api.createBuffer(desc);
+    s_Data.buffers.push_back(buffer);
     return buffer;
 }
 
 void prime_destroy_buffer(prime_buffer* buffer)
 {
     PRIME_ASSERT_MSG(buffer, "buffer is null");
-    if (s_Data.activeBuffer == buffer) {
-        s_Data.activeBuffer = nullptr;
+    auto it = std::find(s_Data.buffers.begin(), s_Data.buffers.end(), buffer);
+    if (it != s_Data.buffers.end()) {
+        s_Data.buffers.erase(it); 
     }
-    s_Data.api.destroyBuffer(buffer->handle);
-    delete buffer;
-    buffer = nullptr;
+    prime_DestroyBuffer(buffer);
 }
 
 void prime_set_buffer_data(void* data, u32 size)
@@ -43,6 +43,15 @@ void prime_bind_buffer(prime_buffer* buffer)
     }
     else {
         s_Data.api.bindBuffer(buffer->handle, false);
+    }  
+}
+
+void prime_DestroyBuffer(prime_buffer* buffer)
+{
+    if (s_Data.activeBuffer == buffer) {
+        s_Data.activeBuffer = nullptr;
     }
-    
+    s_Data.api.destroyBuffer(buffer->handle);
+    delete buffer;
+    buffer = nullptr;
 }

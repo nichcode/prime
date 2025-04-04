@@ -12,18 +12,19 @@ prime_shader* prime_create_shader(prime_shader_desc desc)
     prime_shader* shader = new prime_shader();
     PRIME_ASSERT_MSG(shader, "failed to create shader");
     shader->handle = s_Data.api.createShader(desc);
+
+    s_Data.shaders.push_back(shader);
     return shader;
 }
 
 void prime_destroy_shader(prime_shader* shader)
 {
     PRIME_ASSERT_MSG(shader, "shader is null");
-    if (s_Data.activeShader == shader) {
-        s_Data.activeShader = nullptr;
+    auto it = std::find(s_Data.shaders.begin(), s_Data.shaders.end(), shader);
+    if (it != s_Data.shaders.end()) {
+        s_Data.shaders.erase(it); 
     }
-    s_Data.api.destroyShader(shader->handle);
-    delete shader;
-    shader = nullptr;
+    prime_DestroyShader(shader);
 }
 
 void prime_set_int(const char* name, i32 data)
@@ -73,4 +74,14 @@ void prime_bind_shader(prime_shader* shader)
     PRIME_ASSERT_MSG(shader, "shader is null");
     s_Data.api.bindShader(shader->handle);
     s_Data.activeShader = shader;
+}
+
+void prime_DestroyShader(prime_shader* shader)
+{
+    if (s_Data.activeShader == shader) {
+        s_Data.activeShader = nullptr;
+    }
+    s_Data.api.destroyShader(shader->handle);
+    delete shader;
+    shader = nullptr;
 }

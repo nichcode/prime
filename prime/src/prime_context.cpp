@@ -26,18 +26,19 @@ prime_context* prime_create_context(prime_window* window)
     context->view.width = (f32)window_size.x;
     context->view.height = (f32)window_size.y;
     prime_SetContext(window, context);
+
+    s_Data.contexts.push_back(context);
     return context;
 }
 
 void prime_destroy_context(prime_context* context)
 {
     PRIME_ASSERT_MSG(context, "context is null");
-    if (s_Data.activeContext == context) {
-        s_Data.activeContext = nullptr;
+    auto it = std::find(s_Data.contexts.begin(), s_Data.contexts.end(), context);
+    if (it != s_Data.contexts.end()) {
+        s_Data.contexts.erase(it); 
     }
-    s_Data.api.destroyContext(context->handle);
-    delete context;
-    context = nullptr;
+    prime_DestroyContext(context);
 }
 
 void prime_swap_buffers()
@@ -112,4 +113,14 @@ prime_view prime_get_view()
 {
     PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     return s_Data.activeContext->view;
+}
+
+void prime_DestroyContext(prime_context* context)
+{
+    if (s_Data.activeContext == context) {
+        s_Data.activeContext = nullptr;
+    }
+    s_Data.api.destroyContext(context->handle);
+    delete context;
+    context = nullptr;
 }

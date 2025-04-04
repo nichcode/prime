@@ -22,23 +22,20 @@ b8 contextTest()
 
     // draw a triangle
     f32 vertices[] = {
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		 0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 	};
 
-    u32 indices[] = { 0, 1, 2 };
+    u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
     prime_layout layout;
 
     prime_attrib pos_attrib;
-    pos_attrib.divisor = 0;
-    pos_attrib.normalize = false;
     pos_attrib.type = PRIME_FLOAT3;
 
     prime_attrib color_attrib;
-    color_attrib.divisor = 0;
-    color_attrib.normalize = false;
     color_attrib.type = PRIME_FLOAT4;
 
     layout.attribs[0] = pos_attrib;
@@ -46,14 +43,12 @@ b8 contextTest()
     layout.count = 2;
 
     prime_buffer_desc buffer_desc;
-    buffer_desc.binding = 0;
     buffer_desc.data = vertices;
     buffer_desc.size = sizeof(vertices);
     buffer_desc.type = PRIME_BUFFER_VERTEX;
     buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
     prime_buffer* vertex_buffer = prime_create_buffer(buffer_desc);
 
-    buffer_desc.binding = 0;
     buffer_desc.data = indices;
     buffer_desc.size = sizeof(indices);
     buffer_desc.type = PRIME_BUFFER_INDEX;
@@ -79,7 +74,7 @@ b8 contextTest()
         prime_pull_events();
 
         prime_clear();
-        prime_submit_elements(PRIME_TRIANGLES, 3);
+        prime_submit_elements(PRIME_TRIANGLES, 6);
         prime_swap_buffers();
     }
 

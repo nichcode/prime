@@ -280,15 +280,19 @@ prime_window* prime_create_window(prime_window_desc desc)
     s_Data.activeWindow = window;
 
     prime_free_wstring(wstr);
+
+    s_Data.windows.push_back(window);
     return window;
 }
 
 void prime_destroy_window(prime_window* window)
 {
     PRIME_ASSERT_MSG(window, "window is null");
-    DestroyWindow(window->handle);
-    delete window;
-    window = nullptr;
+    auto it = std::find(s_Data.windows.begin(), s_Data.windows.end(), window);
+    if (it != s_Data.windows.end()) {
+        s_Data.windows.erase(it); 
+    }
+    prime_DestroyWindow(window);
 }
 
 void prime_pull_events()
@@ -491,6 +495,13 @@ b8 prime_get_button_state(u32 button)
      PRIME_ASSERT_MSG(button >= 0, "Invalid button");
     PRIME_ASSERT_MSG(button < PRIME_BUTTON_MAX, "Invalid button");
     return s_Data.activeWindow->buttons[button] == PRIME_ACTION_PRESS;
+}
+
+void prime_DestroyWindow(prime_window* window)
+{
+    DestroyWindow(window->handle);
+    delete window;
+    window = nullptr;
 }
 
 LRESULT CALLBACK windowsProc(HWND hwnd, u32 msg, WPARAM w_param, LPARAM l_param)

@@ -4,6 +4,8 @@
 #include "prime/prime.h"
 #include "prime_API.h"
 
+#include <vector>
+
 struct InitData
 {
     u32 type;
@@ -13,6 +15,11 @@ struct InitData
     prime_context* activeContext;
     prime_buffer* activeBuffer;
     prime_shader* activeShader;
+
+    std::vector<prime_window*> windows;
+    std::vector<prime_context*> contexts;
+    std::vector<prime_buffer*> buffers;
+    std::vector<prime_shader*> shaders;
 };
 
 static InitData s_Data;
@@ -25,3 +32,8 @@ void prime_InitInput();
 
 void prime_SetContext(prime_window* window, prime_context* context);
 b8 prime_HasContext(prime_window* window);
+
+void prime_DestroyWindow(prime_window* window);
+void prime_DestroyContext(prime_context* context);
+void prime_DestroyBuffer(prime_buffer* buffer);
+void prime_DestroyShader(prime_shader* shader);
