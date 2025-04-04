@@ -25,6 +25,9 @@ prime_context* prime_create_context(prime_window* window)
 void prime_destroy_context(prime_context* context)
 {
     PRIME_ASSERT_MSG(context, "context is null");
+    if (s_Data.activeContext == context) {
+        s_Data.activeContext = nullptr;
+    }
     s_Data.api.destroyContext(context->handle);
     delete context;
     context = nullptr;

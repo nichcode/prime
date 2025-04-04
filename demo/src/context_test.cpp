@@ -15,20 +15,28 @@ b8 contextTest()
 
     // draw a triangle
     f32 vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		 0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
 	};
 
     u32 indices[] = { 0, 1, 2 };
 
     prime_layout layout;
+
     prime_attrib pos_attrib;
     pos_attrib.divisor = 0;
     pos_attrib.normalize = false;
     pos_attrib.type = PRIME_FLOAT3;
+
+    prime_attrib color_attrib;
+    color_attrib.divisor = 0;
+    color_attrib.normalize = false;
+    color_attrib.type = PRIME_FLOAT4;
+
     layout.attribs[0] = pos_attrib;
-    layout.count = 1;
+    layout.attribs[1] = color_attrib;
+    layout.count = 2;
 
     prime_buffer_desc buffer_desc;
     buffer_desc.binding = 0;
@@ -45,9 +53,17 @@ b8 contextTest()
     buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
     prime_buffer* index_buffer = prime_create_buffer(buffer_desc);
 
+    prime_shader_desc shader_desc;
+    shader_desc.load = true;
+    shader_desc.vertex_src = "shaders/vertex.glsl";
+    shader_desc.pixel_src = "shaders/pixel.glsl";
+    shader_desc.type = PRIME_GLSL;
+    prime_shader* shader = prime_create_shader(shader_desc);
+
     prime_bind_buffer(vertex_buffer);
     prime_bind_buffer(index_buffer);
     prime_submit_layout(&layout);
+    prime_bind_shader(shader);
 
     while (!prime_window_should_close(window)) {
         prime_pull_events();
@@ -57,6 +73,7 @@ b8 contextTest()
         prime_swap_buffers();
     }
 
+    prime_destroy_shader(shader);
     prime_destroy_buffer(vertex_buffer);
     prime_destroy_buffer(index_buffer);
     prime_destroy_context(context);

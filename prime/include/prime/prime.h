@@ -115,6 +115,7 @@ PRIME_STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 struct prime_window;
 struct prime_context;
 struct prime_buffer;
+struct prime_shader;
 
 using prime_close_func = void(*)(prime_window* window);
 using prime_key_func = void(*)(prime_window* window, u32 key, i32 scancode, u32 action);
@@ -290,7 +291,8 @@ enum prime_types
     PRIME_FLOAT2,
     PRIME_FLOAT3,
     PRIME_FLOAT4,
-    PRIME_BOOL
+    PRIME_BOOL,
+    PRIME_GLSL
 };
 
 struct prime_vec2
@@ -391,6 +393,14 @@ struct prime_layout
     u32 count = 0;
 };
 
+struct prime_shader_desc
+{
+    u32 type;
+    const char* vertex_src;
+    const char* pixel_src;
+    b8 load;
+};
+
 PRIME_API b8 prime_init(u32 type);
 PRIME_API void prime_shutdown();
 
@@ -480,6 +490,19 @@ PRIME_API void prime_destroy_buffer(prime_buffer* buffer);
 
 PRIME_API void prime_bind_buffer(prime_buffer* buffer);
 PRIME_API void prime_set_buffer_data(void* data, u32 size);
+
+PRIME_API prime_shader* prime_create_shader(prime_shader_desc desc);
+PRIME_API void prime_destroy_shader(prime_shader* shader);
+
+PRIME_API void prime_set_int(const char* name, i32 data);
+PRIME_API void prime_set_int_array(const char* name, i32* data, u32 count);
+PRIME_API void prime_set_float(const char* name, f32 data);
+PRIME_API void prime_set_float2(const char* name, prime_vec2 data);
+PRIME_API void prime_set_float3(const char* name, prime_vec3 data);
+PRIME_API void prime_set_float4(const char* name, prime_vec4 data);
+PRIME_API void prime_set_mat4(const char* name, prime_mat4 data);
+
+PRIME_API void prime_bind_shader(prime_shader* shader);
 
 #ifdef PRIME_CONFIG_DEBUG
 #define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)

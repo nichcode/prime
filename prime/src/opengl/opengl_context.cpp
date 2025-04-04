@@ -169,19 +169,19 @@ void gl_SetClearColor(void* handle, prime_vec4 color)
     glClearColor(color.x, color.y, color.z, color.w);
 }
 
-void _glSubmitArrays(void* handle, u32 mode, u32 count)
+void gl_SubmitArrays(void* handle, u32 mode, u32 count)
 {
     GLenum gl_mode = drawModeToGL(mode);
     glDrawArrays(gl_mode, 0, count);
 }
 
-void _glSubmitElements(void* handle, u32 mode, u32 count)
+void gl_SubmitElements(void* handle, u32 mode, u32 count)
 {
     GLenum gl_mode = drawModeToGL(mode);
     glDrawElements(gl_mode, count, GL_UNSIGNED_INT, nullptr);
 }
 
-void _glSubmitLayout(void* handle, prime_layout* layout)
+void gl_SubmitLayout(void* handle, prime_layout* layout)
 {
     u32 stride = 0;
     u32 index = 0;

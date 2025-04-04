@@ -11,6 +11,7 @@ struct InitData
     prime_window* activeWindow;
     prime_context* activeContext;
     prime_buffer* activeBuffer;
+    prime_shader* activeShader;
 };
 
 static InitData s_Data;

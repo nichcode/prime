@@ -20,6 +20,9 @@ prime_buffer* prime_create_buffer(prime_buffer_desc desc)
 void prime_destroy_buffer(prime_buffer* buffer)
 {
     PRIME_ASSERT_MSG(buffer, "buffer is null");
+    if (s_Data.activeBuffer == buffer) {
+        s_Data.activeBuffer = nullptr;
+    }
     s_Data.api.destroyBuffer(buffer->handle);
     delete buffer;
     buffer = nullptr;

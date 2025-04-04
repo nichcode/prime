@@ -4,6 +4,7 @@
 
 #include "opengl/opengl_context.h"
 #include "opengl/opengl_buffer.h"
+#include "opengl/opengl_shader.h"
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #include "windows/windows_API.h"
@@ -25,15 +26,28 @@ void prime_InitAPI()
             s_Data.api.swapBuffers = gl_SwapBuffers;
             s_Data.api.setVsync = gl_SetVsync;
             s_Data.api.setClearColor = gl_SetClearColor;
+            s_Data.api.submitArrays = gl_SubmitArrays;
+            s_Data.api.submitElements = gl_SubmitElements;
+            s_Data.api.submitLayout = gl_SubmitLayout;
 
             // buffer
             s_Data.api.createBuffer = gl_CreateBuffer;
             s_Data.api.destroyBuffer = gl_DestroyBuffer;
             s_Data.api.bindBuffer = gl_BindBuffer;
             s_Data.api.setBufferData = gl_SetBufferData;
-            s_Data.api.submitArrays = _glSubmitArrays;
-            s_Data.api.submitElements = _glSubmitElements;
-            s_Data.api.submitLayout = _glSubmitLayout;
+
+            // shader
+            s_Data.api.createShader = gl_CreateShader;
+            s_Data.api.destroyShader = gl_DestroyShader;
+            s_Data.api.bindShader = gl_BindShader;
+            s_Data.api.setInt = gl_SetInt;
+            s_Data.api.setIntArray = gl_SetIntArray;
+            s_Data.api.setFloat = gl_SetFloat;
+            s_Data.api.setFloat2 = gl_SetFloat2;
+            s_Data.api.setFloat3 = gl_SetFloat3;
+            s_Data.api.setFloat4 = gl_SetFloat4;
+            s_Data.api.setMat4 = gl_SetMat4;
+            
 
             break;
         }

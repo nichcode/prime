@@ -11,6 +11,7 @@ b8 prime_init(u32 type)
     s_Data.activeContext = nullptr;
     s_Data.activeWindow = nullptr;
     s_Data.activeBuffer = nullptr;
+    s_Data.activeShader = nullptr;
     return PRIME_PASSED;
 }
 
