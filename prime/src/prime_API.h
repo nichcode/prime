@@ -11,6 +11,7 @@ struct API
     void(*swapBuffers)(void* handle) = nullptr;
     void(*setClearColor)(void* handle, prime_vec4 color) = nullptr;
     void(*setVsync)(void* handle, b8 vsync) = nullptr;
+    void(*setView)(void* handle, prime_view view) = nullptr;
     void(*makeActive)(void* handle) = nullptr;
     void(*clear)(void* handle) = nullptr;
     void(*submitArrays)(void* handle, u32 mode, u32 count) = nullptr;

@@ -25,6 +25,7 @@ void prime_InitAPI()
             s_Data.api.makeActive = gl_MakeActive;
             s_Data.api.swapBuffers = gl_SwapBuffers;
             s_Data.api.setVsync = gl_SetVsync;
+            s_Data.api.setView = gl_SetView;
             s_Data.api.setClearColor = gl_SetClearColor;
             s_Data.api.submitArrays = gl_SubmitArrays;
             s_Data.api.submitElements = gl_SubmitElements;

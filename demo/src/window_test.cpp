@@ -63,8 +63,6 @@ b8 windowTest()
 {
     prime_window_desc desc;
     desc.flag = PRIME_WINDOW_SHOW | PRIME_WINDOW_CENTER;
-    desc.title = "prime window";
-    desc.size = { 640, 480 };
     prime_window* window = prime_create_window(desc);
 
     prime_set_close_callback(onWindowClose);

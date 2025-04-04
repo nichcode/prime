@@ -365,26 +365,28 @@ struct prime_mat4
 
 struct prime_window_desc
 {
-    prime_vec2u size;
-    prime_vec2i pos;
+    i32 x = 0;
+    i32 y = 0;
+    u32 width = 640;
+    u32 height = 480;
     const char* title = "prime window";
-    u32 flag;
+    u32 flag = PRIME_WINDOW_SHOW;
 };
 
 struct prime_buffer_desc
 {
-    u32 type;
-    u32 usage;
-    u32 size;
-    u32 binding;
-    void* data;
+    u32 type = 0;
+    u32 usage = 0;
+    u32 size = 0;
+    u32 binding = 0;
+    void* data = nullptr;
 };
 
 struct prime_attrib
 {
-    u32 divisor;
-    b8 normalize;
-    u32 type;
+    u32 divisor = 0;
+    b8 normalize = false;
+    u32 type = 0;
 };
 
 struct prime_layout
@@ -395,14 +397,24 @@ struct prime_layout
 
 struct prime_shader_desc
 {
-    u32 type;
-    const char* vertex_src;
-    const char* pixel_src;
-    b8 load;
+    u32 type = 0;
+    const char* vertex_src = nullptr;
+    const char* pixel_src = nullptr;
+    b8 load = true;
+};
+
+struct prime_view
+{
+    f32 x = 0.0f;
+    f32 y = 0.0f;
+    f32 width = 0.0f;
+    f32 height = 0.0f;
 };
 
 PRIME_API b8 prime_init(u32 type);
 PRIME_API void prime_shutdown();
+PRIME_API void prime_set_user_data(void* data);
+PRIME_API void* prime_get_user_data();
 
 PRIME_API char* prime_format(const char* fmt, ...);
 PRIME_API char* prime_format_args(const char* fmt, va_list args_list);
@@ -458,7 +470,6 @@ PRIME_API const char* prime_get_window_title(prime_window* window);
 PRIME_API void prime_input_set_window(prime_window* window);
 PRIME_API b8 prime_get_key_state(u32 key);
 PRIME_API b8 prime_get_button_state(u32 button);
-PRIME_API b8 prime_get_action_state(u32 action);
 
 PRIME_API const char* prime_get_key_name(u32 key);
 PRIME_API const char* prime_get_button_name(u32 button);
@@ -480,6 +491,9 @@ PRIME_API void prime_make_active(prime_context* context);
 PRIME_API void prime_set_vsync(b8 vsync);
 PRIME_API void prime_set_clear_color(prime_vec4 color);
 PRIME_API void prime_set_clear_colori(prime_vec4i color);
+
+PRIME_API void prime_set_view(prime_view view);
+PRIME_API prime_view prime_get_view();
 
 PRIME_API void prime_submit_arrays(u32 mode, u32 count);
 PRIME_API void prime_submit_elements(u32 mode, u32 count);

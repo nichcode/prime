@@ -12,6 +12,7 @@ void gl_MakeActive(void* handle);
 
 void gl_SetVsync(void* handle, b8 vsync);
 void gl_SetClearColor(void* handle, prime_vec4 color);
+void gl_SetView(void* handle, prime_view view);
 
 void gl_SubmitArrays(void* handle, u32 mode, u32 count);
 void gl_SubmitElements(void* handle, u32 mode, u32 count);

@@ -1,6 +1,5 @@
 
 #include "pch.h"
-#include "prime_utils.h"
 #include "prime/prime.h"
 
 b8 prime_init(u32 type)
@@ -18,6 +17,16 @@ b8 prime_init(u32 type)
 void prime_shutdown()
 {
     prime_ShutdownAPI();
+}
+
+void prime_set_user_data(void* data)
+{
+    s_Data.userData = data;
+}
+
+void* prime_get_user_data()
+{
+    return s_Data.userData;
 }
 
 char* prime_format(const char* fmt, ...)

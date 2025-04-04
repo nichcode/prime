@@ -1,12 +1,19 @@
 
 #include "prime/prime.h"
 
+void onResize(prime_window* window, u32 width, u32 height)
+{
+    prime_context* context = (prime_context*)prime_get_user_data();
+    prime_view view;
+    view.width = (f32)width;
+    view.height = (f32)height;
+    prime_set_view(view);
+}
+
 b8 contextTest()
 {
     prime_window_desc desc;
     desc.flag = PRIME_WINDOW_SHOW | PRIME_WINDOW_CENTER;
-    desc.title = "prime window";
-    desc.size = { 640, 480 };
     prime_window* window = prime_create_window(desc);
 
     prime_context* context = prime_create_context(window);
@@ -64,6 +71,9 @@ b8 contextTest()
     prime_bind_buffer(index_buffer);
     prime_submit_layout(&layout);
     prime_bind_shader(shader);
+
+    prime_set_window_resized_callback(onResize);
+    prime_set_user_data(context);
 
     while (!prime_window_should_close(window)) {
         prime_pull_events();

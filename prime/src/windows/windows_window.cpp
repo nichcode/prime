@@ -236,8 +236,8 @@ prime_window* prime_create_window(prime_window_desc desc)
     u32 ex_style = WS_EX_APPWINDOW;
 
     RECT rect = { 0, 0, 0, 0 };
-    rect.right = desc.size.x;
-    rect.bottom = desc.size.y;
+    rect.right = desc.width;
+    rect.bottom = desc.height;
     AdjustWindowRectEx(&rect, style, 0, ex_style);
     wchar_t* wstr = prime_to_wstring(desc.title);
 
@@ -249,15 +249,17 @@ prime_window* prime_create_window(prime_window_desc desc)
 
     PRIME_ASSERT_MSG(window->handle, "win32 window creation failed");
     window->title = desc.title;
-    window->size = desc.size;
+    window->size.x = desc.width;
+    window->size.y = desc.height;
 
     if (desc.flag & PRIME_WINDOW_CENTER) {
         centerWindow(window);
     }
     else {
-        RECT rect = { desc.pos.x, desc.pos.y, desc.pos.x, desc.pos.y };
+        RECT rect = { desc.x, desc.y, desc.x, desc.y };
         AdjustWindowRectEx(&rect, WS_OVERLAPPEDWINDOW, 0, WS_EX_OVERLAPPEDWINDOW);
-        window->pos = desc.pos;
+        window->pos.x = desc.x;
+        window->pos.y = desc.y;
 
         SetWindowPos(
             window->handle, 

@@ -169,6 +169,11 @@ void gl_SetClearColor(void* handle, prime_vec4 color)
     glClearColor(color.x, color.y, color.z, color.w);
 }
 
+void gl_SetView(void* handle, prime_view view)
+{
+    glViewport((GLint)view.x, (GLint)view.y, (GLsizei)view.width, (GLsizei)view.height);
+}
+
 void gl_SubmitArrays(void* handle, u32 mode, u32 count)
 {
     GLenum gl_mode = drawModeToGL(mode);

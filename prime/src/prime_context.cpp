@@ -6,6 +6,7 @@ struct prime_context
 {
     prime_window* window;
     void* handle = nullptr;
+    prime_view view;
 };
 
 prime_context* prime_create_context(prime_window* window)
@@ -18,6 +19,12 @@ prime_context* prime_create_context(prime_window* window)
     PRIME_ASSERT_MSG(context, "failed to create context");
 
     context->handle = s_Data.api.createContext(prime_get_window_handle(window));
+    prime_vec2u window_size = prime_get_window_size(window);
+
+    context->view.x = 0.0f;
+    context->view.y = 0.0f;
+    context->view.width = (f32)window_size.x;
+    context->view.height = (f32)window_size.y;
     prime_SetContext(window, context);
     return context;
 }
@@ -92,4 +99,17 @@ void prime_submit_layout(prime_layout* layout)
     PRIME_ASSERT_MSG(layout, "layout is null");
     PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     s_Data.api.submitLayout(s_Data.activeContext->handle, layout);
+}
+
+void prime_set_view(prime_view view)
+{
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
+    s_Data.api.setView(s_Data.activeContext->handle, view);
+    s_Data.activeContext->view = view;
+}
+
+prime_view prime_get_view()
+{
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
+    return s_Data.activeContext->view;
 }

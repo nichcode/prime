@@ -8,6 +8,7 @@ struct InitData
 {
     u32 type;
     API api;
+    void* userData;
     prime_window* activeWindow;
     prime_context* activeContext;
     prime_buffer* activeBuffer;
