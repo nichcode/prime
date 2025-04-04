@@ -71,3 +71,22 @@ void prime_set_clear_colori(prime_vec4i color)
     prime_vec4 fcolor = { fr, fg, fb, fa };
     s_Data.api.setClearColor(s_Data.activeContext->handle, fcolor);
 }
+
+void prime_submit_arrays(u32 mode, u32 count)
+{
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
+    s_Data.api.submitArrays(s_Data.activeContext->handle, mode, count);
+}
+
+void prime_submit_elements(u32 mode, u32 count)
+{
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
+    s_Data.api.submitElements(s_Data.activeContext->handle, mode, count);
+}
+
+void prime_submit_layout(prime_layout* layout)
+{
+    PRIME_ASSERT_MSG(layout, "layout is null");
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
+    s_Data.api.submitLayout(s_Data.activeContext->handle, layout);
+}

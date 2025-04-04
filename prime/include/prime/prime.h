@@ -70,8 +70,7 @@ using b8 = bool;
 #define PRIME_MAX_TEXTURE_SLOTS 16
 #define PRIME_PI 3.14159265358979323846f
 #define PRIME_BIT(x) 1 << x
-#define PRIME_KB 1024
-#define PRIME_MB 1024 * 1024
+#define PRIME_MAX_ATTRIB 8
 
 #ifdef PRIME_PLATFORM_WINDOWS
 #define PRIME_EXT __declspec(dllexport)
@@ -276,6 +275,24 @@ enum prime_buffer_usages
     PRIME_BUFFER_USAGE_DYNAMIC
 };
 
+enum prime_mode
+{
+    PRIME_TRIANGLES,
+};
+
+enum prime_types
+{
+    PRIME_INT,
+    PRIME_INT2,
+    PRIME_INT3,
+    PRIME_INT4,
+    PRIME_FLOAT,
+    PRIME_FLOAT2,
+    PRIME_FLOAT3,
+    PRIME_FLOAT4,
+    PRIME_BOOL
+};
+
 struct prime_vec2
 {
     f32 x = 0.0f;
@@ -361,6 +378,19 @@ struct prime_buffer_desc
     void* data;
 };
 
+struct prime_attrib
+{
+    u32 divisor;
+    b8 normalize;
+    u32 type;
+};
+
+struct prime_layout
+{
+    prime_attrib attribs[PRIME_MAX_ATTRIB]{};
+    u32 count = 0;
+};
+
 PRIME_API b8 prime_init(u32 type);
 PRIME_API void prime_shutdown();
 
@@ -440,6 +470,10 @@ PRIME_API void prime_make_active(prime_context* context);
 PRIME_API void prime_set_vsync(b8 vsync);
 PRIME_API void prime_set_clear_color(prime_vec4 color);
 PRIME_API void prime_set_clear_colori(prime_vec4i color);
+
+PRIME_API void prime_submit_arrays(u32 mode, u32 count);
+PRIME_API void prime_submit_elements(u32 mode, u32 count);
+PRIME_API void prime_submit_layout(prime_layout* layout);
 
 PRIME_API prime_buffer* prime_create_buffer(prime_buffer_desc desc);
 PRIME_API void prime_destroy_buffer(prime_buffer* buffer);

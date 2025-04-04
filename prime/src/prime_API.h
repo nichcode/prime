@@ -13,6 +13,9 @@ struct API
     void(*setVsync)(void* handle, b8 vsync) = nullptr;
     void(*makeActive)(void* handle) = nullptr;
     void(*clear)(void* handle) = nullptr;
+    void(*submitArrays)(void* handle, u32 mode, u32 count) = nullptr;
+    void(*submitElements)(void* handle, u32 mode, u32 count) = nullptr;
+    void(*submitLayout)(void* handle, prime_layout* layout) = nullptr;
 
     // buffer
     void*(*createBuffer)(prime_buffer_desc desc) = nullptr;

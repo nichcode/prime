@@ -31,6 +31,9 @@ void prime_InitAPI()
             s_Data.api.destroyBuffer = gl_DestroyBuffer;
             s_Data.api.bindBuffer = gl_BindBuffer;
             s_Data.api.setBufferData = gl_SetBufferData;
+            s_Data.api.submitArrays = _glSubmitArrays;
+            s_Data.api.submitElements = _glSubmitElements;
+            s_Data.api.submitLayout = _glSubmitLayout;
 
             break;
         }
