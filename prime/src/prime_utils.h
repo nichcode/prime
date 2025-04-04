@@ -10,6 +10,7 @@ struct InitData
     API api;
     prime_window* activeWindow;
     prime_context* activeContext;
+    prime_buffer* activeBuffer;
 };
 
 static InitData s_Data;

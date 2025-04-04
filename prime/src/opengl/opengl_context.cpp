@@ -26,6 +26,8 @@ void* gl_CreateContext(void* window_handle)
     context->deviceContext = GetDC(context->window);
 #endif // PRIME_PLATFORM_WINDOWS
 
+    PRIME_ASSERT_MSG(context->handle, "failed to create context handle");
+
     glGenVertexArrays(1, &context->vao);
     glBindVertexArray(context->vao);
     return context;

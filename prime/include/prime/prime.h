@@ -115,6 +115,7 @@ PRIME_STATIC_ASSERT(sizeof(f64) == 8, "Expected f64 to be 8 bytes.");
 
 struct prime_window;
 struct prime_context;
+struct prime_buffer;
 
 using prime_close_func = void(*)(prime_window* window);
 using prime_key_func = void(*)(prime_window* window, u32 key, i32 scancode, u32 action);
@@ -261,6 +262,20 @@ enum prime_window_flags
     PRIME_WINDOW_CENTER = PRIME_BIT(1)
 };
 
+enum prime_buffer_types
+{
+    PRIME_BUFFER_VERTEX,
+    PRIME_BUFFER_INDEX,
+    PRIME_BUFFER_UNIFORM,
+    PRIME_BUFFER_STORAGE
+};
+
+enum prime_buffer_usages
+{
+    PRIME_BUFFER_USAGE_STATIC,
+    PRIME_BUFFER_USAGE_DYNAMIC
+};
+
 struct prime_vec2
 {
     f32 x = 0.0f;
@@ -335,6 +350,15 @@ struct prime_window_desc
     prime_vec2i pos;
     const char* title = "prime window";
     u32 flag;
+};
+
+struct prime_buffer_desc
+{
+    u32 type;
+    u32 usage;
+    u32 size;
+    u32 binding;
+    void* data;
 };
 
 PRIME_API b8 prime_init(u32 type);
@@ -416,6 +440,12 @@ PRIME_API void prime_make_active(prime_context* context);
 PRIME_API void prime_set_vsync(b8 vsync);
 PRIME_API void prime_set_clear_color(prime_vec4 color);
 PRIME_API void prime_set_clear_colori(prime_vec4i color);
+
+PRIME_API prime_buffer* prime_create_buffer(prime_buffer_desc desc);
+PRIME_API void prime_destroy_buffer(prime_buffer* buffer);
+
+PRIME_API void prime_bind_buffer(prime_buffer* buffer);
+PRIME_API void prime_set_buffer_data(void* data, u32 size);
 
 #ifdef PRIME_CONFIG_DEBUG
 #define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)

@@ -15,10 +15,9 @@ prime_context* prime_create_context(prime_window* window)
 
     prime_context* context;
     context = new prime_context();
-    context->handle = s_Data.api.createContext(prime_get_window_handle(window));
     PRIME_ASSERT_MSG(context, "failed to create context");
-    PRIME_ASSERT_MSG(context->handle, "failed to create context");
 
+    context->handle = s_Data.api.createContext(prime_get_window_handle(window));
     prime_SetContext(window, context);
     return context;
 }
@@ -33,13 +32,13 @@ void prime_destroy_context(prime_context* context)
 
 void prime_swap_buffers()
 {
-    PRIME_ASSERT_MSG(s_Data.activeContext, "no active context");
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     s_Data.api.swapBuffers(s_Data.activeContext->handle);
 }
 
 void prime_clear()
 {
-    PRIME_ASSERT_MSG(s_Data.activeContext, "no active context");
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     s_Data.api.clear(s_Data.activeContext->handle);
 }
 
@@ -52,19 +51,19 @@ void prime_make_active(prime_context* context)
 
 void prime_set_vsync(b8 vsync)
 {
-    PRIME_ASSERT_MSG(s_Data.activeContext, "no active context");
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     s_Data.api.setVsync(s_Data.activeContext->handle, vsync);
 }
 
 void prime_set_clear_color(prime_vec4 color)
 {
-    PRIME_ASSERT_MSG(s_Data.activeContext, "no active context");
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     s_Data.api.setClearColor(s_Data.activeContext->handle, color);
 }
 
 void prime_set_clear_colori(prime_vec4i color)
 {
-    PRIME_ASSERT_MSG(s_Data.activeContext, "no active context");
+    PRIME_ASSERT_MSG(s_Data.activeContext, "active context not set");
     f32 fr = (f32)color.x / 255.0f;
     f32 fg = (f32)color.y / 255.0f;
     f32 fb = (f32)color.z / 255.0f;

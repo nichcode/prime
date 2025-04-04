@@ -13,6 +13,12 @@ struct API
     void(*setVsync)(void* handle, b8 vsync) = nullptr;
     void(*makeActive)(void* handle) = nullptr;
     void(*clear)(void* handle) = nullptr;
+
+    // buffer
+    void*(*createBuffer)(prime_buffer_desc desc) = nullptr;
+    void(*destroyBuffer)(void* handle) = nullptr;
+    void(*bindBuffer)(void* handle, b8 send_data) = nullptr;
+    void(*setBufferData)(void* handle, void* data, u32 size) = nullptr;
 };
 
 void prime_InitAPI();

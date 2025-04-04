@@ -6,6 +6,7 @@
 #include "prime_maths.cpp"
 #include "prime_API.cpp"
 #include "prime_context.cpp"
+#include "prime_buffer.cpp"
 #include "prime.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS
@@ -17,3 +18,4 @@
 // opengl
 #include "opengl/opengl_funcs.cpp"
 #include "opengl/opengl_context.cpp"
+#include "opengl/opengl_buffer.cpp"
