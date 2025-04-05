@@ -29,43 +29,43 @@ void prime_destroy_shader(prime_shader* shader)
 
 void prime_set_int(const char* name, i32 data)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setInt(s_Data.activeShader->handle, name, data);
 }
 
 void prime_set_int_array(const char* name, i32* data, u32 count)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setIntArray(s_Data.activeShader->handle, name, data, count);
 }
 
 void prime_set_float(const char* name, f32 data)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setFloat(s_Data.activeShader->handle, name, data);
 }
 
 void prime_set_float2(const char* name, prime_vec2 data)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setFloat2(s_Data.activeShader->handle, name, data);
 }
 
 void prime_set_float3(const char* name, prime_vec3 data)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setFloat3(s_Data.activeShader->handle, name, data);
 }
 
 void prime_set_float4(const char* name, prime_vec4 data)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setFloat4(s_Data.activeShader->handle, name, data);
 }
 
 void prime_set_mat4(const char* name, prime_mat4 data)
 {
-    PRIME_ASSERT_MSG(s_Data.activeShader, "active shader not set");
+    PRIME_ASSERT_MSG(s_Data.activeShader, "no shader bound");
     s_Data.api.setMat4(s_Data.activeShader->handle, name, data);
 }
 

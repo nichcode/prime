@@ -30,6 +30,8 @@ void prime_InitAPI()
             s_Data.api.submitArrays = gl_SubmitArrays;
             s_Data.api.submitElements = gl_SubmitElements;
             s_Data.api.submitLayout = gl_SubmitLayout;
+            s_Data.api.submitArraysInstanced = gl_SubmitArraysInstanced;
+            s_Data.api.submitElementsInstanced = gl_SubmitElementsInstanced;
 
             // buffer
             s_Data.api.createBuffer = gl_CreateBuffer;

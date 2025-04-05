@@ -12,3 +12,4 @@ void runTests();
 // tests
 b8 windowTest();
 b8 contextTest();
+b8 renderTest();

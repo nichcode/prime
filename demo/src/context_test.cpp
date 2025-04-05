@@ -20,7 +20,7 @@ b8 contextTest()
     prime_make_active(context);
     prime_set_clear_color({ .2f, .2f, .2f, 1.0f });
 
-    // draw a triangle
+    // draw a rectangle
     f32 vertices[] = {
 		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 		 0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
@@ -43,16 +43,16 @@ b8 contextTest()
     layout.count = 2;
 
     prime_buffer_desc buffer_desc;
+    buffer_desc.type = PRIME_VERTEX_BUFFER;
     buffer_desc.data = vertices;
     buffer_desc.size = sizeof(vertices);
-    buffer_desc.type = PRIME_BUFFER_VERTEX;
-    buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
+    buffer_desc.usage = PRIME_STATIC;
     prime_buffer* vertex_buffer = prime_create_buffer(buffer_desc);
 
     buffer_desc.data = indices;
+    buffer_desc.type = PRIME_INDEX_BUFFER;
     buffer_desc.size = sizeof(indices);
-    buffer_desc.type = PRIME_BUFFER_INDEX;
-    buffer_desc.usage = PRIME_BUFFER_USAGE_STATIC;
+    buffer_desc.usage = PRIME_STATIC;
     prime_buffer* index_buffer = prime_create_buffer(buffer_desc);
 
     prime_shader_desc shader_desc;

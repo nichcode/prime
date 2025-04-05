@@ -2,15 +2,21 @@
 #include "pch.h"
 #include "prime/prime.h"
 
-b8 prime_init(u32 type)
+b8 prime_init(u32 type, b8 use_ndc)
 {
     s_Data.type = type;
+    s_Data.useNDC = use_ndc;
+    s_Data.index = 0;
     prime_InitAPI();
     prime_InitInput();
-    s_Data.activeContext = nullptr;
     s_Data.activeWindow = nullptr;
-    s_Data.activeBuffer = nullptr;
+    s_Data.activeContext = nullptr;
     s_Data.activeShader = nullptr;
+
+    s_Data.activeVBuffer = nullptr;
+    s_Data.activeIBuffer = nullptr;
+    s_Data.activeSBuffer = nullptr;
+    s_Data.activeUBuffer = nullptr;
 
     s_Data.windows.clear();
     s_Data.contexts.clear();
@@ -22,6 +28,7 @@ b8 prime_init(u32 type)
 void prime_shutdown()
 {
     prime_ShutdownAPI();
+    prime_ShutdownSprites();
 
     // windows
     for (prime_window* window : s_Data.windows) {

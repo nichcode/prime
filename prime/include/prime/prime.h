@@ -264,16 +264,16 @@ enum prime_window_flags
 
 enum prime_buffer_types
 {
-    PRIME_BUFFER_VERTEX,
-    PRIME_BUFFER_INDEX,
-    PRIME_BUFFER_UNIFORM,
-    PRIME_BUFFER_STORAGE
+    PRIME_VERTEX_BUFFER,
+    PRIME_INDEX_BUFFER,
+    PRIME_STORAGE_BUFFER,
+    PRIME_UNIFORM_BUFFER
 };
 
-enum prime_buffer_usages
+enum prime_usages
 {
-    PRIME_BUFFER_USAGE_STATIC,
-    PRIME_BUFFER_USAGE_DYNAMIC
+    PRIME_STATIC,
+    PRIME_DYNAMIC
 };
 
 enum prime_mode
@@ -411,7 +411,15 @@ struct prime_view
     f32 height = 0.0f;
 };
 
-PRIME_API b8 prime_init(u32 type);
+struct prime_rect
+{
+    f32 x = 0.0f;
+    f32 y = 0.0f;
+    f32 width = 0.0f;
+    f32 height = 0.0f;
+};
+
+PRIME_API b8 prime_init(u32 type, b8 use_ndc);
 PRIME_API void prime_shutdown();
 PRIME_API void prime_set_user_data(void* data);
 PRIME_API void* prime_get_user_data();
@@ -499,11 +507,14 @@ PRIME_API void prime_submit_arrays(u32 mode, u32 count);
 PRIME_API void prime_submit_elements(u32 mode, u32 count);
 PRIME_API void prime_submit_layout(prime_layout* layout);
 
+PRIME_API void prime_submit_elements_instanced(u32 mode, u32 count, u32 instance_count);
+PRIME_API void prime_submit_arrays_instanced(u32 mode, u32 count, u32 instance_count);
+
 PRIME_API prime_buffer* prime_create_buffer(prime_buffer_desc desc);
 PRIME_API void prime_destroy_buffer(prime_buffer* buffer);
 
 PRIME_API void prime_bind_buffer(prime_buffer* buffer);
-PRIME_API void prime_set_buffer_data(void* data, u32 size);
+PRIME_API void prime_set_buffer_data(u32 type, void* data, u32 size);
 
 PRIME_API prime_shader* prime_create_shader(prime_shader_desc desc);
 PRIME_API void prime_destroy_shader(prime_shader* shader);
@@ -518,22 +529,10 @@ PRIME_API void prime_set_mat4(const char* name, prime_mat4 data);
 
 PRIME_API void prime_bind_shader(prime_shader* shader);
 
-#ifdef PRIME_CONFIG_DEBUG
-#define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)
-#define PRIME_INFO(...)                     prime_log_info(__VA_ARGS__)
-#define PRIME_WARN(...)                     prime_log_warn(__VA_ARGS__)
-#define PRIME_ERROR(...)                    prime_log_error(__VA_ARGS__)
-#define PRIME_ASSERT(expr)                  prime_assert(expr, PRIME_FILE, PRIME_LINE)
-#define PRIME_ASSERT_MSG(expr, ...)         prime_assert_msg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
-#else
-#define PRIME_TRACE(...)         
-#define PRIME_DEBUG(...)         
-#define PRIME_INFO(...)         
-#define PRIME_WARN(...)          
-#define PRIME_ERROR(...)               
-#define PRIME_ASSERT(expr)
-#define PRIME_ASSERT_MSG(expr, message)
-#endif // PRIME_CONFIG_DEBUG
+PRIME_API void prime_set_draw_color(prime_vec4 color);
+PRIME_API void prime_set_draw_colori(prime_vec4i color);
+PRIME_API void prime_draw_rect(prime_rect rect);
+PRIME_API void prime_flush();
 
 PRIME_API i32 prime_maxi(i32 a, i32 b);
 PRIME_API i32 prime_mini(i32 a, i32 b);
@@ -616,3 +615,20 @@ PRIME_API prime_mat4 prime_rotate(f32 x_degrees, f32 y_degrees, f32 z_degrees);
 PRIME_API prime_vec4 prime_vec4_mul_mat4(const prime_vec4 vec, const prime_mat4 mat);
 PRIME_API prime_vec4 prime_mat4_mul_vec4(const prime_mat4 matrix, const prime_vec4 vec);
 PRIME_API char* prime_mat4_to_string(prime_mat4 matrix);
+
+#ifdef PRIME_CONFIG_DEBUG
+#define PRIME_TRACE(...)                    prime_log_trace(__VA_ARGS__)
+#define PRIME_INFO(...)                     prime_log_info(__VA_ARGS__)
+#define PRIME_WARN(...)                     prime_log_warn(__VA_ARGS__)
+#define PRIME_ERROR(...)                    prime_log_error(__VA_ARGS__)
+#define PRIME_ASSERT(expr)                  prime_assert(expr, PRIME_FILE, PRIME_LINE)
+#define PRIME_ASSERT_MSG(expr, ...)         prime_assert_msg(expr, PRIME_FILE, PRIME_LINE, __VA_ARGS__)
+#else
+#define PRIME_TRACE(...)         
+#define PRIME_DEBUG(...)         
+#define PRIME_INFO(...)         
+#define PRIME_WARN(...)          
+#define PRIME_ERROR(...)               
+#define PRIME_ASSERT(expr)
+#define PRIME_ASSERT_MSG(expr, message)
+#endif // PRIME_CONFIG_DEBUG

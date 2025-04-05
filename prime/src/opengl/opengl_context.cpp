@@ -189,7 +189,6 @@ void gl_SubmitElements(void* handle, u32 mode, u32 count)
 void gl_SubmitLayout(void* handle, prime_layout* layout)
 {
     u32 stride = 0;
-    u32 index = 0;
     u64 offsets[layout->count];
     for (u32 i = 0; i < layout->count; i++) {
         offsets[i] = stride;
@@ -205,20 +204,33 @@ void gl_SubmitLayout(void* handle, prime_layout* layout)
 
         switch (type) {
             case GL_FLOAT: {
-                glVertexAttribPointer(index, count, type, normalize, stride, offset);
-                glEnableVertexAttribArray(index);
-                glVertexAttribDivisor(index, divisor);
+                glVertexAttribPointer(s_Data.index, count, type, normalize, stride, offset);
+                glEnableVertexAttribArray(s_Data.index);
+                glVertexAttribDivisor(s_Data.index, divisor);
                 break;
             }
 
             case GL_BOOL:
             case GL_INT: {
-                glVertexAttribIPointer(index, count, type, stride, offset);
-                glEnableVertexAttribArray(index);
-                glVertexAttribDivisor(index, divisor);
+                glVertexAttribIPointer(s_Data.index, count, type, stride, offset);
+                glEnableVertexAttribArray(s_Data.index);
+                glVertexAttribDivisor(s_Data.index, divisor);
                 break;
             }
         }
-        index++;
+        s_Data.index++;
     }
+}
+
+void gl_SubmitArraysInstanced(void* handle, u32 mode, u32 count, u32 instance_count)
+{
+    GLenum gl_mode = drawModeToGL(mode);
+    glDrawArraysInstanced(gl_mode, 0, count, instance_count);
+
+}
+
+void gl_SubmitElementsInstanced(void* handle, u32 mode, u32 count, u32 instance_count)
+{
+    GLenum gl_mode = drawModeToGL(mode);
+    glDrawElementsInstanced(gl_mode, count, GL_UNSIGNED_INT, nullptr, instance_count);
 }

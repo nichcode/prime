@@ -8,6 +8,7 @@
 #include "prime_context.cpp"
 #include "prime_buffer.cpp"
 #include "prime_shader.cpp"
+#include "prime_render.cpp"
 #include "prime.cpp"
 
 #ifdef PRIME_PLATFORM_WINDOWS

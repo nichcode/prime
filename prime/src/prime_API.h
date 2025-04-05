@@ -17,6 +17,8 @@ struct API
     void(*submitArrays)(void* handle, u32 mode, u32 count) = nullptr;
     void(*submitElements)(void* handle, u32 mode, u32 count) = nullptr;
     void(*submitLayout)(void* handle, prime_layout* layout) = nullptr;
+    void(*submitArraysInstanced)(void* handle, u32 mode, u32 count, u32 instance_count) = nullptr;
+    void(*submitElementsInstanced)(void* handle, u32 mode, u32 count, u32 instance_count) = nullptr;
 
     // buffer
     void*(*createBuffer)(prime_buffer_desc desc) = nullptr;
