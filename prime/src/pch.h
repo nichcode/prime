@@ -1,5 +1,6 @@
 
 #include "prime/log.h"
+#include "utils.h"
 
 #include <stdio.h>
 #include <stdint.h>

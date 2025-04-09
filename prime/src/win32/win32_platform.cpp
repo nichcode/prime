@@ -21,6 +21,8 @@ b8 prInit()
 
     ATOM success = RegisterClassExW(&wc);
     PR_ASSERT(success, "Window Registration Failed");
+
+    _InitInput();
     PR_INFO("Init");
     return PR_PASSED;
 }

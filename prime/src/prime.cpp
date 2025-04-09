@@ -1,6 +1,7 @@
 
 #include "prime/defines.h"
 
+#include "input.cpp"
 #include "log.cpp"
 
 #ifdef PR_PLATFORM_WINDOWS
