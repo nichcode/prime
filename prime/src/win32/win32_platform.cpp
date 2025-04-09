@@ -4,12 +4,30 @@
 
 b8 prInit()
 {
+    s_Instance = GetModuleHandleW(nullptr);
+    WNDCLASSEXW wc = {};
+    wc.cbClsExtra = 0;
+    wc.cbSize = sizeof(WNDCLASSEXW);
+    wc.cbWndExtra = 0;
+    wc.hbrBackground = NULL;
+    wc.hCursor = LoadCursorW(s_Instance, IDC_ARROW);
+    wc.hIcon = LoadIconW(s_Instance, IDI_APPLICATION);
+    wc.hIconSm = LoadIconW(s_Instance, IDI_APPLICATION);
+    wc.hInstance = s_Instance;
+    wc.lpfnWndProc = _Win32Proc;
+    wc.lpszClassName = s_ClassName;
+    wc.lpszMenuName = NULL;
+    wc.style = CS_DBLCLKS | CS_OWNDC | CS_HREDRAW | CS_VREDRAW;
+
+    ATOM success = RegisterClassExW(&wc);
+    PR_ASSERT(success, "Window Registration Failed");
     PR_INFO("Init");
     return PR_PASSED;
 }
 
 void prShutdown()
 {
+    UnregisterClassW(s_ClassName, s_Instance);
     PR_INFO("Shutdown");
 }
 

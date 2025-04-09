@@ -4,11 +4,15 @@
 int main(int argc, char** argv)
 {
     b8 succes = prInit();
-    PR_TRACE("hello %f", 20.0f);
-    PR_INFO("hello %f", 20.0f);
-    PR_WARN("hello %f", 20.0f);
-    PR_ERROR("hello %f", 20.0f);
 
+    u32 flags = prWindowFlags_Center | prWindowFlags_Show;
+    prWindow* window = prCreateWindow("window", 640, 480, flags);
+
+    while (!prWindowShouldClose(window)) {
+        prPullEvents();
+    }
+
+    prDestroyWindow(window);
     prShutdown();
     return 0;
 }
