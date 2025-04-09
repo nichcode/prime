@@ -1,6 +1,7 @@
 
 #include "pch.h"
 #include "prime/platform.h"
+#include "wgl_context.h"
 
 b8 prInit()
 {
@@ -23,6 +24,7 @@ b8 prInit()
     PR_ASSERT(success, "Window Registration Failed");
 
     _InitInput();
+    _WGLCreateDummyContext();
     PR_INFO("Init");
     return PR_PASSED;
 }
