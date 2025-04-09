@@ -1,0 +1,55 @@
+{
+    "tasks": [
+        {
+            // build everything debug
+            "type": "shell",
+            "label": "build everything debug",
+            "command": "call make all config=debug",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "detail": "build everything debug.",
+                "isDefault": true
+            }
+        },
+        {
+            // build everything release
+            "type": "shell",
+            "label": "build everything release",
+            "command": "call make all config=release",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "detail": "build everything release."
+            }
+        },
+        {
+            // clean everything
+            "type": "shell",
+            "label": "clean everything",
+            "command": "call make clean",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "detail": "clean everything."
+            }
+        }
+
+    ],
+    "version": "2.0.0"
+}
