@@ -4,9 +4,12 @@
 #include "prime/input.h"
 #include "prime/platform.h"
 
+struct prContext;
+
 struct prWindow
 {
     HWND handle;
+    prContext* context;
     u32 width, height;
     i32 x, y;
     const char* title;
@@ -259,6 +262,7 @@ prWindow* prCreateWindow(const char* title, u32 width, u32 height, u32 flags)
     wchar_t* wstr = prToWstring(title);
 
     prWindow* window = new prWindow();
+    PR_ASSERT(window, "failed to create win32 window");
     window->x = CW_USEDEFAULT;
     window->y = CW_USEDEFAULT;
     window->title = title;
@@ -269,8 +273,8 @@ prWindow* prCreateWindow(const char* title, u32 width, u32 height, u32 flags)
         ex_style, s_ClassName, wstr, style, window->x,
         window->y, rect.right - rect.left, rect.bottom - rect.top, 
         NULL, NULL, s_Instance,  NULL);
-
-    PR_ASSERT(window->handle, "win32 window creation failed");
+        
+    PR_ASSERT(window->handle, "failed to create win32 window");
 
     if (flags & prWindowFlags_Center) {
         _CenterWindow(window);
@@ -288,6 +292,7 @@ prWindow* prCreateWindow(const char* title, u32 width, u32 height, u32 flags)
     prFreeWstring(wstr);
     _MapKeys(window);
     window->focused = true;
+    window->context = nullptr;
     return window;
 }
 
@@ -296,6 +301,7 @@ void prDestroyWindow(prWindow* window)
     PR_ASSERT(window, "window is null");
     DestroyWindow(window->handle);
     delete window;
+    window = nullptr;
 }
 
 void prPullEvents()
@@ -304,6 +310,33 @@ void prPullEvents()
     while (PeekMessageA(&msg, NULL, 0, 0, PM_REMOVE)) {
         TranslateMessage(&msg);
         DispatchMessageA(&msg);
+    }
+
+    // from GLFW
+    HWND handle = GetActiveWindow();
+    if (handle) {
+
+        prWindow* window = (prWindow*)GetProp(handle, s_PropName);
+        if (window) {
+            int i;
+            const int keys[4][2] = {
+                { VK_LSHIFT, prKeys_LeftShift },
+                { VK_RSHIFT, prKeys_RightShift },
+                { VK_LWIN, prKeys_LeftSuper },
+                { VK_RWIN, prKeys_RightSuper }
+            };
+
+            for (i = 0; i < 4; i++) {
+                const int vk = keys[i][0];
+                const int key = keys[i][1];
+                const int scancode = window->scancodes[key];
+
+                if ((GetKeyState(vk) & 0x8000)) { continue; }
+                if (window->keycodes[key] != prActions_Press) { continue; }
+
+                _ProcessKey(window, key, scancode, prActions_Release);
+            }
+        }
     }
 }
 
@@ -415,6 +448,19 @@ b8 prWindowShouldClose(prWindow* window)
 {
     PR_ASSERT(window, "window is null");
     return window->shouldClose;
+}
+
+b8 _WindowHasContext(prWindow* window)
+{
+    PR_ASSERT(window, "window is null");
+    return window->context;
+}
+
+void _SetWindowContext(prWindow* window, prContext* context)
+{
+    PR_ASSERT(window, "window is null");
+    PR_ASSERT(context, "context is null");
+    window->context = context;
 }
 
 b8 prGetKeyState(prWindow* window, u32 key)

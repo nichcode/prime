@@ -3,36 +3,8 @@
 #include "wgl_context.h"
 #include "opengl/opengl_funcs.h"
 
-#define WGL_DRAW_TO_WINDOW_ARB            0x2001
-#define WGL_ACCELERATION_ARB              0x2003
-#define WGL_SWAP_METHOD_ARB               0x2007
-#define WGL_SUPPORT_OPENGL_ARB            0x2010
-#define WGL_DOUBLE_BUFFER_ARB             0x2011
-#define WGL_PIXEL_TYPE_ARB                0x2013
-#define WGL_COLOR_BITS_ARB                0x2014
-#define WGL_DEPTH_BITS_ARB                0x2022
-#define WGL_STENCIL_BITS_ARB              0x2023
-#define WGL_FULL_ACCELERATION_ARB         0x2027
-#define WGL_TYPE_RGBA_ARB                 0x202B
-#define WGL_CONTEXT_PROFILE_MASK_ARB      0x9126
-#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB  0x00000001
-#define WGL_CONTEXT_MAJOR_VERSION_ARB     0x2091
-#define WGL_CONTEXT_MINOR_VERSION_ARB     0x2092
-#define WGL_CONTEXT_DEBUG_BIT_ARB         0x00000001
-#define WGL_CONTEXT_FLAGS_ARB             0x2094
-#define WGL_SWAP_COPY_ARB                 0x2029
-
-
 HMODULE s_Gdi32;
 HMODULE s_OpenGL32;
-
-typedef BOOL (WINAPI * PFNWGLCHOOSEPIXELFORMATARBPROC) (HDC hdc, const int *piAttribIList, const FLOAT *pfAttribFList, UINT nMaxFormats, int *piFormats, UINT *nNumFormats);
-typedef HGLRC (WINAPI * PFNWGLCREATECONTEXTATTRIBSARBPROC) (HDC hDC, HGLRC hShareContext, const int *attribList);
-typedef BOOL (WINAPI * PFNWGLSWAPINTERVALEXTPROC) (int interval);
-
-static PFNWGLCHOOSEPIXELFORMATARBPROC s_WGLChoosePixelFormatARB = nullptr;
-static PFNWGLCREATECONTEXTATTRIBSARBPROC s_WGLCreateContextAttribsARB = nullptr;
-static PFNWGLSWAPINTERVALEXTPROC s_WGLSwapIntervalEXT = nullptr;
 
 void _WGLCreateDummyContext()
 {
@@ -51,6 +23,9 @@ void _WGLCreateDummyContext()
 
     s_DescribePixelFormat = (DescribePixelFormatFunc)GetProcAddress(s_Gdi32, "DescribePixelFormat");
     PR_ASSERT(s_DescribePixelFormat, "failed to load DescribePixelFormat from gdi32.dll");
+
+    s_SwapBuffers = (SwapBuffersFunc)GetProcAddress(s_Gdi32, "SwapBuffers");
+    PR_ASSERT(s_SwapBuffers, "failed to load SwapBuffers from gdi32.dll");
 
     // load wgl functions
     s_WGLGetProcAddress = (PFNWGLGETPROCADDRESSPROC)GetProcAddress(s_OpenGL32, "wglGetProcAddress");
@@ -115,6 +90,7 @@ void _WGLCreateDummyContext()
 
     s_WGLSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)s_WGLGetProcAddress("wglSwapIntervalEXT");
     PR_ASSERT(s_WGLSwapIntervalEXT, "failed to load wglSwapIntervalEXT");
+    _LoadGL(s_OpenGL32);
 
     s_WGLMakeCurrent(dummy_dc, 0);
     ReleaseDC(dummy_window, dummy_dc);
@@ -150,6 +126,12 @@ HGLRC _WGLCreateContext(HWND window, i32 major, i32 minor)
     s_DescribePixelFormat(hdc, pixel_format, sizeof(PIXELFORMATDESCRIPTOR), &pixel_format_desc);
     s_SetPixelFormat(hdc, pixel_format, &pixel_format_desc);
 
+    b8 major_invalid = major > glVersion.major;
+    b8 minor_invalid = major == glVersion.major && minor > glVersion.minor;
+    b8 invalid = major_invalid & minor_invalid;
+
+    PR_ASSERT(!invalid, "your device doesent support opengl version %i", major);
+
     int opengl_attrib[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, major,
         WGL_CONTEXT_MINOR_VERSION_ARB, minor,
@@ -162,19 +144,4 @@ HGLRC _WGLCreateContext(HWND window, i32 major, i32 minor)
     PR_ASSERT(context, "WGL context creation failed");
     s_WGLMakeCurrent(GetDC(window), context);
     return context;
-}
-
-void _WGLDestroyContext(HGLRC context)
-{
-    s_WGLDeleteContext(context);
-}
-
-void _WGLMakeActive(HDC hdc, HGLRC context)
-{
-    s_WGLMakeCurrent(hdc, context);
-}
-
-void _WGLSetSetVsync(int interval)
-{
-    s_WGLSwapIntervalEXT(interval);
 }

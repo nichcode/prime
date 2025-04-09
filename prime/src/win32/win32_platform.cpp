@@ -104,7 +104,7 @@ void prFreeWstring(wchar_t* wstring)
     delete[] wstring;
 }
 
-void prConsoleWrite(u32 level, const char* message)
+void _ConsoleWrite(u32 level, const char* message)
 {
     b8 error = level > prLogLevels_Warn;
     HANDLE console = NULL;

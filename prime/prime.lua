@@ -17,5 +17,6 @@ end
 
     includedirs {
         "include",
-        "src"
+        "src",
+        "vendor"
     }

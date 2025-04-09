@@ -16,7 +16,6 @@ PR_API wchar_t* prToWstring(const char* string);
 
 PR_API void prFreeString(char* string);
 PR_API void prFreeWstring(wchar_t* wstring);
-PR_API void prConsoleWrite(u32 level, const char* message);
 
 PR_API void* prLoadLibrary(const char* dll);
 PR_API void* prLoadProc(void* dll, const char* func_name);

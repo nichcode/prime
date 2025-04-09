@@ -4,7 +4,8 @@
             "name": "win32 shared debug",
             "includePath": [
                 "${workspaceFolder}/prime/include",
-                "${workspaceFolder}/prime/src"
+                "${workspaceFolder}/prime/src",
+                "${workspaceFolder}/prime/vendor"
             ],
             "defines": [
                 "PR_EXPORT",

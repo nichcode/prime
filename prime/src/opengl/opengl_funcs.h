@@ -1,102 +1,103 @@
 
 #pragma once
 
-#define GL_DEPTH_BUFFER_BIT               0x00000100
-#define GL_STENCIL_BUFFER_BIT             0x00000400
-#define GL_COLOR_BUFFER_BIT               0x00004000
-#define GL_FALSE                          0
-#define GL_TRUE                           1
-#define GL_POINTS                         0x0000
-#define GL_LINES                          0x0001
-#define GL_LINE_LOOP                      0x0002
-#define GL_LINE_STRIP                     0x0003
-#define GL_TRIANGLES                      0x0004
-#define GL_TRIANGLE_STRIP                 0x0005
-#define GL_TRIANGLE_FAN                   0x0006
-#define GL_QUADS                          0x0007
-#define GL_NEVER                          0x0200
-#define GL_LESS                           0x0201
-#define GL_EQUAL                          0x0202
-#define GL_LEQUAL                         0x0203
-#define GL_GREATER                        0x0204
-#define GL_NOTEQUAL                       0x0205
-#define GL_GEQUAL                         0x0206
-#define GL_ALWAYS                         0x0207
-#define GL_ZERO                           0
-#define GL_ONE                            1
-#define GL_SRC_COLOR                      0x0300
-#define GL_ONE_MINUS_SRC_COLOR            0x0301
-#define GL_SRC_ALPHA                      0x0302
-#define GL_ONE_MINUS_SRC_ALPHA            0x0303
-#define GL_DST_ALPHA                      0x0304
-#define GL_ONE_MINUS_DST_ALPHA            0x0305
-#define GL_DST_COLOR                      0x0306
-#define GL_ONE_MINUS_DST_COLOR            0x0307
-#define GL_SRC_ALPHA_SATURATE             0x0308
-#define GL_NONE                           0
-#define GL_FRONT_LEFT                     0x0400
-#define GL_FRONT_RIGHT                    0x0401
-#define GL_BACK_LEFT                      0x0402
-#define GL_BACK_RIGHT                     0x0403
-#define GL_FRONT                          0x0404
-#define GL_BACK                           0x0405
-#define GL_LEFT                           0x0406
-#define GL_RIGHT                          0x0407
-#define GL_FRONT_AND_BACK                 0x0408
-#define GL_NO_ERROR                       0
-#define GL_INVALID_ENUM                   0x0500
-#define GL_INVALID_VALUE                  0x0501
-#define GL_INVALID_OPERATION              0x0502
-#define GL_OUT_OF_MEMORY                  0x0505
-#define GL_LINE_SMOOTH                    0x0B20
-#define GL_LINE_WIDTH                     0x0B21
-#define GL_POLYGON_MODE                   0x0B40
-#define GL_POLYGON_SMOOTH                 0x0B41
-#define GL_CULL_FACE                      0x0B44
-#define GL_CULL_FACE_MODE                 0x0B45
-#define GL_FRONT_FACE                     0x0B46
-#define GL_DEPTH_TEST                     0x0B71
-#define GL_BLEND                          0x0BE2
-#define GL_DRAW_BUFFER                    0x0C01
-#define GL_READ_BUFFER                    0x0C02
-#define GL_DOUBLEBUFFER                   0x0C32
-#define GL_UNPACK_ALIGNMENT               0x0CF5
-#define GL_PACK_ALIGNMENT                 0x0D05
-#define GL_MAX_TEXTURE_SIZE               0x0D33
-#define GL_TEXTURE_2D                     0x0DE1
-#define GL_BYTE                           0x1400
-#define GL_UNSIGNED_BYTE                  0x1401
-#define GL_SHORT                          0x1402
-#define GL_UNSIGNED_SHORT                 0x1403
-#define GL_INT                            0x1404
-#define GL_UNSIGNED_INT                   0x1405
-#define GL_FLOAT                          0x1406
-#define GL_CLEAR                          0x1500
-#define GL_TEXTURE                        0x1702
-#define GL_COLOR                          0x1800
-#define GL_DEPTH                          0x1801
-#define GL_STENCIL                        0x1802
-#define GL_STENCIL_INDEX                  0x1901
-#define GL_DEPTH_COMPONENT                0x1902
-#define GL_RED                            0x1903
-#define GL_GREEN                          0x1904
-#define GL_BLUE                           0x1905
-#define GL_ALPHA                          0x1906
-#define GL_RGB                            0x1907
-#define GL_RGBA                           0x1908
-#define GL_LINE                           0x1B01
-#define GL_FILL                           0x1B02
-#define GL_VENDOR                         0x1F00
-#define GL_RENDERER                       0x1F01
-#define GL_VERSION                        0x1F02
-#define GL_NEAREST                        0x2600
-#define GL_LINEAR                         0x2601
-#define GL_NEAREST_MIPMAP_NEAREST         0x2700
-#define GL_LINEAR_MIPMAP_NEAREST          0x2701
-#define GL_NEAREST_MIPMAP_LINEAR          0x2702
-#define GL_LINEAR_MIPMAP_LINEAR           0x2703
-#define GL_TEXTURE_MAG_FILTER             0x2800
-#define GL_TEXTURE_MIN_FILTER             0x2801
-#define GL_TEXTURE_WRAP_S                 0x2802
-#define GL_TEXTURE_WRAP_T                 0x2803
-#define GL_REPEAT                         0x2901
+#include "prime/defines.h"
+#include "vendor/glcorearb.h"
+
+struct GLVersion
+{
+    i32 major = 0;
+    i32 minor = 0;
+};
+
+static GLVersion glVersion;
+
+static PFNGLCREATEPROGRAMPROC glCreateProgram = nullptr;
+static PFNGLDELETETEXTURESPROC glDeleteTextures = nullptr;
+static PFNGLGENTEXTURESPROC glGenTextures = nullptr;
+static PFNGLBINDTEXTUREPROC glBindTexture = nullptr;
+static PFNGLDRAWBUFFERPROC glDrawBuffer = nullptr;
+static PFNGLDRAWARRAYSPROC glDrawArrays = nullptr;
+static PFNGLCREATESHADERPROC glCreateShader = nullptr;
+static PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation = nullptr;
+static PFNGLUNIFORM1FPROC glUniform1f = nullptr;
+static PFNGLUNIFORM2FVPROC glUniform2fv = nullptr;
+static PFNGLUNIFORM3FVPROC glUniform3fv = nullptr;
+static PFNGLUNIFORM1IPROC glUniform1i = nullptr;
+static PFNGLUNIFORMMATRIX4FVPROC glUniformMatrix4fv = nullptr;
+static PFNGLVERTEXATTRIBDIVISORPROC glVertexAttribDivisor = nullptr;
+static PFNGLACTIVETEXTUREPROC glActiveTexture = nullptr;
+static PFNGLBUFFERSUBDATAPROC glBufferSubData = nullptr;
+static PFNGLDRAWARRAYSINSTANCEDPROC glDrawArraysInstanced = nullptr;
+static PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer = nullptr;
+static PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus = nullptr;
+static PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers = nullptr;
+static PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D = nullptr;
+static PFNGLDRAWBUFFERSPROC glDrawBuffers = nullptr;
+static PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers = nullptr;
+static PFNGLBLENDFUNCIPROC glBlendFunci = nullptr;
+static PFNGLBLENDEQUATIONPROC glBlendEquation = nullptr;
+static PFNGLCLEARBUFFERFVPROC glClearBufferfv = nullptr;
+static PFNGLSHADERSOURCEPROC glShaderSource = nullptr;
+static PFNGLCOMPILESHADERPROC glCompileShader = nullptr;
+static PFNGLGETSHADERIVPROC glGetShaderiv = nullptr;
+static PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog = nullptr;
+static PFNGLATTACHSHADERPROC glAttachShader = nullptr;
+static PFNGLLINKPROGRAMPROC glLinkProgram = nullptr;
+static PFNGLVALIDATEPROGRAMPROC glValidateProgram = nullptr;
+static PFNGLGETPROGRAMIVPROC glGetProgramiv = nullptr;
+static PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog = nullptr;
+static PFNGLGENBUFFERSPROC glGenBuffers = nullptr;
+static PFNGLGENVERTEXARRAYSPROC glGenVertexArrays = nullptr;
+static PFNGLGETATTRIBLOCATIONPROC glGetAttribLocation = nullptr;
+static PFNGLBINDVERTEXARRAYPROC glBindVertexArray = nullptr;
+static PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray = nullptr;
+static PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = nullptr;
+static PFNGLBINDBUFFERPROC glBindBuffer = nullptr;
+static PFNGLBINDBUFFERBASEPROC glBindBufferBase = nullptr;
+static PFNGLBUFFERDATAPROC glBufferData = nullptr;
+static PFNGLGETVERTEXATTRIBPOINTERVPROC glGetVertexAttribPointerv = nullptr;
+static PFNGLUSEPROGRAMPROC glUseProgram = nullptr;
+static PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays = nullptr;
+static PFNGLDELETEBUFFERSPROC glDeleteBuffers = nullptr;
+static PFNGLDELETEPROGRAMPROC glDeleteProgram = nullptr;
+static PFNGLDETACHSHADERPROC glDetachShader = nullptr;
+static PFNGLDELETESHADERPROC glDeleteShader = nullptr;
+static PFNGLDRAWELEMENTSINSTANCEDPROC glDrawElementsInstanced = nullptr;
+static PFNGLGENERATEMIPMAPPROC glGenerateMipmap = nullptr;
+static PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback = nullptr;
+static PFNGLGETSTRINGPROC glGetstring = nullptr;
+
+static PFNGLTEXIMAGE2DPROC glTexImage2D = nullptr;
+static PFNGLTEXPARAMETERIPROC glTexParameteri = nullptr;
+static PFNGLTEXPARAMETERFVPROC glTexParameterfv = nullptr;
+static PFNGLCLEARPROC glClear = nullptr;
+static PFNGLCLEARCOLORPROC glClearColor = nullptr;
+static PFNGLREADBUFFERPROC glReadBuffer = nullptr;
+static PFNGLDEPTHMASKPROC glDepthMask = nullptr;
+static PFNGLDISABLEPROC glDisable = nullptr;
+static PFNGLENABLEPROC glEnable = nullptr;
+static PFNGLSCISSORPROC glScissor = nullptr;
+static PFNGLVIEWPORTPROC glViewport = nullptr;
+static PFNGLDEPTHFUNCPROC glDepthFunc = nullptr;
+static PFNGLCULLFACEPROC glCullFace = nullptr;
+static PFNGLBLENDFUNCPROC glBlendFunc = nullptr;
+static PFNGLFRONTFACEPROC glFrontFace = nullptr;
+static PFNGLUNIFORM2FPROC glUniform2f = nullptr;
+static PFNGLUNIFORM3FPROC glUniform3f = nullptr;
+static PFNGLUNIFORM4FPROC glUniform4f = nullptr;
+static PFNGLUNIFORM1IVPROC glUniform1iv = nullptr;
+static PFNGLUNIFORMMATRIX2FVPROC glUniformMatrix2fv = nullptr;
+static PFNGLUNIFORMMATRIX3FVPROC glUniformMatrix3fv = nullptr;
+static PFNGLVERTEXATTRIBIPOINTERPROC glVertexAttribIPointer = nullptr;
+static PFNGLDRAWELEMENTSPROC glDrawElements = nullptr;
+static PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
+static PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+static PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
+static PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
+static PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+static PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+static PFNGLPIXELSTOREIPROC glPixelStorei;
+static PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
+
+void _LoadGL(void* opengl_dll);
