@@ -54,17 +54,11 @@ using f64 = double;
 using b32 = int;
 using b8 = bool;
 
-#define PR_RELEASE 0
-#define PR_PRESS 1
-#define PR_REPEAT 2
-#define PR_TRUE 1
-#define PR_FALSE 0
 #define PR_PASSED 1
 #define PR_FAILED 0
 #define PR_STR(x) #x
 #define PR_LINE __LINE__
 #define PR_FILE __FILE__
-#define PR_INLINE inline
 #define PR_MAX_TEXTURE_SLOTS 16
 #define PR_PI 3.14159265358979323846f
 #define PR_BIT(x) 1 << x

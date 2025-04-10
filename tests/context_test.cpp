@@ -13,9 +13,17 @@ int main(int argc, char** argv)
     desc.major = 3;
     desc.minor = 3;
     prContext* context = prCreateContext(window, desc);
-    prMakeActive(context);
+    prMakeActive(context, false);
     prSetVsync(true);
     prSetClearColor(.2f, .2f, .2f, 1.0f);
+
+    prBufferDesc buffer_desc;
+    buffer_desc.type = prBufferTypes_Vertex;
+    buffer_desc.data = nullptr;
+    buffer_desc.size = 8;
+    prBuffer* buffer = prCreateBuffer(context, buffer_desc);
+
+    prBindBuffer(buffer);
 
     while (!prWindowShouldClose(window)) {
         prPullEvents();

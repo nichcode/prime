@@ -1,26 +1,7 @@
 
 #include "pch.h"
 #include "prime/window.h"
-#include "prime/input.h"
 #include "prime/platform.h"
-
-struct prContext;
-
-struct prWindow
-{
-    HWND handle;
-    prContext* context;
-    u32 width, height;
-    i32 x, y;
-    const char* title;
-    b8 shouldClose, focused;
-
-    u32 keycodes[512];
-    u32 scancodes[prKeys_Max + 1];
-    u32 keys[prKeys_Max + 1];
-    u32 buttons[prButtons_Max + 1];
-    i32 mousePos[2];
-};
 
 struct Callbacks
 {
@@ -40,7 +21,8 @@ void _CenterWindow(prWindow* window)
 {
     MONITORINFO monitor_info;
     monitor_info.cbSize = sizeof(MONITORINFO);
-    GetMonitorInfo(MonitorFromWindow(window->handle, MONITOR_DEFAULTTONEAREST), &monitor_info);
+    //HWND handle = (HWND)window->handle;
+    GetMonitorInfo(MonitorFromWindow((HWND)window->handle, MONITOR_DEFAULTTONEAREST), &monitor_info);
     u32 max_hwidth = monitor_info.rcMonitor.right;
     u32 max_hheight = monitor_info.rcMonitor.bottom;
 
@@ -48,7 +30,7 @@ void _CenterWindow(prWindow* window)
     i32 y = (max_hheight - window->height) / 2;
     window->x = x;
     window->y = y;
-    SetWindowPos(window->handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
+    SetWindowPos((HWND)window->handle, 0, x, y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_SHOWWINDOW);
 }
 
 void _MapKeys(prWindow* window)
@@ -269,28 +251,30 @@ prWindow* prCreateWindow(const char* title, u32 width, u32 height, u32 flags)
     window->width = width;
     window->height = height;
 
-    window->handle = CreateWindowExW(
+    HWND handle = CreateWindowExW(
         ex_style, s_ClassName, wstr, style, window->x,
         window->y, rect.right - rect.left, rect.bottom - rect.top, 
         NULL, NULL, s_Instance,  NULL);
         
-    PR_ASSERT(window->handle, "failed to create win32 window");
+    PR_ASSERT(handle, "failed to create win32 window");
+    window->handle = handle;
 
     if (flags & prWindowFlags_Center) {
         _CenterWindow(window);
     }
 
     if (flags & prWindowFlags_Show) {
-        UpdateWindow(window->handle);
-        ShowWindow(window->handle, SW_NORMAL);
+        UpdateWindow(handle);
+        ShowWindow(handle, SW_NORMAL);
     }
     else {
-        ShowWindow(window->handle, SW_HIDE);
+        ShowWindow(handle, SW_HIDE);
     }
 
-    SetPropW(window->handle, s_PropName, window);
+    SetPropW(handle, s_PropName, window);
     prFreeWstring(wstr);
     _MapKeys(window);
+
     window->focused = true;
     window->context = nullptr;
     return window;
@@ -299,7 +283,7 @@ prWindow* prCreateWindow(const char* title, u32 width, u32 height, u32 flags)
 void prDestroyWindow(prWindow* window)
 {
     PR_ASSERT(window, "window is null");
-    DestroyWindow(window->handle);
+    DestroyWindow((HWND)window->handle);
     delete window;
     window = nullptr;
 }
@@ -343,13 +327,13 @@ void prPullEvents()
 void prHideWindow(prWindow* window)
 {
     PR_ASSERT(window, "window is null");
-    ShowWindow(window->handle, SW_HIDE);
+    ShowWindow((HWND)window->handle, SW_HIDE);
 }
 
 void prShowWindow(prWindow* window)
 {
     PR_ASSERT(window, "window is null");
-    ShowWindow(window->handle, SW_SHOW);
+    ShowWindow((HWND)window->handle, SW_SHOW);
 }
 
 void prSetWindowTitle(prWindow* window, const char* title)
@@ -357,7 +341,7 @@ void prSetWindowTitle(prWindow* window, const char* title)
     PR_ASSERT(window, "window is null");
     window->title = title;
     wchar_t* wstr = prToWstring(title);
-    SetWindowText(window->handle, wstr);
+    SetWindowText((HWND)window->handle, wstr);
     prFreeWstring(wstr);
 }
 
@@ -373,7 +357,7 @@ void prSetWindowSize(prWindow* window, u32 width, u32 height)
     window->width = width;
     window->height = height;
 
-    SetWindowPos(window->handle, HWND_TOP, 0, 0, 
+    SetWindowPos((HWND)window->handle, HWND_TOP, 0, 0, 
         rect.right - rect.left, rect.bottom - rect.top,
         SWP_NOACTIVATE | SWP_NOOWNERZORDER | SWP_NOMOVE | SWP_NOZORDER
     );
@@ -388,7 +372,7 @@ void prSetWindowPos(prWindow* window, i32 x, i32 y)
     window->y = y;
 
     SetWindowPos(
-        window->handle, NULL, rect.left, rect.top, 
+        (HWND)window->handle, NULL, rect.left, rect.top, 
         0, 0, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOSIZE
     );
 }

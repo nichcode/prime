@@ -4,25 +4,7 @@
 #include "prime/window.h"
 
 #include "opengl/opengl_context.h"
-
-struct prAPI
-{
-    // context
-    void*(*createContext)(void* window_handle, i32 major, i32 minor) = nullptr;
-    void(*destroyContext)(void* handle) = nullptr;
-    void(*swapBuffers)(void* handle) = nullptr;
-    void(*setVsync)(void* handle, b8 vsync) = nullptr;
-    void(*makeActive)(void* handle) = nullptr;
-    void(*clear)(void* handle) = nullptr;
-    void(*setClearColor)(void* handle, f32 r, f32 g, f32 b, f32 a) = nullptr;
-};
-
-struct prContext
-{
-    prAPI api;
-    prWindow* window;
-    void* handle;
-};
+#include "opengl/opengl_buffer.h"
 
 void _InitAPI(prContext* context, u32 type)
 {
@@ -36,6 +18,13 @@ void _InitAPI(prContext* context, u32 type)
             context->api.swapBuffers = _GLSwapBuffers;
             context->api.setVsync = _GLSetVsync;
             context->api.setClearColor = _GLSetClearColor;
+
+            // buffer
+            context->api.createBuffer = _GLCreateBuffer;
+            context->api.destroyBuffer = _GLDestroyBuffer;
+            context->api.bindBuffer = _GLBindBuffer;
+            context->api.setBufferData = _GLSetBufferData;
+
             break;
         }
     }
@@ -44,7 +33,7 @@ void _InitAPI(prContext* context, u32 type)
 prContext* prCreateContext(prWindow* window, prContextDesc desc)
 {
     PR_ASSERT(window, "window is nullptr");
-    PR_ASSERT(!_WindowHasContext(window), "window already has context");
+    PR_ASSERT(!window->context, "window already has context");
 
     prContext* context = new prContext();
     PR_ASSERT(context, "failed to create context");
@@ -53,16 +42,32 @@ prContext* prCreateContext(prWindow* window, prContextDesc desc)
     context->handle = context->api.createContext(prGetWindowHandle(window), desc.major, desc.minor);
     PR_ASSERT(context, "failed to create context");
 
-    _SetWindowContext(window, context);
+    window->context = context;
     return context;
 }
 
 void prDestroyContext(prContext* context)
 {
     PR_ASSERT(context, "context is null");
-    if (s_State.activeContext == context) {
-        s_State.activeContext = nullptr;
+    if (s_ActiveContext == context) {
+        s_ActiveContext = nullptr;
     }
+    
+    // buffers
+    for (prBuffer* buffer : context->data.buffers) {
+        context->api.destroyBuffer(buffer->handle);
+        delete buffer;
+        buffer = nullptr;
+    }
+
+    context->data.buffers.clear();
+
+    // reset states
+    context->state.activeVertexBuffer = nullptr;
+    context->state.activeIndexBuffer = nullptr;
+    context->state.activeStorageBuffer = nullptr;
+    context->state.activeUniformBuffer = nullptr;
+
     context->api.destroyContext(context->handle);
     delete context;
     context = nullptr;
@@ -70,31 +75,48 @@ void prDestroyContext(prContext* context)
 
 void prSwapBuffers()
 {
-    PR_ASSERT(s_State.activeContext, "no context bound");
-    s_State.activeContext->api.swapBuffers(s_State.activeContext->handle);
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    s_ActiveContext->api.swapBuffers(s_ActiveContext->handle);
 }
 
 void prClear()
 {
-    PR_ASSERT(s_State.activeContext, "no context bound");
-    s_State.activeContext->api.clear(s_State.activeContext->handle);
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    s_ActiveContext->api.clear(s_ActiveContext->handle);
 }
 
-void prMakeActive(prContext* context)
+void prMakeActive(prContext* context, b8 bind_pipeline)
 {
     PR_ASSERT(context, "context is null");
-    s_State.activeContext = context;
+    s_ActiveContext = context;
     context->api.makeActive(context->handle);
+    if (bind_pipeline) {
+        if (context->state.activeVertexBuffer) {
+            context->api.bindBuffer(context->state.activeVertexBuffer->handle, false);
+        }
+
+        if (context->state.activeIndexBuffer) {
+            context->api.bindBuffer(context->state.activeIndexBuffer->handle, false);
+        }
+
+        if (context->state.activeStorageBuffer) {
+            context->api.bindBuffer(context->state.activeStorageBuffer->handle, false);
+        }
+
+        if (context->state.activeUniformBuffer) {
+            context->api.bindBuffer(context->state.activeUniformBuffer->handle, false);
+        }
+    }
 }
 
 void prSetVsync(b8 vsync)
 {
-    PR_ASSERT(s_State.activeContext, "no context bound");
-    s_State.activeContext->api.setVsync(s_State.activeContext->handle, vsync);
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    s_ActiveContext->api.setVsync(s_ActiveContext->handle, vsync);
 }
 
 void prSetClearColor(f32 r, f32 g, f32 b, f32 a)
 {
-    PR_ASSERT(s_State.activeContext, "no context bound");
-    s_State.activeContext->api.setClearColor(s_State.activeContext->handle, r, g, b, a);
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    s_ActiveContext->api.setClearColor(s_ActiveContext->handle, r, g, b, a);
 }

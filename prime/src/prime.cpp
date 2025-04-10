@@ -4,6 +4,7 @@
 #include "input.cpp"
 #include "log.cpp"
 #include "context.cpp"
+#include "buffer.cpp"
 
 #ifdef PR_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"
@@ -14,3 +15,4 @@
 // opengl
 #include "opengl/opengl_funcs.cpp"  
 #include "opengl/opengl_context.cpp"  
+#include "opengl/opengl_buffer.cpp"  

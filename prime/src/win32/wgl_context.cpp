@@ -126,11 +126,9 @@ HGLRC _WGLCreateContext(HWND window, i32 major, i32 minor)
     s_DescribePixelFormat(hdc, pixel_format, sizeof(PIXELFORMATDESCRIPTOR), &pixel_format_desc);
     s_SetPixelFormat(hdc, pixel_format, &pixel_format_desc);
 
-    b8 major_invalid = major > glVersion.major;
-    b8 minor_invalid = major == glVersion.major && minor > glVersion.minor;
-    b8 invalid = major_invalid & minor_invalid;
+    b8 valid = major < glVersion.major || (major == glVersion.major && minor <= glVersion.minor);
 
-    PR_ASSERT(!invalid, "your device doesent support opengl version %i", major);
+    PR_ASSERT(valid, "your device doesent support opengl version %i.%i", major, minor);
 
     int opengl_attrib[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, major,
@@ -142,6 +140,7 @@ HGLRC _WGLCreateContext(HWND window, i32 major, i32 minor)
 
     HGLRC context = s_WGLCreateContextAttribsARB(hdc, 0, opengl_attrib);
     PR_ASSERT(context, "WGL context creation failed");
-    s_WGLMakeCurrent(GetDC(window), context);
+
+    ReleaseDC(window, hdc);
     return context;
 }
