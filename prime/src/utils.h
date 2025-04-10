@@ -4,6 +4,7 @@
 #include "prime/defines.h"
 #include "prime/input.h"
 #include "prime/buffer.h"
+#include "prime/shader.h"
 #include <vector>
 
 // declarations
@@ -36,12 +37,29 @@ struct prAPI
     void(*makeActive)(void* handle) = nullptr;
     void(*clear)(void* handle) = nullptr;
     void(*setClearColor)(void* handle, f32 r, f32 g, f32 b, f32 a) = nullptr;
+    void(*drawArrays)(void* handle, u32 mode, u32 count) = nullptr;
+    void(*drawElements)(void* handle, u32 mode, u32 count) = nullptr;
+    void(*drawArraysInstanced)(void* handle, u32 mode, u32 count, u32 instance_count) = nullptr;
+    void(*drawElementsInstanced)(void* handle, u32 mode, u32 count, u32 instance_count) = nullptr;
 
     // buffer
     void*(*createBuffer)(prBufferDesc desc) = nullptr;
     void(*destroyBuffer)(void* handle) = nullptr;
     void(*bindBuffer)(void* handle, b8 send_data) = nullptr;
     void(*setBufferData)(void* handle, void* data, u32 size) = nullptr;
+
+    // shader
+    void*(*createShader)(prShaderDesc desc) = nullptr;
+    void(*destroyShader)(void* handle) = nullptr;
+    void(*bindShader)(void* handle) = nullptr;
+    void(*setInt)(void* handle, const char* name, i32 data) = nullptr;
+    void(*setIntArray)(void* handle, const char* name, i32* data, u32 count) = nullptr;
+    void(*setFloat)(void* handle, const char* name, f32 data) = nullptr;
+    void(*setFloat2)(void* handle, const char* name, f32 data, f32 data2) = nullptr;
+    void(*setFloat3)(void* handle, const char* name, f32 data, f32 data2, f32 data3) = nullptr;
+    void(*setFloat4)(void* handle, const char* name, f32 data, f32 data2, f32 data3, f32 data4) = nullptr;
+    void(*setMat4)(void* handle, const char* name, f32* data) = nullptr;
+    void(*setLayout)(void* handle, prShaderLayout* layout) = nullptr;
 };
 
 struct prPipeLineState
@@ -50,11 +68,13 @@ struct prPipeLineState
     prBuffer* activeIndexBuffer = nullptr;
     prBuffer* activeStorageBuffer = nullptr;
     prBuffer* activeUniformBuffer = nullptr;
+    prShader* activeShader = nullptr;
 };
 
 struct prDestructor
 {
     std::vector<prBuffer*> buffers;
+    std::vector<prShader*> shaders;
 };
 
 struct prContext
@@ -71,6 +91,14 @@ struct prBuffer
     void* handle = nullptr;
     u32 type = 0;
     b8 dataSent = false;
+};
+
+struct prShader
+{
+    prContext* context = nullptr;
+    void* handle = nullptr;
+    prShaderLayout* layout = nullptr;
+    b8 layoutSent = false;
 };
 
 static prContext* s_ActiveContext = nullptr;

@@ -5,6 +5,7 @@
 #include "log.cpp"
 #include "context.cpp"
 #include "buffer.cpp"
+#include "shader.cpp"
 
 #ifdef PR_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"
@@ -16,3 +17,4 @@
 #include "opengl/opengl_funcs.cpp"  
 #include "opengl/opengl_context.cpp"  
 #include "opengl/opengl_buffer.cpp"  
+#include "opengl/opengl_shader.cpp"  
