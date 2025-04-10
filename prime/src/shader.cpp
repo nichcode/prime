@@ -8,7 +8,7 @@ prShader* prCreateShader(prContext* context, prShaderDesc desc)
     PR_ASSERT(shader, "failed to create shader");
     shader->context = context;
     shader->handle = context->api.createShader(desc);
-    shader->layout = &desc.layout;
+    shader->layout = desc.layout;
     shader->layoutSent = false;
 
     context->data.shaders.push_back(shader);
@@ -42,7 +42,7 @@ void prBindShader(prShader* shader)
         context->state.activeShader = shader;
         context->api.bindShader(shader->handle);
         if (!shader->layoutSent) {
-            context->api.setLayout(shader->handle, shader->layout);
+            context->api.setLayout(shader->handle, &shader->layout);
             shader->layoutSent = true;
         }
     }

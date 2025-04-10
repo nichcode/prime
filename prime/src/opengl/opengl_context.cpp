@@ -118,3 +118,8 @@ void _GLDrawElementsInstanced(void* handle, u32 mode, u32 count, u32 instance_co
     GLenum gl_mode = drawModeToGL(mode);
     glDrawElementsInstanced(gl_mode, count, GL_UNSIGNED_INT, nullptr, instance_count);
 }
+
+void _GLSetView(void* handle, prViewport view)
+{
+    glViewport((u32)view.x, (u32)view.y, (u32)view.width, (u32)view.height);
+}

@@ -17,3 +17,5 @@ void _GLDrawArrays(void* handle, u32 mode, u32 count);
 void _GLDrawElements(void* handle, u32 mode, u32 count);
 void _GLDrawArraysInstanced(void* handle, u32 mode, u32 count, u32 instance_count);
 void _GLDrawElementsInstanced(void* handle, u32 mode, u32 count, u32 instance_count);
+
+void _GLSetView(void* handle, prViewport view);

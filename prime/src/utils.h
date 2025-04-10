@@ -5,6 +5,8 @@
 #include "prime/input.h"
 #include "prime/buffer.h"
 #include "prime/shader.h"
+#include "prime/viewport.h"
+#include "maths.h"
 #include <vector>
 
 // declarations
@@ -41,6 +43,7 @@ struct prAPI
     void(*drawElements)(void* handle, u32 mode, u32 count) = nullptr;
     void(*drawArraysInstanced)(void* handle, u32 mode, u32 count, u32 instance_count) = nullptr;
     void(*drawElementsInstanced)(void* handle, u32 mode, u32 count, u32 instance_count) = nullptr;
+    void(*setView)(void* handle, prViewport view) = nullptr;
 
     // buffer
     void*(*createBuffer)(prBufferDesc desc) = nullptr;
@@ -82,6 +85,7 @@ struct prContext
     prAPI api;
     prDestructor data;
     prPipeLineState state;
+    prViewport view;
     void* handle;
 };
 
@@ -97,8 +101,30 @@ struct prShader
 {
     prContext* context = nullptr;
     void* handle = nullptr;
-    prShaderLayout* layout = nullptr;
+    prShaderLayout layout;
     b8 layoutSent = false;
+};
+
+struct prVertex
+{
+    prVec3 position;
+    prVec4 color;
+};
+
+struct prRenderer
+{
+    u32 count = 0;
+    b8 useNdc = true;
+    
+    prMat4 projection;
+    prContext* context;
+
+    prBuffer* vbo = nullptr;
+    prBuffer* ibo = nullptr;
+    prShader* shader = nullptr;
+
+    prVec4 vertices[4];
+    std::vector<prVertex> sprites;
 };
 
 static prContext* s_ActiveContext = nullptr;

@@ -23,6 +23,7 @@ void _InitAPI(prContext* context, u32 type)
             context->api.drawElements = _GLDrawElements;
             context->api.drawArraysInstanced = _GLDrawArraysInstanced;
             context->api.drawElementsInstanced = _GLDrawElementsInstanced;
+            context->api.setView = _GLSetView;
 
             // buffer
             context->api.createBuffer = _GLCreateBuffer;
@@ -62,6 +63,7 @@ void _ShutdownAPI(prContext* context)
     context->api.drawElements = nullptr;
     context->api.drawArraysInstanced = nullptr;
     context->api.drawElementsInstanced = nullptr;
+    context->api.setView = nullptr;
 
     // buffer
     context->api.createBuffer = nullptr;
@@ -187,6 +189,13 @@ void prSetClearColor(f32 r, f32 g, f32 b, f32 a)
     s_ActiveContext->api.setClearColor(s_ActiveContext->handle, r, g, b, a);
 }
 
+void prSetView(prViewport viewport)
+{
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    s_ActiveContext->view = viewport;
+    s_ActiveContext->api.setView(s_ActiveContext->handle, viewport);
+}
+
 void prDrawArrays(u32 mode, u32 count)
 {
     PR_ASSERT(s_ActiveContext, "no context bound");
@@ -209,4 +218,10 @@ void prDrawArraysInstanced(u32 mode, u32 count, u32 instance_count)
 {
     PR_ASSERT(s_ActiveContext, "no context bound");
     s_ActiveContext->api.drawArraysInstanced(s_ActiveContext->handle, mode, count, instance_count);
+}
+
+prViewport prGetView()
+{
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    return s_ActiveContext->view;
 }

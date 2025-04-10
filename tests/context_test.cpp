@@ -14,17 +14,17 @@ int main(int argc, char** argv)
     desc.minor = 3;
     prContext* context = prCreateContext(window, desc);
     prMakeActive(context, false);
-    prMakeActive(context, false);
     prSetVsync(true);
     prSetClearColor(.2f, .2f, .2f, 1.0f);
 
     f32 vertices[] = {
 		-0.5f, -0.5f, 0.0f,
 		 0.5f, -0.5f, 0.0f,
-		 0.0f,  0.5f, 0.0f
+         0.5f,  0.5f, 0.0f,
+		-0.5f,  0.5f, 0.0f
 	};
 
-    u32 indices[] = { 0, 1, 2 };
+    u32 indices[] = { 0, 1, 2, 2, 3, 0 };
 
     // layout
     prShaderLayout layout;
@@ -47,7 +47,8 @@ int main(int argc, char** argv)
     buffer_desc.size = sizeof(indices);
     buffer_desc.usage = prBufferUsages_Static;
     prBuffer* index_buffer = prCreateBuffer(context, buffer_desc);
-
+    
+    // shader
     prShaderDesc shader_desc;
     shader_desc.load = true;
     shader_desc.type = prShaderSourceTypes_GLSL;
@@ -64,7 +65,7 @@ int main(int argc, char** argv)
         prPullEvents();
 
         prClear();
-        prDrawElements(prDrawModes_Triangles, 3);
+        prDrawElements(prDrawModes_Triangles, 6);
         prSwapBuffers();
     }
 

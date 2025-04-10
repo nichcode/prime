@@ -6,6 +6,7 @@
 #include "context.cpp"
 #include "buffer.cpp"
 #include "shader.cpp"
+#include "renderer.cpp"
 
 #ifdef PR_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"
