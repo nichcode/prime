@@ -98,6 +98,10 @@ prContext* prCreateContext(prWindow* window, prContextDesc desc)
     PR_ASSERT(context, "failed to create context");
 
     window->context = context;
+    context->view.x = 0.0f;
+    context->view.y = 0.0f;
+    context->view.width = (f32)window->width;
+    context->view.height = (f32)window->height;
     return context;
 }
 
@@ -159,19 +163,19 @@ void prMakeActive(prContext* context, b8 bind_pipeline)
         
         if (bind_pipeline) {
             if (context->state.activeVertexBuffer) {
-                context->api.bindBuffer(context->state.activeVertexBuffer->handle, false);
+                context->api.bindBuffer(context->state.activeVertexBuffer->handle);
             }
 
             if (context->state.activeIndexBuffer) {
-                context->api.bindBuffer(context->state.activeIndexBuffer->handle, false);
+                context->api.bindBuffer(context->state.activeIndexBuffer->handle);
             }
 
             if (context->state.activeStorageBuffer) {
-                context->api.bindBuffer(context->state.activeStorageBuffer->handle, false);
+                context->api.bindBuffer(context->state.activeStorageBuffer->handle);
             }
 
             if (context->state.activeUniformBuffer) {
-                context->api.bindBuffer(context->state.activeUniformBuffer->handle, false);
+                context->api.bindBuffer(context->state.activeUniformBuffer->handle);
             }
         }
     }
@@ -187,6 +191,16 @@ void prSetClearColor(f32 r, f32 g, f32 b, f32 a)
 {
     PR_ASSERT(s_ActiveContext, "no context bound");
     s_ActiveContext->api.setClearColor(s_ActiveContext->handle, r, g, b, a);
+}
+
+void prSetClearColori(u8 r, u8 g, u8 b, u8 a)
+{
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    f32 fr = (f32)r / 255.0f;
+    f32 fg = (f32)g / 255.0f;
+    f32 fb = (f32)b / 255.0f;
+    f32 fa = (f32)a / 255.0f;
+    s_ActiveContext->api.setClearColor(s_ActiveContext->handle, fr, fg, fb, fa);
 }
 
 void prSetView(prViewport viewport)

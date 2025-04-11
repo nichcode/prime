@@ -241,7 +241,7 @@ void _GLSetMat4(void* handle, const char* name, f32* data)
 {
     glShader* shader = (glShader*)handle;
     GLint location = glGetUniformLocation(shader->id, name);
-    glUniformMatrix4fv(location, 16, GL_FALSE, data);
+    glUniformMatrix4fv(location, 1, GL_FALSE, data);
 }
 
 void _GLSetLayout(void* handle, prShaderLayout* layout)

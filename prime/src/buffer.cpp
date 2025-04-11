@@ -13,6 +13,31 @@ prBuffer* prCreateBuffer(prContext* context, prBufferDesc desc)
     buffer->context = context;
     buffer->handle = context->api.createBuffer(desc);
 
+    // rebind the previous active buffer
+    if (buffer->type == prBufferTypes_Vertex) {
+        if (context->state.activeVertexBuffer) {
+            context->api.bindBuffer(context->state.activeVertexBuffer->handle);
+        }
+    }
+
+    else if (buffer->type == prBufferTypes_Index) {
+        if (context->state.activeIndexBuffer) {
+            context->api.bindBuffer(context->state.activeIndexBuffer->handle);
+        }
+    }
+
+    else if (buffer->type == prBufferTypes_Storage) {
+        if (context->state.activeStorageBuffer) {
+            context->api.bindBuffer(context->state.activeStorageBuffer->handle);
+        }
+    }
+
+    else if (buffer->type == prBufferTypes_Uniform) {
+        if (context->state.activeUniformBuffer) {
+            context->api.bindBuffer(context->state.activeUniformBuffer->handle);
+        }
+    }
+
     context->data.buffers.push_back(buffer);
     return buffer;
 }
@@ -64,32 +89,28 @@ void prBindBuffer(prBuffer* buffer)
     if (buffer->type == prBufferTypes_Vertex) {
         if (context->state.activeVertexBuffer != buffer) {
             context->state.activeVertexBuffer = buffer;
-            if (buffer->dataSent) { context->api.bindBuffer(buffer->handle, false); }
-            else { context->api.bindBuffer(buffer->handle, true); buffer->dataSent = true; }
+            context->api.bindBuffer(buffer->handle);
         }
     }
 
     else if (buffer->type == prBufferTypes_Index) {
         if (context->state.activeIndexBuffer != buffer) {
             context->state.activeIndexBuffer = buffer;
-            if (buffer->dataSent) { context->api.bindBuffer(buffer->handle, false); }
-            else { context->api.bindBuffer(buffer->handle, true); buffer->dataSent = true; }
+            context->api.bindBuffer(buffer->handle);
         }
     }
 
     else if (buffer->type == prBufferTypes_Storage) {
         if (context->state.activeStorageBuffer != buffer) {
             context->state.activeStorageBuffer = buffer;
-            if (buffer->dataSent) { context->api.bindBuffer(buffer->handle, false); }
-            else { context->api.bindBuffer(buffer->handle, true); buffer->dataSent = true; }
+            context->api.bindBuffer(buffer->handle);
         }
     }
 
     else if (buffer->type == prBufferTypes_Uniform) {
         if (context->state.activeUniformBuffer != buffer) {
             context->state.activeUniformBuffer = buffer;
-            if (buffer->dataSent) { context->api.bindBuffer(buffer->handle, false); }
-            else { context->api.bindBuffer(buffer->handle, true); buffer->dataSent = true; }
+            context->api.bindBuffer(buffer->handle);
         }
     }
 }

@@ -50,19 +50,33 @@ inline u32 bufferUsageToGL(u32 usage)
 struct glBuffer
 {
     u32 id = 0;
-    prBufferDesc desc;
+    u32 type = 0;
 };
 
 void* _GLCreateBuffer(prBufferDesc desc)
 {
     glBuffer* buffer = new glBuffer();
     PR_ASSERT(buffer, "failed to create opengl buffer handle");
-    buffer->desc.type = bufferTypeToGL(desc.type);
-    buffer->desc.binding = desc.binding;
-    buffer->desc.data = desc.data;
-    buffer->desc.size = desc.size;
-    buffer->desc.usage = bufferUsageToGL(desc.usage);
+    buffer->type = bufferTypeToGL(desc.type);
+    u32 usage = bufferUsageToGL(desc.usage);
     glGenBuffers(1, &buffer->id);
+
+    switch (buffer->type) {
+        case GL_ARRAY_BUFFER: 
+        case GL_ELEMENT_ARRAY_BUFFER: {
+            glBindBuffer(buffer->type, buffer->id);
+            glBufferData(buffer->type, desc.size, desc.data, usage);
+            break;
+        }
+        case GL_UNIFORM_BUFFER:
+        case GL_SHADER_STORAGE_BUFFER: {
+            glBindBuffer(buffer->type, buffer->id);
+            glBufferData(buffer->type, desc.size, desc.data, usage);
+            glBindBufferBase(buffer->type, desc.binding, buffer->id);
+            break;
+        }
+    }
+
     return buffer;
 }
 
@@ -74,33 +88,14 @@ void _GLDestroyBuffer(void* handle)
     handle = nullptr;
 }
 
-void _GLBindBuffer(void* handle, b8 send_data)
+void _GLBindBuffer(void* handle)
 {
     glBuffer* buffer = (glBuffer*)handle;
-    if (send_data) {
-        switch (buffer->desc.type) {
-            case GL_ARRAY_BUFFER: 
-            case GL_ELEMENT_ARRAY_BUFFER: {
-                glBindBuffer(buffer->desc.type, buffer->id);
-                glBufferData(buffer->desc.type, buffer->desc.size, buffer->desc.data, buffer->desc.usage);
-                break;
-            }
-            case GL_UNIFORM_BUFFER:
-            case GL_SHADER_STORAGE_BUFFER: {
-                glBindBuffer(buffer->desc.type, buffer->id);
-                glBufferData(buffer->desc.type, buffer->desc.size, buffer->desc.data, buffer->desc.usage);
-                glBindBufferBase(buffer->desc.type, buffer->desc.binding, buffer->id);
-                break;
-            }
-        }
-    }
-    else {
-        glBindBuffer(buffer->desc.type, buffer->id);
-    }
+    glBindBuffer(buffer->type, buffer->id);
 }
 
 void _GLSetBufferData(void* handle, void* data, u32 size)
 {
     glBuffer* buffer = (glBuffer*)handle;
-    glBufferSubData(buffer->desc.type, 0, size, data);
+    glBufferSubData(buffer->type, 0, size, data);
 }

@@ -17,15 +17,23 @@ int main(int argc, char** argv)
     prSetVsync(true);
     prSetClearColor(.2f, .2f, .2f, 1.0f);
 
-    prRenderer* renderer = prCreateRenderer(context, true);
+    prRenderer* renderer = prCreateRenderer(context);
+    prSetRendererDrawColor(renderer, 0.0f, 0.0f, 1.0f, 1.0f);
+
+    prCamera camera;
+    camera.aspect_ratio = 1.77f;
+    camera.rotation = 0.0f;
+    camera.zoom = 3.0f;
    
     while (!prWindowShouldClose(window)) {
         prPullEvents();
 
-        prDrawRect(renderer, { 0.0f, 0.0f, 0.5f, 0.5f });
-
         prClear();
-        prFlush(renderer);
+        prSetRendererCamera(renderer, camera);
+
+        prRendererDrawRect(renderer, { 0.0f, 0.0f, 0.5f, 0.5f });
+
+        prRendererFlush(renderer);
         prSwapBuffers();
     }
 

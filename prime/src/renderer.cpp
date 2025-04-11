@@ -9,27 +9,17 @@
 #define MAX_VERTICES MAX_SPRITES * 4
 #define MAX_INDICES MAX_SPRITES * 6
 
-prRenderer* prCreateRenderer(prContext* context, b8 use_ndc)
+prRenderer* prCreateRenderer(prContext* context)
 {
     PR_ASSERT(context, "context is null");
     prRenderer* renderer = new prRenderer();
     PR_ASSERT(renderer, "failed to create renderer");
 
     renderer->context = context;
-    renderer->useNdc = use_ndc;
-
-    if (use_ndc) {
-        renderer->vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-        renderer->vertices[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-        renderer->vertices[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-        renderer->vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
-    }
-    else {
-        renderer->vertices[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
-        renderer->vertices[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
-        renderer->vertices[2] = { 1.0f, 1.0f, 0.0f, 1.0f };
-        renderer->vertices[3] = { 0.0f, 1.0f, 0.0f, 1.0f };
-    }
+    renderer->vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
+    renderer->vertices[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
+    renderer->vertices[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
+    renderer->vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
 
     u32* indices = new u32[MAX_INDICES];
     u32 offset = 0;
@@ -76,10 +66,6 @@ prRenderer* prCreateRenderer(prContext* context, b8 use_ndc)
     shader_desc.layout = layout;
     renderer->shader = prCreateShader(context, shader_desc);
 
-    prBindBuffer(renderer->vbo);
-    prBindBuffer(renderer->ibo);
-    prBindShader(renderer->shader);
-
     delete[] indices;
     return renderer;
 }
@@ -96,10 +82,9 @@ void prDestroyRenderer(prRenderer* renderer)
     renderer = nullptr;
 }
 
-void prDrawRect(prRenderer* renderer, const prRect rect)
+void prRendererDrawRect(prRenderer* renderer, const prRect rect)
 {
     PR_ASSERT(renderer, "renderer is null");
-
     prMat4 transform = prTranslate({ rect.x, rect.y, 0.0f }) 
         * prScale({ rect.w, rect.h, 1.0f });
 
@@ -110,21 +95,65 @@ void prDrawRect(prRenderer* renderer, const prRect rect)
         sprite.position.y = position.y;
         sprite.position.z = 0.0f;
 
-        sprite.color = { 1.0f, 0.0f, 0.0f, 1.0f };
+        sprite.color = renderer->drawColor;
         renderer->sprites.push_back(sprite);
     }
     renderer->count += 6;
 }
 
-void prFlush(prRenderer* renderer)
+void prRendererFlush(prRenderer* renderer)
 {
     PR_ASSERT(renderer, "renderer is null");
     if (renderer->count) {
+        prBindBuffer(renderer->vbo);
+        prBindBuffer(renderer->ibo);
+        prBindShader(renderer->shader);
+
         u32 size = sizeof(prVertex) * renderer->count;
         prSetBufferData(prBufferTypes_Vertex, renderer->sprites.data(), size);
+        prSetMat4("u_ViewProjection", renderer->projection.data);
         
         prDrawElements(prDrawModes_Triangles, renderer->count);
         renderer->sprites.clear();
         renderer->count = 0;
     }
+}
+
+void prSetRendererDrawColor(prRenderer* renderer, f32 r, f32 g, f32 b, f32 a)
+{
+    PR_ASSERT(renderer, "renderer is null");
+    renderer->drawColor = { r, g, b, a };
+}
+
+void prSetRendererDrawColori(prRenderer* renderer, u8 r, u8 g, u8 b, u8 a)
+{
+    PR_ASSERT(renderer, "renderer is null");
+    f32 fr = (f32)r / 255.0f;
+    f32 fg = (f32)g / 255.0f;
+    f32 fb = (f32)b / 255.0f;
+    f32 fa = (f32)a / 255.0f;
+    renderer->drawColor = { fr, fg, fb, fa };
+}
+
+void prSetRendererCamera(prRenderer* renderer, prCamera camera)
+{
+    PR_ASSERT(renderer, "renderer is null");
+    prMat4 transform;
+    if (camera.rotation) {
+        transform = prTranslate({ camera.x, camera.y, 0.0f }) 
+            * prRotateZ(camera.rotation);
+    }
+    else {
+        transform = prTranslate({ camera.x, camera.y, 0.0f });
+    }
+
+    f32 size = camera.zoom;
+    f32 aspect_ratio = camera.aspect_ratio;
+    f32 left = -size * aspect_ratio * 0.5f;
+    f32 right = size * aspect_ratio * 0.5f;
+    f32 bottom = -size * 0.5f;
+    f32 top = size * 0.5f;
+
+    prMat4 projection = prOrtho(left, right, bottom, top, -1.0f, 1.0f);
+    renderer->projection = projection * prInverse(transform);
 }

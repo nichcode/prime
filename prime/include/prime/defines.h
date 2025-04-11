@@ -60,7 +60,6 @@ using b8 = bool;
 #define PR_LINE __LINE__
 #define PR_FILE __FILE__
 #define PR_MAX_TEXTURE_SLOTS 16
-#define PR_PI 3.14159265358979323846f
 #define PR_BIT(x) 1 << x
 #define PR_MAX_ATTRIB 8
 

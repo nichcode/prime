@@ -48,7 +48,7 @@ struct prAPI
     // buffer
     void*(*createBuffer)(prBufferDesc desc) = nullptr;
     void(*destroyBuffer)(void* handle) = nullptr;
-    void(*bindBuffer)(void* handle, b8 send_data) = nullptr;
+    void(*bindBuffer)(void* handle) = nullptr;
     void(*setBufferData)(void* handle, void* data, u32 size) = nullptr;
 
     // shader
@@ -114,14 +114,14 @@ struct prVertex
 struct prRenderer
 {
     u32 count = 0;
-    b8 useNdc = true;
-    
     prMat4 projection;
     prContext* context;
 
     prBuffer* vbo = nullptr;
     prBuffer* ibo = nullptr;
     prShader* shader = nullptr;
+
+    prVec4 drawColor;
 
     prVec4 vertices[4];
     std::vector<prVertex> sprites;
