@@ -77,6 +77,7 @@ void* _GLCreateBuffer(prBufferDesc desc)
         }
     }
 
+    glBindBuffer(buffer->type, 0);
     return buffer;
 }
 

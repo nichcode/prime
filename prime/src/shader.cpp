@@ -2,23 +2,25 @@
 #include "pch.h"
 #include "prime/shader.h"
 
-prShader* prCreateShader(prContext* context, prShaderDesc desc)
+prShader* prCreateShader(prShaderDesc desc)
 {
+    PR_ASSERT(s_ActiveContext, "no context bound");
     prShader* shader = new prShader();
     PR_ASSERT(shader, "failed to create shader");
-    shader->context = context;
-    shader->handle = context->api.createShader(desc);
+
+    shader->handle = s_ActiveContext->api.createShader(desc);
     shader->layout = desc.layout;
     shader->layoutSent = false;
 
-    context->data.shaders.push_back(shader);
+    s_ActiveContext->data.shaders.push_back(shader);
     return shader;
 }
 
 void prDestroyShader(prShader* shader)
 {
     PR_ASSERT(shader, "shader is null");
-    prContext* context = shader->context;
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    prContext* context = s_ActiveContext;
 
     auto it = std::find(context->data.shaders.begin(), context->data.shaders.end(), shader);
     if (it != context->data.shaders.end()) {
@@ -36,7 +38,8 @@ void prDestroyShader(prShader* shader)
 void prBindShader(prShader* shader)
 {
     PR_ASSERT(shader, "shader is null");
-    prContext* context = shader->context;
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    prContext* context = s_ActiveContext;
 
     if (context->state.activeShader != shader) {
         context->state.activeShader = shader;

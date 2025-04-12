@@ -32,6 +32,7 @@ b8 prInit()
 void prShutdown()
 {
     UnregisterClassW(s_ClassName, s_Instance);
+    s_ActiveContext = nullptr;
     PR_INFO("Shutdown");
 }
 

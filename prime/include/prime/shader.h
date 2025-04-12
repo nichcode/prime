@@ -45,7 +45,7 @@ struct prShaderDesc
     prShaderLayout layout;
 };
 
-PR_API prShader* prCreateShader(prContext* context, prShaderDesc desc);
+PR_API prShader* prCreateShader(prShaderDesc desc);
 PR_API void prDestroyShader(prShader* shader);
 PR_API void prBindShader(prShader* shader);
 

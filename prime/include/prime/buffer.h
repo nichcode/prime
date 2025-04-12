@@ -3,7 +3,6 @@
 
 #include "defines.h"
 
-struct prContext;
 struct prBuffer;
 
 enum prBufferTypes_
@@ -29,7 +28,7 @@ struct prBufferDesc
     void* data = nullptr;
 };
 
-PR_API prBuffer* prCreateBuffer(prContext* context, prBufferDesc desc);
+PR_API prBuffer* prCreateBuffer(prBufferDesc desc);
 PR_API void prDestroyBuffer(prBuffer* buffer);
 
 PR_API void prBindBuffer(prBuffer* buffer);

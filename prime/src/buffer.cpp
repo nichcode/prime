@@ -2,50 +2,50 @@
 #include "pch.h"
 #include "prime/buffer.h"
 
-prBuffer* prCreateBuffer(prContext* context, prBufferDesc desc)
+prBuffer* prCreateBuffer(prBufferDesc desc)
 {
-    PR_ASSERT(context, "context is null");
+    PR_ASSERT(s_ActiveContext, "no context bound");
     prBuffer* buffer = new prBuffer();
     PR_ASSERT(buffer, "failed to create buffer");
 
     buffer->dataSent = false;
     buffer->type = desc.type;
-    buffer->context = context;
-    buffer->handle = context->api.createBuffer(desc);
+    buffer->handle = s_ActiveContext->api.createBuffer(desc);
 
     // rebind the previous active buffer
     if (buffer->type == prBufferTypes_Vertex) {
-        if (context->state.activeVertexBuffer) {
-            context->api.bindBuffer(context->state.activeVertexBuffer->handle);
+        if (s_ActiveContext->state.activeVertexBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeVertexBuffer->handle);
         }
     }
 
     else if (buffer->type == prBufferTypes_Index) {
-        if (context->state.activeIndexBuffer) {
-            context->api.bindBuffer(context->state.activeIndexBuffer->handle);
+        if (s_ActiveContext->state.activeIndexBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeIndexBuffer->handle);
         }
     }
 
     else if (buffer->type == prBufferTypes_Storage) {
-        if (context->state.activeStorageBuffer) {
-            context->api.bindBuffer(context->state.activeStorageBuffer->handle);
+        if (s_ActiveContext->state.activeStorageBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeStorageBuffer->handle);
         }
     }
 
     else if (buffer->type == prBufferTypes_Uniform) {
-        if (context->state.activeUniformBuffer) {
-            context->api.bindBuffer(context->state.activeUniformBuffer->handle);
+        if (s_ActiveContext->state.activeUniformBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeUniformBuffer->handle);
         }
     }
 
-    context->data.buffers.push_back(buffer);
+    s_ActiveContext->data.buffers.push_back(buffer);
     return buffer;
 }
 
 void prDestroyBuffer(prBuffer* buffer)
 {
     PR_ASSERT(buffer, "buffer is null");
-    prContext* context = buffer->context;
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    prContext* context = s_ActiveContext;
 
     auto it = std::find(context->data.buffers.begin(), context->data.buffers.end(), buffer);
     if (it != context->data.buffers.end()) {
@@ -84,7 +84,8 @@ void prDestroyBuffer(prBuffer* buffer)
 void prBindBuffer(prBuffer* buffer)
 {
     PR_ASSERT(buffer, "buffer is null");
-    prContext* context = buffer->context;
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    prContext* context = s_ActiveContext;
 
     if (buffer->type == prBufferTypes_Vertex) {
         if (context->state.activeVertexBuffer != buffer) {
@@ -118,23 +119,25 @@ void prBindBuffer(prBuffer* buffer)
 void prSetBufferData(u32 type, void* data, u32 size)
 {
     PR_ASSERT(s_ActiveContext, "no context bound");
+    prContext* context = s_ActiveContext;
+
     if (type == prBufferTypes_Vertex) {
-        PR_ASSERT(s_ActiveContext->state.activeVertexBuffer, "no vertex buffer bound");
-        s_ActiveContext->api.setBufferData(s_ActiveContext->state.activeVertexBuffer->handle, data, size);
+        PR_ASSERT(context->state.activeVertexBuffer, "no vertex buffer bound");
+        context->api.setBufferData(context->state.activeVertexBuffer->handle, data, size);
     }
 
     else if (type == prBufferTypes_Index) {
-        PR_ASSERT(s_ActiveContext->state.activeIndexBuffer, "no index buffer bound");
-        s_ActiveContext->api.setBufferData(s_ActiveContext->state.activeIndexBuffer->handle, data, size);
+        PR_ASSERT(context->state.activeIndexBuffer, "no index buffer bound");
+        context->api.setBufferData(context->state.activeIndexBuffer->handle, data, size);
     }
 
     else if (type == prBufferTypes_Storage) {
-        PR_ASSERT(s_ActiveContext->state.activeStorageBuffer, "no Storage buffer bound");
-        s_ActiveContext->api.setBufferData(s_ActiveContext->state.activeStorageBuffer->handle, data, size);
+        PR_ASSERT(context->state.activeStorageBuffer, "no Storage buffer bound");
+        context->api.setBufferData(context->state.activeStorageBuffer->handle, data, size);
     }
 
     else if (type == prBufferTypes_Uniform) {
-        PR_ASSERT(s_ActiveContext->state.activeUniformBuffer, "no Uniform buffer bound");
-        s_ActiveContext->api.setBufferData(s_ActiveContext->state.activeUniformBuffer->handle, data, size);
+        PR_ASSERT(context->state.activeUniformBuffer, "no Uniform buffer bound");
+        context->api.setBufferData(context->state.activeUniformBuffer->handle, data, size);
     }
 }

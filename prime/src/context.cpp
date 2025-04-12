@@ -6,6 +6,7 @@
 #include "opengl/opengl_context.h"
 #include "opengl/opengl_buffer.h"
 #include "opengl/opengl_shader.h"
+#include "opengl/opengl_texture.h"
 
 void _InitAPI(prContext* context, u32 type)
 {
@@ -43,6 +44,14 @@ void _InitAPI(prContext* context, u32 type)
             context->api.setFloat4 = _GLSetFloat4;
             context->api.setMat4 = _GLSetMat4;
             context->api.setLayout = _GLSetLayout;
+
+            // texture
+            context->api.createTexture = _GLCreateTexture;
+            context->api.loadTexture = _GLLoadTexture;
+            context->api.bindTexture = _GLBindTexture;
+            context->api.destroyTexture = _GLDestroyTexture;
+            context->api.bindTarget = _GLBindRenderTarget;
+            context->api.unbindTarget = _GLUnbindRenderTarget;
 
             break;
         }
@@ -83,6 +92,14 @@ void _ShutdownAPI(prContext* context)
     context->api.setFloat4 = nullptr;
     context->api.setMat4 = nullptr;
     context->api.setLayout = nullptr;
+
+    // texture
+    context->api.createTexture = nullptr;
+    context->api.loadTexture = nullptr;
+    context->api.bindTexture = nullptr;
+    context->api.destroyTexture = nullptr;
+    context->api.bindTarget = nullptr;
+    context->api.unbindTarget = nullptr;
 }
 
 prContext* prCreateContext(prWindow* window, prContextDesc desc)
@@ -126,8 +143,16 @@ void prDestroyContext(prContext* context)
         shader = nullptr;
     }
 
+    // textures
+    for (prTexture* texture : context->data.textures) {
+        context->api.destroyShader(texture->handle);
+        delete texture;
+        texture = nullptr;
+    }
+
     context->data.buffers.clear();
     context->data.shaders.clear();
+    context->data.textures.clear();
 
     // reset states
     context->state.activeVertexBuffer = nullptr;
@@ -135,6 +160,7 @@ void prDestroyContext(prContext* context)
     context->state.activeStorageBuffer = nullptr;
     context->state.activeUniformBuffer = nullptr;
     context->state.activeShader = nullptr;
+    context->state.activeTexture = nullptr;
 
     context->api.destroyContext(context->handle);
     _ShutdownAPI(context);
@@ -154,30 +180,12 @@ void prClear()
     s_ActiveContext->api.clear(s_ActiveContext->handle);
 }
 
-void prMakeActive(prContext* context, b8 bind_pipeline)
+void prMakeActive(prContext* context)
 {
     PR_ASSERT(context, "context is null");
     if (s_ActiveContext != context) {
         s_ActiveContext = context;
         context->api.makeActive(context->handle);
-        
-        if (bind_pipeline) {
-            if (context->state.activeVertexBuffer) {
-                context->api.bindBuffer(context->state.activeVertexBuffer->handle);
-            }
-
-            if (context->state.activeIndexBuffer) {
-                context->api.bindBuffer(context->state.activeIndexBuffer->handle);
-            }
-
-            if (context->state.activeStorageBuffer) {
-                context->api.bindBuffer(context->state.activeStorageBuffer->handle);
-            }
-
-            if (context->state.activeUniformBuffer) {
-                context->api.bindBuffer(context->state.activeUniformBuffer->handle);
-            }
-        }
     }
 }
 

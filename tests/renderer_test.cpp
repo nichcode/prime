@@ -22,17 +22,18 @@ int main(int argc, char** argv)
     desc.major = 3;
     desc.minor = 3;
     prContext* context = prCreateContext(window, desc);
-    prMakeActive(context, false);
+    prMakeActive(context);
     prSetVsync(true);
     prSetClearColor(.2f, .2f, .2f, 1.0f);
 
-    prRenderer* renderer = prCreateRenderer(context);
-    prSetRendererDrawColor(renderer, 0.0f, 0.0f, 1.0f, 1.0f);
+    prRenderer* renderer = prCreateRenderer();
 
     prCamera camera;
     camera.aspect_ratio = 1.77f;
     camera.rotation = 0.0f;
     camera.zoom = 3.0f;
+
+    prTexture* texture = prLoadTexture("textures/texture2d.png");
 
     prSetWindowResizedCallback(onWindowResize);
     prSetUserData(context);
@@ -42,11 +43,21 @@ int main(int argc, char** argv)
 
         prClear();
         prSetRendererCamera(renderer, camera);
+        prSetRendererTexture(renderer, texture);
 
+        prSetRendererDrawColor(renderer, 1.0f, 0.0f, 0.0f, 1.0f);
+        prRendererDrawRect(renderer, { -1.0f, 0.0f, 0.5f, 0.5f });
+
+        prSetRendererDrawColor(renderer, 0.0f, 1.0f, 0.0f, 1.0f);
         prRendererDrawRect(renderer, { 0.0f, 0.0f, 0.5f, 0.5f });
+        
+        prSetRendererDrawColor(renderer, 0.0f, 0.0f, 1.0f, 1.0f);
+        prRendererDrawRect(renderer, { 1.0f, 0.0f, 0.5f, 0.5f });
+
+        prRendererDrawTexture(renderer, { 0.0f, 0.8f, 0.5f, 0.5f });
 
         prRendererFlush(renderer);
-        prSwapBuffers();
+        prSwapBuffers(); 
     }
 
     prSetWindowResizedCallback(nullptr);

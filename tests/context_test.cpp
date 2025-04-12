@@ -22,15 +22,15 @@ int main(int argc, char** argv)
     desc.major = 3;
     desc.minor = 3;
     prContext* context = prCreateContext(window, desc);
-    prMakeActive(context, false);
+    prMakeActive(context);
     prSetVsync(true);
     prSetClearColor(.2f, .2f, .2f, 1.0f);
 
     f32 vertices[] = {
-		-0.5f, -0.5f, 0.0f,
-		 0.5f, -0.5f, 0.0f,
-         0.5f,  0.5f, 0.0f,
-		-0.5f,  0.5f, 0.0f
+		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
+		 0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
+		 0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f, 0.0f, 0.0f
 	};
 
     u32 indices[] = { 0, 1, 2, 2, 3, 0 };
@@ -38,9 +38,12 @@ int main(int argc, char** argv)
     // layout
     prShaderLayout layout;
     prShaderAttrib position_attrib;
+    prShaderAttrib tex_coords_attrib;
     position_attrib.type = prShaderDataTypes_Float3;
+    tex_coords_attrib.type = prShaderDataTypes_Float2;
     layout.attribs[0] = position_attrib;
-    layout.count = 1;
+    layout.attribs[1] = tex_coords_attrib;
+    layout.count = 2;
 
     // vertex buffer
     prBufferDesc buffer_desc;
@@ -48,14 +51,14 @@ int main(int argc, char** argv)
     buffer_desc.data = vertices;
     buffer_desc.size = sizeof(vertices);
     buffer_desc.usage = prBufferUsages_Static;
-    prBuffer* vertex_buffer = prCreateBuffer(context, buffer_desc);
+    prBuffer* vertex_buffer = prCreateBuffer(buffer_desc);
 
     // index buffer
     buffer_desc.type = prBufferTypes_Index;
     buffer_desc.data = indices;
     buffer_desc.size = sizeof(indices);
     buffer_desc.usage = prBufferUsages_Static;
-    prBuffer* index_buffer = prCreateBuffer(context, buffer_desc);
+    prBuffer* index_buffer = prCreateBuffer(buffer_desc);
     
     // shader
     prShaderDesc shader_desc;
@@ -64,11 +67,15 @@ int main(int argc, char** argv)
     shader_desc.vertex_src = "shaders/context_vertex.glsl";
     shader_desc.pixel_src = "shaders/context_pixel.glsl";
     shader_desc.layout = layout;
-    prShader* shader = prCreateShader(context, shader_desc);
+    prShader* shader = prCreateShader(shader_desc);
+
+    prTexture* texture = prLoadTexture("textures/texture2d.png");
 
     prBindBuffer(vertex_buffer);
     prBindBuffer(index_buffer);
     prBindShader(shader);
+    prBindTexture(texture, 0);
+    prSetInt("u_Texture", 0);
 
     prSetWindowResizedCallback(onWindowResize);
     prSetUserData(context);

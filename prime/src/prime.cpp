@@ -7,6 +7,7 @@
 #include "buffer.cpp"
 #include "shader.cpp"
 #include "renderer.cpp"
+#include "texture.cpp"
 
 #ifdef PR_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"
@@ -19,3 +20,4 @@
 #include "opengl/opengl_context.cpp"  
 #include "opengl/opengl_buffer.cpp"  
 #include "opengl/opengl_shader.cpp"  
+#include "opengl/opengl_texture.cpp"  
