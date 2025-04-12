@@ -1,6 +1,15 @@
 
 #include "prime/prime.h"
 
+void onWindowResize(prWindow* window, u32 width, u32 height)
+{
+    prContext* context = (prContext*)prGetUserData();
+    prViewport view;
+    view.width = width;
+    view.height = height;
+    prSetView(view);
+}
+
 int main(int argc, char** argv)
 {
     prInit();
@@ -61,6 +70,9 @@ int main(int argc, char** argv)
     prBindBuffer(index_buffer);
     prBindShader(shader);
 
+    prSetWindowResizedCallback(onWindowResize);
+    prSetUserData(context);
+
     while (!prWindowShouldClose(window)) {
         prPullEvents();
 
@@ -69,6 +81,7 @@ int main(int argc, char** argv)
         prSwapBuffers();
     }
 
+    prSetWindowResizedCallback(nullptr);
     prDestroyContext(context);
     prDestroyWindow(window);
     prShutdown();

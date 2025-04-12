@@ -1,6 +1,15 @@
 
 #include "prime/prime.h"
 
+void onWindowResize(prWindow* window, u32 width, u32 height)
+{
+    prContext* context = (prContext*)prGetUserData();
+    prViewport view;
+    view.width = width;
+    view.height = height;
+    prSetView(view);
+}
+
 int main(int argc, char** argv)
 {
     prInit();
@@ -24,6 +33,9 @@ int main(int argc, char** argv)
     camera.aspect_ratio = 1.77f;
     camera.rotation = 0.0f;
     camera.zoom = 3.0f;
+
+    prSetWindowResizedCallback(onWindowResize);
+    prSetUserData(context);
    
     while (!prWindowShouldClose(window)) {
         prPullEvents();
@@ -37,6 +49,7 @@ int main(int argc, char** argv)
         prSwapBuffers();
     }
 
+    prSetWindowResizedCallback(nullptr);
     prDestroyRenderer(renderer);
     prDestroyContext(context);
     prDestroyWindow(window);

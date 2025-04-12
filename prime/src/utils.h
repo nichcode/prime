@@ -128,6 +128,7 @@ struct prRenderer
 };
 
 static prContext* s_ActiveContext = nullptr;
+static void* s_UserData = nullptr;
 
 void _InitInput();
 void _ConsoleWrite(u32 level, const char* message);

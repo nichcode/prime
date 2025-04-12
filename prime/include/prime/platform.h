@@ -20,3 +20,6 @@ PR_API void prFreeWstring(wchar_t* wstring);
 PR_API void* prLoadLibrary(const char* dll);
 PR_API void* prLoadProc(void* dll, const char* func_name);
 PR_API void prFreeLibrary(void* dll);
+
+PR_API void prSetUserData(void* data);
+PR_API void* prGetUserData();

@@ -149,3 +149,13 @@ void prFreeLibrary(void* dll)
     PR_ASSERT((HMODULE)dll, "dll is null");
     FreeLibrary((HMODULE)dll);
 }
+
+void prSetUserData(void* data)
+{
+    s_UserData = data;
+}
+
+void* prGetUserData()
+{
+    return s_UserData;
+}
