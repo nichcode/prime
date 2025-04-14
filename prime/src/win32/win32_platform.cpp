@@ -25,6 +25,10 @@ b8 prInit()
 
     _InitInput();
     _WGLCreateDummyContext();
+
+    int freetype_success = FT_Init_FreeType(&s_Library);
+    PR_ASSERT(!freetype_success, "Freetype initialization failed!");
+
     PR_INFO("Init");
     return PR_PASSED;
 }
@@ -33,6 +37,7 @@ void prShutdown()
 {
     UnregisterClassW(s_ClassName, s_Instance);
     s_ActiveContext = nullptr;
+    FT_Done_FreeType(s_Library);
     PR_INFO("Shutdown");
 }
 

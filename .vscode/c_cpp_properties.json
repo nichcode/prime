@@ -25,7 +25,9 @@
             "name": "win32 shared release",
             "includePath": [
                 "${workspaceFolder}/prime/include",
-                "${workspaceFolder}/prime/src"
+                "${workspaceFolder}/prime/src",
+                "${workspaceFolder}/prime/vendor",
+                "${workspaceFolder}/prime/vendor/vendor/freetype"
             ],
             "defines": [
                 "PR_EXPORT",

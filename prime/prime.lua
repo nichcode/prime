@@ -14,10 +14,12 @@ project "prime"
     includedirs {
         "include",
         "src",
-        "vendor"
+        "vendor",
+        "vendor/vendor/freetype"
     }
 
     links {
         "gdi32",
-        "opengl32"
+        "opengl32",
+        "vendor/vendor/freetype/freetype-mingw"
     }

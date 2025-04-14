@@ -10,6 +10,9 @@
 #include "maths.h"
 #include <vector>
 
+#include "ft2build.h"
+#include FT_FREETYPE_H
+
 // declarations
 struct prContext;
 
@@ -154,6 +157,7 @@ struct prRenderer
 
 static prContext* s_ActiveContext = nullptr;
 static void* s_UserData = nullptr;
+static FT_Library s_Library;
 
 void _InitInput();
 void _ConsoleWrite(u32 level, const char* message);
