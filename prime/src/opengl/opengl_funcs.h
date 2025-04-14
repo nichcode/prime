@@ -100,4 +100,4 @@ static PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 static PFNGLPIXELSTOREIPROC glPixelStorei;
 static PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
 
-void _LoadGL(void* opengl_dll);
+void _LoadGL();

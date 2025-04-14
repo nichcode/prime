@@ -1,18 +1,15 @@
 
 #include "pch.h"
 #include "opengl_funcs.h"
+#include "prime/platform.h"
 
-#ifdef PR_PLATFORM_WINDOWS
-#include "win32/wgl_context.h"
-#endif // PR_PLATFORM_WINDOWS
-
-static void* s_Dll;
+void* s_Dll;
 void* _Load(const char* func_name);
 
 #ifdef PR_PLATFORM_WINDOWS
     void* _Load(const char* func_name)
     {
-        PROC proc = s_WGLGetProcAddress(func_name);
+        PROC proc = wglGetProcAddress(func_name);
         if (!proc) {
             proc = GetProcAddress((HMODULE)s_Dll, func_name);
             PR_ASSERT(proc, "failed to load gl function %s", func_name);
@@ -21,9 +18,9 @@ void* _Load(const char* func_name);
     }
 #endif // PRIME_PLATFORM_WINDOWS
 
-void _LoadGL(void* opengl_dll)
+void _LoadGL()
 {
-    s_Dll = opengl_dll;
+    s_Dll = prLoadLibrary("opengl32.dll");
 
     glGetstring = (PFNGLGETSTRINGPROC)_Load("glGetString");
     const char* version = (const char*) glGetstring(GL_VERSION);

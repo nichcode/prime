@@ -5,7 +5,8 @@
             "includePath": [
                 "${workspaceFolder}/prime/include",
                 "${workspaceFolder}/prime/src",
-                "${workspaceFolder}/prime/vendor"
+                "${workspaceFolder}/prime/vendor",
+                "${workspaceFolder}/prime/vendor/vendor/freetype"
             ],
             "defines": [
                 "PR_EXPORT",
@@ -28,41 +29,6 @@
             ],
             "defines": [
                 "PR_EXPORT",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.18362.0",
-            "compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
-        },
-
-        {
-            "name": "win32 static debug",
-            "includePath": [
-                "${workspaceFolder}/prime/include",
-                "${workspaceFolder}/prime/src"
-            ],
-            "defines": [
-                "PR_CONFIG_DEBUG",
-                "UNICODE",
-                "_UNICODE"
-            ],
-            "windowsSdkVersion": "10.0.18362.0",
-            "compilerPath": "C:\\msys64\\ucrt64\\bin\\g++.exe",
-            "cStandard": "c17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "gcc-x64"
-        },
-
-        {
-            "name": "win32 static release",
-            "includePath": [
-                "${workspaceFolder}/prime/include",
-                "${workspaceFolder}/prime/src"
-            ],
-            "defines": [
                 "UNICODE",
                 "_UNICODE"
             ],

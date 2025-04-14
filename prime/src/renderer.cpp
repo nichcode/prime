@@ -8,6 +8,8 @@
 #define MAX_SPRITES 10000
 #define MAX_VERTICES MAX_SPRITES * 4
 #define MAX_INDICES MAX_SPRITES * 6
+#define TEXTURE_ID 0.0f
+#define FONT_ID 0.0f
 
 void _ResetBatch(prRenderer* renderer)
 {
@@ -143,7 +145,7 @@ void prRendererDrawRect(prRenderer* renderer, const prRect rect)
         sprite.texture.x = renderer->texCoords[i].x;
         sprite.texture.y = renderer->texCoords[i].y;
         sprite.texture.z = 0.0f; // texture index
-        sprite.texture.w = 0.0f;
+        sprite.texture.w = TEXTURE_ID;
 
         sprite.color = renderer->drawColor;
         renderer->sprites.push_back(sprite);
@@ -173,7 +175,7 @@ void prRendererDrawTexture(prRenderer* renderer, const prRect rect)
         sprite.texture.x = renderer->texCoords[i].x;
         sprite.texture.y = renderer->texCoords[i].y;
         sprite.texture.z = (f32)renderer->activeTexIndex; // texture index
-        sprite.texture.w = 0.0f;
+        sprite.texture.w = TEXTURE_ID;
 
         sprite.color = renderer->tintColor;
         renderer->sprites.push_back(sprite);

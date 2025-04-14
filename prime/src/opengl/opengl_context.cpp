@@ -49,7 +49,7 @@ void _GLDestroyContext(void* handle)
 {
     glContext* context = (glContext*)handle;
 #ifdef PR_PLATFORM_WINDOWS
-    s_WGLDeleteContext(context->handle);
+    wglDeleteContext(context->handle);
     ReleaseDC(context->window, context->deviceContext);
 #endif // PR_PLATFORM_WINDOWS
 
@@ -62,7 +62,7 @@ void _GLSwapBuffers(void* handle)
 {
     glContext* context = (glContext*)handle;
 #ifdef PR_PLATFORM_WINDOWS
-    s_SwapBuffers(context->deviceContext);
+    SwapBuffers(context->deviceContext);
 #endif // PR_PLATFORM_WINDOWS
 }
 
@@ -70,7 +70,7 @@ void _GLMakeActive(void* handle)
 {
     glContext* context = (glContext*)handle;
 #ifdef PR_PLATFORM_WINDOWS
-    s_WGLMakeCurrent(context->deviceContext, context->handle);
+    wglMakeCurrent(context->deviceContext, context->handle);
 #endif // PR_PLATFORM_WINDOWS
 
     if (!context->vao) { glGenVertexArrays(1, &context->vao); }
@@ -81,7 +81,7 @@ void _GLSetVsync(void* handle, b8 vsync)
 {
     glContext* context = (glContext*)handle;
 #ifdef PR_PLATFORM_WINDOWS
-    s_WGLSwapIntervalEXT(vsync);
+    wglSwapIntervalEXT(vsync);
 #endif // PR_PLATFORM_WINDOWS
 }
 

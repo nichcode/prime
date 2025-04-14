@@ -1,13 +1,9 @@
 
 project "prime"
     language "C++"
-
-if (_OPTIONS["with-shared"]) then
     kind "SharedLib"
+
     defines { "PR_EXPORT" }
-else
-    kind "StaticLib"
-end
 
     targetdir(target_dir)
     objdir(obj_dir)
@@ -19,4 +15,9 @@ end
         "include",
         "src",
         "vendor"
+    }
+
+    links {
+        "gdi32",
+        "opengl32"
     }

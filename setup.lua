@@ -4,11 +4,6 @@ newoption {
     description = "build prime with test applications"
 }
 
-newoption {
-    trigger = "with-shared",
-    description = "build prime as a shared library"
-}
-
 target_dir = "%{wks.location}/bin/%{cfg.buildcfg}"
 obj_dir = "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
 
@@ -19,14 +14,9 @@ end
 
     configurations { "Debug", "Release" }
     flags { "MultiProcessorCompile" }
+    staticruntime "off"
 
     defines { "UNICODE", "_UNICODE" }
-
-    if (_OPTIONS["with-shared"]) then
-        staticruntime "off"
-    else
-        staticruntime "on"
-    end
 
     filter {"system:windows", "configurations:*"}
         architecture "x64"
