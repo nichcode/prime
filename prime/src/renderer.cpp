@@ -170,6 +170,35 @@ void prRendererDrawRect(prRenderer* renderer, const prRect rect, const prColor c
     renderer->indexCount += 6;
 }
 
+void prRendererDrawRectEx(prRenderer* renderer, const prRect rect, f32 rotation, const prColor color)
+{
+    PR_ASSERT(renderer, "renderer is null");
+    _CheckBatch(renderer);
+
+    if (!rotation) { prRendererDrawRect(renderer, rect, color); return; }
+    
+    prMat4 transform = prTranslate({ rect.x, rect.y, 0.0f }) 
+        * prRotateZ(rotation)
+        * prScale({ rect.w, rect.h, 1.0f });
+
+    for (size_t i = 0; i < 4; i++) {
+        prVec4 position = transform * renderer->vertices[i];
+        prVertex sprite;
+        sprite.position.x = position.x;
+        sprite.position.y = position.y;
+        sprite.position.z = 0.0f;
+
+        sprite.texture.x = renderer->texCoords[i].x;
+        sprite.texture.y = renderer->texCoords[i].y;
+        sprite.texture.z = 0.0f; // texture index
+        sprite.texture.w = TEXTURE_ID;
+
+        sprite.color = color;
+        renderer->sprites.push_back(sprite);
+    }
+    renderer->indexCount += 6;
+}
+
 void prRendererDrawTexture(prRenderer* renderer, const prRect rect, prTexture* texture)
 {
     PR_ASSERT(renderer, "renderer is null");
@@ -197,6 +226,77 @@ void prRendererDrawTexture(prRenderer* renderer, const prRect rect, prTexture* t
         sprite.texture.w = TEXTURE_ID;
 
         sprite.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+        renderer->sprites.push_back(sprite);
+    }
+    renderer->indexCount += 6;
+}
+
+void prRendererDrawTextureEx(prRenderer* renderer, const prRect rect, f32 rotation, 
+                            prTexture* texture, const prColor tint_color, u32 flip)
+{
+    PR_ASSERT(renderer, "renderer is null");
+    if (!texture) {
+        prRendererDrawRectEx(renderer, rect, rotation, { 1.0f, 1.0f, 1.0f, 1.0f });
+        return;
+    }
+
+    _CheckBatch(renderer);
+    prMat4 transform = prTranslate({ rect.x, rect.y, 0.0f }) 
+        * prRotateZ(rotation)
+        * prScale({ rect.w, rect.h, 1.0f });
+
+    f32 index = _GetTextureIndex(renderer, texture);
+
+    f32 left = 0.0f;
+    f32 top = 0.0f;
+    f32 right = 1.0f;
+    f32 bottom = 1.0f;
+
+    if (flip & prFlips_Horizontal) {
+        f32 temp = right;
+        right = left;
+        left = temp;
+    }
+    if (flip & prFlips_Vertical) {
+        f32 temp = top;
+        top = bottom;
+        bottom = temp;
+    }
+
+    // renderer->texCoords[0] = { 0.0f, 0.0f };
+    // renderer->texCoords[1] = { 1.0f, 0.0f };
+    // renderer->texCoords[2] = { 1.0f, 1.0f };
+    // renderer->texCoords[3] = { 0.0f, 1.0f };
+
+    // m_TextureCoordsFlipY[0] = { 0.0f, 1.0f };
+    // m_TextureCoordsFlipY[1] = { 1.0f, 1.0f };
+    // m_TextureCoordsFlipY[2] = { 1.0f, 0.0f };
+    // m_TextureCoordsFlipY[3] = { 0.0f, 0.0f };
+
+    // m_TextureCoordsFlipX[0] = { 1.0f, 0.0f };
+    // m_TextureCoordsFlipX[1] = { 0.0f, 0.0f };
+    // m_TextureCoordsFlipX[2] = { 0.0f, 1.0f };
+    // m_TextureCoordsFlipX[3] = { 1.0f, 1.0f };
+
+    prVec2 coords[4];
+    coords[0] = { left, top };
+    coords[1] = { right, top };
+    coords[2] = { right, bottom };
+    coords[3] = { left, bottom };
+
+    for (size_t i = 0; i < 4; i++) {
+        prVec4 position = transform * renderer->vertices[i];
+        prVertex sprite;
+        sprite.position.x = position.x;
+        sprite.position.y = position.y;
+        sprite.position.z = 0.0f;
+
+        sprite.texture.x = coords[i].x;
+        sprite.texture.y = coords[i].y;
+        sprite.texture.z = index;
+        sprite.texture.w = TEXTURE_ID;
+
+        sprite.color = tint_color;
         renderer->sprites.push_back(sprite);
     }
     renderer->indexCount += 6;

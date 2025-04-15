@@ -28,7 +28,7 @@ int main(int argc, char** argv)
     prRenderer* renderer = prCreateRenderer();
 
     prCamera camera;
-    camera.aspect_ratio = 1.77f;
+    camera.aspect_ratio = 1.778f; // 16 / 9;
     camera.rotation = 0.0f;
     camera.zoom = 3.0f;
 
@@ -37,20 +37,29 @@ int main(int argc, char** argv)
 
     prSetWindowResizedCallback(onWindowResize);
     prSetUserData(context);
+
+    f32 rotation = 0.0f;
    
     while (!prWindowShouldClose(window)) {
         prPullEvents();
 
         prClear({ .2f, .2f, .2f, 1.0f });
         prSetRendererCamera(renderer, camera);
+        rotation += 4.0f;
 
         prRendererDrawText(renderer, 0.0f, 0.0f, 1.0f, "Text Rendering", font, { 1.0f, 1.0f, 0.0f, 1.0f });
 
-        prRendererDrawRect(renderer, {-1.0f, 0.0f, 0.5f, 0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f });
+        prRendererDrawRectEx(renderer, {-1.0f, 0.0f, 0.5f, 0.5f }, rotation, { 1.0f, 0.0f, 0.0f, 1.0f });
         prRendererDrawRect(renderer, { 0.0f, 0.0f, 0.5f, 0.5f }, { 0.0f, 1.0f, 0.0f, 1.0f });
-        prRendererDrawRect(renderer, { 1.0f, 0.0f, 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f, 1.0f });
+        prRendererDrawRectEx(renderer, { 1.0f, 0.0f, 0.5f, 0.5f }, rotation, { 0.0f, 0.0f, 1.0f, 1.0f });
+
+        prRendererDrawTextureEx(renderer, {-1.0f, 0.8f, 0.5f, 0.5f }, 0.0f, texture, 
+                                { 1.0f, 1.0f, 1.0f, 1.0f }, prFlips_Horizontal);
 
         prRendererDrawTexture(renderer, { 0.0f, 0.8f, 0.5f, 0.5f }, texture);
+        
+        prRendererDrawTextureEx(renderer, { 1.0f, 0.8f, 0.5f, 0.5f }, 0.0f, texture, 
+                                { 1.0f, 1.0f, 1.0f, 1.0f }, prFlips_Vertical | prFlips_Horizontal);
 
         prRendererFlush(renderer);
         prSwapBuffers(); 
