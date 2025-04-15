@@ -126,3 +126,13 @@ const char* prGetTexturePath(prTexture* texture)
     PR_ASSERT(texture, "texture is null");
     return texture->path;
 }
+
+prRect prGetTextureRect(prTexture* texture)
+{
+    prRect rect;
+    rect.x = 0.0f;
+    rect.y = 0.0f;
+    rect.w = texture->width;
+    rect.h = texture->height;
+    return rect;
+}

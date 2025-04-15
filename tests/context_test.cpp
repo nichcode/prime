@@ -3,7 +3,6 @@
 
 void onWindowResize(prWindow* window, u32 width, u32 height)
 {
-    prContext* context = (prContext*)prGetUserData();
     prViewport view;
     view.width = width;
     view.height = height;
@@ -77,7 +76,6 @@ int main(int argc, char** argv)
     prSetInt("u_Texture", 0);
 
     prSetWindowResizedCallback(onWindowResize);
-    prSetUserData(context);
 
     while (!prWindowShouldClose(window)) {
         prPullEvents();

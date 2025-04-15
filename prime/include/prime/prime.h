@@ -6,6 +6,7 @@
 #include "font.h"
 #include "input.h"
 #include "platform.h"
+#include "rect.h"
 #include "renderer.h"
 #include "shader.h"
 #include "texture.h"

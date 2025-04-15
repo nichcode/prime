@@ -51,10 +51,10 @@ prRenderer* prCreateRenderer()
     prRenderer* renderer = new prRenderer();
     PR_ASSERT(renderer, "failed to create renderer");
 
-    renderer->vertices[0] = { -0.5f, -0.5f, 0.0f, 1.0f };
-    renderer->vertices[1] = {  0.5f, -0.5f, 0.0f, 1.0f };
-    renderer->vertices[2] = {  0.5f,  0.5f, 0.0f, 1.0f };
-    renderer->vertices[3] = { -0.5f,  0.5f, 0.0f, 1.0f };
+    renderer->vertices[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
+    renderer->vertices[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
+    renderer->vertices[2] = { 1.0f, 1.0f, 0.0f, 1.0f };
+    renderer->vertices[3] = { 0.0f, 1.0f, 0.0f, 1.0f };
 
     renderer->texCoords[0] = { 0.0f, 0.0f };
     renderer->texCoords[1] = { 1.0f, 0.0f };
@@ -170,16 +170,34 @@ void prRendererDrawRect(prRenderer* renderer, const prRect rect, const prColor c
     renderer->indexCount += 6;
 }
 
-void prRendererDrawRectEx(prRenderer* renderer, const prRect rect, f32 rotation, const prColor color)
+void prRendererDrawRectEx(prRenderer* renderer, const prRect rect, f32 rotation, u32 anchor, const prColor color)
 {
     PR_ASSERT(renderer, "renderer is null");
     _CheckBatch(renderer);
 
     if (!rotation) { prRendererDrawRect(renderer, rect, color); return; }
-    
-    prMat4 transform = prTranslate({ rect.x, rect.y, 0.0f }) 
-        * prRotateZ(rotation)
-        * prScale({ rect.w, rect.h, 1.0f });
+    prMat4 transform;
+
+    switch (anchor) {
+        case prAnchors_TopLeft: {
+            transform = prTranslate({ rect.x, rect.y, 0.0f }) 
+                    * prRotateZ(rotation)
+                    * prScale({ rect.w, rect.h, 1.0f });       
+            break;
+        }
+
+        case prAnchors_Center: {
+            prVec2 origin;
+            origin.x = rect.w / 2.0f;
+            origin.y = rect.h / 2.0f;
+
+            transform = prTranslate({ rect.x + origin.x, rect.y + origin.y, 0.0f })
+                        * prRotateZ(rotation)
+                        * prTranslate({ -origin.x, -origin.y, 0.0f })
+                        * prScale({ rect.w, rect.h, 1.0f });         
+            break;
+        }
+    }
 
     for (size_t i = 0; i < 4; i++) {
         prVec4 position = transform * renderer->vertices[i];
@@ -232,18 +250,36 @@ void prRendererDrawTexture(prRenderer* renderer, const prRect rect, prTexture* t
 }
 
 void prRendererDrawTextureEx(prRenderer* renderer, const prRect rect, f32 rotation, 
-                            prTexture* texture, const prColor tint_color, u32 flip)
+                            u32 anchor, prTexture* texture, const prColor tint_color, u32 flip)
 {
     PR_ASSERT(renderer, "renderer is null");
     if (!texture) {
-        prRendererDrawRectEx(renderer, rect, rotation, { 1.0f, 1.0f, 1.0f, 1.0f });
+        prRendererDrawRectEx(renderer, rect, rotation, anchor, { 1.0f, 1.0f, 1.0f, 1.0f });
         return;
     }
-
     _CheckBatch(renderer);
-    prMat4 transform = prTranslate({ rect.x, rect.y, 0.0f }) 
-        * prRotateZ(rotation)
-        * prScale({ rect.w, rect.h, 1.0f });
+
+    prMat4 transform;
+    switch (anchor) {
+        case prAnchors_TopLeft: {
+            transform = prTranslate({ rect.x, rect.y, 0.0f }) 
+                    * prRotateZ(rotation)
+                    * prScale({ rect.w, rect.h, 1.0f });       
+            break;
+        }
+
+        case prAnchors_Center: {
+            prVec2 origin;
+            origin.x = rect.w / 2.0f;
+            origin.y = rect.h / 2.0f;
+
+            transform = prTranslate({ rect.x + origin.x, rect.y + origin.y, 0.0f })
+                        * prRotateZ(rotation)
+                        * prTranslate({ -origin.x, -origin.y, 0.0f })
+                        * prScale({ rect.w, rect.h, 1.0f });         
+            break;
+        }
+    }
 
     f32 index = _GetTextureIndex(renderer, texture);
 
@@ -262,21 +298,6 @@ void prRendererDrawTextureEx(prRenderer* renderer, const prRect rect, f32 rotati
         top = bottom;
         bottom = temp;
     }
-
-    // renderer->texCoords[0] = { 0.0f, 0.0f };
-    // renderer->texCoords[1] = { 1.0f, 0.0f };
-    // renderer->texCoords[2] = { 1.0f, 1.0f };
-    // renderer->texCoords[3] = { 0.0f, 1.0f };
-
-    // m_TextureCoordsFlipY[0] = { 0.0f, 1.0f };
-    // m_TextureCoordsFlipY[1] = { 1.0f, 1.0f };
-    // m_TextureCoordsFlipY[2] = { 1.0f, 0.0f };
-    // m_TextureCoordsFlipY[3] = { 0.0f, 0.0f };
-
-    // m_TextureCoordsFlipX[0] = { 1.0f, 0.0f };
-    // m_TextureCoordsFlipX[1] = { 0.0f, 0.0f };
-    // m_TextureCoordsFlipX[2] = { 0.0f, 1.0f };
-    // m_TextureCoordsFlipX[3] = { 1.0f, 1.0f };
 
     prVec2 coords[4];
     coords[0] = { left, top };
@@ -370,11 +391,6 @@ void prRendererFlush(prRenderer* renderer)
 
         u32 size = sizeof(prVertex) * renderer->indexCount;
         prSetBufferData(prBufferTypes_Vertex, renderer->sprites.data(), size);
-        prSetMat4("u_TextureProjection", renderer->projection.data);
-
-        prViewport view = prGetView();
-        prMat4 projection = prOrtho(view.x, view.width, view.height, view.y, -1.0f, 1.0f);
-        prSetMat4("u_TextProjection", projection.data);
 
         for (u32 i = 0; i < renderer->texIndex; i++) {
             prBindTexture(renderer->textures[i], i);
@@ -388,22 +404,29 @@ void prRendererFlush(prRenderer* renderer)
 void prSetRendererCamera(prRenderer* renderer, prCamera camera)
 {
     PR_ASSERT(renderer, "renderer is null");
-    prMat4 transform;
-    if (camera.rotation) {
-        transform = prTranslate({ camera.x, camera.y, 0.0f }) 
-            * prRotateZ(camera.rotation);
-    }
-    else {
-        transform = prTranslate({ camera.x, camera.y, 0.0f });
-    }
+    //prMat4 transform;
+    // if (camera.rotation) {
+    //     transform = prTranslate({ camera.x, camera.y, 0.0f }) 
+    //         * prRotateZ(camera.rotation);
+    // }
+    // else {
+    //     transform = prTranslate({ camera.x, camera.y, 0.0f });
+    // }
 
-    f32 size = camera.zoom;
-    f32 aspect_ratio = camera.aspect_ratio;
-    f32 left = -size * aspect_ratio * 0.5f;
-    f32 right = size * aspect_ratio * 0.5f;
-    f32 bottom = size * 0.5f;
-    f32 top = -size * 0.5f;
+    // f32 size = camera.zoom;
+    // f32 aspect_ratio = camera.aspect_ratio;
+    // f32 left = -size * aspect_ratio * 0.5f;
+    // f32 right = size * aspect_ratio * 0.5f;
+    // f32 bottom = size * 0.5f;
+    // f32 top = -size * 0.5f;
 
-    prMat4 projection = prOrtho(left, right, bottom, top, -1.0f, 1.0f);
-    renderer->projection = projection * prInverse(transform);
+    prMat4 projection = prOrtho(
+        camera.view.x, 
+        camera.view.width,
+        camera.view.height, 
+        camera.view.y,
+        -1.0f, 1.0f);
+
+    renderer->projection = projection;
+    prSetMat4("u_ViewProjection", renderer->projection.data);
 }

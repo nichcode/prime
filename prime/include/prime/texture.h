@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "defines.h"
+#include "rect.h"
 
 struct prTexture;
 
@@ -45,3 +45,4 @@ PR_API void prUnbindTarget(prTexture* texture);
 PR_API u32 prGetTextureWidth(prTexture* texture);
 PR_API u32 prGetTextureHeight(prTexture* texture);
 PR_API const char* prGetTexturePath(prTexture* texture);
+PR_API prRect prGetTextureRect(prTexture* texture);
