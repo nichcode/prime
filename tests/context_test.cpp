@@ -24,7 +24,6 @@ int main(int argc, char** argv)
     prContext* context = prCreateContext(window, desc);
     prMakeActive(context);
     prSetVsync(true);
-    prSetClearColor(.2f, .2f, .2f, 1.0f);
 
     f32 vertices[] = {
 		-0.5f, -0.5f, 0.0f, 0.0f, 1.0f,
@@ -83,7 +82,7 @@ int main(int argc, char** argv)
     while (!prWindowShouldClose(window)) {
         prPullEvents();
 
-        prClear();
+        prClear({ .2f, .2f, .2f, 1.0f });
         prDrawElements(prDrawModes_Triangles, 6);
         prSwapBuffers();
     }

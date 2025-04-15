@@ -19,12 +19,12 @@ void _InitAPI(prContext* context, u32 type)
             context->api.makeActive = _GLMakeActive;
             context->api.swapBuffers = _GLSwapBuffers;
             context->api.setVsync = _GLSetVsync;
-            context->api.setClearColor = _GLSetClearColor;
             context->api.drawArrays = _GLDrawArrays;
             context->api.drawElements = _GLDrawElements;
             context->api.drawArraysInstanced = _GLDrawArraysInstanced;
             context->api.drawElementsInstanced = _GLDrawElementsInstanced;
             context->api.setView = _GLSetView;
+            context->api.setBlend = _GLSetBlendMode;
 
             // buffer
             context->api.createBuffer = _GLCreateBuffer;
@@ -67,12 +67,12 @@ void _ShutdownAPI(prContext* context)
     context->api.makeActive = nullptr;
     context->api.swapBuffers = nullptr;
     context->api.setVsync = nullptr;
-    context->api.setClearColor = nullptr;
     context->api.drawArrays = nullptr;
     context->api.drawElements = nullptr;
     context->api.drawArraysInstanced = nullptr;
     context->api.drawElementsInstanced = nullptr;
     context->api.setView = nullptr;
+    context->api.setBlend = nullptr;
 
     // buffer
     context->api.createBuffer = nullptr;
@@ -150,9 +150,17 @@ void prDestroyContext(prContext* context)
         texture = nullptr;
     }
 
+    // fonts
+    for (prFont* font : context->data.fonts) {
+        font->glyphs.clear();
+        delete font;
+        font = nullptr;
+    }
+
     context->data.buffers.clear();
     context->data.shaders.clear();
     context->data.textures.clear();
+    context->data.fonts.clear();
 
     // reset states
     context->state.activeVertexBuffer = nullptr;
@@ -161,6 +169,7 @@ void prDestroyContext(prContext* context)
     context->state.activeUniformBuffer = nullptr;
     context->state.activeShader = nullptr;
     context->state.activeTexture = nullptr;
+    context->state.activeTarget = nullptr;
 
     context->api.destroyContext(context->handle);
     _ShutdownAPI(context);
@@ -174,10 +183,10 @@ void prSwapBuffers()
     s_ActiveContext->api.swapBuffers(s_ActiveContext->handle);
 }
 
-void prClear()
+void prClear(const prColor color)
 {
     PR_ASSERT(s_ActiveContext, "no context bound");
-    s_ActiveContext->api.clear(s_ActiveContext->handle);
+    s_ActiveContext->api.clear(s_ActiveContext->handle, color);
 }
 
 void prMakeActive(prContext* context)
@@ -195,27 +204,17 @@ void prSetVsync(b8 vsync)
     s_ActiveContext->api.setVsync(s_ActiveContext->handle, vsync);
 }
 
-void prSetClearColor(f32 r, f32 g, f32 b, f32 a)
-{
-    PR_ASSERT(s_ActiveContext, "no context bound");
-    s_ActiveContext->api.setClearColor(s_ActiveContext->handle, r, g, b, a);
-}
-
-void prSetClearColori(u8 r, u8 g, u8 b, u8 a)
-{
-    PR_ASSERT(s_ActiveContext, "no context bound");
-    f32 fr = (f32)r / 255.0f;
-    f32 fg = (f32)g / 255.0f;
-    f32 fb = (f32)b / 255.0f;
-    f32 fa = (f32)a / 255.0f;
-    s_ActiveContext->api.setClearColor(s_ActiveContext->handle, fr, fg, fb, fa);
-}
-
 void prSetView(prViewport viewport)
 {
     PR_ASSERT(s_ActiveContext, "no context bound");
     s_ActiveContext->view = viewport;
     s_ActiveContext->api.setView(s_ActiveContext->handle, viewport);
+}
+
+void prSetBlendMode(u32 blend_mode)
+{
+    PR_ASSERT(s_ActiveContext, "no context bound");
+    s_ActiveContext->api.setBlend(s_ActiveContext->handle, blend_mode);
 }
 
 void prDrawArrays(u32 mode, u32 count)

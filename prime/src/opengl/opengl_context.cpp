@@ -85,13 +85,9 @@ void _GLSetVsync(void* handle, b8 vsync)
 #endif // PR_PLATFORM_WINDOWS
 }
 
-void _GLSetClearColor(void* handle, f32 r, f32 g, f32 b, f32 a)
+void _GLClear(void* handle, const prColor color)
 {
-    glClearColor(r, g, b, a);
-}
-
-void _GLClear(void* handle)
-{
+    glClearColor(color.r, color.g, color.b, color.a);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
@@ -122,4 +118,19 @@ void _GLDrawElementsInstanced(void* handle, u32 mode, u32 count, u32 instance_co
 void _GLSetView(void* handle, prViewport view)
 {
     glViewport((u32)view.x, (u32)view.y, (u32)view.width, (u32)view.height);
+}
+
+void _GLSetBlendMode(void* handle, u32 blend_mode)
+{
+    switch (blend_mode) {
+        case prBlendModes_None: {
+            glDisable(GL_BLEND);
+            break;
+        }
+        case prBlendModes_Alpha: {
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            break;
+        }
+    }
 }

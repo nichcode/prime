@@ -24,7 +24,6 @@ int main(int argc, char** argv)
     prContext* context = prCreateContext(window, desc);
     prMakeActive(context);
     prSetVsync(true);
-    prSetClearColor(.2f, .2f, .2f, 1.0f);
 
     prRenderer* renderer = prCreateRenderer();
 
@@ -34,6 +33,7 @@ int main(int argc, char** argv)
     camera.zoom = 3.0f;
 
     prTexture* texture = prLoadTexture("textures/texture2d.png");
+    prFont* font = prLoadFont("fonts/font.ttf", 30);
 
     prSetWindowResizedCallback(onWindowResize);
     prSetUserData(context);
@@ -41,20 +41,16 @@ int main(int argc, char** argv)
     while (!prWindowShouldClose(window)) {
         prPullEvents();
 
-        prClear();
+        prClear({ .2f, .2f, .2f, 1.0f });
         prSetRendererCamera(renderer, camera);
-        prSetRendererTexture(renderer, texture);
 
-        prSetRendererDrawColor(renderer, 1.0f, 0.0f, 0.0f, 1.0f);
-        prRendererDrawRect(renderer, { -1.0f, 0.0f, 0.5f, 0.5f });
+        prRendererDrawText(renderer, 0.0f, 0.0f, 1.0f, "Text Rendering", font, { 1.0f, 1.0f, 0.0f, 1.0f });
 
-        prSetRendererDrawColor(renderer, 0.0f, 1.0f, 0.0f, 1.0f);
-        prRendererDrawRect(renderer, { 0.0f, 0.0f, 0.5f, 0.5f });
-        
-        prSetRendererDrawColor(renderer, 0.0f, 0.0f, 1.0f, 1.0f);
-        prRendererDrawRect(renderer, { 1.0f, 0.0f, 0.5f, 0.5f });
+        prRendererDrawRect(renderer, {-1.0f, 0.0f, 0.5f, 0.5f }, { 1.0f, 0.0f, 0.0f, 1.0f });
+        prRendererDrawRect(renderer, { 0.0f, 0.0f, 0.5f, 0.5f }, { 0.0f, 1.0f, 0.0f, 1.0f });
+        prRendererDrawRect(renderer, { 1.0f, 0.0f, 0.5f, 0.5f }, { 0.0f, 0.0f, 1.0f, 1.0f });
 
-        prRendererDrawTexture(renderer, { 0.0f, 0.8f, 0.5f, 0.5f });
+        prRendererDrawTexture(renderer, { 0.0f, 0.8f, 0.5f, 0.5f }, texture);
 
         prRendererFlush(renderer);
         prSwapBuffers(); 

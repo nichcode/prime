@@ -7,8 +7,12 @@
 #include "prime/shader.h"
 #include "prime/viewport.h"
 #include "prime/texture.h"
+#include "prime/font.h"
+#include "prime/renderer.h"
 #include "maths.h"
+
 #include <vector>
+#include <map>
 
 #include "ft2build.h"
 #include FT_FREETYPE_H
@@ -41,13 +45,13 @@ struct prAPI
     void(*swapBuffers)(void* context_handle) = nullptr;
     void(*setVsync)(void* context_handle, b8 vsync) = nullptr;
     void(*makeActive)(void* context_handle) = nullptr;
-    void(*clear)(void* context_handle) = nullptr;
-    void(*setClearColor)(void* context_handle, f32 r, f32 g, f32 b, f32 a) = nullptr;
+    void(*clear)(void* context_handle, const prColor color) = nullptr;
     void(*drawArrays)(void* context_handle, u32 mode, u32 count) = nullptr;
     void(*drawElements)(void* context_handle, u32 mode, u32 count) = nullptr;
     void(*drawArraysInstanced)(void* context_handle, u32 mode, u32 count, u32 instance_count) = nullptr;
     void(*drawElementsInstanced)(void* context_handle, u32 mode, u32 count, u32 instance_count) = nullptr;
     void(*setView)(void* context_handle, prViewport view) = nullptr;
+    void(*setBlend)(void* context_handle, u32 blend_mode) = nullptr;
 
     // buffer
     void*(*createBuffer)(prBufferDesc desc) = nullptr;
@@ -93,6 +97,7 @@ struct prDestructor
     std::vector<prBuffer*> buffers;
     std::vector<prShader*> shaders;
     std::vector<prTexture*> textures;
+    std::vector<prFont*> fonts;
 };
 
 struct prContext
@@ -127,10 +132,19 @@ struct prTexture
     const char* path = nullptr;
 };
 
+struct prFont
+{
+    prTexture* texture = nullptr;
+    std::map<u8, prGlyph> glyphs;
+    const char* path = nullptr;
+    u32 size = 0;
+    f32 baseline = 0.0f;
+};
+
 struct prVertex
 {
     prVec3 position;
-    prVec4 color;
+    prColor color;
     prVec4 texture;
 };
 
@@ -138,16 +152,12 @@ struct prRenderer
 {
     u32 indexCount = 0;
     u32 texIndex = 1;
-    u32 activeTexIndex = 0;
     u32 drawCalls;
     
     prMat4 projection;
     prBuffer* vbo = nullptr;
     prBuffer* ibo = nullptr;
     prShader* shader = nullptr;
-
-    prVec4 drawColor;
-    prVec4 tintColor;
 
     prVec4 vertices[4];
     prVec2 texCoords[4];

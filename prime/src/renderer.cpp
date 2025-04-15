@@ -3,21 +3,20 @@
 #include "prime/renderer.h"
 #include "prime/buffer.h"
 #include "prime/shader.h"
+#include "prime/texture.h"
 #include "prime/context.h"
 
 #define MAX_SPRITES 10000
 #define MAX_VERTICES MAX_SPRITES * 4
 #define MAX_INDICES MAX_SPRITES * 6
 #define TEXTURE_ID 0.0f
-#define FONT_ID 0.0f
+#define FONT_ID 1.0f
 
 void _ResetBatch(prRenderer* renderer)
 {
     renderer->sprites.clear();
-    renderer->textures.clear();
     renderer->indexCount = 0;
     renderer->texIndex = 1;
-    renderer->activeTexIndex = 0;
 }
 
 void _CheckBatch(prRenderer* renderer)
@@ -25,6 +24,25 @@ void _CheckBatch(prRenderer* renderer)
     if (renderer->indexCount >= MAX_INDICES || renderer->texIndex >= PR_MAX_TEXTURE_SLOTS) {
         prRendererFlush(renderer);
     }
+}
+
+f32 _GetTextureIndex(prRenderer* renderer, prTexture* texture)
+{
+    u32 tex_index = 0.0f;
+    for (u32 i = 1; i < renderer->texIndex; i++) {
+        if (renderer->textures[i] == texture) {
+            tex_index = (f32)i;
+            break;
+        }
+    }
+
+    if (tex_index == 0.0f) {
+        tex_index = renderer->texIndex;
+        renderer->textures.push_back(texture);
+        renderer->texIndex++;
+    }
+
+    return tex_index;
 }
 
 prRenderer* prCreateRenderer()
@@ -98,12 +116,11 @@ prRenderer* prCreateRenderer()
     desc.height = 1;
     prTexture* texture = prCreateTexture(desc);
     renderer->textures.push_back(texture);
-    renderer->tintColor = { 1.0f, 1.0f, 1.0f, 1.0f };
-    renderer->activeTexIndex = 0;
 
     prBindBuffer(renderer->vbo);
     prBindBuffer(renderer->ibo);
     prBindShader(renderer->shader);
+    prSetBlendMode(prBlendModes_Alpha);
 
     i32 samplers[PR_MAX_TEXTURE_SLOTS];
     for (u32 i = 0; i < PR_MAX_TEXTURE_SLOTS; i++) { samplers[i] = i; }
@@ -127,7 +144,7 @@ void prDestroyRenderer(prRenderer* renderer)
     renderer = nullptr;
 }
 
-void prRendererDrawRect(prRenderer* renderer, const prRect rect)
+void prRendererDrawRect(prRenderer* renderer, const prRect rect, const prColor color)
 {
     PR_ASSERT(renderer, "renderer is null");
     _CheckBatch(renderer);
@@ -147,23 +164,25 @@ void prRendererDrawRect(prRenderer* renderer, const prRect rect)
         sprite.texture.z = 0.0f; // texture index
         sprite.texture.w = TEXTURE_ID;
 
-        sprite.color = renderer->drawColor;
+        sprite.color = color;
         renderer->sprites.push_back(sprite);
     }
     renderer->indexCount += 6;
 }
 
-void prRendererDrawTexture(prRenderer* renderer, const prRect rect)
+void prRendererDrawTexture(prRenderer* renderer, const prRect rect, prTexture* texture)
 {
     PR_ASSERT(renderer, "renderer is null");
-    if (!renderer->activeTexIndex) { // no active texture
-        prRendererDrawRect(renderer, rect);
+    if (!texture) { // texture is null
+        prRendererDrawRect(renderer, rect, { 1.0f, 1.0f, 1.0f, 1.0f });
         return;
     }
 
     _CheckBatch(renderer);
     prMat4 transform = prTranslate({ rect.x, rect.y, 0.0f }) 
         * prScale({ rect.w, rect.h, 1.0f });
+
+    f32 index = _GetTextureIndex(renderer, texture);
 
     for (size_t i = 0; i < 4; i++) {
         prVec4 position = transform * renderer->vertices[i];
@@ -174,13 +193,71 @@ void prRendererDrawTexture(prRenderer* renderer, const prRect rect)
 
         sprite.texture.x = renderer->texCoords[i].x;
         sprite.texture.y = renderer->texCoords[i].y;
-        sprite.texture.z = (f32)renderer->activeTexIndex; // texture index
+        sprite.texture.z = index;
         sprite.texture.w = TEXTURE_ID;
 
-        sprite.color = renderer->tintColor;
+        sprite.color = { 1.0f, 1.0f, 1.0f, 1.0f };
         renderer->sprites.push_back(sprite);
     }
     renderer->indexCount += 6;
+}
+
+void prRendererDrawText(prRenderer* renderer, f32 x, f32 y, f32 scale, const char* text, prFont* font, const prColor color)
+{
+    PR_ASSERT(renderer, "renderer is null");
+    PR_ASSERT(font, "font is null");
+    if(!text) { return; }
+
+    prTexture* texture = font->texture;
+    if (!texture) { return; }
+
+    f32 index = _GetTextureIndex(renderer, texture);
+    f32 size = texture->width;
+    f32 base = font->baseline;
+    prVec2 origin = { x, y };
+
+    while(char c = *(text++)) {
+        auto glyph = font->glyphs.at(c);
+        f32 xpos = origin.x + glyph.offset_x;
+        f32 ypos = origin.y + (base - glyph.offset_y) * scale;
+
+        f32 width = glyph.size_x * scale;
+        f32 height = glyph.size_y * scale;
+
+        f32 left = glyph.index_x / size;
+        f32 top = glyph.index_y / size;
+        f32 right = (glyph.index_x + glyph.size_x) / size;
+        f32 bottom = (glyph.index_y + glyph.size_y) / size;
+
+        prVec2 coords[4];
+        coords[0] = { left, top };
+        coords[1] = { right, top };
+        coords[2] = { right, bottom };
+        coords[3] = { left, bottom };
+
+        prVec2 position[4];
+        position[0] = { xpos, ypos };
+        position[1] = { xpos + width, ypos };
+        position[2] = { xpos + width, ypos + height };
+        position[3] = { xpos, ypos + height };
+
+        for (size_t i = 0; i < 4; i++) {
+            prVertex sprite;
+            sprite.position.x = position[i].x;
+            sprite.position.y = position[i].y;
+            sprite.position.z = 0.0f;
+
+            sprite.texture.x = coords[i].x;
+            sprite.texture.y = coords[i].y;
+            sprite.texture.z = index;
+            sprite.texture.w = FONT_ID;
+
+            sprite.color = color;
+            renderer->sprites.push_back(sprite);
+        }
+        renderer->indexCount += 6;
+        origin.x += glyph.advance_x * scale; 
+    }
 }
 
 void prRendererFlush(prRenderer* renderer)
@@ -193,7 +270,11 @@ void prRendererFlush(prRenderer* renderer)
 
         u32 size = sizeof(prVertex) * renderer->indexCount;
         prSetBufferData(prBufferTypes_Vertex, renderer->sprites.data(), size);
-        prSetMat4("u_ViewProjection", renderer->projection.data);
+        prSetMat4("u_TextureProjection", renderer->projection.data);
+
+        prViewport view = prGetView();
+        prMat4 projection = prOrtho(view.x, view.width, view.height, view.y, -1.0f, 1.0f);
+        prSetMat4("u_TextProjection", projection.data);
 
         for (u32 i = 0; i < renderer->texIndex; i++) {
             prBindTexture(renderer->textures[i], i);
@@ -202,38 +283,6 @@ void prRendererFlush(prRenderer* renderer)
         prDrawElements(prDrawModes_Triangles, renderer->indexCount);
         _ResetBatch(renderer);
     }
-}
-
-void prSetRendererDrawColor(prRenderer* renderer, f32 r, f32 g, f32 b, f32 a)
-{
-    PR_ASSERT(renderer, "renderer is null");
-    renderer->drawColor = { r, g, b, a };
-}
-
-void prSetRendererDrawColori(prRenderer* renderer, u8 r, u8 g, u8 b, u8 a)
-{
-    PR_ASSERT(renderer, "renderer is null");
-    f32 fr = (f32)r / 255.0f;
-    f32 fg = (f32)g / 255.0f;
-    f32 fb = (f32)b / 255.0f;
-    f32 fa = (f32)a / 255.0f;
-    renderer->drawColor = { fr, fg, fb, fa };
-}
-
-void prSetRendererTintColor(prRenderer* renderer, f32 r, f32 g, f32 b, f32 a)
-{
-    PR_ASSERT(renderer, "renderer is null");
-    renderer->tintColor = { r, g, b, a };
-}
-
-void prSetRendererTintColori(prRenderer* renderer, u8 r, u8 g, u8 b, u8 a)
-{
-    PR_ASSERT(renderer, "renderer is null");
-    f32 fr = (f32)r / 255.0f;
-    f32 fg = (f32)g / 255.0f;
-    f32 fb = (f32)b / 255.0f;
-    f32 fa = (f32)a / 255.0f;
-    renderer->tintColor = { fr, fg, fb, fa };
 }
 
 void prSetRendererCamera(prRenderer* renderer, prCamera camera)
@@ -257,26 +306,4 @@ void prSetRendererCamera(prRenderer* renderer, prCamera camera)
 
     prMat4 projection = prOrtho(left, right, bottom, top, -1.0f, 1.0f);
     renderer->projection = projection * prInverse(transform);
-}
-
-void prSetRendererTexture(prRenderer* renderer, prTexture* texture)
-{
-    PR_ASSERT(renderer, "renderer is null");
-    PR_ASSERT(texture, "texture is null");
-
-    u32 tex_index = 0.0f;
-    for (u32 i = 1; i < renderer->texIndex; i++) {
-        if (renderer->textures[i] == texture) {
-            tex_index = i;
-            break;
-        }
-    }
-
-    if (tex_index == 0) {
-        tex_index = renderer->texIndex;
-        renderer->textures.push_back(texture);
-        renderer->texIndex++;
-    }
-
-    renderer->activeTexIndex = tex_index;
 }

@@ -7,11 +7,11 @@ void* _GLCreateContext(void* window_handle, i32 major, i32 minor);
 void _GLDestroyContext(void* handle);
 
 void _GLSwapBuffers(void* handle);
-void _GLClear(void* handle);
+void _GLClear(void* handle, const prColor color);
 void _GLMakeActive(void* handle);
 
 void _GLSetVsync(void* handle, b8 vsync);
-void _GLSetClearColor(void* handle, f32 r, f32 g, f32 b, f32 a);
+void _GLSetBlendMode(void* handle, u32 blend_mode);
 
 void _GLDrawArrays(void* handle, u32 mode, u32 count);
 void _GLDrawElements(void* handle, u32 mode, u32 count);
