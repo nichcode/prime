@@ -7,5 +7,5 @@ project "renderer_test"
     objdir(obj_dir) 
 
     files { "renderer_test.cpp" }
-    includedirs { "%{wks.location}/prime/include" }
-    links { "prime" }
+    includedirs { "%{wks.location}/include" }
+    links { "PAL" }

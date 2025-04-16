@@ -1,122 +1,122 @@
 
-#include "prime/prime.h"
+#include "PAL/PAL.h"
 
 struct Data
 {
-    prRenderer* renderer;
-    prCamera* camera;
+    PAL_Renderer* renderer;
+    PAL_Camera* camera;
 };
 
-void onWindowResize(prWindow* window, u32 width, u32 height)
+void onWindowResize(PAL_Window* window, u32 width, u32 height)
 {
-    Data* data = (Data*)prGetUserData();
-    prViewport view;
+    Data* data = (Data*)PAL_GetUserData();
+    PAL_Viewport view;
     view.width = width;
     view.height = height;
-    prSetView(view);
+    PAL_SetViewport(view);
 
     data->camera->view = view;
 }
 
 int main(int argc, char** argv)
 {
-    prInit();
+    PAL_Init();
 
-    u32 flags = prWindowFlags_Center | prWindowFlags_Show;
-    prWindow* window = prCreateWindow("window", 640, 480, flags);
+    u32 flags = PAL_WindowFlags_Center | PAL_WindowFlags_Show;
+    PAL_Window* window = PAL_CreateWindow("window", 640, 480, flags);
 
-    prContextDesc desc;
-    desc.type = prContextTypes_OpenGL;
+    PAL_ContextDesc desc;
+    desc.type = PAL_ContextTypes_OpenGL;
     desc.major = 3;
     desc.minor = 3;
-    prContext* context = prCreateContext(window, desc);
-    prMakeActive(context);
-    prSetVsync(true);
+    PAL_Context* context = PAL_CreateContext(window, desc);
+    PAL_MakeActive(context);
+    PAL_SetVsync(true);
 
-    prRenderer* renderer = prCreateRenderer();
+    PAL_Renderer* renderer = PAL_CreateRenderer();
 
-    prCamera camera;
+    PAL_Camera camera;
     camera.view = { 0.0f, 0.0f, 640.0f, 480.0f };
     camera.rotation = 0.0f;
 
-    prTexture* texture = prLoadTexture("textures/texture2d.png");
-    prFont* font = prLoadFont("fonts/font.ttf", 30);
+    PAL_Texture* texture = PAL_LoadTexture("textures/texture2d.png");
+    PAL_Font* font = PAL_LoadFont("fonts/font.ttf", 30);
 
     Data data;
     data.camera = &camera;
     data.renderer = renderer;
-    prSetUserData(&data);
-    prSetWindowResizedCallback(onWindowResize);
+    PAL_SetUserData(&data);
+    PAL_SetWindowResizedCallback(onWindowResize);
 
     f32 rotation = 0.0f;
    
-    while (!prWindowShouldClose(window)) {
-        prPullEvents();
+    while (!PAL_WindowShouldClose(window)) {
+        PAL_PullEvents();
 
-        prClear({ .2f, .2f, .2f, 1.0f });
-        prSetRendererCamera(renderer, camera); 
+        PAL_Clear({ .2f, .2f, .2f, 1.0f });
+        PAL_SetRendererCamera(renderer, camera); 
         rotation += 4.0f;
 
-        prRendererDrawText(renderer, 0.0f, 0.0f, 1.0f, "Text Rendering", font, { 1.0f, 1.0f, 0.0f, 1.0f });
-        prRendererDrawText(renderer, 200.0f, 0.0f, 1.0f, "Prime", font, { 1.0f, 1.0f, 0.0f, 1.0f });
+        PAL_RendererDrawText(renderer, 0.0f, 0.0f, 1.0f, "Text Rendering", font, { 1.0f, 1.0f, 0.0f, 1.0f });
+        PAL_RendererDrawText(renderer, 200.0f, 0.0f, 1.0f, "PAL", font, { 1.0f, 1.0f, 0.0f, 1.0f });
 
-        prRect red;
+        PAL_Rect red;
         red.x = 100.0f;
         red.y = camera.view.height / 3.0f;
         red.w = 70.0f;
         red.h = 70.0f;
-        prRendererDrawRectEx(renderer, red, rotation, prAnchors_Center, PR_RED);
+        PAL_RendererDrawRectEx(renderer, red, rotation, PAL_Anchors_Center, PAL_RED);
 
-        prRect green;
+        PAL_Rect green;
         green.x = 300.0f;
         green.y = camera.view.height / 2.0f;
         green.w = 70.0f;
         green.h = 70.0f;
-        prRendererDrawRect(renderer, green, PR_GREEN);
+        PAL_RendererDrawRect(renderer, green, PAL_GREEN);
 
-        prRect non_scalable;
+        PAL_Rect non_scalable;
         non_scalable.x = camera.view.width - 70.0f;
         non_scalable.y = 30.0f;
         non_scalable.w = 70.0f;
         non_scalable.h = 70.0f;
-        prRendererDrawRect(renderer, non_scalable, PR_GREEN);
+        PAL_RendererDrawRect(renderer, non_scalable, PAL_GREEN);
 
-        prRect blue;
+        PAL_Rect blue;
         blue.x = 500.0f;
         blue.y = camera.view.height / 3.0f;
         blue.w = 70.0f;
         blue.h = 70.0f;
-        prRendererDrawRectEx(renderer, blue, rotation, prAnchors_Center, PR_BLUE);
+        PAL_RendererDrawRectEx(renderer, blue, rotation, PAL_Anchors_Center, PAL_BLUE);
 
-        prRect tex_x;
+        PAL_Rect tex_x;
         tex_x.x = 100.0f;
         tex_x.y = camera.view.height - camera.view.height / 3.0f;
         tex_x.w = 70.0f;
         tex_x.h = 70.0f;
-        prRendererDrawTextureEx(renderer, tex_x, 0.0f, prAnchors_Center, texture, PR_WHITE, prFlips_Horizontal);
+        PAL_RendererDrawTextureEx(renderer, tex_x, 0.0f, PAL_Anchors_Center, texture, PAL_WHITE, PAL_Flips_Horizontal);
 
-        prRect tex;
+        PAL_Rect tex;
         tex.x = 300.0f;
         tex.y = camera.view.height - camera.view.height / 3.0f;
         tex.w = 70.0f;
         tex.h = 70.0f;
-        prRendererDrawTexture(renderer, tex, texture);
+        PAL_RendererDrawTexture(renderer, tex, texture);
 
-        prRect tex_xy;
+        PAL_Rect tex_xy;
         tex_xy.x = 500.0f;
         tex_xy.y = camera.view.height - camera.view.height / 3.0f;
         tex_xy.w = 70.0f;
         tex_xy.h = 70.0f;
-        prRendererDrawTextureEx(renderer, tex_xy, 0.0f, prAnchors_Center, texture, PR_WHITE, prFlips_Horizontal | prFlips_Vertical);
+        PAL_RendererDrawTextureEx(renderer, tex_xy, 0.0f, PAL_Anchors_Center, texture, PAL_WHITE, PAL_Flips_Horizontal | PAL_Flips_Vertical);
 
-        prRendererFlush(renderer);
-        prSwapBuffers(); 
+        PAL_RendererFlush(renderer);
+        PAL_SwapBuffers(); 
     }
 
-    prSetWindowResizedCallback(nullptr);
-    prDestroyRenderer(renderer);
-    prDestroyContext(context);
-    prDestroyWindow(window);
-    prShutdown();
+    PAL_SetWindowResizedCallback(nullptr);
+    PAL_DestroyRenderer(renderer);
+    PAL_DestroyContext(context);
+    PAL_DestroyWindow(window);
+    PAL_Shutdown();
     return 0;
 }

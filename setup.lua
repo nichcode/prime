@@ -1,13 +1,13 @@
 
 newoption {
     trigger = "with-tests",
-    description = "build prime with test applications"
+    description = "build PAL with test applications"
 }
 
 target_dir = "%{wks.location}/bin/%{cfg.buildcfg}"
 obj_dir = "%{wks.location}/obj/%{cfg.buildcfg}/%{prj.name}"
 
-workspace "prime"
+workspace "PAL"
 if (_OPTIONS["with-tests"]) then
     startproject "window_test"
 end
@@ -27,7 +27,7 @@ end
         symbols "on"
         runtime "Debug"
 
-        defines { "PR_CONFIG_DEBUG" }
+        defines { "PAL_CONFIG_DEBUG" }
 
     filter "configurations:Release"
         symbols "off"
@@ -40,4 +40,4 @@ if (_OPTIONS["with-tests"]) then
     include "tests/renderer_test.lua"
 end
 
-    include "prime/prime.lua"
+    include "PAL.lua"

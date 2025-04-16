@@ -7,5 +7,5 @@ project "context_test"
     objdir(obj_dir) 
 
     files { "context_test.cpp" }
-    includedirs { "%{wks.location}/prime/include" }
-    links { "prime" }
+    includedirs { "%{wks.location}/include" }
+    links { "PAL" }
