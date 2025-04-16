@@ -9,6 +9,7 @@
 #include "renderer.cpp"
 #include "texture.cpp"
 #include "font.cpp"
+#include "rect.cpp"
 
 #ifdef PR_PLATFORM_WINDOWS
 #include "win32/win32_platform.cpp"

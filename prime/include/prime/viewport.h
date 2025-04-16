@@ -3,6 +3,7 @@
 
 #include "defines.h"
 
+/// @brief Viewport
 struct prViewport
 {
     f32 x = 0.0f;

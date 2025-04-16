@@ -62,8 +62,8 @@ int main(int argc, char** argv)
     prShaderDesc shader_desc;
     shader_desc.load = true;
     shader_desc.type = prShaderSourceTypes_GLSL;
-    shader_desc.vertex_src = "shaders/context_vertex.glsl";
-    shader_desc.pixel_src = "shaders/context_pixel.glsl";
+    shader_desc.vertex_src = "shaders/vertex.glsl";
+    shader_desc.pixel_src = "shaders/pixel.glsl";
     shader_desc.layout = layout;
     prShader* shader = prCreateShader(shader_desc);
 

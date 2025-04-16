@@ -55,8 +55,8 @@ prFont* prLoadFont(const char* filepath, u32 size)
         glyph.offset_x = (f32)slot->bitmap_left;
         glyph.offset_y = (f32)slot->bitmap_top;
 
-        glyph.size_x = (f32)slot->bitmap.width;
-        glyph.size_y = (f32)slot->bitmap.rows;
+        glyph.width = (f32)slot->bitmap.width;
+        glyph.height = (f32)slot->bitmap.rows;
 
         glyph.advance_x = (u32)slot->advance.x >> 6;
         glyph.advance_y = (u32)slot->advance.y >> 6;

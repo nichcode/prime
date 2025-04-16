@@ -3,6 +3,7 @@
 
 #include "defines.h"
 
+/// @brief Buttons
 enum prButtons_
 {
     prButtons_Left,
@@ -12,6 +13,7 @@ enum prButtons_
     prButtons_Max
 };
 
+/// @brief Keys
 enum prKeys_
 {
     prKeys_A,
@@ -129,6 +131,7 @@ enum prKeys_
     prKeys_Max
 };
 
+/// @brief Actions
 enum prActions_
 {
     prActions_Release,
@@ -138,6 +141,23 @@ enum prActions_
     prActions_Max
 };
 
+/**
+ * @brief Get the name of the specified key
+ * @param key The key
+ * @returns The name of the key.
+ */
 PR_API const char* prGetKeyName(u32 key);
+
+/**
+ * @brief Get the name of the specified button
+ * @param button The button
+ * @returns The name of the button.
+ */
 PR_API const char* prGetButtonName(u32 button);
+
+/**
+ * @brief Get the name of the specified action
+ * @param action The action
+ * @returns The name of the action.
+ */
 PR_API const char* prGetActionName(u32 action);

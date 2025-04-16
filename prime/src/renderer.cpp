@@ -5,6 +5,7 @@
 #include "prime/shader.h"
 #include "prime/texture.h"
 #include "prime/context.h"
+#include "shader_sources.h"
 
 #define MAX_SPRITES 10000
 #define MAX_VERTICES MAX_SPRITES * 4
@@ -102,10 +103,10 @@ prRenderer* prCreateRenderer()
     renderer->ibo = prCreateBuffer(buffer_desc);
 
     prShaderDesc shader_desc;
-    shader_desc.load = true;
+    shader_desc.load = false;
     shader_desc.type = prShaderSourceTypes_GLSL;
-    shader_desc.vertex_src = "shaders/renderer_vertex.glsl";
-    shader_desc.pixel_src = "shaders/renderer_pixel.glsl";
+    shader_desc.vertex_src = s_VertexSource;
+    shader_desc.pixel_src = s_PixelSource;
     shader_desc.layout = layout;
     renderer->shader = prCreateShader(shader_desc);
 
@@ -342,13 +343,13 @@ void prRendererDrawText(prRenderer* renderer, f32 x, f32 y, f32 scale, const cha
         f32 xpos = origin.x + glyph.offset_x;
         f32 ypos = origin.y + (base - glyph.offset_y) * scale;
 
-        f32 width = glyph.size_x * scale;
-        f32 height = glyph.size_y * scale;
+        f32 width = glyph.width * scale;
+        f32 height = glyph.height * scale;
 
         f32 left = glyph.index_x / size;
         f32 top = glyph.index_y / size;
-        f32 right = (glyph.index_x + glyph.size_x) / size;
-        f32 bottom = (glyph.index_y + glyph.size_y) / size;
+        f32 right = (glyph.index_x + glyph.width) / size;
+        f32 bottom = (glyph.index_y + glyph.height) / size;
 
         prVec2 coords[4];
         coords[0] = { left, top };
@@ -404,27 +405,20 @@ void prRendererFlush(prRenderer* renderer)
 void prSetRendererCamera(prRenderer* renderer, prCamera camera)
 {
     PR_ASSERT(renderer, "renderer is null");
-    //prMat4 transform;
-    // if (camera.rotation) {
-    //     transform = prTranslate({ camera.x, camera.y, 0.0f }) 
-    //         * prRotateZ(camera.rotation);
-    // }
-    // else {
-    //     transform = prTranslate({ camera.x, camera.y, 0.0f });
-    // }
-
-    // f32 size = camera.zoom;
-    // f32 aspect_ratio = camera.aspect_ratio;
-    // f32 left = -size * aspect_ratio * 0.5f;
-    // f32 right = size * aspect_ratio * 0.5f;
-    // f32 bottom = size * 0.5f;
-    // f32 top = -size * 0.5f;
+    prMat4 transform;
+    if (camera.rotation) {
+        transform = prTranslate({ camera.view.x, camera.view.y, 0.0f }) 
+            * prRotateZ(camera.rotation);
+    }
+    else {
+        transform = prTranslate({ camera.view.x, camera.view.y, 0.0f });
+    }
 
     prMat4 projection = prOrtho(
-        camera.view.x, 
+        0.0f, 
         camera.view.width,
         camera.view.height, 
-        camera.view.y,
+        0.0f,
         -1.0f, 1.0f);
 
     renderer->projection = projection;
