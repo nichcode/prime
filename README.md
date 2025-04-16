@@ -17,9 +17,9 @@ Primeonly supports Windows currently but Linux, Andriod and macos support will b
 ## Getting Started
 To get started, get all of the prerequisites fosr your current platform (see above). After this, clone the repository: `git clone https://github.com/nichcode/prime.
 
-To generate prime and prime tests for windows, open command prompt in the root directory of prime and run `premake\premake5 gmake2 --file=setup.lua --with-tests`
+To generate prime and prime tests for windows, open command prompt in the root directory of prime and run `premake\premake5.exe gmake2 --file=setup.lua --with-tests`
 
-To generate prime without prime tests for window, open command prompt in the root directory of prime and run `premake\premake5 gmake2 --file=setup.lua`
+To generate prime without prime tests for window, open command prompt in the root directory of prime and run `premake\premake5.exe gmake2 --file=setup.lua`
 
 # Building
 There are two build types available, Debug and Release. Debug includes debug symbols and is optimal for development and exploration, while Release is ideal for performance.
