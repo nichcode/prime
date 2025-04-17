@@ -6,10 +6,17 @@
 /// @brief Color
 struct PAL_Color
 {
-    f32 r = 1.0f;
-    f32 g = 1.0f;
-    f32 b = 1.0f;
-    f32 a = 1.0f;
+    /// @brief red component of the color
+    f32 r = 0.0f;
+
+    /// @brief green component of the color
+    f32 g = 0.0f;
+
+    /// @brief blue component of the color
+    f32 b = 0.0f;
+
+    /// @brief alpha component of the color
+    f32 a = 0.0f;
 };
 
 /**

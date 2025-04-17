@@ -48,13 +48,13 @@ enum PAL_WindowFlags_
 PAL_API PAL_Window* PAL_CreateWindow(const char* title, u32 width, u32 height, u32 flags);
 
 /**
- * @brief Destroy a window.
+ * @brief Destroy the window.
  * @param window The window
  */
 PAL_API void PAL_DestroyWindow(PAL_Window* window);
 
 /**
- * @brief Pull window events for all created windows.
+ * @brief Pull events for all created windows.
  */
 PAL_API void PAL_PullEvents();
 
@@ -80,16 +80,16 @@ PAL_API void PAL_SetWindowTitle(PAL_Window* window, const char* title);
 /**
  * @brief Set the size of the window
  * @param window The window
- * @param width The width of the window
- * @param height The height of the window
+ * @param width The width
+ * @param height The height
  */
 PAL_API void PAL_SetWindowSize(PAL_Window* window, u32 width, u32 height);
 
 /**
  * @brief Set the position of the window
  * @param window The window
- * @param x The x position of the window
- * @param y The y position of the window
+ * @param x The x position
+ * @param y The y position
  */
 PAL_API void PAL_SetWindowPos(PAL_Window* window, i32 x, i32 y);
 
@@ -154,59 +154,59 @@ PAL_API void PAL_WindowResetCallbacks();
 PAL_API b8 PAL_WindowShouldClose(PAL_Window* window);
 
 /**
- * @brief Get the state of a key.
+ * @brief Get the state of the key.
  * @param window The window
  * @param key The key
- * @returns True if PAL_essed otherwise false
+ * @returns True if pressed otherwise false
  */
 PAL_API b8 PAL_GetKeyState(PAL_Window* window, u32 key);
 
 /**
- * @brief Get the state of a button.
+ * @brief Get the state of the button.
  * @param window The window
  * @param button The button
- * @returns True if PAL_essed otherwise false
+ * @returns True if pressed otherwise false
  */
 PAL_API b8 PAL_GetButtonState(PAL_Window* window, u32 button);
 
 /**
- * @brief Get the title of a window.
+ * @brief Get the title of the window.
  * @param window The window
- * @returns the title of the window
+ * @returns the title
  */
 PAL_API const char* PAL_GetWindowTitle(PAL_Window* window);
 
 /**
- * @brief Get the handle of a window.
+ * @brief Get the handle of the window.
  * @param window The window
- * @returns the handle of the window
+ * @returns the handle
  */
 PAL_API void* PAL_GetWindowHandle(PAL_Window* window);
 
 /**
- * @brief Get the width of a window.
+ * @brief Get the width of the window.
  * @param window The window
- * @returns the width of the window
+ * @returns the width
  */
 PAL_API u32 PAL_GetWindowWidth(PAL_Window* window);
 
 /**
- * @brief Get the height of a window.
+ * @brief Get the height of the window.
  * @param window The window
- * @returns the height of the window
+ * @returns the height
  */
 PAL_API u32 PAL_GetWindowHeight(PAL_Window* window);
 
 /**
- * @brief Get the x position of a window.
+ * @brief Get the x position of the window.
  * @param window The window
- * @returns the x position of the window
+ * @returns the x position
  */
 PAL_API i32 PAL_GetWindowPosX(PAL_Window* window);
 
 /**
- * @brief Get the y position of a window.
+ * @brief Get the y position of the window.
  * @param window The window
- * @returns the y position of the window
+ * @returns the y position
  */
 PAL_API i32 PAL_GetWindowPosY(PAL_Window* window);

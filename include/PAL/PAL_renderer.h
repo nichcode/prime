@@ -13,7 +13,7 @@ struct PAL_Context;
 struct PAL_Texture;
 struct PAL_Font;
 
-/// @brief Flips
+/// @brief Renderflips
 enum PAL_Flips_
 {
     PAL_Flips_None = 0,
@@ -36,19 +36,21 @@ struct PAL_Camera
 };
 
 /**
- * @brief Create a renderer. A Context must be bound before creating the renderer.
+ * @brief Create a renderer. 
+ * @attention A Context must be active.
  * @returns If successful, a pointer to the created renderer otherwise nullptr.
  */
 PAL_API PAL_Renderer* PAL_CreateRenderer();
 
 /**
- * @brief Destroy a renderer. A Context must be bound before destroying the renderer.
+ * @brief Destroy a renderer.
+ * @attention A Context must be active.
  * @param renderer The renderer
  */
 PAL_API void PAL_DestroyRenderer(PAL_Renderer* renderer);
 
 /**
- * @brief Draw a rect using a renderer.
+ * @brief Draw a rect using the renderer.
  * @param renderer The renderer
  * @param rect The rect
  * @param color The color
@@ -56,17 +58,17 @@ PAL_API void PAL_DestroyRenderer(PAL_Renderer* renderer);
 PAL_API void PAL_RendererDrawRect(PAL_Renderer* renderer, const PAL_Rect rect, const PAL_Color color);
 
 /**
- * @brief Draw a rect using a renderer.
+ * @brief Draw a rect using the renderer.
  * @param renderer The renderer
  * @param rect The rect
- * @param rotation The angle degrees
+ * @param rotation The angle in degrees
  * @param anchor The rotation anchor
  * @param color The color
  */
 PAL_API void PAL_RendererDrawRectEx(PAL_Renderer* renderer, const PAL_Rect rect, f32 rotation, u32 anchor, const PAL_Color color);
 
 /**
- * @brief Draw a texture using a renderer.
+ * @brief Draw a texture using the renderer.
  * @param renderer The renderer
  * @param rect The rect
  * @param texture The texture
@@ -74,21 +76,21 @@ PAL_API void PAL_RendererDrawRectEx(PAL_Renderer* renderer, const PAL_Rect rect,
 PAL_API void PAL_RendererDrawTexture(PAL_Renderer* renderer, const PAL_Rect rect, PAL_Texture* texture);
 
 /**
- * @brief Draw a texture using a renderer.
+ * @brief Draw a texture using the renderer.
  * @param renderer The renderer
  * @param rect The rect
- * @param rotation The angle degrees
+ * @param rotation The angle in degrees
  * @param anchor The rotation anchor
  * @param texture The texture
  * @param tint_color The tint_color
- * @param flip The flip
+ * @param flip The render flip
  */
 PAL_API void PAL_RendererDrawTextureEx(PAL_Renderer* renderer, const PAL_Rect rect, f32 rotation,
                                     u32 anchor, PAL_Texture* texture, const PAL_Color tint_color, u32 flip);
 
 
 /**
- * @brief Draw a text using a renderer.
+ * @brief Draw a text using the renderer.
  * @param renderer The renderer
  * @param x The position x
  * @param y The position y
@@ -99,13 +101,13 @@ PAL_API void PAL_RendererDrawTextureEx(PAL_Renderer* renderer, const PAL_Rect re
 PAL_API void PAL_RendererDrawText(PAL_Renderer* renderer, f32 x, f32 y, f32 scale, const char* text, PAL_Font* font, const PAL_Color color);
 
 /**
- * @brief Update the renderer
+ * @brief Push the command queue and update the renderer
  * @param renderer The renderer
  */
 PAL_API void PAL_RendererFlush(PAL_Renderer* renderer);
 
 /**
- * @brief Set the renderer camera
+ * @brief Set the camera of the renderer
  * @param renderer The renderer
  * @param camera The camera
  */

@@ -58,8 +58,8 @@ struct PAL_ShaderDesc
 
     /// @brief Shader vertex source
     const char* vertex_src = nullptr;
-    /// @brief Shader vertex source
 
+    /// @brief Shader pixel source
     const char* pixel_src = nullptr;
 
     /// @brief Load shader sources from disk
@@ -70,58 +70,59 @@ struct PAL_ShaderDesc
 };
 
 /**
- * @brief Create a shader with a shader descriptor. 
- * A Context must be bound before creating the renderer.
- * @param desc The shader descriptor
+ * @brief Create a shader. 
+ * @attention A Context must be bound.
+ * @param desc The shader descriptor.
  * @returns If successful, a pointer to the created shader otherwise nullptr.
  */
 PAL_API PAL_Shader* PAL_CreateShader(PAL_ShaderDesc desc);
 
 /**
- * @brief Destroy a shader. A Context must be bound before destroying the shader.
+ * @brief Destroy the shader.
+ * @attention A Context must be bound.
  * @param shader The shader
  */
 PAL_API void PAL_DestroyShader(PAL_Shader* shader);
 
 /**
- * @brief Bind a shader.
+ * @brief Bind the shader to the pipeline.
  * @param shader The shader
  */
 PAL_API void PAL_BindShader(PAL_Shader* shader);
 
 /**
- * @brief Set the currently bound shader uniform int.
- * @param name The uniform name
+ * @brief Set int data to the active shader.
+ * @param name The layout name
  * @param data The data
  */
 PAL_API void PAL_SetInt(const char* name, i32 data);
 
 /**
- * @brief Set the currently bound shader uniform int array.
- * @param name The uniform name
+ * @brief Set int array data to the active shader.
+ * @param name The layout name
  * @param data The data array
  * @param count The count of elements in the array
  */
 PAL_API void PAL_SetIntArray(const char* name, i32* data, u32 count);
 
 /**
- * @brief Set the currently bound shader uniform float.
- * @param name The uniform name
+ * @brief Set float data to the active shader.
+ * @param name The layout name
  * @param data The data
  */
 PAL_API void PAL_SetFloat(const char* name, f32 data);
 
 /**
- * @brief Set the currently bound shader uniform float2.
- * @param name The uniform name
+ * @brief Set float2 data to the active shader.
+ * @param name The layout name
  * @param data The data
  * @param data2 The data2
  */
 PAL_API void PAL_SetFloat2(const char* name, f32 data, f32 data2);
 
 /**
- * @brief Set the currently bound shader uniform float3.
- * @param name The uniform name
+ * @brief Set float3 data to the active shader.
+ * @param name The layout name
  * @param data The data
  * @param data2 The data2
  * @param data3 The data3
@@ -129,8 +130,8 @@ PAL_API void PAL_SetFloat2(const char* name, f32 data, f32 data2);
 PAL_API void PAL_SetFloat3(const char* name, f32 data, f32 data2, f32 data3);
 
 /**
- * @brief Set the currently bound shader uniform float4.
- * @param name The uniform name
+ * @brief Set float4 data to the active shader.
+ * @param name The layout name
  * @param data The data
  * @param data2 The data2
  * @param data3 The data3
@@ -139,8 +140,8 @@ PAL_API void PAL_SetFloat3(const char* name, f32 data, f32 data2, f32 data3);
 PAL_API void PAL_SetFloat4(const char* name, f32 data, f32 data2, f32 data3, f32 data4);
 
 /**
- * @brief Set the currently bound shader uniform mat4.
- * @param name The uniform name
+ * @brief Set mat4 data to the active shader.
+ * @param name The layout name
  * @param data The data
  */
 PAL_API void PAL_SetMat4(const char* name, f32* data);

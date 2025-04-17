@@ -6,10 +6,17 @@
 /// @brief Rect
 struct PAL_Rect
 {
+    /// @brief x position of the rect
     f32 x = 0.0f;
+
+    /// @brief y position of the rect
     f32 y = 0.0f;
+    
     f32 w = 0.0f;
+    /// @brief width of the rect
+    
     f32 h = 0.0f;
+    /// @brief height of the rect
 };
 
 /**

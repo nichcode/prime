@@ -10,4 +10,5 @@
 #include "PAL_renderer.h"
 #include "PAL_shader.h"
 #include "PAL_texture.h"
+#include "PAL_time.h"
 #include "PAL_window.h"

@@ -29,6 +29,11 @@ b8 PAL_Init()
     int freetype_success = FT_Init_FreeType(&s_Library);
     PAL_ASSERT(!freetype_success, "Freetype initialization failed!");
 
+    u64 time = 0;
+    QueryPerformanceFrequency((LARGE_INTEGER*)&s_ClockFrequency);
+    QueryPerformanceCounter((LARGE_INTEGER*)&time);
+    s_StartTime = time - s_ClockFrequency;
+
     PAL_INFO("Init");
     return PAL_PASSED;
 }
@@ -156,6 +161,11 @@ void PAL_FreeLibrary(void* dll)
     FreeLibrary((HMODULE)dll);
 }
 
+void PAL_Sleep(u64 milli_seconds)
+{
+    Sleep((DWORD)milli_seconds);
+}
+
 void PAL_SetUserData(void* data)
 {
     s_UserData = data;
@@ -164,4 +174,11 @@ void PAL_SetUserData(void* data)
 void* PAL_GetUserData()
 {
     return s_UserData;
+}
+
+f32 PAL_GetTime()
+{
+    u64 time = 0;
+    QueryPerformanceCounter((LARGE_INTEGER*)&time);
+    return (f32)((time - s_StartTime) / s_ClockFrequency);
 }

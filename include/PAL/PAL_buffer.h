@@ -34,36 +34,38 @@ struct PAL_BufferDesc
     /// @brief The size in bytes of the buffer.
     u32 size = 0;
 
-    /// @brief The binding base of the buffer. This only applys for Uniform and storage buffers
+    /// @brief The binding base of the buffer. This only applys for Uniform and storage buffers.
     u32 binding = 0;
 
-    /// @brief The actual data of the buffer..
+    /// @brief The actual data of the buffer.
     void* data = nullptr;
 };
 
 /**
  * @brief Create a buffer. 
- * A Context must be bound before creating the buffer.
- * @param desc The buffer descriptor
+ * @attention A Context must be active.
+ * @param desc The buffer descriptor.
  * @returns If successful, a pointer to the created buffer otherwise nullptr.
  */
 PAL_API PAL_Buffer* PAL_CreateBuffer(PAL_BufferDesc desc);
 
 /**
- * @brief Destroy a buffer. A Context must be bound before destroying the buffer.
+ * @brief Destroy a buffer.
+ * @attention A Context must be active.
  * @param buffer The buffer
  */
 PAL_API void PAL_DestroyBuffer(PAL_Buffer* buffer);
 
 /**
- * @brief Bind a buffer to the pipeline
+ * @brief Make the buffer active.
  * @param buffer The buffer
  */
 PAL_API void PAL_BindBuffer(PAL_Buffer* buffer);
 
 /**
- * @brief Set data to a binded buffer in the pipeline
- * @param type The buffer type to set the data to. the buffer should be bound to the pipeline
+ * @brief Set data to the buffer
+ * @attention the buffer must be active.
+ * @param type The buffer type to set the data to.
  * @param data The data
  * @param size The size of the data
  */

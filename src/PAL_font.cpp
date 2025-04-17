@@ -20,7 +20,7 @@ PAL_Font* PAL_LoadFont(const char* filepath, u32 size)
     static u32 texture_size = 512;
     char buffer[texture_size  * texture_size];
 
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Font* font = new PAL_Font();
     PAL_ASSERT(font, "failed to create font");
 
@@ -83,7 +83,7 @@ PAL_Font* PAL_LoadFont(const char* filepath, u32 size)
 void PAL_DestroyFont(PAL_Font* font)
 {
     PAL_ASSERT(font, "font is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     auto it = std::find(context->data.fonts.begin(), context->data.fonts.end(), font);

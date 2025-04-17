@@ -142,22 +142,22 @@ enum PAL_Actions_
 };
 
 /**
- * @brief Get the name of the specified key
+ * @brief Get the name of the key
  * @param key The key
- * @returns The name of the key.
+ * @returns The name
  */
 PAL_API const char* PAL_GetKeyName(u32 key);
 
 /**
- * @brief Get the name of the specified button
+ * @brief Get the name of the button
  * @param button The button
- * @returns The name of the button.
+ * @returns The name
  */
 PAL_API const char* PAL_GetButtonName(u32 button);
 
 /**
- * @brief Get the name of the specified action
+ * @brief Get the name of the action
  * @param action The action
- * @returns The name of the action.
+ * @returns The name
  */
 PAL_API const char* PAL_GetActionName(u32 action);

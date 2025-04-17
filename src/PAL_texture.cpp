@@ -4,7 +4,7 @@
 
 PAL_Texture* PAL_CreateTexture(PAL_TextureDesc desc)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Texture* texture = new PAL_Texture();
     PAL_ASSERT(texture, "failed to create texture");
 
@@ -25,7 +25,7 @@ PAL_Texture* PAL_CreateTexture(PAL_TextureDesc desc)
 
 PAL_Texture* PAL_LoadTexture(const char* filepath)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Texture* texture = new PAL_Texture();
     PAL_ASSERT(texture, "failed to create texture");
 
@@ -44,7 +44,7 @@ PAL_Texture* PAL_LoadTexture(const char* filepath)
 void PAL_DestroyTexture(PAL_Texture* texture)
 {
     PAL_ASSERT(texture, "texture is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     auto it = std::find(context->data.textures.begin(), context->data.textures.end(), texture);
@@ -68,7 +68,7 @@ void PAL_DestroyTexture(PAL_Texture* texture)
 void PAL_BindTexture(PAL_Texture* texture, u32 slot)
 {
     PAL_ASSERT(texture, "texture is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     if (context->state.activeTexture != texture) {
@@ -85,7 +85,7 @@ void PAL_BindTexture(PAL_Texture* texture, u32 slot)
 void PAL_BindTarget(PAL_Texture* texture)
 {
     PAL_ASSERT(texture, "texture is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     if (context->state.activeTarget != texture) {
@@ -100,7 +100,7 @@ void PAL_BindTarget(PAL_Texture* texture)
 void PAL_UnbindTarget(PAL_Texture* texture)
 {
     PAL_ASSERT(texture, "texture is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     if (texture->flag & PAL_TextureFlags_Target) {

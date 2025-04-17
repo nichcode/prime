@@ -37,50 +37,52 @@ struct PAL_Glyph
 };
 
 /**
- * @brief Load a font from disk. A Context must be bound before loading the buffer.
- * @param file The filepath of the font
- * @param size The size of the font
+ * @brief Load a font from disk. 
+ * @attention A Context must be active.
+ * @param file The filepath of the font.
+ * @param size The size of the font.
  * @returns If successful, a pointer to the created font otherwise nullptr.
  */
 PAL_API PAL_Font* PAL_LoadFont(const char* filepath, u32 size);
 
 /**
- * @brief Destroy a font. A Context must be bound before destroying the font.
- * @param font The font to be destroyed
+ * @brief Destroy a font.
+ * @attention A Context must be active.
+ * @param font The font.
  */
 PAL_API void PAL_DestroyFont(PAL_Font* font);
 
 /**
- * @brief Get the size of a font.
- * @param font The font to query its size
- * @returns The size of the specified font
+ * @brief Get the size of the font.
+ * @param font The font
+ * @returns The size
  */
 PAL_API u32 PAL_GetFontSize(PAL_Font* font);
 
 /**
- * @brief Get the filepath of a font.
- * @param font The font to query its filepath
- * @returns The filepath of the specified font
+ * @brief Get the filepath of the font.
+ * @param font The font
+ * @returns The filepath
  */
 PAL_API const char* PAL_GetFontPath(PAL_Font* font);
 
 /**
- * @brief Get the baseline of a font.
- * @param font The font to query its baseline
- * @returns The filepath of the specified font
+ * @brief Get the baseline of the font.
+ * @param font The font
+ * @returns The baseline
  */
 PAL_API f32 PAL_GetFontBaseLine(PAL_Font* font);
 
 /**
- * @brief Get the texture atlas of a font.
- * @param font The font to query its texture atlas
- * @returns The filepath of the specified font
+ * @brief Get the texture atlas of the font.
+ * @param font The font
+ * @returns The texture
  */
 PAL_API PAL_Texture* PAL_GetFontTexture(PAL_Font* font);
 
 /**
- * @brief Get a glyph of a font.
- * @param font The font to query its glyph
+ * @brief Get a glyph from the font.
+ * @param font The font.
  * @param c The index of the glyph
  * @returns If successful, a pointer to the glyph otherwise nullptr.
  */

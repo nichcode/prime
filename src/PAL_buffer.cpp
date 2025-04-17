@@ -4,7 +4,7 @@
 
 PAL_Buffer* PAL_CreateBuffer(PAL_BufferDesc desc)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Buffer* buffer = new PAL_Buffer();
     PAL_ASSERT(buffer, "failed to create buffer");
 
@@ -44,7 +44,7 @@ PAL_Buffer* PAL_CreateBuffer(PAL_BufferDesc desc)
 void PAL_DestroyBuffer(PAL_Buffer* buffer)
 {
     PAL_ASSERT(buffer, "buffer is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     auto it = std::find(context->data.buffers.begin(), context->data.buffers.end(), buffer);
@@ -84,7 +84,7 @@ void PAL_DestroyBuffer(PAL_Buffer* buffer)
 void PAL_BindBuffer(PAL_Buffer* buffer)
 {
     PAL_ASSERT(buffer, "buffer is null");
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     if (buffer->type == PAL_BufferTypes_Vertex) {
@@ -118,7 +118,7 @@ void PAL_BindBuffer(PAL_Buffer* buffer)
 
 void PAL_SetBufferData(u32 type, void* data, u32 size)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Context* context = s_ActiveContext;
 
     if (type == PAL_BufferTypes_Vertex) {

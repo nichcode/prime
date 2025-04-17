@@ -17,7 +17,6 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H
 
-
 struct PAL_Context;
 
 struct PAL_Window

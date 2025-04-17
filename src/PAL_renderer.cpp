@@ -48,7 +48,7 @@ f32 _GetTextureIndex(PAL_Renderer* renderer, PAL_Texture* texture)
 
 PAL_Renderer* PAL_CreateRenderer()
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     PAL_Renderer* renderer = new PAL_Renderer();
     PAL_ASSERT(renderer, "failed to create renderer");
 

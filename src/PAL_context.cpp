@@ -179,13 +179,13 @@ void PAL_DestroyContext(PAL_Context* context)
 
 void PAL_SwapBuffers()
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.swapBuffers(s_ActiveContext->handle);
 }
 
 void PAL_Clear(const PAL_Color color)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.clear(s_ActiveContext->handle, color);
 }
 
@@ -200,49 +200,49 @@ void PAL_MakeActive(PAL_Context* context)
 
 void PAL_SetVsync(b8 vsync)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.setVsync(s_ActiveContext->handle, vsync);
 }
 
 void PAL_SetViewport(PAL_Viewport viewport)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->view = viewport;
     s_ActiveContext->api.setView(s_ActiveContext->handle, viewport);
 }
 
 void PAL_SetBlendMode(u32 blend_mode)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.setBlend(s_ActiveContext->handle, blend_mode);
 }
 
 void PAL_DrawArrays(u32 mode, u32 count)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.drawArrays(s_ActiveContext->handle, mode, count);
 }
 
 void PAL_DrawElements(u32 mode, u32 count)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.drawElements(s_ActiveContext->handle, mode, count);
 }
 
 void PAL_DrawElementsInstanced(u32 mode, u32 count, u32 instance_count)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.drawElementsInstanced(s_ActiveContext->handle, mode, count, instance_count);
 }
 
 void PAL_DrawArraysInstanced(u32 mode, u32 count, u32 instance_count)
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     s_ActiveContext->api.drawArraysInstanced(s_ActiveContext->handle, mode, count, instance_count);
 }
 
 PAL_Viewport PAL_GetView()
 {
-    PAL_ASSERT(s_ActiveContext, "no context bound");
+    PAL_ASSERT(s_ActiveContext, "no active context");
     return s_ActiveContext->view;
 }
