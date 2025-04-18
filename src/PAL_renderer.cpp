@@ -48,9 +48,9 @@ f32 _GetTextureIndex(PAL_Renderer* renderer, PAL_Texture* texture)
 
 PAL_Renderer* PAL_CreateRenderer()
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return nullptr);
     PAL_Renderer* renderer = new PAL_Renderer();
-    PAL_ASSERT(renderer, "failed to create renderer");
+    CHECK_ERR(renderer, "renderer is null", return nullptr);
 
     renderer->vertices[0] = { 0.0f, 0.0f, 0.0f, 1.0f };
     renderer->vertices[1] = { 1.0f, 0.0f, 0.0f, 1.0f };
@@ -133,7 +133,8 @@ PAL_Renderer* PAL_CreateRenderer()
 
 void PAL_DestroyRenderer(PAL_Renderer* renderer)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     PAL_DestroyBuffer(renderer->vbo);
     PAL_DestroyBuffer(renderer->ibo);
     PAL_DestroyShader(renderer->shader);
@@ -147,7 +148,8 @@ void PAL_DestroyRenderer(PAL_Renderer* renderer)
 
 void PAL_RendererDrawRect(PAL_Renderer* renderer, const PAL_Rect rect, const PAL_Color color)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     _CheckBatch(renderer);
     
     PAL_Mat4 transform = _Translate({ rect.x, rect.y, 0.0f }) 
@@ -173,7 +175,8 @@ void PAL_RendererDrawRect(PAL_Renderer* renderer, const PAL_Rect rect, const PAL
 
 void PAL_RendererDrawRectEx(PAL_Renderer* renderer, const PAL_Rect rect, f32 rotation, u32 anchor, const PAL_Color color)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     _CheckBatch(renderer);
 
     if (!rotation) { PAL_RendererDrawRect(renderer, rect, color); return; }
@@ -220,7 +223,8 @@ void PAL_RendererDrawRectEx(PAL_Renderer* renderer, const PAL_Rect rect, f32 rot
 
 void PAL_RendererDrawTexture(PAL_Renderer* renderer, const PAL_Rect rect, PAL_Texture* texture)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     if (!texture) { // texture is null
         PAL_RendererDrawRect(renderer, rect, { 1.0f, 1.0f, 1.0f, 1.0f });
         return;
@@ -253,7 +257,8 @@ void PAL_RendererDrawTexture(PAL_Renderer* renderer, const PAL_Rect rect, PAL_Te
 void PAL_RendererDrawTextureEx(PAL_Renderer* renderer, const PAL_Rect rect, f32 rotation, 
                             u32 anchor, PAL_Texture* texture, const PAL_Color tint_color, u32 flip)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     if (!texture) {
         PAL_RendererDrawRectEx(renderer, rect, rotation, anchor, { 1.0f, 1.0f, 1.0f, 1.0f });
         return;
@@ -326,9 +331,18 @@ void PAL_RendererDrawTextureEx(PAL_Renderer* renderer, const PAL_Rect rect, f32 
 
 void PAL_RendererDrawText(PAL_Renderer* renderer, f32 x, f32 y, f32 scale, const char* text, PAL_Font* font, const PAL_Color color)
 {
-    PAL_ASSERT(renderer, "renderer is null");
-    PAL_ASSERT(font, "font is null");
-    if(!text) { return; }
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
+
+    if (!font) {
+        _SetError("font is null"); 
+        return; 
+    }
+
+    if (!text) {
+        _SetError("text is empty"); 
+        return; 
+    }
 
     PAL_Texture* texture = font->texture;
     if (!texture) { return; }
@@ -384,7 +398,8 @@ void PAL_RendererDrawText(PAL_Renderer* renderer, f32 x, f32 y, f32 scale, const
 
 void PAL_RendererFlush(PAL_Renderer* renderer)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     if (renderer->indexCount) {
         PAL_BindBuffer(renderer->vbo);
         PAL_BindBuffer(renderer->ibo);
@@ -404,7 +419,8 @@ void PAL_RendererFlush(PAL_Renderer* renderer)
 
 void PAL_SetRendererCamera(PAL_Renderer* renderer, PAL_Camera camera)
 {
-    PAL_ASSERT(renderer, "renderer is null");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(renderer, "renderer is null", return);
     PAL_Mat4 transform;
     if (camera.rotation) {
         transform = _Translate({ camera.view.x, camera.view.y, 0.0f }) 

@@ -10,6 +10,7 @@
 #include "PAL_texture.cpp"
 #include "PAL_font.cpp"
 #include "PAL_rect.cpp"
+#include "PAL_error.cpp"
 
 #ifdef PAL_PLATFORM_WINDOWS
 #include "win32/PAL_win32_platform.cpp"

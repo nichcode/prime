@@ -1,5 +1,6 @@
 
 #include "PAL/PAL_log.h"
+#include "PAL/PAL_error.h"
 #include "PAL_utils.h"
 #include "PAL_operator.h"
 

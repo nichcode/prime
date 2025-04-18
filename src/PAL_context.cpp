@@ -104,27 +104,31 @@ void _ShutdownAPI(PAL_Context* context)
 
 PAL_Context* PAL_CreateContext(PAL_Window* window, PAL_ContextDesc desc)
 {
-    PAL_ASSERT(window, "window is nullptr");
-    PAL_ASSERT(!window->context, "window already has context");
-
+    CHECK_ERR(window, "window is null", return nullptr);
+    if (window->context) {
+        _SetError("window already has context");
+        return nullptr;
+    }
+    
     PAL_Context* context = new PAL_Context();
-    PAL_ASSERT(context, "failed to create context");
+    CHECK_ERR(context, "failed to create context", return nullptr);
     _InitAPI(context, desc.type);
 
     context->handle = context->api.createContext(PAL_GetWindowHandle(window), desc.major, desc.minor);
-    PAL_ASSERT(context, "failed to create context");
-
+    CHECK_ERR(context, "failed to create context handle", delete context; return nullptr);
+    
     window->context = context;
     context->view.x = 0.0f;
     context->view.y = 0.0f;
     context->view.width = (f32)window->width;
     context->view.height = (f32)window->height;
+
     return context;
 }
 
 void PAL_DestroyContext(PAL_Context* context)
 {
-    PAL_ASSERT(context, "context is null");
+    CHECK_ERR(context, "context is null", return);
     if (s_ActiveContext == context) {
         s_ActiveContext = nullptr;
     }
@@ -163,10 +167,10 @@ void PAL_DestroyContext(PAL_Context* context)
     context->data.fonts.clear();
 
     // reset states
-    context->state.activeVertexBuffer = nullptr;
-    context->state.activeIndexBuffer = nullptr;
-    context->state.activeStorageBuffer = nullptr;
-    context->state.activeUniformBuffer = nullptr;
+    context->state.activeVBuffer = nullptr;
+    context->state.activeIBuffer = nullptr;
+    context->state.activeSBuffer = nullptr;
+    context->state.activeUBuffer = nullptr;
     context->state.activeShader = nullptr;
     context->state.activeTexture = nullptr;
     context->state.activeTarget = nullptr;
@@ -179,19 +183,22 @@ void PAL_DestroyContext(PAL_Context* context)
 
 void PAL_SwapBuffers()
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.swapBuffers(s_ActiveContext->handle);
 }
 
 void PAL_Clear(const PAL_Color color)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.clear(s_ActiveContext->handle, color);
 }
 
 void PAL_MakeActive(PAL_Context* context)
 {
-    PAL_ASSERT(context, "context is null");
+    if (!context) {
+        _SetError("context is null"); 
+        return; 
+    }
     if (s_ActiveContext != context) {
         s_ActiveContext = context;
         context->api.makeActive(context->handle);
@@ -200,49 +207,49 @@ void PAL_MakeActive(PAL_Context* context)
 
 void PAL_SetVsync(b8 vsync)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.setVsync(s_ActiveContext->handle, vsync);
 }
 
 void PAL_SetViewport(PAL_Viewport viewport)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->view = viewport;
     s_ActiveContext->api.setView(s_ActiveContext->handle, viewport);
 }
 
 void PAL_SetBlendMode(u32 blend_mode)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.setBlend(s_ActiveContext->handle, blend_mode);
 }
 
 void PAL_DrawArrays(u32 mode, u32 count)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.drawArrays(s_ActiveContext->handle, mode, count);
 }
 
 void PAL_DrawElements(u32 mode, u32 count)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.drawElements(s_ActiveContext->handle, mode, count);
 }
 
 void PAL_DrawElementsInstanced(u32 mode, u32 count, u32 instance_count)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.drawElementsInstanced(s_ActiveContext->handle, mode, count, instance_count);
 }
 
 void PAL_DrawArraysInstanced(u32 mode, u32 count, u32 instance_count)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     s_ActiveContext->api.drawArraysInstanced(s_ActiveContext->handle, mode, count, instance_count);
 }
 
 PAL_Viewport PAL_GetView()
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return {});
     return s_ActiveContext->view;
 }

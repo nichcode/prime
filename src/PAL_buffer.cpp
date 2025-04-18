@@ -4,36 +4,37 @@
 
 PAL_Buffer* PAL_CreateBuffer(PAL_BufferDesc desc)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return nullptr) 
     PAL_Buffer* buffer = new PAL_Buffer();
-    PAL_ASSERT(buffer, "failed to create buffer");
+    CHECK_ERR(buffer, "failed to create buffer", return nullptr);
 
     buffer->dataSent = false;
     buffer->type = desc.type;
     buffer->handle = s_ActiveContext->api.createBuffer(desc);
+    CHECK_ERR(buffer, "failed to create buffer handle", delete buffer; return nullptr);
 
     // rebind the previous active buffer
     if (buffer->type == PAL_BufferTypes_Vertex) {
-        if (s_ActiveContext->state.activeVertexBuffer) {
-            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeVertexBuffer->handle);
+        if (s_ActiveContext->state.activeVBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeVBuffer->handle);
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Index) {
-        if (s_ActiveContext->state.activeIndexBuffer) {
-            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeIndexBuffer->handle);
+        if (s_ActiveContext->state.activeIBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeIBuffer->handle);
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Storage) {
-        if (s_ActiveContext->state.activeStorageBuffer) {
-            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeStorageBuffer->handle);
+        if (s_ActiveContext->state.activeSBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeSBuffer->handle);
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Uniform) {
-        if (s_ActiveContext->state.activeUniformBuffer) {
-            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeUniformBuffer->handle);
+        if (s_ActiveContext->state.activeUBuffer) {
+            s_ActiveContext->api.bindBuffer(s_ActiveContext->state.activeUBuffer->handle);
         }
     }
 
@@ -43,8 +44,8 @@ PAL_Buffer* PAL_CreateBuffer(PAL_BufferDesc desc)
 
 void PAL_DestroyBuffer(PAL_Buffer* buffer)
 {
-    PAL_ASSERT(buffer, "buffer is null");
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(buffer, "buffer is null", return);
     PAL_Context* context = s_ActiveContext;
 
     auto it = std::find(context->data.buffers.begin(), context->data.buffers.end(), buffer);
@@ -53,26 +54,26 @@ void PAL_DestroyBuffer(PAL_Buffer* buffer)
     }
 
     if (buffer->type == PAL_BufferTypes_Vertex) {
-        if (context->state.activeVertexBuffer == buffer) {
-            context->state.activeVertexBuffer = nullptr;
+        if (context->state.activeVBuffer == buffer) {
+            context->state.activeVBuffer = nullptr;
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Index) {
-        if (context->state.activeIndexBuffer == buffer) {
-            context->state.activeIndexBuffer = nullptr;
+        if (context->state.activeIBuffer == buffer) {
+            context->state.activeIBuffer = nullptr;
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Storage) {
-        if (context->state.activeStorageBuffer == buffer) {
-            context->state.activeStorageBuffer = nullptr;
+        if (context->state.activeSBuffer == buffer) {
+            context->state.activeSBuffer = nullptr;
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Uniform) {
-        if (context->state.activeUniformBuffer == buffer) {
-            context->state.activeUniformBuffer = nullptr;
+        if (context->state.activeUBuffer == buffer) {
+            context->state.activeUBuffer = nullptr;
         }
     }
 
@@ -83,34 +84,33 @@ void PAL_DestroyBuffer(PAL_Buffer* buffer)
 
 void PAL_BindBuffer(PAL_Buffer* buffer)
 {
-    PAL_ASSERT(buffer, "buffer is null");
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(buffer, "buffer is null", return);
     PAL_Context* context = s_ActiveContext;
-
     if (buffer->type == PAL_BufferTypes_Vertex) {
-        if (context->state.activeVertexBuffer != buffer) {
-            context->state.activeVertexBuffer = buffer;
+        if (context->state.activeVBuffer != buffer) {
+            context->state.activeVBuffer = buffer;
             context->api.bindBuffer(buffer->handle);
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Index) {
-        if (context->state.activeIndexBuffer != buffer) {
-            context->state.activeIndexBuffer = buffer;
+        if (context->state.activeIBuffer != buffer) {
+            context->state.activeIBuffer = buffer;
             context->api.bindBuffer(buffer->handle);
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Storage) {
-        if (context->state.activeStorageBuffer != buffer) {
-            context->state.activeStorageBuffer = buffer;
+        if (context->state.activeSBuffer != buffer) {
+            context->state.activeSBuffer = buffer;
             context->api.bindBuffer(buffer->handle);
         }
     }
 
     else if (buffer->type == PAL_BufferTypes_Uniform) {
-        if (context->state.activeUniformBuffer != buffer) {
-            context->state.activeUniformBuffer = buffer;
+        if (context->state.activeUBuffer != buffer) {
+            context->state.activeUBuffer = buffer;
             context->api.bindBuffer(buffer->handle);
         }
     }
@@ -118,26 +118,25 @@ void PAL_BindBuffer(PAL_Buffer* buffer)
 
 void PAL_SetBufferData(u32 type, void* data, u32 size)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
     PAL_Context* context = s_ActiveContext;
-
     if (type == PAL_BufferTypes_Vertex) {
-        PAL_ASSERT(context->state.activeVertexBuffer, "no vertex buffer bound");
-        context->api.setBufferData(context->state.activeVertexBuffer->handle, data, size);
+        CHECK_ERR(context->state.activeVBuffer, "no active vertex buffer")
+        context->api.setBufferData(context->state.activeVBuffer->handle, data, size);
     }
 
     else if (type == PAL_BufferTypes_Index) {
-        PAL_ASSERT(context->state.activeIndexBuffer, "no index buffer bound");
-        context->api.setBufferData(context->state.activeIndexBuffer->handle, data, size);
+        CHECK_ERR(context->state.activeIBuffer, "no active index buffer")
+        context->api.setBufferData(context->state.activeIBuffer->handle, data, size);
     }
 
     else if (type == PAL_BufferTypes_Storage) {
-        PAL_ASSERT(context->state.activeStorageBuffer, "no Storage buffer bound");
-        context->api.setBufferData(context->state.activeStorageBuffer->handle, data, size);
+        CHECK_ERR(context->state.activeSBuffer, "no active storage buffer")
+        context->api.setBufferData(context->state.activeSBuffer->handle, data, size);
     }
 
     else if (type == PAL_BufferTypes_Uniform) {
-        PAL_ASSERT(context->state.activeUniformBuffer, "no Uniform buffer bound");
-        context->api.setBufferData(context->state.activeUniformBuffer->handle, data, size);
+        CHECK_ERR(context->state.activeUBuffer, "no active uniform buffer")
+        context->api.setBufferData(context->state.activeUBuffer->handle, data, size);
     }
 }

@@ -81,10 +81,10 @@ struct PAL_DynAPI
 
 struct PAL_PipeLineState
 {
-    PAL_Buffer* activeVertexBuffer = nullptr;
-    PAL_Buffer* activeIndexBuffer = nullptr;
-    PAL_Buffer* activeStorageBuffer = nullptr;
-    PAL_Buffer* activeUniformBuffer = nullptr;
+    PAL_Buffer* activeVBuffer = nullptr;
+    PAL_Buffer* activeIBuffer = nullptr;
+    PAL_Buffer* activeSBuffer = nullptr;
+    PAL_Buffer* activeUBuffer = nullptr;
     PAL_Shader* activeShader = nullptr;
     PAL_Texture* activeTexture = nullptr;
     PAL_Texture* activeTarget = nullptr;
@@ -168,3 +168,7 @@ static FT_Library s_Library;
 
 void _InitInput();
 void _ConsoleWrite(u32 level, const char* message);
+void _SetError(const char* msg, ...);
+
+#define CHECK_CONTEXT(...) if (!s_ActiveContext) {_SetError("no active context"); __VA_ARGS__; }
+#define CHECK_ERR(expr, msg, ...) if (!expr) {_SetError(msg); __VA_ARGS__; }

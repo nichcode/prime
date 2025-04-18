@@ -4,11 +4,13 @@
 
 PAL_Shader* PAL_CreateShader(PAL_ShaderDesc desc)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return nullptr);
     PAL_Shader* shader = new PAL_Shader();
-    PAL_ASSERT(shader, "failed to create shader");
+    CHECK_ERR(shader, "failed to create shader", return nullptr);
 
     shader->handle = s_ActiveContext->api.createShader(desc);
+    CHECK_ERR(shader, "failed to create shader handle", delete shader; return nullptr);
+
     shader->layout = desc.layout;
     shader->layoutSent = false;
 
@@ -18,8 +20,8 @@ PAL_Shader* PAL_CreateShader(PAL_ShaderDesc desc)
 
 void PAL_DestroyShader(PAL_Shader* shader)
 {
-    PAL_ASSERT(shader, "shader is null");
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(shader, "shader is null", return);
     PAL_Context* context = s_ActiveContext;
 
     auto it = std::find(context->data.shaders.begin(), context->data.shaders.end(), shader);
@@ -37,8 +39,8 @@ void PAL_DestroyShader(PAL_Shader* shader)
 
 void PAL_BindShader(PAL_Shader* shader)
 {
-    PAL_ASSERT(shader, "shader is null");
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(shader, "shader is null", return);
     PAL_Context* context = s_ActiveContext;
 
     if (context->state.activeShader != shader) {
@@ -53,49 +55,49 @@ void PAL_BindShader(PAL_Shader* shader)
 
 void PAL_SetInt(const char* name, i32 data)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setInt(s_ActiveContext->state.activeShader->handle, name, data);
 }
 
 void PAL_SetIntArray(const char* name, i32* data, u32 count) 
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setIntArray(s_ActiveContext->state.activeShader->handle, name, data, count);
 }
 
 void PAL_SetFloat(const char* name, f32 data)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setFloat(s_ActiveContext->state.activeShader->handle, name, data);
 }
 
 void PAL_SetFloat2(const char* name, f32 data, f32 data2)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setFloat2(s_ActiveContext->state.activeShader->handle, name, data, data2);
 }
 
 void PAL_SetFloat3(const char* name, f32 data, f32 data2, f32 data3)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setFloat3(s_ActiveContext->state.activeShader->handle, name, data, data2, data3);
 }
 
 void PAL_SetFloat4(const char* name, f32 data, f32 data2, f32 data3, f32 data4)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setFloat4(s_ActiveContext->state.activeShader->handle, name, data, data2, data3, data4);
 }
 
 void PAL_SetMat4(const char* name, f32* data)
 {
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_ASSERT(s_ActiveContext->state.activeShader, "no shader bound");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(s_ActiveContext->state.activeShader, "no active shader");
     s_ActiveContext->api.setMat4(s_ActiveContext->state.activeShader->handle, name, data);
 }

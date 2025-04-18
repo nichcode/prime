@@ -97,10 +97,10 @@ GLuint _GenShader(i32 type, const char* source)
         std::vector<GLchar> info_log(max_length);
         glGetShaderInfoLog(shader, max_length, &max_length, info_log.data());
         if (type == GL_VERTEX_SHADER) {
-            PAL_ASSERT(false, "vertex shader compilation error : %s", info_log.data());
+            _SetError("vertex shader compilation error : %s", info_log.data());
         }
         else if (type == GL_FRAGMENT_SHADER) {
-            PAL_ASSERT(false, "pixel shader compilation error : %s", info_log.data());
+            _SetError("pixel shader compilation error : %s", info_log.data());
         }
     }
     return shader;
@@ -125,7 +125,7 @@ GLuint _GenProgram(u32 vertexShader, u32 pixelShader)
 
         glDeleteProgram(program);
         program = 0;
-        PAL_ASSERT(false, "shader link error : %s", info_log.data());
+        _SetError("shader link error : %s", info_log.data());
     }
     return program;
 }
@@ -143,12 +143,12 @@ std::string _Readfile(const char* filepath)
             file.read(&result[0], size);
         }
         else {
-            PAL_ASSERT(false, "Could not read from file '%s'", filepath);
+            _SetError("Could not read from file %s", filepath);
             return nullptr;
         }
     }
     else {
-        PAL_ASSERT(false, "Could not read from file '%s'", filepath);
+        _SetError("Could not read from file %s", filepath);
         return nullptr;
     }
     return result;
@@ -156,6 +156,9 @@ std::string _Readfile(const char* filepath)
 
 void* _GLCreateShader(PAL_ShaderDesc desc)
 {
+    glShader* shader = new glShader();
+    if (!shader) { return nullptr; }
+
     // TODO: transpiler
     std::string vertex_src;
     std::string pixel_src;
@@ -171,9 +174,6 @@ void* _GLCreateShader(PAL_ShaderDesc desc)
     u32 vertex_shader = _GenShader(GL_VERTEX_SHADER, vertex_src.c_str());
     u32 pixel_shader = _GenShader(GL_FRAGMENT_SHADER, pixel_src.c_str());
     
-    glShader* shader = new glShader();
-    PAL_ASSERT(shader, "failed to create opengl shader handle");
-
     shader->id = _GenProgram(vertex_shader, pixel_shader);
     glDeleteShader(vertex_shader);
     glDeleteShader(pixel_shader);

@@ -4,13 +4,17 @@
 
 PAL_Font* PAL_LoadFont(const char* filepath, u32 size)
 {
+    CHECK_CONTEXT(return nullptr);
+    PAL_Font* font = new PAL_Font();
+    CHECK_ERR(font, "font is null", return nullptr);
+   
     FT_Face font_face;
     i32 error = FT_New_Face(s_Library, filepath, 0, &font_face);
     if (error == FT_Err_Unknown_File_Format) {
-        PAL_ASSERT(false, "Unknown file format"); 
+        _SetError("Unknown file format"); 
     }
     else if (error != 0) {
-        PAL_ASSERT(false, "filepath is null"); 
+        _SetError("filepath is null"); 
     }
 
     FT_Set_Pixel_Sizes(font_face, 0, size);
@@ -19,16 +23,11 @@ PAL_Font* PAL_LoadFont(const char* filepath, u32 size)
     u32 col = padding;
     static u32 texture_size = 512;
     char buffer[texture_size  * texture_size];
-
-    PAL_ASSERT(s_ActiveContext, "no active context");
-    PAL_Font* font = new PAL_Font();
-    PAL_ASSERT(font, "failed to create font");
-
     FT_GlyphSlot slot =  font_face->glyph;
 
     for (u8 c = 32; c < 127; c++) {
         if (FT_Load_Char(font_face, c, FT_LOAD_RENDER)) {
-            PAL_ERROR("Failed to load Glyph");
+            _SetError("Failed to load Glyph");
             continue;
         }
 
@@ -70,6 +69,7 @@ PAL_Font* PAL_LoadFont(const char* filepath, u32 size)
     desc.width = texture_size;
     desc.height = texture_size;
     font->texture = PAL_CreateTexture(desc);
+    CHECK_ERR(font->texture, "failed to create font texture atlas", delete font; return nullptr);
 
     font->path = filepath;
     font->size = size;
@@ -82,8 +82,8 @@ PAL_Font* PAL_LoadFont(const char* filepath, u32 size)
 
 void PAL_DestroyFont(PAL_Font* font)
 {
-    PAL_ASSERT(font, "font is null");
-    PAL_ASSERT(s_ActiveContext, "no active context");
+    CHECK_CONTEXT(return);
+    CHECK_ERR(font, "font is null");
     PAL_Context* context = s_ActiveContext;
 
     auto it = std::find(context->data.fonts.begin(), context->data.fonts.end(), font);
@@ -98,30 +98,30 @@ void PAL_DestroyFont(PAL_Font* font)
 
 u32 PAL_GetFontSize(PAL_Font* font)
 {
-    PAL_ASSERT(font, "font is null");
+    CHECK_ERR(font, "font is null");
     return font->size;
 }
 
 const char* PAL_GetFontPath(PAL_Font* font)
 {
-    PAL_ASSERT(font, "font is null");
+    CHECK_ERR(font, "font is null");
     return font->path;
 }
 
 f32 PAL_GetFontBaseLine(PAL_Font* font)
 {
-    PAL_ASSERT(font, "font is null");
+    CHECK_ERR(font, "font is null");
     return font->baseline;
 }
 
 PAL_Texture* PAL_GetFontTexture(PAL_Font* font)
 {
-    PAL_ASSERT(font, "font is null");
+    CHECK_ERR(font, "font is null");
     return font->texture;
 }
 
 PAL_Glyph* PAL_GetFontGlyph(PAL_Font* font, u8 c)
 {
-    PAL_ASSERT(font, "font is null");
+    CHECK_ERR(font, "font is null");
     return &font->glyphs.at(c);
 }

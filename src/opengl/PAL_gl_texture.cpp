@@ -88,6 +88,7 @@ struct glTexture
 void* _GLCreateTexture(PAL_TextureDesc desc)
 {
     glTexture* texture = new glTexture();
+    if (!texture) { return nullptr; }
     u32 data_format = dataFormatToGL(desc.format);
     u32 int_format = intFormatToGL(desc.format);
     texture->int_format = int_format;
@@ -122,7 +123,7 @@ void* _GLCreateTexture(PAL_TextureDesc desc)
         // Check for completeness
         i32 status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
         if (status != GL_FRAMEBUFFER_COMPLETE) {
-            PAL_ASSERT(false, "Failure to create render target texture. Complete status: %i", status);
+            _SetError("Failed to create render target texture. Complete status: %i", status);
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glBindTexture(GL_TEXTURE_2D, 0);
@@ -157,6 +158,7 @@ void* _GLLoadTexture(const char* filepath, u32* width, u32* height)
     stbi_uc* data = stbi_load(filepath, &w, &h, &channels, 0);
     if (data) {
         glTexture* texture = new glTexture();
+        if (!texture) { return nullptr; }
 
         GLenum int_fmt = 0, data_fmt = 0;
         if (channels == 4) {
@@ -168,9 +170,7 @@ void* _GLLoadTexture(const char* filepath, u32* width, u32* height)
             int_fmt = GL_RGB;
         }
 
-        PAL_ASSERT(int_fmt & data_fmt, "Format not supported!");
-        texture->int_format = int_fmt;
-
+        if (!int_fmt & data_fmt) { _SetError("Format not supported!"); };
         glGenTextures(1, &texture->id);
         glBindTexture(GL_TEXTURE_2D, texture->id);
 
@@ -188,7 +188,6 @@ void* _GLLoadTexture(const char* filepath, u32* width, u32* height)
         stbi_image_free(data);
         return texture;
     }
-    PAL_ASSERT(false, "Could not load texture2d - %s", filepath);
     return nullptr;
 }
 

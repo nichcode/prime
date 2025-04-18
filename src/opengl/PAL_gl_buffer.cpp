@@ -25,8 +25,6 @@ inline u32 bufferTypeToGL(u32 type)
             break;
         }
     }
-
-    PAL_ASSERT(false, "invalid buffer type");
     return 0;
 }
 
@@ -42,8 +40,6 @@ inline u32 bufferUsageToGL(u32 usage)
             break;
         }
     }
-
-    PAL_ASSERT(false, "invalid buffer type");
     return 0;
 }
 
@@ -56,7 +52,7 @@ struct glBuffer
 void* _GLCreateBuffer(PAL_BufferDesc desc)
 {
     glBuffer* buffer = new glBuffer();
-    PAL_ASSERT(buffer, "failed to create opengl buffer handle");
+    if (!buffer) { return nullptr; }
     buffer->type = bufferTypeToGL(desc.type);
     u32 usage = bufferUsageToGL(desc.usage);
     glGenBuffers(1, &buffer->id);

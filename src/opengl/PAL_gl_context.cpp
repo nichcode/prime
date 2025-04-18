@@ -15,8 +15,6 @@ inline GLenum drawModeToGL(u32 mode)
             break;
         }
     }
-
-    PAL_ASSERT(false, "invalid draw mode");
     return 0;
 }
 
@@ -33,7 +31,7 @@ struct glContext
 void* _GLCreateContext(void* window_handle, i32 major, i32 minor)
 {
     glContext* context = new glContext();
-    PAL_ASSERT(context, "failed to create opengl context handle");
+    if (!context) { return nullptr; }
 
 #ifdef PAL_PLATFORM_WINDOWS
     context->window = (HWND)window_handle;
@@ -41,7 +39,6 @@ void* _GLCreateContext(void* window_handle, i32 major, i32 minor)
     context->deviceContext = GetDC(context->window);
 #endif // PAL_PLATFORM_WINDOWS
 
-    PAL_ASSERT(context->handle, "failed to create opengl context handle");
     return context;
 }
 

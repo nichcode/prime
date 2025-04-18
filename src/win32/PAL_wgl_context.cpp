@@ -32,7 +32,7 @@ void _WGLCreateDummyContext()
         window_class.hInstance,
         0);
 
-    PAL_ASSERT(dummy_window, "Win32 dummy window creation failed");
+    CHECK_ERR(dummy_window, "Win32 dummy window creation failed");
     HDC dummy_dc = GetDC(dummy_window);
 
     PIXELFORMATDESCRIPTOR pfd = {};
@@ -54,13 +54,13 @@ void _WGLCreateDummyContext()
 
     // wgl
     wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)LOAD_WGL_FUNC("wglChoosePixelFormatARB");
-    PAL_ASSERT(wglChoosePixelFormatARB, "failed to load wglChoosePixelFormatARB");
+    CHECK_ERR(wglChoosePixelFormatARB, "failed to load wglChoosePixelFormatARB");
     
     wglCreateContextAttribsARB = (PFNWGLCREATECONTEXTATTRIBSARBPROC)LOAD_WGL_FUNC("wglCreateContextAttribsARB");
-    PAL_ASSERT(wglCreateContextAttribsARB, "failed to load wglCreateContextAttribs ARB");
+    CHECK_ERR(wglCreateContextAttribsARB, "failed to load wglCreateContextAttribs ARB");
     
     wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)LOAD_WGL_FUNC("wglSwapIntervalEXT");
-    PAL_ASSERT(wglSwapIntervalEXT, "failed to load wglSwapIntervalEXT");
+    CHECK_ERR(wglSwapIntervalEXT, "failed to load wglSwapIntervalEXT");
 
     _LoadGL();
 
@@ -89,15 +89,17 @@ HGLRC _WGLCreateContext(HWND window, i32 major, i32 minor)
     int pixel_format = 0;
     UINT num_format = 0;
     wglChoosePixelFormatARB(hdc, pixel_format_attrib, nullptr, 1, &pixel_format, &num_format);
-    PAL_ASSERT(num_format, "failed to find pixel format");
+    if (!num_format) { _SetError("failed to find pixel format"); return nullptr; }
 
     PIXELFORMATDESCRIPTOR pixel_format_desc = {};
     DescribePixelFormat(hdc, pixel_format, sizeof(PIXELFORMATDESCRIPTOR), &pixel_format_desc);
     SetPixelFormat(hdc, pixel_format, &pixel_format_desc);
 
     b8 valid = major < glVersion.major || (major == glVersion.major && minor <= glVersion.minor);
-
-    PAL_ASSERT(valid, "your device doesent support opengl version %i.%i", major, minor);
+    if (!valid) { 
+        _SetError("your device doesent support opengl version %i.%i", major, minor);
+        return nullptr;
+    }
 
     int opengl_attrib[] = {
         WGL_CONTEXT_MAJOR_VERSION_ARB, major,
@@ -108,8 +110,7 @@ HGLRC _WGLCreateContext(HWND window, i32 major, i32 minor)
     };
 
     HGLRC context = wglCreateContextAttribsARB(hdc, 0, opengl_attrib);
-    PAL_ASSERT(context, "WGL context creation failed");
-
+    if (!context) { _SetError("wgl context creation failed"); return nullptr; }
     ReleaseDC(window, hdc);
     return context;
 }

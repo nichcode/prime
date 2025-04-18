@@ -12,7 +12,7 @@ void* _Load(const char* func_name);
         PROC proc = wglGetProcAddress(func_name);
         if (!proc) {
             proc = GetProcAddress((HMODULE)s_Dll, func_name);
-            PAL_ASSERT(proc, "failed to load gl function %s", func_name);
+            if (!proc) { _SetError("failed to load gl function %s", func_name); }
         }
         return (void*)proc;
     }
@@ -24,7 +24,7 @@ void _LoadGL()
 
     glGetstring = (PFNGLGETSTRINGPROC)_Load("glGetString");
     const char* version = (const char*) glGetstring(GL_VERSION);
-    PAL_ASSERT(version, "failed to get opengl version");
+    CHECK_ERR(version, "failed to get opengl version");
 
 #ifdef _MSC_VER
     sscanf_s(version, "%d.%d", &major, &minor);
